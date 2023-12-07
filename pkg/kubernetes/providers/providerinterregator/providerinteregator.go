@@ -19,6 +19,10 @@ import (
 func NewInterregationReport(nodes []v1.Node) (*types.InterregationReport, error) {
 	report := types.InterregationReport{}
 
+	if len(nodes) == 0 {
+		return nil, fmt.Errorf("no nodes found")
+	}
+
 	report.Nodes = nodes
 	interregator := report.GetInterregator(GetProviderInterregators())
 
