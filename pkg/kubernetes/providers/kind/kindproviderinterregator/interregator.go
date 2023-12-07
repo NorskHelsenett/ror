@@ -1,4 +1,4 @@
-package kindproviderterregator
+package kindproviderinterregator
 
 import (
 	"fmt"
