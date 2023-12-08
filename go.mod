@@ -3,6 +3,7 @@ module github.com/NorskHelsenett/ror
 go 1.21.4
 
 require (
+	github.com/dotse/go-health v0.2.4
 	github.com/evanphx/json-patch v4.12.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
 	github.com/spf13/viper v1.18.0
