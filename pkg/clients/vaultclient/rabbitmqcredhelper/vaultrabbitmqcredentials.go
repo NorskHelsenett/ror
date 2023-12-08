@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"ror/internal/clients/vaultclient"
-
+	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/hashicorp/vault-client-go"

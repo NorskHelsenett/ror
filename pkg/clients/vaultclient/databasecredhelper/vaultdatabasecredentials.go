@@ -3,9 +3,9 @@ package databasecredhelper
 import (
 	"errors"
 	"fmt"
-	"ror/internal/clients/vaultclient"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/hashicorp/vault-client-go"
