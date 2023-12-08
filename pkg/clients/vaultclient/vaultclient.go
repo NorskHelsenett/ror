@@ -65,8 +65,8 @@ func (rc VaultClient) CheckHealth() []health.Check {
 }
 
 // TODO: Remove this function, it is only used to support legacy code
-func (v VaultClient) GetInitiatedVaultClient() *VaultClient {
-	return &v
+func GetInitiatedVaultClient() *VaultClient {
+	return vaultClient
 }
 
 func (v *VaultClient) initClient() {
