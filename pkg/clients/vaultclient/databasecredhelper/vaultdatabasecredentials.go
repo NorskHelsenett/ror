@@ -3,6 +3,7 @@ package databasecredhelper
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient"
@@ -12,6 +13,7 @@ import (
 )
 
 type VaultDBCredentials struct {
+	lock        sync.RWMutex
 	VaultClient *vaultclient.VaultClient
 	Username    string
 	Password    string
@@ -36,11 +38,17 @@ func NewVaultDBCredentials(vcli *vaultclient.VaultClient, vaultpath string, moun
 	return &vc
 }
 func (dbc *VaultDBCredentials) IsExpired() bool {
+	dbc.lock.RLock()
+	defer dbc.lock.RUnlock()
+
 	return dbc.Exp-10 < time.Now().Unix()
 }
 
 func (dbc *VaultDBCredentials) CheckAndRenew() bool {
 	if dbc.IsExpired() {
+		dbc.lock.Lock()
+		defer dbc.lock.Unlock()
+
 		msg := fmt.Sprintf("Renewing lease for database %s/credentials/%s", dbc.MountPath, dbc.VaultPath)
 		rlog.Debug(msg)
 		_ = dbc.updateCreds()
