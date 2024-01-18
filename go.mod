@@ -7,7 +7,7 @@ require (
 	github.com/evanphx/json-patch v4.12.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gomodule/redigo v1.8.3
-	github.com/hashicorp/vault-client-go v0.4.2
+	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/hashicorp/vault/api v1.10.0
 	github.com/nitishm/go-rejson/v4 v4.1.1-0.20230331060235-d2aa875760e4
 	github.com/prometheus/client_golang v1.17.0
