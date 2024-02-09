@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/azure/azureproviderinterregator"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dproviderinterregator"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providerinterregator/types"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/tanzu/tanzuproviderinterregator"
 
@@ -43,5 +44,6 @@ func GetProviderInterregators() []types.ClusterProviderinterregator {
 	return []types.ClusterProviderinterregator{
 		tanzuproviderinterregator.NewInterregator(),
 		azureproviderinterregator.NewInterregator(),
+		k3dproviderinterregator.NewInterregator(),
 	}
 }
