@@ -1,0 +1,60 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package apiresourcecontracts
+
+import (
+	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
+)
+
+{{ range .}}
+// Function to return {{.Kind}} resource by name.
+func (m Resource{{.PluralCapitalized}}) GetByName(search string) Resource{{.Kind}} {
+	for _, resource := range m.{{.PluralCapitalized}} {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse Resource{{.Kind}}
+	return emptyResponse
+}
+
+{{if .Namespaced}}
+// Function to return {{.Kind}} resource by namespace.
+func (m Resource{{.PluralCapitalized}}) GetByNamespace(search string) Resource{{.Kind}} {
+	for _, res := range m.{{.PluralCapitalized}} {
+		if res.Metadata.Namespace == search {
+			return res
+		}
+	}
+	var emptyResponse Resource{{.Kind}}
+	return emptyResponse
+}
+{{end}}
+
+// Function to return {{.Kind}} resource by uid.
+func (m Resource{{.PluralCapitalized}}) GetByUid(search string) Resource{{.Kind}}  {
+	for _, res := range m.{{.PluralCapitalized}} {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse Resource{{.Kind}} 
+	return emptyResponse
+}
+
+// Function to return {{.Kind}} resource by label.
+func (m Resource{{.PluralCapitalized}}) GetByLabels(search map[string]string) []Resource{{.Kind}} {
+	var Response []Resource{{.Kind}}
+	for _, res := range m.{{.PluralCapitalized}} {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}
+
+{{end}}
+
