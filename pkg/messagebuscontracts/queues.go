@@ -25,6 +25,4 @@ const (
 	ExchangeRorResources = "ror.resources"
 	ExchangeRorEvents    = "ror.events"
 	ExchangeTanzu        = "tanzu"
-	ExchangeK3d          = "k3d"
-	ExchangeKind         = "kind"
 )

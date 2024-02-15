@@ -2,7 +2,8 @@ package messagebuscontracts
 
 import (
 	"ror/internal/models/tanzu"
-	"ror/pkg/apicontracts/apiresourcecontracts"
+
+	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 )
 
 type ClusterCreatedEvent struct {

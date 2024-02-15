@@ -1,0 +1,19 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package apiresourcecontracts
+
+// Resourcetypes allowed in the generic resource models.
+type Resourcetypes interface {
+    {{range $i, $property := . -}}
+ {{if $i}}|{{end}}Resource{{.Kind}} 
+{{- end}}
+}
+
+{{ range .}}
+// type for returning {{.Kind}} resources to internal functions
+type Resource{{.PluralCapitalized}} struct {
+	Owner      ResourceOwnerReference `json:"owner"`
+	{{.PluralCapitalized}} []Resource{{.Kind}}    `json:"{{.Plural}}"`
+}
+{{end}}

@@ -1,6 +1,6 @@
 package messagebuscontracts
 
-import "ror/pkg/apicontracts/messages"
+import "github.com/NorskHelsenett/ror/pkg/apicontracts/messages"
 
 type SwitchboardPostSeverity string
 type SwitchboardSourceType int
