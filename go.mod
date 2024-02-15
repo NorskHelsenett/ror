@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/dotse/go-health v0.2.4
-	github.com/evanphx/json-patch v5.9.0+incompatible
+	github.com/evanphx/json-patch/v5 v5.9.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gomodule/redigo v1.8.9
 	github.com/hashicorp/vault-client-go v0.4.3
