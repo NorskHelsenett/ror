@@ -10,7 +10,7 @@ import (
 type K3dtypes struct {
 }
 
-func NewK3dtypes() K3dtypes {
+func NewInterregator() K3dtypes {
 	return K3dtypes{}
 }
 
