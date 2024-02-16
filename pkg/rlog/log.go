@@ -112,6 +112,7 @@ func Fatal(msg string, err error, fields ...Field) {
 func Infoc(ctx context.Context, msg string, fields ...Field) {
 	correlateWithTrace(ctx, msg, zap.InfoLevel, &fields)
 	getFieldsFromContext(ctx, &fields)
+	Info("debuging fields from context", Any("fields", fields))
 	l.Info(msg, fields...)
 }
 
@@ -212,8 +213,8 @@ func correlateWithTrace(ctx context.Context, msg string, lvl zapcore.Level, fiel
 func getFieldsFromContext(ctx context.Context, fields *[]Field) {
 	Info("looking for fields in context", Any("fields", l.ContextKeyFields))
 	for _, key := range l.ContextKeyFields {
-		Info("found field", Any("key", key))
 		if ctx.Value(key) != nil {
+			Info("found field", Any("key", key))
 			*fields = append(*fields, zap.Any(key, ctx.Value(key)))
 		}
 	}
