@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -210,6 +211,7 @@ func correlateWithTrace(ctx context.Context, msg string, lvl zapcore.Level, fiel
 // tries to get a predifined set of fields from context, if the field is not
 // present int the context it is ignored
 func getFieldsFromContext(ctx context.Context, fields *[]Field) {
+	Info("looking for fields in context", rlog.Any("fields", l.ContextKeyFields))
 	for _, key := range l.ContextKeyFields {
 		Info("found field", Any("key", key))
 		if ctx.Value(key) != nil {
