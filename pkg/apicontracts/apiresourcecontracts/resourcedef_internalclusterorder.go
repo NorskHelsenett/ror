@@ -1,7 +1,7 @@
 package apiresourcecontracts
 
 import (
-	"ror/pkg/providers"
+	"github.com/NorskHelsenett/ror/pkg/models/providers"
 )
 
 type ResourceClusterOrder struct {

@@ -1,8 +1,9 @@
 package apicontractsv2self
 
 import (
-	identitymodels "ror/internal/identity/models"
 	"time"
+
+	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 )
 
 type SelfData struct {

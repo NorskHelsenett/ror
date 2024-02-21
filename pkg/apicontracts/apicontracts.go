@@ -1,8 +1,9 @@
 package apicontracts
 
 import (
-	identitymodels "ror/internal/identity/models"
 	"time"
+
+	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
