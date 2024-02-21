@@ -1,7 +1,7 @@
 package messagebuscontracts
 
 import (
-	"ror/internal/models/tanzu"
+	"github.com/NorskHelsenett/ror/pkg/models/providers/tanzu"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 )

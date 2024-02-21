@@ -2,7 +2,7 @@
 package apiresourcecontracts
 
 import (
-	aclmodels "ror/internal/acl/models"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
 
 	"github.com/gin-gonic/gin"
 )
