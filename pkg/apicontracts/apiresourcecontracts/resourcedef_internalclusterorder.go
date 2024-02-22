@@ -13,39 +13,46 @@ type ResourceClusterOrder struct {
 }
 
 type ResourceClusterOrderSpec struct {
-	Provider    providers.ProviderType `json:"provider" validate:"required,min=1,ne=' '"`
-	ClusterName string                 `json:"clusterName" validate:"required,min=1,ne=' '"`
-	ProjectId   string                 `json:"projectId" validate:"required,min=1,ne=' '"`
-	OrderBy     string                 `json:"orderBy" validate:"required,min=1,ne=' '"`
+	OrderType ResourceActionType     `json:"orderType" validate:"required,min=1,ne=' '"`
+	Provider  providers.ProviderType `json:"provider,omitempty"`
+	Cluster   string                 `json:"cluster" validate:"required,min=1,ne=' '"`
+	ProjectId string                 `json:"projectId,omitempty"`
+	OrderBy   string                 `json:"orderBy" validate:"required,min=1,ne=' '"`
 
-	Environment      EnvironmentType                    `json:"environment" validate:"required,min=1,max=4"`
-	Criticality      CriticalityLevel                   `json:"criticality" validate:"required,min=1,max=4"`
-	Sensitivity      SensitivityLevel                   `json:"sensitivity" validate:"required,min=1,max=4"`
-	HighAvailability bool                               `json:"highAvailability" validate:"boolean"`
-	NodePools        []ResourceClusterOrderSpecNodePool `json:"nodePools" validate:"required,min=1,dive,required"`
+	Environment      EnvironmentType                    `json:"environment,omitempty" validate:"min=1,max=4"`
+	Criticality      CriticalityLevel                   `json:"criticality,omitempty" validate:"min=1,max=4"`
+	Sensitivity      SensitivityLevel                   `json:"sensitivity,omitempty" validate:"min=1,max=4"`
+	HighAvailability bool                               `json:"highAvailability,omitempty" validate:"boolean"`
+	NodePools        []ResourceClusterOrderSpecNodePool `json:"nodePools,omitempty" validate:"min=1,dive,required"`
 	ServiceTags      map[string]string                  `json:"serviceTags,omitempty"`
 	ProviderConfig   map[string]interface{}             `json:"providerConfig,omitempty"`
-	OwnerGroup       string                             `json:"ownerGroup" validate:"required,min=1,ne=' '"`
+	OwnerGroup       string                             `json:"ownerGroup,omitempty" validate:"min=1,ne=' '"`
+	K8sVersion       string                             `json:"k8sVersion,omitempty"`
 }
 
 type ResourceProviderConfigTanzu struct {
 	DatacenterId string `json:"datacenterId" validate:"required,min=1,ne=' '"`
 	NamespaceId  string `json:"namespaceId" validate:"required,min=1,ne=' '"`
 }
+
 type ResourceProviderConfigAks struct {
 	Region        string `json:"region" validate:"required,min=1,ne=' '"`
 	Subscription  string `json:"subscription" validate:"required,min=1,ne=' '"`
 	ResourceGroup string `json:"resourceGroup" validate:"required,min=1,ne=' '"`
 }
 
+type ResourceProviderConfigKind struct {
+}
+
 type ResourceClusterOrderSpecNodePool struct {
+	Name         string `json:"name" validate:"required,min=1,ne=' '"`
 	MachineClass string `json:"machineClass" validate:"required,min=1,ne=' '"`
 	Count        int    `json:"count" validate:"required,min=1"`
 }
 
 type ResourceClusterOrderStatus struct {
 	Status           string                                     `json:"status"`
-	Phase            string                                     `json:"phase"`
+	Phase            ResourceClusterOrderStatusPhase            `json:"phase"`
 	Conditions       []ResourceKubernetesClusterStatusCondition `json:"conditions"`
 	CreatedTime      string                                     `json:"createdTime"`
 	UpdatedTime      string                                     `json:"updatedTime"`
@@ -59,6 +66,28 @@ type ResourceClusterOrderCondition struct {
 	Reason             string `json:"reason"`
 	Message            string `json:"message"`
 }
+
+type ResourceClusterOrderStatusPhase string
+
+const (
+	ResourceClusterOrderStatusPhasePending ResourceClusterOrderStatusPhase = "Pending"
+
+	ResourceClusterOrderStatusPhaseCreating ResourceClusterOrderStatusPhase = "Creating"
+	ResourceClusterOrderStatusPhaseUpdating ResourceClusterOrderStatusPhase = "Updating"
+	ResourceClusterOrderStatusPhaseDeleting ResourceClusterOrderStatusPhase = "Deleting"
+
+	ResourceClusterOrderStatusPhaseCompleted ResourceClusterOrderStatusPhase = "Completed"
+	ResourceClusterOrderStatusPhaseFailed    ResourceClusterOrderStatusPhase = "Failed"
+)
+
+type ResourceActionType string
+
+const (
+	ResourceActionTypeUnknown ResourceActionType = ""
+	ResourceActionTypeCreate  ResourceActionType = "Create"
+	ResourceActionTypeUpdate  ResourceActionType = "Update"
+	ResourceActionTypeDelete  ResourceActionType = "Delete"
+)
 
 type EnvironmentType int
 

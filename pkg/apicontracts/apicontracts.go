@@ -4,6 +4,7 @@ import (
 	"time"
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
+	"github.com/NorskHelsenett/ror/pkg/models/providers"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -66,21 +67,21 @@ type ClusterMetadataModel struct {
 }
 
 type AgentApiKeyModel struct {
-	Identifier     string     `json:"identifier" validate:"required,min=1,ne=' ',max=100"`
-	DatacenterName string     `json:"datacenterName" validate:"required,min=1,ne=' '"`
-	WorkspaceName  string     `json:"workspaceName" validate:"required,min=1,ne=' '"`
-	Provider       string     `json:"provider" validate:"required,min=1,ne=' ',max=20"`
-	Type           ApiKeyType `json:"type" validate:"required,min=1,ne='',eq=Cluster"`
+	Identifier     string                 `json:"identifier" validate:"required,min=1,ne=' ',max=100"`
+	DatacenterName string                 `json:"datacenterName" validate:"required,min=1,ne=' '"`
+	WorkspaceName  string                 `json:"workspaceName" validate:"required,min=1,ne=' '"`
+	Provider       providers.ProviderType `json:"provider" validate:"required,min=1,ne=' ',max=20"`
+	Type           ApiKeyType             `json:"type" validate:"required,min=1,ne='',eq=Cluster"`
 }
 
 /// Domain object
 
 type Datacenter struct {
-	ID          string             `json:"id" bson:"_id,omitempty"`
-	Name        string             `json:"name"`
-	Provider    string             `json:"provider"`
-	Location    DatacenterLocation `json:"location"`
-	APIEndpoint string             `json:"apiEndpoint"`
+	ID          string                 `json:"id" bson:"_id,omitempty"`
+	Name        string                 `json:"name"`
+	Provider    providers.ProviderType `json:"provider"`
+	Location    DatacenterLocation     `json:"location"`
+	APIEndpoint string                 `json:"apiEndpoint"`
 }
 
 type DatacenterLocation struct {
@@ -375,15 +376,15 @@ type Billing struct {
 }
 
 type Price struct {
-	ID           string    `json:"id" bson:"_id,omitempty"`
-	Provider     string    `json:"provider"`
-	MachineClass string    `json:"machineClass"`
-	Cpu          int       `json:"cpu"`
-	Memory       int64     `json:"memory"`
-	MemoryBytes  int64     `json:"memoryBytes"`
-	Price        int       `json:"price"`
-	From         time.Time `json:"from"`
-	To           time.Time `json:"to,omitempty"`
+	ID           string                 `json:"id" bson:"_id,omitempty"`
+	Provider     providers.ProviderType `json:"provider"`
+	MachineClass string                 `json:"machineClass"`
+	Cpu          int                    `json:"cpu"`
+	Memory       int64                  `json:"memory"`
+	MemoryBytes  int64                  `json:"memoryBytes"`
+	Price        int                    `json:"price"`
+	From         time.Time              `json:"from"`
+	To           time.Time              `json:"to,omitempty"`
 }
 
 type PaginatedResult[T any] struct {
