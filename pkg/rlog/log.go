@@ -33,6 +33,7 @@ var (
 
 type Logger struct {
 	*zap.Logger
+	ContextKeyFields []string
 }
 
 func init() {
@@ -50,8 +51,23 @@ func InitializeRlog() {
 		panic(fmt.Errorf("unable to initialize logger: %w", err))
 	}
 
-	l = Logger{zapLogger}
+	l = Logger{
+		Logger:           zapLogger,
+		ContextKeyFields: []string{},
+	}
+
 	Debug("global logger initialized", String("level", logLevel.String()))
+}
+
+// AddContextKeyField adds a key to look for in a contexts so that we
+// can add the context value as a persistent field to all logs
+func AddContextKeyField(key string) error {
+	if key == "" {
+		return fmt.Errorf("empty key")
+	}
+
+	l.ContextKeyFields = append(l.ContextKeyFields, key)
+	return nil
 }
 
 // Info logs a message at InfoLevel. The message includes any fields passed
@@ -194,8 +210,10 @@ func correlateWithTrace(ctx context.Context, msg string, lvl zapcore.Level, fiel
 // tries to get a predifined set of fields from context, if the field is not
 // present int the context it is ignored
 func getFieldsFromContext(ctx context.Context, fields *[]Field) {
-	if reqId, ok := ctx.Value(RequestIdKey).(string); ok {
-		*fields = append(*fields, zap.String("requestId", reqId))
+	for _, key := range l.ContextKeyFields {
+		if ctx.Value(key) != nil {
+			*fields = append(*fields, zap.Any(key, ctx.Value(key)))
+		}
 	}
 }
 
