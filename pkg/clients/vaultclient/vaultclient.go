@@ -92,6 +92,23 @@ func (v VaultClient) GetClient() *vault.Client {
 	return v.Client
 }
 
+// Starts a goroutine, that will set a timer for the next renew threshold and
+// renew the token
+func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan struct{}) {
+	for {
+		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
+		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
+
+		select {
+		case <-done:
+			break
+		case <-timer.C:
+			rlog.Debugc(ctx, "time to renew token")
+			v.renewToken()
+		}
+	}
+}
+
 func (v VaultClient) renewTokenIfNeeded() {
 	if v.isExpired() {
 		err := v.renewToken()
@@ -104,6 +121,7 @@ func (v VaultClient) renewTokenIfNeeded() {
 func (v *VaultClient) renewToken() error {
 	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
 	rlog.Info("token values", rlog.Any("exp", v.Exp), rlog.Any("now", time.Now().Unix()), rlog.Any("ttl", v.Ttl), rlog.Any("renewThreshold", v.RenewThreshold))
+
 	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Token: v.Token})
 	if err != nil {
 		return fmt.Errorf("Could not renew token: %w", err)
