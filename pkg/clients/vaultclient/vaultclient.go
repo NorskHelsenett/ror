@@ -59,7 +59,7 @@ func (rc VaultClient) CheckHealth() []health.Check {
 	c := health.Check{}
 	if !rc.Ping() {
 		c.Status = health.StatusFail
-		c.Output = "Could not onnect to vault"
+		c.Output = "Could not connect to vault"
 	}
 	return []health.Check{c}
 }
