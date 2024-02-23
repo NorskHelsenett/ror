@@ -96,6 +96,12 @@ func (v VaultClient) GetClient() *vault.Client {
 // renew the token
 func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
 	rlog.Debugc(ctx, "started token refresher")
+	//debug
+	err := v.renewToken()
+	if err != nil {
+		rlog.Infoc(ctx, "failed to renew token", rlog.Any("error", err))
+	}
+	//\debug
 	for {
 		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
 		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
