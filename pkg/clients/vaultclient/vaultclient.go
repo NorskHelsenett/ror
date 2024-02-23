@@ -96,6 +96,7 @@ func (v VaultClient) renewTokenIfNeeded() {
 	if v.isExpired() {
 		err := v.renewToken()
 		if err != nil {
+			rlog.Info("could not renew token", rlog.Any("error", err))
 			v.getInitialToken()
 		}
 	}
@@ -105,8 +106,7 @@ func (v *VaultClient) renewToken() error {
 	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
 	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Increment: fmt.Sprintf("%v", v.Ttl), Token: v.Token})
 	if err != nil {
-		rlog.Error("Could not renew vault token", err)
-		return err
+		return fmt.Errorf("Could not renew token: %w", err)
 	}
 
 	v.Token = resp.Auth.ClientToken
@@ -114,8 +114,7 @@ func (v *VaultClient) renewToken() error {
 
 	err = v.Client.SetToken(v.Token)
 	if err != nil {
-		rlog.Error("Could not set token", err)
-		return err
+		return fmt.Errorf("Could not set token: %w", err)
 	}
 
 	return nil
