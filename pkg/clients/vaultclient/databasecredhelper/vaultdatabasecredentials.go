@@ -45,8 +45,8 @@ func (dbc *VaultDBCredentials) IsExpired() bool {
 }
 
 func (dbc *VaultDBCredentials) CheckAndRenew() bool {
-	vaultClientHealth := dbc.VaultClient.CheckHealth()
-	rlog.Debug("checking vault client health", rlog.Any("health", vaultClientHealth))
+	// Renews the client if the vault access token has expired
+	dbc.VaultClient.GetClient()
 
 	if dbc.IsExpired() {
 		dbc.lock.Lock()
