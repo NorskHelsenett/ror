@@ -62,6 +62,10 @@ func (rc VaultClient) CheckHealth() []health.Check {
 		Output: "Vault connection ok",
 	}
 
+	if rc.isExpired() {
+		rlog.Debug("the vault token is expired")
+	}
+
 	ok, err := rc.Ping()
 	if !ok {
 		rlog.Error("vault ping returned error", err)
