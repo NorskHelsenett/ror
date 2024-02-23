@@ -61,7 +61,6 @@ func (rc VaultClient) CheckHealth() []health.Check {
 		Status: health.StatusPass,
 		Output: "Vault connection ok",
 	}
-
 	ok, err := rc.Ping()
 	if !ok {
 		rlog.Error("vault ping returned error", err)
@@ -95,15 +94,19 @@ func (v VaultClient) GetClient() *vault.Client {
 
 func (v VaultClient) renewTokenIfNeeded() {
 	if v.isExpired() {
-		v.renewToken()
+		err := v.renewToken()
+		if err != nil {
+			v.getInitialToken()
+		}
 	}
 }
 
-func (v *VaultClient) renewToken() {
+func (v *VaultClient) renewToken() error {
 	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
 	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Increment: fmt.Sprintf("%v", v.Ttl), Token: v.Token})
 	if err != nil {
-		rlog.Fatal("Could not renew vault token", err)
+		rlog.Error("Could not renew vault token", err)
+		return err
 	}
 
 	v.Token = resp.Auth.ClientToken
@@ -112,7 +115,10 @@ func (v *VaultClient) renewToken() {
 	err = v.Client.SetToken(v.Token)
 	if err != nil {
 		rlog.Error("Could not set token", err)
+		return err
 	}
+
+	return nil
 }
 
 func (v VaultClient) Ping() (bool, error) {
