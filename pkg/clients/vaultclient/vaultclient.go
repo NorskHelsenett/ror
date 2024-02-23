@@ -55,12 +55,20 @@ func NewVaultClient(role string, url string) *VaultClient {
 	vc.getInitialToken()
 	return &vc
 }
+
 func (rc VaultClient) CheckHealth() []health.Check {
-	c := health.Check{}
-	if !rc.Ping() {
+	c := health.Check{
+		Status: health.StatusPass,
+		Output: "Vault connection ok",
+	}
+
+	ok, err := rc.Ping()
+	if !ok {
+		rlog.Error("vault ping returned error", err)
 		c.Status = health.StatusFail
 		c.Output = "Could not connect to vault"
 	}
+
 	return []health.Check{c}
 }
 
@@ -107,14 +115,18 @@ func (v *VaultClient) renewToken() {
 	}
 }
 
-func (v VaultClient) Ping() bool {
+func (v VaultClient) Ping() (bool, error) {
 	if v.Client == nil {
-		rlog.Error("Vault client is not initialized", fmt.Errorf(""))
-		return false
+		err := fmt.Errorf("Vault client is not initialized")
+		rlog.Error("could not ping vault", err)
+		return false, err
 	}
 	_, err := v.Client.Auth.TokenLookUpSelf(v.Context)
+	if err != nil {
+		return false, err
+	}
 
-	return err == nil
+	return true, nil
 }
 
 func (v *VaultClient) getInitialToken() {
