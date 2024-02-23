@@ -162,7 +162,7 @@ func (v *VaultClient) renewToken(ctx context.Context) error {
 	rlog.Infoc(ctx, "renewing vault token", rlog.String("role", v.Role), rlog.Any("initial ttl", v.Ttl))
 	rlog.Debugc(ctx, "token values", rlog.Any("exp", v.Exp), rlog.Any("now", time.Now().Unix()), rlog.Any("ttl", v.Ttl), rlog.Any("renewThreshold", v.RenewThreshold))
 
-	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Token: v.Token})
+	resp, err := v.Client.Auth.TokenRenewSelf(v.Context, schema.TokenRenewSelfRequest{})
 	if err != nil {
 		return fmt.Errorf("could not renew token: %w", err)
 	}
