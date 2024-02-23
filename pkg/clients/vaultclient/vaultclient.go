@@ -95,6 +95,7 @@ func (v VaultClient) GetClient() *vault.Client {
 // Starts a goroutine, that will set a timer for the next renew threshold and
 // renew the token
 func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
+	rlog.Debugc(ctx, "started token refresher")
 	for {
 		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
 		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
@@ -129,6 +130,7 @@ func (v *VaultClient) renewToken() error {
 
 	v.Token = resp.Auth.ClientToken
 	v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
+	v.Ttl = int32(resp.Auth.LeaseDuration)
 
 	err = v.Client.SetToken(v.Token)
 	if err != nil {
@@ -166,6 +168,7 @@ func (v *VaultClient) getInitialToken() {
 
 		v.Token = resp.Auth.ClientToken
 		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
+		v.Ttl = int32(resp.Auth.LeaseDuration)
 		rlog.Infof("Authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
 	} else {
 		rlog.Warn("Authenticating against Vault with a static token. This is not recomended in production!!!!")
