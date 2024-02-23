@@ -94,7 +94,7 @@ func (v VaultClient) GetClient() *vault.Client {
 
 // Starts a goroutine, that will set a timer for the next renew threshold and
 // renew the token
-func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan struct{}) {
+func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
 	for {
 		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
 		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
