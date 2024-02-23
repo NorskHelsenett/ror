@@ -105,7 +105,10 @@ func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interfac
 			break
 		case <-timer.C:
 			rlog.Debugc(ctx, "time to renew token")
-			v.renewToken()
+			err := v.renewToken()
+			if err != nil {
+				rlog.Infoc(ctx, "failed to renew token", rlog.Any("error", err))
+			}
 		}
 	}
 }
@@ -169,6 +172,7 @@ func (v *VaultClient) getInitialToken() {
 		v.Token = resp.Auth.ClientToken
 		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
 		v.Ttl = int32(resp.Auth.LeaseDuration)
+
 		rlog.Infof("Authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
 	} else {
 		rlog.Warn("Authenticating against Vault with a static token. This is not recomended in production!!!!")
