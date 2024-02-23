@@ -96,7 +96,7 @@ func (v VaultClient) GetClient() *vault.Client {
 // renew the token
 func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
 	rlog.Debugc(ctx, "started token refresher")
-	//debug
+	//debu
 	err := v.renewToken()
 	if err != nil {
 		rlog.Infoc(ctx, "failed to renew token", rlog.Any("error", err))
@@ -175,6 +175,7 @@ func (v *VaultClient) getInitialToken() {
 			rlog.Fatal("Could not authenticate against vault", err)
 		}
 
+		rlog.Info("checking if token is even renewable", rlog.Any("is token renewable", resp.Renewable), rlog.Any("leak the token for good meassure", resp.Auth.ClientToken))
 		v.Token = resp.Auth.ClientToken
 		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
 		v.Ttl = int32(resp.Auth.LeaseDuration)
