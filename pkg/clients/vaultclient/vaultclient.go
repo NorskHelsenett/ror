@@ -97,14 +97,13 @@ func (v VaultClient) renewTokenIfNeeded() {
 		err := v.renewToken()
 		if err != nil {
 			rlog.Info("could not renew token", rlog.Any("error", err))
-			v.getInitialToken()
 		}
 	}
 }
 
 func (v *VaultClient) renewToken() error {
 	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
-	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Increment: fmt.Sprintf("%v", v.Ttl), Token: v.Token})
+	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Token: v.Token})
 	if err != nil {
 		return fmt.Errorf("Could not renew token: %w", err)
 	}
