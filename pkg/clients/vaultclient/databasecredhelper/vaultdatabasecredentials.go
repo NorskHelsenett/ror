@@ -45,6 +45,9 @@ func (dbc *VaultDBCredentials) IsExpired() bool {
 }
 
 func (dbc *VaultDBCredentials) CheckAndRenew() bool {
+	vaultClientHealth := dbc.VaultClient.CheckHealth()
+	rlog.Debug("checking vault client health", rlog.Any("health", vaultClientHealth))
+
 	if dbc.IsExpired() {
 		dbc.lock.Lock()
 		defer dbc.lock.Unlock()
