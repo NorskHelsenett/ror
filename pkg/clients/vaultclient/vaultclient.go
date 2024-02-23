@@ -103,6 +103,7 @@ func (v VaultClient) renewTokenIfNeeded() {
 
 func (v *VaultClient) renewToken() error {
 	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
+	rlog.Info("token values", rlog.Any("exp", v.Exp), rlog.Any("now", time.Now().Unix()), rlog.Any("ttl", v.Ttl), rlog.Any("renewThreshold", v.RenewThreshold))
 	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Token: v.Token})
 	if err != nil {
 		return fmt.Errorf("Could not renew token: %w", err)
