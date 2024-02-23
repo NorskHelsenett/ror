@@ -49,7 +49,7 @@ func NewVaultClient(role string, url string) *VaultClient {
 	vc.Role = role
 	vc.Exp = 0
 	vc.Ttl = 86400
-	vc.RenewThreshold = 3600
+	vc.RenewThreshold = 10
 	vc.Url = url
 	vc.initClient()
 	vc.getInitialToken()
@@ -63,7 +63,7 @@ func (rc VaultClient) CheckHealth() []health.Check {
 	}
 
 	if rc.isExpired() {
-		rlog.Debug("the vault token is expired")
+		rlog.Debug("the vault token is expired", rlog.Int64("expiry", rc.Exp), rlog.Int("RenewThreshold", int(rc.RenewThreshold)))
 	}
 
 	ok, err := rc.Ping()
