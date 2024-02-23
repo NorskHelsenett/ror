@@ -43,17 +43,90 @@ func Init(role string, url string) {
 	health.Register("vault", vaultClient)
 }
 
-func NewVaultClient(role string, url string) *VaultClient {
-	vc := VaultClient{}
-	vc.Context = context.Background()
-	vc.Role = role
-	vc.Exp = 0
-	vc.Ttl = 86400
-	vc.RenewThreshold = 10
-	vc.Url = url
-	vc.initClient()
-	vc.getInitialToken()
-	return &vc
+// creates a new vault client
+func New(ctx context.Context, role string, url string, renewThreshold int64) (*VaultClient, error) {
+	client, err := getClient(url)
+	if err != nil {
+		return nil, err
+	}
+
+	vaultClient := VaultClient{
+		Context:        ctx,
+		Client:         client,
+		Role:           role,
+		RenewThreshold: renewThreshold,
+	}
+
+	return &vaultClient, nil
+}
+
+// logs into a vault using a k8s authentication path and gets a new token
+func (v *VaultClient) K8sLogin() error {
+	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+	if _, err := os.Stat(tokenFilePath); err == nil {
+		rlog.Info("loging into vault using service account token")
+
+		byteValue, _ := os.ReadFile(tokenFilePath)
+		jwt := string(byteValue)
+		resp, err := v.Client.Auth.KubernetesLogin(v.Context, schema.KubernetesLoginRequest{Jwt: jwt, Role: v.Role})
+		if err != nil {
+			return fmt.Errorf("could not authenticate against vault: %w", err)
+		}
+
+		v.Token = resp.Auth.ClientToken
+		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
+		v.Ttl = int32(resp.Auth.LeaseDuration)
+
+		rlog.Infof("authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
+
+	} else {
+		rlog.Warn("authenticating against Vault with a static token. This is not recomended in production!!!!")
+		// TODO: Check if development or get static token from env.
+		v.Token = "S3cret!"
+		v.Exp = time.Now().Unix() + int64(365*24*3600)
+	}
+
+	err := v.Client.SetToken(v.Token)
+	if err != nil {
+		return fmt.Errorf("could not set token: %w", err)
+	}
+
+	return nil
+}
+
+func getClient(vaultUrl string) (*vault.Client, error) {
+	client, err := vault.New(
+		vault.WithAddress(vaultUrl),
+		vault.WithRequestTimeout(30*time.Second),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+// Starts a goroutine, that will set a timer for the next renew threshold and
+// renew the token, it will run until it recieves a done signal. It does not
+// handle errors well at the moment
+func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
+	rlog.Debugc(ctx, "started token refresher")
+	for {
+		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
+		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
+
+		select {
+		case <-done:
+			break
+		case <-timer.C:
+			rlog.Debugc(ctx, "time to renew token")
+			err := v.renewToken(ctx)
+			if err != nil {
+				rlog.Errorc(ctx, "failed to renew token", err)
+			}
+		}
+	}
 }
 
 func (rc VaultClient) CheckHealth() []health.Check {
@@ -71,84 +144,6 @@ func (rc VaultClient) CheckHealth() []health.Check {
 	return []health.Check{c}
 }
 
-// TODO: Remove this function, it is only used to support legacy code
-func GetInitiatedVaultClient() *VaultClient {
-	return vaultClient
-}
-
-func (v *VaultClient) initClient() {
-	var err error
-	v.Client, err = vault.New(
-		vault.WithAddress(v.Url),
-		vault.WithRequestTimeout(30*time.Second),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func (v VaultClient) GetClient() *vault.Client {
-	v.renewTokenIfNeeded()
-	return v.Client
-}
-
-// Starts a goroutine, that will set a timer for the next renew threshold and
-// renew the token
-func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
-	rlog.Debugc(ctx, "started token refresher")
-	//debu
-	err := v.renewToken()
-	if err != nil {
-		rlog.Infoc(ctx, "failed to renew token", rlog.Any("error", err))
-	}
-	//\debug
-	for {
-		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
-		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
-
-		select {
-		case <-done:
-			break
-		case <-timer.C:
-			rlog.Debugc(ctx, "time to renew token")
-			err := v.renewToken()
-			if err != nil {
-				rlog.Infoc(ctx, "failed to renew token", rlog.Any("error", err))
-			}
-		}
-	}
-}
-
-func (v VaultClient) renewTokenIfNeeded() {
-	if v.isExpired() {
-		err := v.renewToken()
-		if err != nil {
-			rlog.Info("could not renew token", rlog.Any("error", err))
-		}
-	}
-}
-
-func (v *VaultClient) renewToken() error {
-	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
-	rlog.Info("token values", rlog.Any("exp", v.Exp), rlog.Any("now", time.Now().Unix()), rlog.Any("ttl", v.Ttl), rlog.Any("renewThreshold", v.RenewThreshold))
-
-	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Token: v.Token})
-	if err != nil {
-		return fmt.Errorf("Could not renew token: %w", err)
-	}
-
-	v.Token = resp.Auth.ClientToken
-	v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
-	v.Ttl = int32(resp.Auth.LeaseDuration)
-
-	err = v.Client.SetToken(v.Token)
-	if err != nil {
-		return fmt.Errorf("Could not set token: %w", err)
-	}
-
-	return nil
-}
-
 func (v VaultClient) Ping() (bool, error) {
 	if v.Client == nil {
 		err := fmt.Errorf("Vault client is not initialized")
@@ -163,34 +158,25 @@ func (v VaultClient) Ping() (bool, error) {
 	return true, nil
 }
 
-func (v *VaultClient) getInitialToken() {
-	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
-	if _, err := os.Stat(tokenFilePath); err == nil {
-		rlog.Info("Staring vault login using Kubernetes logon method")
+func (v *VaultClient) renewToken(ctx context.Context) error {
+	rlog.Infoc(ctx, "renewing vault token", rlog.String("role", v.Role), rlog.Any("initial ttl", v.Ttl))
+	rlog.Debugc(ctx, "token values", rlog.Any("exp", v.Exp), rlog.Any("now", time.Now().Unix()), rlog.Any("ttl", v.Ttl), rlog.Any("renewThreshold", v.RenewThreshold))
 
-		byteValue, _ := os.ReadFile(tokenFilePath)
-		jwt := string(byteValue)
-		resp, err := v.Client.Auth.KubernetesLogin(v.Context, schema.KubernetesLoginRequest{Jwt: jwt, Role: v.Role})
-		if err != nil {
-			rlog.Fatal("Could not authenticate against vault", err)
-		}
-
-		rlog.Info("checking if token is even renewable", rlog.Any("is token renewable", resp.Renewable), rlog.Any("leak the token for good meassure", resp.Auth.ClientToken))
-		v.Token = resp.Auth.ClientToken
-		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
-		v.Ttl = int32(resp.Auth.LeaseDuration)
-
-		rlog.Infof("Authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
-	} else {
-		rlog.Warn("Authenticating against Vault with a static token. This is not recomended in production!!!!")
-		// TODO: Check if development or get static token from env.
-		v.Token = "S3cret!"
-		v.Exp = time.Now().Unix() + int64(365*24*3600)
-	}
-	err := v.Client.SetToken(v.Token)
+	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Token: v.Token})
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not renew token: %w", err)
 	}
+
+	v.Token = resp.Auth.ClientToken
+	v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
+	v.Ttl = int32(resp.Auth.LeaseDuration)
+
+	err = v.Client.SetToken(v.Token)
+	if err != nil {
+		return fmt.Errorf("could not set token: %w", err)
+	}
+
+	return nil
 }
 
 func (v *VaultClient) isExpired() bool {
@@ -208,4 +194,84 @@ func getVaultClient() (*api.Client, error) {
 	vaultClient.renewTokenIfNeeded()
 	client.AddHeader("X-Vault-Token", vaultClient.Token)
 	return client, nil
+}
+
+// DEPRECATED. we dont want to have to rely on calling this withing the lease
+// time of the tokens to be able to renew them. We use WaitForTokenRenewal go
+// routine instead
+func (v VaultClient) GetClient() *vault.Client {
+	v.renewTokenIfNeeded()
+	return v.Client
+}
+
+// DEPRECATED. Use New() instead
+func NewVaultClient(role string, url string) *VaultClient {
+	vc := VaultClient{}
+	vc.Context = context.Background()
+	vc.Role = role
+	vc.Exp = 0
+	vc.Ttl = 86400
+	vc.RenewThreshold = 10
+	vc.Url = url
+	vc.initClient()
+	vc.getInitialToken()
+	return &vc
+}
+
+// DEPRECATED. Remove this function, it is only used to support legacy code
+func GetInitiatedVaultClient() *VaultClient {
+	return vaultClient
+}
+
+// DEPRECATED. use getClient instead
+func (v *VaultClient) initClient() {
+	var err error
+	v.Client, err = vault.New(
+		vault.WithAddress(v.Url),
+		vault.WithRequestTimeout(30*time.Second),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// DEPRECATED. use WaitForTokenRenewal instead
+func (v VaultClient) renewTokenIfNeeded() {
+	if v.isExpired() {
+		ctx := context.Background()
+		err := v.renewToken(ctx)
+		if err != nil {
+			rlog.Info("could not renew token", rlog.Any("error", err))
+		}
+	}
+}
+
+// DEPRECATED. use K8sLogin instead
+func (v *VaultClient) getInitialToken() {
+	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
+	if _, err := os.Stat(tokenFilePath); err == nil {
+		rlog.Info("Staring vault login using Kubernetes logon method")
+
+		byteValue, _ := os.ReadFile(tokenFilePath)
+		jwt := string(byteValue)
+		resp, err := v.Client.Auth.KubernetesLogin(v.Context, schema.KubernetesLoginRequest{Jwt: jwt, Role: v.Role})
+		if err != nil {
+			rlog.Fatal("Could not authenticate against vault", err)
+		}
+
+		v.Token = resp.Auth.ClientToken
+		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
+		v.Ttl = int32(resp.Auth.LeaseDuration)
+
+		rlog.Infof("Authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
+	} else {
+		rlog.Warn("Authenticating against Vault with a static token. This is not recomended in production!!!!")
+		// TODO: Check if development or get static token from env.
+		v.Token = "S3cret!"
+		v.Exp = time.Now().Unix() + int64(365*24*3600)
+	}
+	err := v.Client.SetToken(v.Token)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
