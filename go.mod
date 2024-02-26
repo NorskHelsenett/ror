@@ -16,10 +16,10 @@ require (
 	github.com/redis/go-redis/v9 v9.5.0
 	github.com/spf13/viper v1.18.2
 	go.mongodb.org/mongo-driver v1.14.0
-	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.49.0
+	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.48.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.23.1
-	go.opentelemetry.io/otel/sdk v1.23.1
+	go.opentelemetry.io/otel/sdk v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a
