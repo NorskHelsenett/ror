@@ -61,11 +61,11 @@ func New(ctx context.Context, role string, url string, renewThreshold int64) (*V
 }
 
 // logs into a vault using a k8s authentication path and gets a new token
-func (v *VaultClient) K8sLogin() error {
+func (v *VaultClient) K8sLogin(ctx context.Context) error {
 	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
 
 	if _, err := os.Stat(tokenFilePath); err == nil {
-		rlog.Info("loging into vault using service account token")
+		rlog.Infoc(ctx, "loging into vault using service account token")
 
 		byteValue, _ := os.ReadFile(tokenFilePath)
 		jwt := string(byteValue)
@@ -78,10 +78,10 @@ func (v *VaultClient) K8sLogin() error {
 		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
 		v.Ttl = int32(resp.Auth.LeaseDuration)
 
-		rlog.Infof("authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
+		rlog.Infoc(ctx, "authenticated to vault", rlog.Int("ttl", resp.Auth.LeaseDuration))
 
 	} else {
-		rlog.Warn("authenticating against Vault with a static token. This is not recomended in production!!!!")
+		rlog.Warnc(ctx, "authenticating against Vault with a static token. This is not recomended in production!!!!")
 		// TODO: Check if development or get static token from env.
 		v.Token = "S3cret!"
 		v.Exp = time.Now().Unix() + int64(365*24*3600)
@@ -111,10 +111,9 @@ func getClient(vaultUrl string) (*vault.Client, error) {
 // renew the token, it will run until it recieves a done signal. It does not
 // handle errors well at the moment
 func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
-	rlog.Debugc(ctx, "started token refresher")
+	rlog.Debugc(ctx, "started vault token refresher")
 	for {
 		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
-		rlog.Debugc(ctx, "new timer created", rlog.Any("seconds", v.Ttl-int32(v.RenewThreshold)))
 
 		select {
 		case <-done:
