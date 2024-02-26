@@ -6,7 +6,7 @@ require (
 	github.com/dotse/go-health v0.2.4
 	github.com/evanphx/json-patch/v5 v5.9.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/gomodule/redigo v1.8.9
+	github.com/gomodule/redigo v1.9.2
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/hashicorp/vault/api v1.12.0
 	github.com/nitishm/go-rejson/v4 v4.2.0
