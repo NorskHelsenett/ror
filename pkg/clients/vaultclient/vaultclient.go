@@ -110,20 +110,24 @@ func getClient(vaultUrl string) (*vault.Client, error) {
 // Starts a goroutine, that will set a timer for the next renew threshold and
 // renew the token, it will run until it recieves a done signal. It does not
 // handle errors well at the moment
-func (v VaultClient) WaitForTokenRenewal(ctx context.Context, done chan interface{}) {
+func (v VaultClient) WaitForTokenRenewal(ctx context.Context, doneStream chan interface{}, errorStream chan error) {
 	rlog.Debugc(ctx, "started vault token refresher")
+
+loop:
 	for {
 		timer := time.NewTimer(time.Second * time.Duration(v.Ttl-int32(v.RenewThreshold)))
 
 		select {
-		case <-done:
-			break
+		case <-doneStream:
+			break loop
 		case <-timer.C:
-			rlog.Debugc(ctx, "time to renew token")
+			rlog.Debugc(ctx, "attempting to renew vault acces token")
 			err := v.renewToken(ctx)
 			if err != nil {
-				rlog.Errorc(ctx, "failed to renew token", err)
+				//rlog.Errorc(ctx, "failed to renew token", err)
+				errorStream <- err
 			}
+			rlog.Debugc(ctx, "token renewed")
 		}
 	}
 }
@@ -145,7 +149,7 @@ func (rc VaultClient) CheckHealth() []health.Check {
 
 func (v VaultClient) Ping() (bool, error) {
 	if v.Client == nil {
-		err := fmt.Errorf("Vault client is not initialized")
+		err := fmt.Errorf("vault client is not initialized")
 		rlog.Error("could not ping vault", err)
 		return false, err
 	}
@@ -158,9 +162,6 @@ func (v VaultClient) Ping() (bool, error) {
 }
 
 func (v *VaultClient) renewToken(ctx context.Context) error {
-	rlog.Infoc(ctx, "renewing vault token", rlog.String("role", v.Role), rlog.Any("initial ttl", v.Ttl))
-	rlog.Debugc(ctx, "token values", rlog.Any("exp", v.Exp), rlog.Any("now", time.Now().Unix()), rlog.Any("ttl", v.Ttl), rlog.Any("renewThreshold", v.RenewThreshold))
-
 	resp, err := v.Client.Auth.TokenRenewSelf(v.Context, schema.TokenRenewSelfRequest{})
 	if err != nil {
 		return fmt.Errorf("could not renew token: %w", err)
