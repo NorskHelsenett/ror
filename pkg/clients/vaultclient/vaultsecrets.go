@@ -3,18 +3,10 @@ package vaultclient
 import (
 	"errors"
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/hashicorp/vault-client-go"
-)
-
-var (
-	httpClient = &http.Client{
-		Timeout: 10 * time.Second,
-	}
 )
 
 func GetSecret(secretPath string) (map[string]interface{}, error) {
@@ -22,7 +14,6 @@ func GetSecret(secretPath string) (map[string]interface{}, error) {
 		return nil, errors.New("secret path is nil or empty")
 	}
 
-	vaultClient.renewTokenIfNeeded()
 	data, err := vaultClient.Client.Read(vaultClient.Context, secretPath)
 	if err != nil {
 		var vaultError *vault.ResponseError
@@ -47,7 +38,6 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 		return "", errors.New("secret path is nil or empty")
 	}
 
-	vaultClient.renewTokenIfNeeded()
 	data, err := vaultClient.Client.Read(vaultClient.Context, secretPath)
 	if err != nil {
 		var err2 *vault.ResponseError
@@ -73,7 +63,7 @@ func SetSecret(secretPath string, value []byte) (bool, error) {
 	if len(secretPath) < 1 {
 		return false, fmt.Errorf("could not set secret, secret path is empty")
 	}
-	vaultClient.renewTokenIfNeeded()
+
 	secret, err := vaultClient.Client.WriteFromBytes(vaultClient.Context, secretPath, value)
 	if err != nil {
 		msg := fmt.Sprintf("could not set secret on path: %s", secretPath)
