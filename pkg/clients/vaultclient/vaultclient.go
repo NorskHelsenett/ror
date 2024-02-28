@@ -26,12 +26,6 @@ type VaultCredsHelper interface {
 	Login(vc *VaultClient) error
 }
 
-// DEPRECATECD: Use New(ctx context.Context, role string, url string, renewThreshold int64) (*VaultClient, error)
-func Initialize(role string, url string) {
-
-	vaultClient = NewVaultClient(role, url)
-}
-
 // creates a new vault client
 func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultClient, error) {
 
@@ -118,9 +112,4 @@ func NewVaultClient(role string, url string) *VaultClient {
 		return nil
 	}
 	return client
-}
-
-// DEPRECATED. Remove this function, it is only used to support legacy code
-func GetInitiatedVaultClient() *VaultClient {
-	return vaultClient
 }
