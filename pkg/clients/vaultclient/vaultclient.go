@@ -89,11 +89,10 @@ func (v VaultClient) Ping() (bool, error) {
 	return true, nil
 }
 
-// DEPRECATED. we dont want to have to rely on calling this withing the lease
-// time of the tokens to be able to renew them. We use WaitForTokenRenewal go
-// routine instead
-
-// DEPRECATED. Use New() instead
+// This is a opinionated way to create a new vault client
+// Might be better to migrate to New() a factory function that takes a VaultCredsHelper
+// and a url as arguments.
+// Migth deprecate this function in the future
 func NewVaultClient(role string, url string) *VaultClient {
 	var err error
 	var credsHelper VaultCredsHelper
