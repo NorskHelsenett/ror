@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/vault-client-go"
 )
 
+// Deprecated: Use the VaultClient method instead
 func GetSecret(secretPath string) (map[string]interface{}, error) {
 	if secretPath == "" {
 		return nil, errors.New("secret path is nil or empty")
@@ -33,6 +34,7 @@ func GetSecret(secretPath string) (map[string]interface{}, error) {
 	return nil, nil
 }
 
+// Deprecated: Use the VaultClient method instead
 func GetSecretValue(secretPath string, key string) (string, error) {
 	if secretPath == "" {
 		return "", errors.New("secret path is nil or empty")
@@ -59,6 +61,7 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 	return "", nil
 }
 
+// Deprecated: Use the VaultClient method instead
 func SetSecret(secretPath string, value []byte) (bool, error) {
 	if len(secretPath) < 1 {
 		return false, fmt.Errorf("could not set secret, secret path is empty")
