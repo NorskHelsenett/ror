@@ -61,26 +61,6 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 	return "", nil
 }
 
-// Deprecated: Use the VaultClient method instead
-func SetSecret(secretPath string, value []byte) (bool, error) {
-	if len(secretPath) < 1 {
-		return false, fmt.Errorf("could not set secret, secret path is empty")
-	}
-
-	secret, err := vaultClient.Client.WriteFromBytes(vaultClient.Context, secretPath, value)
-	if err != nil {
-		msg := fmt.Sprintf("could not set secret on path: %s", secretPath)
-		rlog.Error(msg, err)
-		return false, errors.New(msg)
-	}
-
-	if secret.Data != nil {
-		return true, nil
-	}
-
-	return false, errors.New("could not set secret")
-}
-
 func (vc VaultClient) GetSecret(secretPath string) (map[string]interface{}, error) {
 	if secretPath == "" {
 		return nil, errors.New("secret path is nil or empty")
