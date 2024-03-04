@@ -3,17 +3,12 @@ package vaultclient
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
-
-	"errors"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/dotse/go-health"
-	"github.com/hashicorp/vault-client-go/schema"
-	"github.com/hashicorp/vault/api"
 
 	"github.com/hashicorp/vault-client-go"
 )
@@ -21,142 +16,99 @@ import (
 var vaultClient *VaultClient = &VaultClient{}
 
 type VaultClient struct {
-	Context        context.Context
-	Client         *vault.Client
-	Url            string
-	Role           string
-	Token          string
-	Exp            int64
-	Ttl            int32
-	RenewThreshold int64
+	Context context.Context
+	Client  *vault.Client
+	Url     string
 }
 
-func Init(role string, url string) {
-	vaultClient.Context = context.Background()
-	vaultClient.Role = role
-	vaultClient.Exp = 0
-	vaultClient.Ttl = 86400
-	vaultClient.RenewThreshold = 3600
-	vaultClient.Url = url
-	vaultClient.initClient()
-	vaultClient.getInitialToken()
-	health.Register("vault", vaultClient)
+type VaultCredsHelper interface {
+	GetToken() string
+	Login(vc *VaultClient) error
 }
 
-func NewVaultClient(role string, url string) *VaultClient {
-	vc := VaultClient{}
-	vc.Context = context.Background()
-	vc.Role = role
-	vc.Exp = 0
-	vc.Ttl = 86400
-	vc.RenewThreshold = 3600
-	vc.Url = url
-	vc.initClient()
-	vc.getInitialToken()
-	return &vc
-}
-func (rc VaultClient) CheckHealth() []health.Check {
-	c := health.Check{}
-	if !rc.Ping() {
-		c.Status = health.StatusFail
-		c.Output = "Could not onnect to vault"
+// creates a new vault client
+func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultClient, error) {
+
+	client, err := getClient(url)
+	if err != nil {
+		return nil, err
 	}
-	return []health.Check{c}
+
+	vaultClient := VaultClient{
+		Context: ctx,
+		Client:  client,
+	}
+
+	err = credsHelper.Login(&vaultClient)
+	if err != nil {
+		return nil, err
+	}
+
+	health.Register("vault", vaultClient)
+	return &vaultClient, nil
 }
 
-// TODO: Remove this function, it is only used to support legacy code
-func GetInitiatedVaultClient() *VaultClient {
-	return vaultClient
-}
-
-func (v *VaultClient) initClient() {
-	var err error
-	v.Client, err = vault.New(
-		vault.WithAddress(v.Url),
+func getClient(vaultUrl string) (*vault.Client, error) {
+	client, err := vault.New(
+		vault.WithAddress(vaultUrl),
 		vault.WithRequestTimeout(30*time.Second),
 	)
 	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func (v VaultClient) GetClient() *vault.Client {
-	v.renewTokenIfNeeded()
-	return v.Client
-}
-
-func (v VaultClient) renewTokenIfNeeded() {
-	if v.isExpired() {
-		v.renewToken()
-	}
-}
-
-func (v *VaultClient) renewToken() {
-	rlog.Infof("Renewing vault token %s for %v", v.Role, v.Ttl)
-	resp, err := v.Client.Auth.TokenRenew(v.Context, schema.TokenRenewRequest{Increment: fmt.Sprintf("%v", v.Ttl), Token: v.Token})
-	if err != nil {
-		rlog.Fatal("Could not renew vault token", err)
+		return nil, err
 	}
 
-	v.Token = resp.Auth.ClientToken
-	v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
-
-	err = v.Client.SetToken(v.Token)
-	if err != nil {
-		rlog.Error("Could not set token", err)
-	}
+	return client, nil
 }
 
-func (v VaultClient) Ping() bool {
+func (rc VaultClient) CheckHealth() []health.Check {
+	c := health.Check{
+		Status: health.StatusPass,
+		Output: "Vault connection ok",
+	}
+	ok, err := rc.Ping()
+	if !ok {
+		rlog.Error("vault ping returned error", err)
+		c.Status = health.StatusFail
+		c.Output = "Could not connect to vault"
+	}
+
+	return []health.Check{c}
+}
+
+func (v VaultClient) Ping() (bool, error) {
 	if v.Client == nil {
-		rlog.Error("Vault client is not initialized", fmt.Errorf(""))
-		return false
+		err := fmt.Errorf("vault client is not initialized")
+		rlog.Error("could not ping vault", err)
+		return false, err
 	}
 	_, err := v.Client.Auth.TokenLookUpSelf(v.Context)
+	if err != nil {
+		return false, err
+	}
 
-	return err == nil
+	return true, nil
 }
 
-func (v *VaultClient) getInitialToken() {
+// This is a opinionated way to create a new vault client
+// Might be better to migrate to New() a factory function that takes a VaultCredsHelper
+// and a url as arguments.
+// Migth deprecate this function in the future
+func NewVaultClient(role string, url string) *VaultClient {
+	var err error
+	var credsHelper VaultCredsHelper
+
 	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
 	if _, err := os.Stat(tokenFilePath); err == nil {
-		rlog.Info("Staring vault login using Kubernetes logon method")
+		credsHelper = NewKubernetesVaultCredsHelper(role, 3600)
 
-		byteValue, _ := os.ReadFile(tokenFilePath)
-		jwt := string(byteValue)
-		resp, err := v.Client.Auth.KubernetesLogin(v.Context, schema.KubernetesLoginRequest{Jwt: jwt, Role: v.Role})
-		if err != nil {
-			rlog.Fatal("Could not authenticate against vault", err)
-		}
-
-		v.Token = resp.Auth.ClientToken
-		v.Exp = time.Now().Unix() + int64(resp.Auth.LeaseDuration)
-		rlog.Infof("Authenticated to vault, ttl: %v", resp.Auth.LeaseDuration)
 	} else {
-		rlog.Warn("Authenticating against Vault with a static token. This is not recomended in production!!!!")
-		// TODO: Check if development or get static token from env.
-		v.Token = "S3cret!"
-		v.Exp = time.Now().Unix() + int64(365*24*3600)
+		credsHelper = NewStaticVaultCredsHelper("S3cret!")
 	}
-	err := v.Client.SetToken(v.Token)
+
+	client, err := New(context.Background(), credsHelper, url)
 	if err != nil {
-		log.Fatal(err)
+		rlog.Error("error initializing vault client", err)
+		return nil
 	}
-}
-
-func (v *VaultClient) isExpired() bool {
-	return v.Exp-v.RenewThreshold < time.Now().Unix()
-}
-
-func getVaultClient() (*api.Client, error) {
-	client, err := api.NewClient(&api.Config{Address: vaultClient.Url, HttpClient: httpClient})
-	if err != nil {
-		msg := "could not get secret, problems with vault client"
-		rlog.Error(msg, err)
-		return nil, errors.New(msg)
-	}
-
-	vaultClient.renewTokenIfNeeded()
-	client.AddHeader("X-Vault-Token", vaultClient.Token)
-	return client, nil
+	return client
 }

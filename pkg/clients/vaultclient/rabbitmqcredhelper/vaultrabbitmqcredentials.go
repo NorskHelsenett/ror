@@ -23,7 +23,7 @@ type VaultRMQCredentials struct {
 // If vaultpath is empty, the role will be used as path
 func NewVaultRMQCredentials(vcli *vaultclient.VaultClient, vaultpath string) *VaultRMQCredentials {
 	if vaultpath == "" {
-		vaultpath = vcli.Role
+		rlog.Error("NewVaultRMQCredentials failed", fmt.Errorf("empty vault path is not allowed"))
 	}
 	vc := VaultRMQCredentials{
 		VaultClient: vcli,
