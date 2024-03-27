@@ -1,0 +1,4 @@
+#!/bin/sh
+
+find . -type f -exec sed -i \
+'s/ror\/internal\/clients/github.com\/NorskHelsenett\/ror\/pkg\/clients/g' {} +

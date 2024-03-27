@@ -6,6 +6,18 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 )
 
+type MetricMetadata struct {
+	Type      string `json:"type" bson:"type"`
+	ClusterId string `json:"clusterId"  bson:"clusterId"`
+	Name      string `json:"name" bson:"name"`
+}
+
+type PersistentVolumeClaimMetric struct {
+	Metadata            MetricMetadata `json:"metadata" bson:"metadata"`
+	Timestamp           time.Time      `json:"timestamp" bson:"timestamp"`
+	RequestedAllocation string         `json:"requestedAllocation" bson:"requestedAllocation"`
+}
+
 type PodMetricsList struct {
 	Kind       string               `json:"kind"`
 	APIVersion string               `json:"apiVersion"`
