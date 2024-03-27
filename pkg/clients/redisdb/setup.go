@@ -72,7 +72,7 @@ func (rc rediscon) Ping() bool {
 }
 
 func (rc *rediscon) connect() {
-	cli := goredis.NewClient(&goredis.Options{Addr: rc.getAddr(), CredentialsProvider: rc.Credentials.GetUsernamePassword})
+	cli := goredis.NewClient(&goredis.Options{Addr: rc.getAddr(), CredentialsProvider: rc.Credentials.GetCredentials})
 	rc.Client = cli
 	if !rc.Ping() {
 		rlog.Error("could not connect to redis", nil)

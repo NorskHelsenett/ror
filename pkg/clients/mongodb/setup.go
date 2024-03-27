@@ -37,6 +37,11 @@ func GetMongoDb() *mongo.Database {
 	return mongoClient
 }
 
+func GetMongoClient() *mongo.Client {
+	mongoClient := mongodb.getDbConnectionWithReconnect()
+	return mongoClient
+}
+
 // Initializes the mongodb client
 func Init(cp DatabaseCredentialHelper, host string, port string, database string) {
 	mongodb.init(cp, host, port, database)

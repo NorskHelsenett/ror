@@ -57,14 +57,9 @@ func (dbc *VaultDBCredentials) CheckAndRenew() bool {
 	return false
 }
 
-func (dbc *VaultDBCredentials) GetUsernamePassword() (string, string) {
+func (dbc *VaultDBCredentials) GetCredentials() (string, string) {
 	dbc.CheckAndRenew()
 	return dbc.Username, dbc.Password
-}
-
-func (dbc *VaultDBCredentials) GetCredentials() (string, string) {
-
-	return dbc.GetUsernamePassword()
 }
 func (dbc *VaultDBCredentials) updateCreds() error {
 

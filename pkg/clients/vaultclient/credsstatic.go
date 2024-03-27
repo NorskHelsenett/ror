@@ -24,7 +24,7 @@ func (sch *StaticVaultCredsHelper) Login(vc *VaultClient) error {
 	ctx := vc.Context
 	rlog.Warnc(ctx, "authenticating against Vault with a static token. This is not recomended in production!!!!")
 	// TODO: Check if development or get static token from env.
-	//sch.token = "S3cret!"
+	// sch.token = "S3cret!"
 
 	err := vc.Client.SetToken(sch.token)
 	if err != nil {
