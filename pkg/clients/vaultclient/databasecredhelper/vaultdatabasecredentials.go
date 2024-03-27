@@ -57,6 +57,11 @@ func (dbc *VaultDBCredentials) CheckAndRenew() bool {
 	return false
 }
 
+// Deprecated: Use GetCredentials instead
+func (dbc *VaultDBCredentials) GetUsernamePassword() (string, string) {
+	return dbc.GetCredentials()
+}
+
 func (dbc *VaultDBCredentials) GetCredentials() (string, string) {
 	dbc.CheckAndRenew()
 	return dbc.Username, dbc.Password
