@@ -112,7 +112,10 @@ func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.
 
 func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 
-	userpart, domainpart := splitUserId(userId)
+	userpart, domainpart, err := splitUserId(userId)
+	if err != nil {
+		return nil, err
+	}
 	filter := fmt.Sprintf("(&(objectClass=user)(sAMAccountName=%s))", userpart)
 	attributes := []string{"cn", "memberOf", "userAccountControl", "accountExpires"}
 	result, err := l.search(l.config.BaseDN, filter, attributes)
@@ -161,12 +164,12 @@ func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 	return &user, nil
 }
 
-func splitUserId(userId string) (string, string) {
+func splitUserId(userId string) (string, string, error) {
 	parts := strings.Split(userId, "@")
 	if len(parts) != 2 {
-		return "", ""
+		return "", "", fmt.Errorf("invalid userId: %s", userId)
 	}
-	return parts[0], parts[1]
+	return parts[1], parts[0], nil
 }
 
 func checkUserAccountControl(userAccountControl string) error {
