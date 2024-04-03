@@ -59,6 +59,10 @@ func NewDomainResolversFromJson(jsonBytes []byte) (*DomainResolvers, error) {
 		return nil, err
 	}
 
+	if len(domainResolverConfigs.DomainResolvers) == 0 {
+		return nil, fmt.Errorf("no domain resolvers found")
+	}
+
 	for _, domainResolverConfig := range domainResolverConfigs.DomainResolvers {
 		if domainResolverConfig.ResolverType == "ldaps" {
 			domainResolverConfig.ResolverType = "ldap"
