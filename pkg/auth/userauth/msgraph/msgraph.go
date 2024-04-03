@@ -8,12 +8,18 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
-	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
 )
+
+type MsGraphConfig struct {
+	Domain       string `json:"domain"`
+	TenantID     string `json:"tenantId"`
+	ClientID     string `json:"clientId"`
+	ClientSecret string `json:"clientSecret"`
+}
 
 // The cache interface defines the methods that a cache should implement.
 type CacheInterface interface {
@@ -25,28 +31,30 @@ type CacheInterface interface {
 type MsGraphClient struct {
 	Client     *msgraphsdk.GraphServiceClient
 	GroupCache kvcachehelper.CacheInterface
+	config     MsGraphConfig
 }
 
 // NewMsGraphClient creates a new GraphClient
-func NewMsGraphClient(tenantID string, clientId string, clientSecret string, cacheHelper kvcachehelper.CacheInterface) (*MsGraphClient, error) {
+func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInterface) (*MsGraphClient, error) {
+	client := &MsGraphClient{config: config, GroupCache: cacheHelper}
 
 	if cacheHelper == nil {
-		cacheHelper = memorycache.NewKvCache()
+		client.GroupCache = cacheHelper
 	}
 
-	cred, err := azidentity.NewClientSecretCredential(tenantID, clientId, clientSecret, nil)
+	cred, err := azidentity.NewClientSecretCredential(client.config.TenantID, client.config.ClientID, client.config.ClientSecret, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := msgraphsdk.NewGraphServiceClientWithCredentials(
+	conn, err := msgraphsdk.NewGraphServiceClientWithCredentials(
 		cred, []string{"https://graph.microsoft.com/.default"},
 	)
 	if err != nil {
 		return nil, err
 	}
-
-	return &MsGraphClient{Client: client, GroupCache: cacheHelper}, nil
+	client.Client = conn
+	return client, nil
 }
 
 // GetUsersWithGroups gets a user and the name of the groups the user is a member of
