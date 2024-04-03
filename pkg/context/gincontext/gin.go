@@ -22,7 +22,7 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 	identity, err := getIdentityFromGinContext(c)
 	if err != nil {
 		rlog.Error("could not get user from gin context: %v", err)
-		c.JSON(http.StatusUnauthorized, apicontracts.Error{
+		c.JSON(http.StatusUnauthorized, apicontracts.RorError{
 			Status:  http.StatusUnauthorized,
 			Message: "Could not fetch user",
 		})
