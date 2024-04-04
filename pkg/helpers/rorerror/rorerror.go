@@ -39,11 +39,11 @@ func GinHandleErrorAndAbort(c *gin.Context, status int, err error, fields ...Fie
 		rorerror := NewRorErrorFromError(status, err)
 		fields = append(fields, String("statuscode", fmt.Sprintf("%d", status)))
 		zfields := make([]rlog.Field, len(fields))
-		for _, field := range fields {
-			zfields = append(zfields, field.ToRlog())
+		for i, field := range fields {
+			zfields[i] = field.ToRlog()
 		}
 		rlog.Errorc(c.Request.Context(), "error:", err, zfields...)
-		c.AbortWithStatusJSON(rorerror.Status, rorerror.AsJson())
+		c.AbortWithStatusJSON(rorerror.Status, rorerror)
 		return true
 	}
 	return false
@@ -68,10 +68,10 @@ func (e RorError) GinLogErrorAndAbort(c *gin.Context, fields ...Field) {
 		zfields = append(zfields, field.ToRlog())
 	}
 	rlog.Errorc(c.Request.Context(), "error", e, zfields...)
-	c.AbortWithStatusJSON(e.Status, e.AsJson())
+	c.AbortWithStatusJSON(e.Status, e)
 }
 
 func (e RorError) GinLogErrorAndAbortWithMessage(c *gin.Context, message string, fields ...rlog.Field) {
 	rlog.Errorc(c.Request.Context(), message, e, fields...)
-	c.AbortWithStatusJSON(e.Status, e.AsJson())
+	c.AbortWithStatusJSON(e.Status, e)
 }
