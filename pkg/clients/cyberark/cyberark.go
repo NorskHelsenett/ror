@@ -8,20 +8,17 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"ror/cmd/cli/config"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 type CyberarkClient struct {
-	client http.Client
-	Url    string
-	token  string
+	client       http.Client
+	Url          string
+	token        string
+	validDomains []string
 }
 
 type CyberarkClientInterface interface {
@@ -68,12 +65,15 @@ type CyberarkPasswordRequest struct {
 	Reason string `json:"reason"`
 }
 
-func NewCyberarkClient(url string) *CyberarkClient {
+func NewCyberarkClient(url string, validDomains ...string) *CyberarkClient {
 
 	cyberarkclient := CyberarkClient{
 		client: http.Client{},
 		Url:    url,
 		token:  "",
+	}
+	if len(validDomains) > 0 {
+		cyberarkclient.validDomains = validDomains
 	}
 
 	return &cyberarkclient
@@ -92,7 +92,8 @@ func (c *CyberarkClient) SetToken(token string) {
 	c.token = token
 }
 
-func (c *CyberarkClient) Authenticate(username, password string) error {
+func (c *CyberarkClient) Authenticate(username, password string) (string, time.Time, error) {
+	expires := time.Now()
 
 	authreq := CyberarkAuthenticationResquest{
 		Username:          username,
@@ -103,23 +104,23 @@ func (c *CyberarkClient) Authenticate(username, password string) error {
 	}
 	reqjson, err := json.Marshal(authreq)
 	if err != nil {
-		return err
+		return "", expires, err
 	}
 
 	res, err := c.client.Post(c.Url+"/PasswordVault/API/auth/RADIUS/Logon/", "application/json", bytes.NewBuffer(reqjson))
 	if err != nil {
-		return err
+		return "", expires, err
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode > 399 || res.StatusCode < 200 {
-		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
+		return "", expires, fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return "", expires, err
 	}
 	token := string(body)
 	token, _ = strings.CutPrefix(token, "\"")
@@ -130,15 +131,17 @@ func (c *CyberarkClient) Authenticate(username, password string) error {
 	if err != nil {
 		timeout = 0
 	}
-	viper.Set(config.RorAuthCyberarkToken, c.token)
-	viper.Set(config.RorAuthCyberarkExpires, time.Now().Add(time.Duration(timeout)*time.Second))
-	viper.WriteConfig()
 
-	return nil
+	expires = time.Now().Add(time.Duration(timeout) * time.Second)
+
+	return c.token, expires, nil
 }
 
 func (c *CyberarkClient) GetSecret(id string) (*CyberarkSecret, error) {
-	secrets, _ := c.GetSecrets()
+	secrets, err := c.GetSecrets()
+	if err != nil {
+		return nil, err
+	}
 	user := strings.Split(id, "@")
 	if len(user) != 2 {
 		return nil, fmt.Errorf("not a valid PAM user")
@@ -156,30 +159,43 @@ func (c *CyberarkClient) GetSecrets() (*[]CyberarkSecret, error) {
 	var out CyberarkSecretsResponse
 	var ret []CyberarkSecret
 	req, err := http.NewRequest("GET", c.Url+"/PasswordVault/api/Accounts", nil)
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	req.Header.Set("Authorization", c.token)
 	req.Header.Set("Accept", "application/json")
 	res, err := c.client.Do(req)
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	if res.StatusCode > 399 || res.StatusCode < 200 {
-		cobra.CheckErr(fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL))
+
+		return nil, fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
 
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	err = json.Unmarshal(body, &out)
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
-	for _, secret := range out.Value {
-		if slices.Contains(config.CyberarkValidDomains, secret.Address) {
-			ret = append(ret, secret)
+	if len(c.validDomains) > 0 {
+		for _, secret := range out.Value {
+			if slices.Contains(c.validDomains, secret.Address) {
+				ret = append(ret, secret)
+			}
+
 		}
-
+	} else {
+		ret = out.Value
 	}
 
 	return &ret, nil
@@ -192,25 +208,33 @@ func (c *CyberarkClient) GetPassword(id string) (string, error) {
 	}
 
 	jsonData, err := json.Marshal(request)
-	cobra.CheckErr(err)
+	if err != nil {
+		return "", err
+	}
 
 	req, err := http.NewRequest("POST", c.Url+"/PasswordVault/api/Accounts/"+id+"/Password/Retrieve", bytes.NewBuffer(jsonData))
-	cobra.CheckErr(err)
+	if err != nil {
+		return "", err
+	}
 
 	req.Header.Set("Authorization", c.token)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	res, err := c.client.Do(req)
-	cobra.CheckErr(err)
+	if err != nil {
+		return "", err
+	}
 
 	if res.StatusCode > 399 || res.StatusCode < 200 {
-		cobra.CheckErr(fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL))
+		return "", fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
 
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
-	cobra.CheckErr(err)
+	if err != nil {
+		return "", err
+	}
 
 	ret := string(body)
 	ret, _ = strings.CutPrefix(ret, "\"")
