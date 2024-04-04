@@ -9,7 +9,7 @@ import (
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
-	"github.com/NorskHelsenett/ror/pkg/apicontracts"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
@@ -22,7 +22,7 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 	identity, err := getIdentityFromGinContext(c)
 	if err != nil {
 		rlog.Error("could not get user from gin context: %v", err)
-		c.JSON(http.StatusUnauthorized, apicontracts.RorError{
+		c.JSON(http.StatusUnauthorized, rorerror.RorError{
 			Status:  http.StatusUnauthorized,
 			Message: "Could not fetch user",
 		})
