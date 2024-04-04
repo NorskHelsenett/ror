@@ -1,6 +1,6 @@
 module github.com/NorskHelsenett/ror
 
-go 1.22.1
+go 1.22.2
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.5.1
