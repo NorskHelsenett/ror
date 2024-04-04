@@ -7,6 +7,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
+	"github.com/NorskHelsenett/ror/pkg/auth/userauth/openldap"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 )
 
@@ -14,9 +15,10 @@ type DomainResolverConfigs struct {
 	DomainResolvers []DomainResolverConfig `json:"domainResolvers"`
 }
 type DomainResolverConfig struct {
-	ResolverType  string                 `json:"resolverType"`
-	LdapsConfig   *ldaps.LdapConfig      `json:"ldapsConfig,omitempty"`
-	MsGraphConfig *msgraph.MsGraphConfig `json:"msGraphConfig,omitempty"`
+	ResolverType    string                 `json:"resolverType"`
+	LdapsConfig     *ldaps.LdapConfig      `json:"ldapsConfig,omitempty"`
+	OpenLdapsConfig *openldap.LdapConfig   `json:"openLdapConfig,omitempty"`
+	MsGraphConfig   *msgraph.MsGraphConfig `json:"msGraphConfig,omitempty"`
 }
 
 type DomainResolverInterface interface {
@@ -36,6 +38,9 @@ func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
 	return nil, fmt.Errorf("no domain resolver found for domain: %s", domain)
 }
 func (d DomainResolvers) SetDomain(domain string, resolver DomainResolverInterface) {
+	if resolver == nil {
+		resolver = &DomainResolvers{}
+	}
 	d[domain] = resolver
 }
 
@@ -53,7 +58,7 @@ func splitUserId(userId string) (string, string, error) {
 
 func NewDomainResolversFromJson(jsonBytes []byte) (*DomainResolvers, error) {
 	var domainResolverConfigs DomainResolverConfigs
-	var domainResolvers *DomainResolvers
+	var domainResolvers *DomainResolvers = &DomainResolvers{}
 	err := json.Unmarshal(jsonBytes, &domainResolverConfigs)
 	if err != nil {
 		return nil, err
@@ -69,6 +74,13 @@ func NewDomainResolversFromJson(jsonBytes []byte) (*DomainResolvers, error) {
 		}
 
 		switch domainResolverConfig.ResolverType {
+		case "openldap":
+			ldapsClient, err := openldap.NewLdapsClient(*domainResolverConfig.OpenLdapsConfig)
+			if err != nil {
+				return nil, err
+			}
+			domainResolvers.SetDomain(domainResolverConfig.OpenLdapsConfig.Domain, ldapsClient)
+
 		case "ldap":
 			ldapsClient, err := ldaps.NewLdapsClient(*domainResolverConfig.LdapsConfig)
 			if err != nil {
