@@ -434,11 +434,25 @@ type RorError struct {
 	Message string `json:"message"`
 }
 
-func NewRorError(status int, err error) RorError {
-	return RorError{
+func NewRorErrorFromError(status int, err error) RorError {
+	rorerror := RorError{
 		Status:  status,
 		Message: err.Error(),
 	}
+	return rorerror
+}
+func NewRorError(status int, err string, errors ...error) RorError {
+	rorerror := RorError{
+		Status:  status,
+		Message: err,
+	}
+	if len(errors) > 0 {
+		for _, errs := range errors {
+			rorerror.Message = fmt.Sprintf("%s Error: %s", rorerror.Message, errs.Error())
+		}
+	}
+
+	return rorerror
 }
 
 func (e RorError) Error() string {
