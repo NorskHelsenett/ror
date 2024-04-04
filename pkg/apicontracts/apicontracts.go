@@ -428,6 +428,8 @@ type Metric struct {
 }
 
 // DEPRECATED: User rorerror
+//
+//	github.com/NorskHelsenett/ror/pkg/helpers/rorerror
 type Error struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
