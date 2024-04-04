@@ -427,6 +427,12 @@ type Metric struct {
 	ClusterCount     int64  `json:"clusterCount"`
 }
 
+// DEPRECATED: User rorerror
+type Error struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
 type DesiredVersion struct {
 	Key   string      `json:"key" bson:"key"`
 	Value interface{} `json:"value" bson:"value"`
