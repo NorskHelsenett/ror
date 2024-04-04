@@ -1,6 +1,8 @@
 package apicontracts
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
@@ -427,9 +429,25 @@ type Metric struct {
 	ClusterCount     int64  `json:"clusterCount"`
 }
 
-type Error struct {
+type RorError struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
+}
+
+func NewRorError(status int, err error) RorError {
+	return RorError{
+		Status:  status,
+		Message: err.Error(),
+	}
+}
+
+func (e RorError) Error() string {
+	return fmt.Sprintf("Status: %d, Message: %s", e.Status, e.Message)
+}
+
+func (e RorError) AsJson() []byte {
+	ret, _ := json.Marshal(e)
+	return ret
 }
 
 type DesiredVersion struct {
