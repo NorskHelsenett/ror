@@ -8,6 +8,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
+	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
@@ -38,8 +39,10 @@ type MsGraphClient struct {
 func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInterface) (*MsGraphClient, error) {
 	client := &MsGraphClient{config: config, GroupCache: cacheHelper}
 
-	if cacheHelper == nil {
+	if cacheHelper != nil {
 		client.GroupCache = cacheHelper
+	} else {
+		client.GroupCache = memorycache.NewKvCache()
 	}
 
 	cred, err := azidentity.NewClientSecretCredential(client.config.TenantID, client.config.ClientID, client.config.ClientSecret, nil)
@@ -147,6 +150,9 @@ func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache CacheIn
 // If the group is not in the cache, it will fetch it from the graph api
 // and add it to the cache
 func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error, groupCache CacheInterface) {
+	if groupId == "" {
+		fmt.Println("test")
+	}
 	name, cached := groupCache.Get(groupId)
 	if cached {
 		groupsNameChan <- name
