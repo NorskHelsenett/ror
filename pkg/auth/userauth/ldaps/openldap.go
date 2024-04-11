@@ -1,4 +1,4 @@
-package openldap
+package ldaps
 
 import (
 	"crypto/tls"

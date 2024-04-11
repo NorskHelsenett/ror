@@ -1,10 +1,11 @@
-package ldaps
+package activedirectory
 
 import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"net"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,27 +16,27 @@ import (
 	"github.com/go-ldap/ldap"
 )
 
-type LdapConfig struct {
-	Domain       string       `json:"domain"`
-	BindUser     string       `json:"bindUser"`
-	BindPassword string       `json:"bindPassword"`
-	BaseDN       string       `json:"basedn"`
-	Servers      []LdapServer `json:"servers"`
-	Certificate  []byte       `json:"certificate,omitempty"` // This is the CA certificate
+type AdConfig struct {
+	Domain       string     `json:"domain"`
+	BindUser     string     `json:"bindUser"`
+	BindPassword string     `json:"bindPassword"`
+	BaseDN       string     `json:"basedn"`
+	Servers      []AdServer `json:"servers,omitempty"`
+	Certificate  []byte     `json:"certificate,omitempty"` // This is the CA certificate
 }
 
-type LdapServer struct {
+type AdServer struct {
 	Host string `json:"host"`
 	Port int    `json:"port"`
 }
 
-type LdapsClient struct {
+type AdClient struct {
 	connection *ldap.Conn
-	config     *LdapConfig
+	config     *AdConfig
 }
 
-func NewLdapsClient(config LdapConfig) (*LdapsClient, error) {
-	ldapsClient := &LdapsClient{config: &config}
+func NewAdClient(config AdConfig) (*AdClient, error) {
+	ldapsClient := &AdClient{config: &config}
 
 	err := ldapsClient.Connect()
 	if err != nil {
@@ -43,15 +44,44 @@ func NewLdapsClient(config LdapConfig) (*LdapsClient, error) {
 	}
 	return ldapsClient, nil
 }
-func (l *LdapsClient) Connect() error {
+func (l *AdClient) Connect() error {
 	var client *ldap.Conn
+	ldapSecurePort, err := strconv.Atoi(ldap.DefaultLdapsPort)
+	if err != nil {
+		return fmt.Errorf("failed to parse default ldaps port")
+	}
+
+	ldapPort, err := strconv.Atoi(ldap.DefaultLdapPort)
+	if err != nil {
+		return fmt.Errorf("failed to parse default ldaps port")
+	}
+
+	if len(l.config.Servers) == 0 {
+		rlog.Infof("Using dns-discovery to find ldap servers for domain %s", l.config.Domain)
+		_, srvs, err := net.LookupSRV("ldap", "tcp", l.config.Domain)
+
+		for _, srv := range srvs {
+			var port int
+			if l.config.Certificate != nil {
+				port = ldapSecurePort
+			} else {
+				port = ldapPort
+			}
+			l.config.Servers = append(l.config.Servers, AdServer{
+				Host: srv.Target,
+				Port: port,
+			})
+		}
+
+		if err != nil {
+			rlog.Error("error getting servers from dns", err, rlog.Any("Domain", l.config.Domain))
+			return err
+		}
+	}
 
 	for _, ldapserver := range l.config.Servers {
-		ldapsport, err := strconv.Atoi(ldap.DefaultLdapsPort)
-		if err != nil {
-			return fmt.Errorf("failed to parse default ldaps port")
-		}
-		if ldapserver.Port == ldapsport {
+
+		if l.config.Certificate != nil {
 			caCert := l.config.Certificate
 			caCertPool := x509.NewCertPool()
 			ok := caCertPool.AppendCertsFromPEM(caCert)
@@ -75,6 +105,8 @@ func (l *LdapsClient) Connect() error {
 		err = client.Bind(l.config.BindUser, l.config.BindPassword)
 		if err != nil {
 			rlog.Error("an error occurred authenticating to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
+		} else {
+			break
 		}
 	}
 
@@ -85,7 +117,7 @@ func (l *LdapsClient) Connect() error {
 	return nil
 }
 
-func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.SearchResult, error) {
+func (l *AdClient) search(basedn, filter string, attributes []string) (*ldap.SearchResult, error) {
 	request := ldap.NewSearchRequest(
 		basedn,
 		ldap.ScopeWholeSubtree,
@@ -109,7 +141,7 @@ func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.
 	return nil, fmt.Errorf("could not fetch search entries")
 }
 
-func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
+func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
 
 	userpart, domainpart, err := splitUserId(userId)
 	if err != nil {

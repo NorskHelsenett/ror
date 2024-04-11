@@ -3,11 +3,12 @@ package userauth
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/auth/userauth/activedirectory"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
-	"github.com/NorskHelsenett/ror/pkg/auth/userauth/openldap"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 )
 
@@ -15,10 +16,10 @@ type DomainResolverConfigs struct {
 	DomainResolvers []DomainResolverConfig `json:"domainResolvers"`
 }
 type DomainResolverConfig struct {
-	ResolverType    string                 `json:"resolverType"`
-	LdapsConfig     *ldaps.LdapConfig      `json:"ldapsConfig,omitempty"`
-	OpenLdapsConfig *openldap.LdapConfig   `json:"openLdapConfig,omitempty"`
-	MsGraphConfig   *msgraph.MsGraphConfig `json:"msGraphConfig,omitempty"`
+	ResolverType  string                    `json:"resolverType"`
+	AdConfig      *activedirectory.AdConfig `json:"adConfig,omitempty"`
+	LdapConfig    *ldaps.LdapConfig         `json:"ldapConfig,omitempty"`
+	MsGraphConfig *msgraph.MsGraphConfig    `json:"msGraphConfig,omitempty"`
 }
 
 type DomainResolverInterface interface {
@@ -32,6 +33,11 @@ func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if len(d) == 0 {
+		return nil, fmt.Errorf("no domainresolvers configured")
+	}
+
 	if domainResolver, ok := d[domain]; ok {
 		return domainResolver.GetUser(userId)
 	}
@@ -64,6 +70,8 @@ func NewDomainResolversFromJson(jsonBytes []byte) (*DomainResolvers, error) {
 		return nil, err
 	}
 
+	var errs []error
+
 	if len(domainResolverConfigs.DomainResolvers) == 0 {
 		return nil, fmt.Errorf("no domain resolvers found")
 	}
@@ -74,28 +82,39 @@ func NewDomainResolversFromJson(jsonBytes []byte) (*DomainResolvers, error) {
 		}
 
 		switch domainResolverConfig.ResolverType {
-		case "openldap":
-			ldapsClient, err := openldap.NewLdapsClient(*domainResolverConfig.OpenLdapsConfig)
-			if err != nil {
-				return nil, err
-			}
-			domainResolvers.SetDomain(domainResolverConfig.OpenLdapsConfig.Domain, ldapsClient)
-
 		case "ldap":
-			ldapsClient, err := ldaps.NewLdapsClient(*domainResolverConfig.LdapsConfig)
+			ldapsClient, err := ldaps.NewLdapsClient(*domainResolverConfig.LdapConfig)
 			if err != nil {
-				return nil, err
+				errs = append(errs, err)
 			}
-			domainResolvers.SetDomain(domainResolverConfig.LdapsConfig.Domain, ldapsClient)
+			domainResolvers.SetDomain(domainResolverConfig.LdapConfig.Domain, ldapsClient)
+
+		case "ad":
+			adClient, err := activedirectory.NewAdClient(*domainResolverConfig.AdConfig)
+			if err != nil {
+				errs = append(errs, err)
+			}
+			domainResolvers.SetDomain(domainResolverConfig.AdConfig.Domain, adClient)
 		case "msgraph":
 			msGraphClient, err := msgraph.NewMsGraphClient(*domainResolverConfig.MsGraphConfig, nil)
 			if err != nil {
-				return nil, err
+				errs = append(errs, err)
 			}
 			domainResolvers.SetDomain(domainResolverConfig.MsGraphConfig.Domain, msGraphClient)
 		default:
-			return nil, fmt.Errorf("unknown resolver type: %s", domainResolverConfig.ResolverType)
+			err = fmt.Errorf("unknown resolver type: %s", domainResolverConfig.ResolverType)
+			errs = append(errs, err)
 		}
 	}
+
+	if len(errs) != 0 {
+		reterr := "the following error were encountered trying to load the resolverconfigs:"
+		for i, err := range errs {
+			reterr = reterr + " " + strconv.Itoa(int(i+1)) + ": " + err.Error()
+		}
+		err = fmt.Errorf("%s", reterr)
+		return domainResolvers, err
+	}
+
 	return domainResolvers, nil
 }
