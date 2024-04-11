@@ -4,12 +4,12 @@ package msgraph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
@@ -120,7 +120,7 @@ func (g *MsGraphClient) getGroups(userId string, groupsChan chan<- []string, err
 	if err != nil {
 		errorChan <- err
 	}
-	fmt.Print(groups.GetValue())
+	rlog.Infof("Got user %s with %d groups", userId, len(groups.GetValue()))
 	groupsChan <- groups.GetValue()
 }
 
@@ -150,9 +150,6 @@ func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache CacheIn
 // If the group is not in the cache, it will fetch it from the graph api
 // and add it to the cache
 func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error, groupCache CacheInterface) {
-	if groupId == "" {
-		fmt.Println("test")
-	}
 	name, cached := groupCache.Get(groupId)
 	if cached {
 		groupsNameChan <- name
