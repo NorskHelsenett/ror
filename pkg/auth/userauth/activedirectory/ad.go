@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net"
 	"regexp"
 	"strconv"
@@ -79,8 +80,12 @@ func (l *AdClient) Connect() error {
 		}
 	}
 
-	for _, ldapserver := range l.config.Servers {
+	//shuffle servers to spread the love
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(l.config.Servers), func(i, j int) { l.config.Servers[i], l.config.Servers[j] = l.config.Servers[j], l.config.Servers[i] })
 
+	for _, ldapserver := range l.config.Servers {
+		rlog.Infof("Trying server %s for domain %s.", ldapserver.Host, l.config.Domain)
 		if l.config.Certificate != nil {
 			caCert := l.config.Certificate
 			caCertPool := x509.NewCertPool()
