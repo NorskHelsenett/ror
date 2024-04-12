@@ -205,7 +205,7 @@ func splitUserId(userId string) (string, string, error) {
 	if len(parts) != 2 {
 		return "", "", fmt.Errorf("invalid userId: %s", userId)
 	}
-	return parts[1], parts[0], nil
+	return parts[0], parts[1], nil
 }
 
 func checkUserAccountControl(userAccountControl string) error {
