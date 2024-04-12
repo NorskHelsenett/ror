@@ -81,7 +81,6 @@ func (l *AdClient) Connect() error {
 	}
 
 	//shuffle servers to spread the love
-	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(l.config.Servers), func(i, j int) { l.config.Servers[i], l.config.Servers[j] = l.config.Servers[j], l.config.Servers[i] })
 
 	for _, ldapserver := range l.config.Servers {
@@ -105,6 +104,7 @@ func (l *AdClient) Connect() error {
 
 		if err != nil {
 			rlog.Error("an error occurred connecting to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port))
+			continue
 		}
 
 		err = client.Bind(l.config.BindUser, l.config.BindPassword)
