@@ -4,6 +4,8 @@ package msgraph
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
@@ -90,6 +92,8 @@ func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
 		}
 	}
 
+	addDomainpartToGroups(&groupnames, userId)
+
 	ret = &identitymodels.User{
 		Email:           *user.GetUserPrincipalName(),
 		Name:            *user.GetDisplayName(),
@@ -98,6 +102,19 @@ func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
 	}
 
 	return ret, nil
+}
+
+func addDomainpartToGroups(groupnames *[]string, userId string) {
+
+	_, domain, err := splitUserId(userId)
+	if err != nil {
+		domain = ""
+	}
+
+	// TODO: Add check if domainpart is allready part of the group name
+	for i, group := range *groupnames {
+		(*groupnames)[i] = group + "@" + domain
+	}
 }
 
 // getUser gets a user from the graph api
@@ -143,6 +160,7 @@ func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache CacheIn
 		}
 
 	}
+
 	return groupNames, nil
 }
 
@@ -162,4 +180,12 @@ func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<
 	}
 	groupCache.Add(groupId, *group.GetDisplayName())
 	groupsNameChan <- *group.GetDisplayName()
+}
+
+func splitUserId(userId string) (string, string, error) {
+	parts := strings.Split(userId, "@")
+	if len(parts) != 2 {
+		return "", "", fmt.Errorf("invalid userId: %s", userId)
+	}
+	return parts[0], parts[1], nil
 }
