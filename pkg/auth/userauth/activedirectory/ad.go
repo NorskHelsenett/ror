@@ -112,6 +112,7 @@ func (l *AdClient) Connect() error {
 		if err != nil {
 			rlog.Error("an error occurred authenticating to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
 		} else {
+			rlog.Infof("Connected to server server %s for domain %s.", ldapserver.Host, l.config.Domain)
 			break
 		}
 	}
@@ -198,6 +199,8 @@ func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
 		IsEmailVerified: true,
 		Groups:          userGroups,
 	}
+
+	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(user.Groups)))
 	return &user, nil
 }
 
