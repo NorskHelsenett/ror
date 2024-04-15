@@ -9,9 +9,9 @@ import (
 	"net"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	newhealth "github.com/dotse/go-health"
@@ -149,7 +149,7 @@ func (l *AdClient) search(basedn, filter string, attributes []string) (*ldap.Sea
 
 func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
 
-	userpart, domainpart, err := splitUserId(userId)
+	userpart, domainpart, err := authtools.SplitUserId(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -199,14 +199,6 @@ func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
 		Groups:          userGroups,
 	}
 	return &user, nil
-}
-
-func splitUserId(userId string) (string, string, error) {
-	parts := strings.Split(userId, "@")
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid userId: %s", userId)
-	}
-	return parts[0], parts[1], nil
 }
 
 func checkUserAccountControl(userAccountControl string) error {

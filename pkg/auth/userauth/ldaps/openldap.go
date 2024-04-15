@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	newhealth "github.com/dotse/go-health"
@@ -110,7 +110,7 @@ func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.
 
 func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 
-	_, domainpart, err := splitUserId(userId)
+	_, domainpart, err := authtools.SplitUserId(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -155,14 +155,6 @@ func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 	}
 
 	return &user, nil
-}
-
-func splitUserId(userId string) (string, string, error) {
-	parts := strings.Split(userId, "@")
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid userId: %s", userId)
-	}
-	return parts[0], parts[1], nil
 }
 
 // TODO: Implement
