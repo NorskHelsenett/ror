@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
@@ -105,7 +106,7 @@ func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
 
 func addDomainpartToGroups(groupnames *[]string, userId string) {
 
-	_, domain, err := splitUserId(userId)
+	_, domain, err := authtools.SplitUserId(userId)
 	if err != nil {
 		domain = ""
 	}

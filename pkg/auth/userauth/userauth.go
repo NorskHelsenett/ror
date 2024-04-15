@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/activedirectory"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
@@ -35,7 +35,7 @@ type DomainResolvers struct {
 }
 
 func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
-	domain, _, err := splitUserId(userId)
+	_, domain, err := authtools.SplitUserId(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -67,14 +67,6 @@ func (d DomainResolvers) RegisterHealthChecks() {
 			newhealth.Register(checkname, resolver)
 		}
 	}
-}
-
-func splitUserId(userId string) (string, string, error) {
-	parts := strings.Split(userId, "@")
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid userId: %s", userId)
-	}
-	return parts[1], parts[0], nil
 }
 
 func NewDomainResolversFromJson(jsonBytes []byte) (*DomainResolvers, error) {
