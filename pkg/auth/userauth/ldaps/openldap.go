@@ -10,6 +10,7 @@ import (
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	newhealth "github.com/dotse/go-health"
 	"github.com/go-ldap/ldap"
 )
 
@@ -161,5 +162,16 @@ func splitUserId(userId string) (string, string, error) {
 	if len(parts) != 2 {
 		return "", "", fmt.Errorf("invalid userId: %s", userId)
 	}
-	return parts[1], parts[0], nil
+	return parts[0], parts[1], nil
+}
+
+// TODO: Implement
+func (l *LdapsClient) CheckHealth() []newhealth.Check {
+	return []newhealth.Check{
+		{
+			ComponentID:   l.config.Domain,
+			ComponentType: "openLdapDomainResolver",
+			Status:        newhealth.StatusPass,
+		},
+	}
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	newhealth "github.com/dotse/go-health"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
@@ -162,4 +163,19 @@ func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<
 	}
 	groupCache.Add(groupId, *group.GetDisplayName())
 	groupsNameChan <- *group.GetDisplayName()
+}
+
+// TODO: Implement
+func (g *MsGraphClient) CheckHealth() []newhealth.Check {
+	var status newhealth.Status = newhealth.StatusPass
+	if g.Client == nil {
+		status = newhealth.StatusFail
+	}
+	return []newhealth.Check{
+		{
+			ComponentID:   g.config.Domain,
+			ComponentType: "msGrapDomainResolver",
+			Status:        status,
+		},
+	}
 }
