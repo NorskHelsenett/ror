@@ -4,14 +4,13 @@ package msgraph
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	newhealth "github.com/dotse/go-health"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
@@ -182,10 +181,17 @@ func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<
 	groupsNameChan <- *group.GetDisplayName()
 }
 
-func splitUserId(userId string) (string, string, error) {
-	parts := strings.Split(userId, "@")
-	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid userId: %s", userId)
+// TODO: Implement
+func (g *MsGraphClient) CheckHealth() []newhealth.Check {
+	var status newhealth.Status = newhealth.StatusPass
+	if g.Client == nil {
+		status = newhealth.StatusFail
 	}
-	return parts[0], parts[1], nil
+	return []newhealth.Check{
+		{
+			ComponentID:   g.config.Domain,
+			ComponentType: "msGrapDomainResolver",
+			Status:        status,
+		},
+	}
 }

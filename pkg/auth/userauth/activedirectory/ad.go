@@ -14,6 +14,7 @@ import (
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	newhealth "github.com/dotse/go-health"
 	"github.com/go-ldap/ldap"
 )
 
@@ -261,4 +262,15 @@ func isAccountExpired(accountExpires int64) bool {
 func convertFileTime(fileTime int64) time.Time {
 	unixTime := (fileTime - 116444736000000000) / 10000000
 	return time.Unix(unixTime, 0)
+}
+
+// TODO: Implement
+func (l *AdClient) CheckHealth() []newhealth.Check {
+	return []newhealth.Check{
+		{
+			ComponentID:   l.config.Domain,
+			ComponentType: "activeDirectoryDomainResolver",
+			Status:        newhealth.StatusPass,
+		},
+	}
 }

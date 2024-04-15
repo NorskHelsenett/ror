@@ -10,11 +10,14 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
+	newhealth "github.com/dotse/go-health"
 )
 
 type DomainResolverConfigs struct {
 	DomainResolvers []DomainResolverConfig `json:"domainResolvers"`
 }
+
+// TODO: add enum for resolverType
 type DomainResolverConfig struct {
 	ResolverType  string                    `json:"resolverType"`
 	AdConfig      *activedirectory.AdConfig `json:"adConfig,omitempty"`
@@ -24,9 +27,12 @@ type DomainResolverConfig struct {
 
 type DomainResolverInterface interface {
 	GetUser(userId string) (*identitymodels.User, error)
+	CheckHealth() []newhealth.Check
 }
 
-type DomainResolvers map[string]DomainResolverInterface
+type DomainResolvers struct {
+	resolvers map[string]DomainResolverInterface
+}
 
 func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
 	domain, _, err := splitUserId(userId)
@@ -34,24 +40,33 @@ func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
 		return nil, err
 	}
 
-	if len(d) == 0 {
+	if len(d.resolvers) == 0 {
 		return nil, fmt.Errorf("no domainresolvers configured")
 	}
 
-	if domainResolver, ok := d[domain]; ok {
+	if domainResolver, ok := d.resolvers[domain]; ok {
 		return domainResolver.GetUser(userId)
 	}
 	return nil, fmt.Errorf("no domain resolver found for domain: %s", domain)
 }
-func (d DomainResolvers) SetDomain(domain string, resolver DomainResolverInterface) {
-	if resolver == nil {
-		resolver = &DomainResolvers{}
+func (d *DomainResolvers) SetDomain(domain string, resolver DomainResolverInterface) {
+	if d.resolvers == nil {
+		d.resolvers = map[string]DomainResolverInterface{}
 	}
-	d[domain] = resolver
+	d.resolvers[domain] = resolver
 }
 
-func (d DomainResolvers) RemoveDomain(domain string) {
-	delete(d, domain)
+func (d *DomainResolvers) RemoveDomain(domain string) {
+	delete(d.resolvers, domain)
+}
+
+func (d DomainResolvers) RegisterHealthChecks() {
+	if len(d.resolvers) != 0 && d.resolvers != nil {
+		for key, resolver := range d.resolvers {
+			checkname := fmt.Sprintf("domainresolvers-%s", key)
+			newhealth.Register(checkname, resolver)
+		}
+	}
 }
 
 func splitUserId(userId string) (string, string, error) {
