@@ -4,6 +4,7 @@ package msgraph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
@@ -40,7 +41,7 @@ type MsGraphClient struct {
 // NewMsGraphClient creates a new GraphClient
 func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInterface) (*MsGraphClient, error) {
 	client := &MsGraphClient{config: config, GroupCache: cacheHelper}
-
+	rlog.Infof("Connecting to msgraph api for domain %s.", config.Domain)
 	if cacheHelper != nil {
 		client.GroupCache = cacheHelper
 	} else {
@@ -58,6 +59,7 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 	if err != nil {
 		return nil, err
 	}
+	rlog.Infof("Connected to msgraph api for domain %s.", config.Domain)
 	client.Client = conn
 	return client, nil
 }
@@ -100,7 +102,7 @@ func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
 		IsEmailVerified: true,
 		Groups:          groupnames,
 	}
-
+	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(ret.Groups)))
 	return ret, nil
 }
 
@@ -137,7 +139,6 @@ func (g *MsGraphClient) getGroups(userId string, groupsChan chan<- []string, err
 	if err != nil {
 		errorChan <- err
 	}
-	rlog.Infof("Got user %s with %d groups", userId, len(groups.GetValue()))
 	groupsChan <- groups.GetValue()
 }
 

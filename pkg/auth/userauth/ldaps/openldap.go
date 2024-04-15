@@ -47,6 +47,7 @@ func (l *LdapsClient) Connect() error {
 
 	for _, ldapserver := range l.config.Servers {
 		ldapsport, err := strconv.Atoi(ldap.DefaultLdapsPort)
+		rlog.Infof("Trying server %s for domain %s.", ldapserver.Host, l.config.Domain)
 		if err != nil {
 			return fmt.Errorf("failed to parse default ldaps port")
 		}
@@ -74,6 +75,9 @@ func (l *LdapsClient) Connect() error {
 		err = client.Bind(l.config.BindUser, l.config.BindPassword)
 		if err != nil {
 			rlog.Error("an error occurred authenticating to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
+		} else {
+			rlog.Infof("Connected to server server %s for domain %s.", ldapserver.Host, l.config.Domain)
+			break
 		}
 	}
 
@@ -153,7 +157,7 @@ func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 		IsEmailVerified: true,
 		Groups:          userGroups,
 	}
-
+	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(user.Groups)))
 	return &user, nil
 }
 
