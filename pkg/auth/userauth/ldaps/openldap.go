@@ -123,6 +123,15 @@ func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 
 	//result, err := l.aearch(client, ldapConfig.BaseDN, filter, []string{"DN", "cn", "mail"})
 	attributes := []string{"DN", "cn", "mail"}
+
+	if l.connection.IsClosing() {
+		rlog.Debug("Reconnecting to LDAP")
+		err := l.Connect()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	result, err := l.search(l.config.BaseDN, filter, attributes)
 
 	if err != nil {

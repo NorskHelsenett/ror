@@ -156,6 +156,15 @@ func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
 	}
 	filter := fmt.Sprintf("(&(objectClass=user)(sAMAccountName=%s))", userpart)
 	attributes := []string{"cn", "memberOf", "userAccountControl", "accountExpires"}
+
+	if l.connection.IsClosing() {
+		rlog.Debug("Reconnecting to Active Directory")
+		err := l.Connect()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	result, err := l.search(l.config.BaseDN, filter, attributes)
 
 	if err != nil {
