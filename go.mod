@@ -10,7 +10,7 @@ require (
 	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/gomodule/redigo v1.9.2
 	github.com/hashicorp/vault-client-go v0.4.3
-	github.com/microsoftgraph/msgraph-sdk-go v1.37.0
+	github.com/microsoftgraph/msgraph-sdk-go v1.38.0
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rabbitmq/amqp091-go v1.9.0
@@ -32,7 +32,7 @@ require (
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.5.2 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
