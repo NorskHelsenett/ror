@@ -18,6 +18,8 @@ import (
 	"github.com/go-ldap/ldap"
 )
 
+var DefaultTimeout = 10 * time.Second
+
 type AdConfig struct {
 	Domain       string     `json:"domain"`
 	BindUser     string     `json:"bindUser"`
@@ -83,6 +85,8 @@ func (l *AdClient) Connect() error {
 
 	//shuffle servers to spread the love
 	rand.Shuffle(len(l.config.Servers), func(i, j int) { l.config.Servers[i], l.config.Servers[j] = l.config.Servers[j], l.config.Servers[i] })
+
+	ldap.DefaultTimeout = DefaultTimeout
 
 	for _, ldapserver := range l.config.Servers {
 		rlog.Infof("Trying server %s for domain %s.", ldapserver.Host, l.config.Domain)
