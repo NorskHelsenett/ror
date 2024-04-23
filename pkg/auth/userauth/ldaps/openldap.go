@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
@@ -13,6 +14,8 @@ import (
 	newhealth "github.com/dotse/go-health"
 	"github.com/go-ldap/ldap"
 )
+
+var DefaultTimeout = 10 * time.Second
 
 type LdapConfig struct {
 	Domain       string       `json:"domain"`
@@ -44,6 +47,8 @@ func NewLdapsClient(config LdapConfig) (*LdapsClient, error) {
 }
 func (l *LdapsClient) Connect() error {
 	var client *ldap.Conn
+
+	ldap.DefaultTimeout = DefaultTimeout
 
 	for _, ldapserver := range l.config.Servers {
 		ldapsport, err := strconv.Atoi(ldap.DefaultLdapsPort)
