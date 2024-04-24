@@ -16,6 +16,8 @@ import (
 	"github.com/go-ldap/ldap"
 )
 
+var DefaultTimeout = 10 * time.Second
+
 type LdapConfig struct {
 	Domain       string       `json:"domain"`
 	BindUser     string       `json:"bindUser"`
@@ -46,6 +48,8 @@ func NewLdapsClient(config LdapConfig) (*LdapsClient, error) {
 }
 func (l *LdapsClient) Connect() error {
 	var client *ldap.Conn
+
+	ldap.DefaultTimeout = DefaultTimeout
 
 	for _, ldapserver := range l.config.Servers {
 		ldapsport, err := strconv.Atoi(ldap.DefaultLdapsPort)
