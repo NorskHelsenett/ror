@@ -1,6 +1,7 @@
 package activedirectory
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
@@ -21,7 +22,8 @@ import (
 var DefaultTimeout = 10 * time.Second
 
 type AdConfig struct {
-	Domain       string     `json:"domain"`
+	Domain       string `json:"domain"`
+	server       string
 	BindUser     string     `json:"bindUser"`
 	BindPassword string     `json:"bindPassword"`
 	BaseDN       string     `json:"basedn"`
@@ -90,6 +92,7 @@ func (l *AdClient) Connect() error {
 
 	for _, ldapserver := range l.config.Servers {
 		rlog.Infof("Trying server %s for domain %s.", ldapserver.Host, l.config.Domain)
+		connectionStart := time.Now()
 		if l.config.Certificate != nil {
 			caCert := l.config.Certificate
 			caCertPool := x509.NewCertPool()
@@ -109,14 +112,18 @@ func (l *AdClient) Connect() error {
 
 		if err != nil {
 			rlog.Error("an error occurred connecting to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port))
+			authtools.ServerConnectionHistogram.WithLabelValues("ad", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "500").Observe(time.Since(connectionStart).Seconds())
 			continue
 		}
 
 		err = client.Bind(l.config.BindUser, l.config.BindPassword)
 		if err != nil {
 			rlog.Error("an error occurred authenticating to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
+			authtools.ServerConnectionHistogram.WithLabelValues("ad", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "401").Observe(time.Since(connectionStart).Seconds())
 		} else {
 			rlog.Infof("Connected to server server %s for domain %s.", ldapserver.Host, l.config.Domain)
+			l.config.server = ldapserver.Host
+			authtools.ServerConnectionHistogram.WithLabelValues("ad", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "200").Observe(time.Since(connectionStart).Seconds())
 			break
 		}
 	}
@@ -152,7 +159,7 @@ func (l *AdClient) search(basedn, filter string, attributes []string) (*ldap.Sea
 	return nil, fmt.Errorf("could not fetch search entries")
 }
 
-func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
+func (l *AdClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
 
 	userpart, domainpart, err := authtools.SplitUserId(userId)
 	if err != nil {
@@ -163,17 +170,21 @@ func (l *AdClient) GetUser(userId string) (*identitymodels.User, error) {
 
 	if l.connection.IsClosing() {
 		rlog.Debug("Reconnecting to Active Directory")
+		authtools.ServerReconnectCounter.WithLabelValues("ad", l.config.Domain).Inc()
 		err := l.Connect()
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	queryStart := time.Now()
 	result, err := l.search(l.config.BaseDN, filter, attributes)
 
 	if err != nil {
+		authtools.UserLookupHistogram.WithLabelValues("ad", l.config.Domain, l.config.server, "500").Observe(time.Since(queryStart).Seconds())
 		return nil, err
 	}
+	authtools.UserLookupHistogram.WithLabelValues("ad", l.config.Domain, l.config.server, "200").Observe(time.Since(queryStart).Seconds())
 	var userEntry *ldap.Entry
 	if result != nil && len(result.Entries) == 1 {
 		for _, entry := range result.Entries {
