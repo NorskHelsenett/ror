@@ -19,7 +19,8 @@ import (
 var DefaultTimeout = 10 * time.Second
 
 type LdapConfig struct {
-	Domain       string       `json:"domain"`
+	Domain       string `json:"domain"`
+	server       string
 	BindUser     string       `json:"bindUser"`
 	BindPassword string       `json:"bindPassword"`
 	BaseDN       string       `json:"basedn"`
@@ -85,6 +86,7 @@ func (l *LdapsClient) Connect() error {
 			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "401").Observe(time.Since(connectionStart).Seconds())
 		} else {
 			rlog.Infof("Connected to server server %s for domain %s.", ldapserver.Host, l.config.Domain)
+			l.config.server = ldapserver.Host
 			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "200").Observe(time.Since(connectionStart).Seconds())
 			break
 		}
@@ -147,11 +149,11 @@ func (l *LdapsClient) GetUser(ctx context.Context, userId string) (*identitymode
 	result, err := l.search(l.config.BaseDN, filter, attributes)
 
 	if err != nil {
-		authtools.UserLookupHistogram.WithLabelValues("openldap", l.config.Domain, "500").Observe(time.Since(queryStart).Seconds())
+		authtools.UserLookupHistogram.WithLabelValues("openldap", l.config.Domain, l.config.server, "500").Observe(time.Since(queryStart).Seconds())
 
 		return nil, err
 	}
-	authtools.UserLookupHistogram.WithLabelValues("openldap", l.config.Domain, "200").Observe(time.Since(queryStart).Seconds())
+	authtools.UserLookupHistogram.WithLabelValues("openldap", l.config.Domain, l.config.server, "200").Observe(time.Since(queryStart).Seconds())
 
 	var userEntry *ldap.Entry
 	if result != nil && len(result.Entries) == 1 {

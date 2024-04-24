@@ -19,6 +19,8 @@ import (
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
 )
 
+var ApiEndpoint = "https://graph.microsoft.com/.default"
+
 type MsGraphConfig struct {
 	Domain       string `json:"domain"`
 	TenantID     string `json:"tenantId"`
@@ -55,14 +57,14 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 	}
 
 	conn, err := msgraphsdk.NewGraphServiceClientWithCredentials(
-		cred, []string{"https://graph.microsoft.com/.default"},
+		cred, []string{ApiEndpoint},
 	)
 
 	if err != nil {
-		authtools.ServerConnectionHistogram.WithLabelValues("msgraph", config.Domain, "https://graph.microsoft.com/.default", "443", "500").Observe(time.Since(connectionStart).Seconds())
+		authtools.ServerConnectionHistogram.WithLabelValues("msgraph", config.Domain, ApiEndpoint, "443", "500").Observe(time.Since(connectionStart).Seconds())
 		return nil, err
 	}
-	authtools.ServerConnectionHistogram.WithLabelValues("msgraph", config.Domain, "https://graph.microsoft.com/.default", "443", "200").Observe(time.Since(connectionStart).Seconds())
+	authtools.ServerConnectionHistogram.WithLabelValues("msgraph", config.Domain, ApiEndpoint, "443", "200").Observe(time.Since(connectionStart).Seconds())
 	rlog.Infof("Connected to msgraph api for domain %s.", config.Domain)
 	client.Client = conn
 	return client, nil
@@ -94,13 +96,13 @@ func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymo
 		case returneUser := <-userChan:
 			user = returneUser
 		case err := <-errorChan:
-			authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, "500").Observe(time.Since(queryStart).Seconds())
+			authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, ApiEndpoint, "500").Observe(time.Since(queryStart).Seconds())
 			return nil, err
 		}
 	}
 
 	addDomainpartToGroups(&groupnames, userId)
-	authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, "200").Observe(time.Since(queryStart).Seconds())
+	authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, ApiEndpoint, "200").Observe(time.Since(queryStart).Seconds())
 
 	ret = &identitymodels.User{
 		Email:           *user.GetUserPrincipalName(),
