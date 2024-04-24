@@ -1,11 +1,13 @@
 package ldaps
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
@@ -51,6 +53,7 @@ func (l *LdapsClient) Connect() error {
 		if err != nil {
 			return fmt.Errorf("failed to parse default ldaps port")
 		}
+		connectionStart := time.Now()
 		if ldapserver.Port == ldapsport {
 			caCert := l.config.Certificate
 			caCertPool := x509.NewCertPool()
@@ -70,15 +73,18 @@ func (l *LdapsClient) Connect() error {
 
 		if err != nil {
 			rlog.Error("an error occurred connecting to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port))
+			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "500").Observe(time.Since(connectionStart).Seconds())
 		}
-
 		err = client.Bind(l.config.BindUser, l.config.BindPassword)
 		if err != nil {
 			rlog.Error("an error occurred authenticating to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
+			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "401").Observe(time.Since(connectionStart).Seconds())
 		} else {
 			rlog.Infof("Connected to server server %s for domain %s.", ldapserver.Host, l.config.Domain)
+			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "200").Observe(time.Since(connectionStart).Seconds())
 			break
 		}
+
 	}
 
 	if client == nil {
@@ -112,7 +118,7 @@ func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.
 	return nil, fmt.Errorf("could not fetch search entries")
 }
 
-func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
+func (l *LdapsClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
 
 	_, domainpart, err := authtools.SplitUserId(userId)
 	if err != nil {
@@ -126,17 +132,23 @@ func (l *LdapsClient) GetUser(userId string) (*identitymodels.User, error) {
 
 	if l.connection.IsClosing() {
 		rlog.Debug("Reconnecting to LDAP")
+		authtools.ServerReconnectCounter.WithLabelValues("openldap", l.config.Domain).Inc()
 		err := l.Connect()
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	queryStart := time.Now()
 	result, err := l.search(l.config.BaseDN, filter, attributes)
 
 	if err != nil {
+		authtools.UserLookupHistogram.WithLabelValues("openldap", l.config.Domain, "500").Observe(time.Since(queryStart).Seconds())
+
 		return nil, err
 	}
+	authtools.UserLookupHistogram.WithLabelValues("openldap", l.config.Domain, "200").Observe(time.Since(queryStart).Seconds())
+
 	var userEntry *ldap.Entry
 	if result != nil && len(result.Entries) == 1 {
 		for _, entry := range result.Entries {

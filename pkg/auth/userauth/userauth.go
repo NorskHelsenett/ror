@@ -1,6 +1,7 @@
 package userauth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -26,7 +27,7 @@ type DomainResolverConfig struct {
 }
 
 type DomainResolverInterface interface {
-	GetUser(userId string) (*identitymodels.User, error)
+	GetUser(ctx context.Context, userId string) (*identitymodels.User, error)
 	CheckHealth() []newhealth.Check
 }
 
@@ -34,7 +35,7 @@ type DomainResolvers struct {
 	resolvers map[string]DomainResolverInterface
 }
 
-func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
+func (d DomainResolvers) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
 	_, domain, err := authtools.SplitUserId(userId)
 	if err != nil {
 		return nil, err
@@ -45,7 +46,7 @@ func (d DomainResolvers) GetUser(userId string) (*identitymodels.User, error) {
 	}
 
 	if domainResolver, ok := d.resolvers[domain]; ok {
-		return domainResolver.GetUser(userId)
+		return domainResolver.GetUser(ctx, userId)
 	}
 	return nil, fmt.Errorf("no domain resolver found for domain: %s", domain)
 }

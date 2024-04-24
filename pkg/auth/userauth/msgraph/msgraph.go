@@ -5,6 +5,7 @@ package msgraph
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
@@ -47,7 +48,7 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 	} else {
 		client.GroupCache = memorycache.NewKvCache()
 	}
-
+	connectionStart := time.Now()
 	cred, err := azidentity.NewClientSecretCredential(client.config.TenantID, client.config.ClientID, client.config.ClientSecret, nil)
 	if err != nil {
 		return nil, err
@@ -56,9 +57,12 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 	conn, err := msgraphsdk.NewGraphServiceClientWithCredentials(
 		cred, []string{"https://graph.microsoft.com/.default"},
 	)
+
 	if err != nil {
+		authtools.ServerConnectionHistogram.WithLabelValues("msgraph", config.Domain, "https://graph.microsoft.com/.default", "443", "500").Observe(time.Since(connectionStart).Seconds())
 		return nil, err
 	}
+	authtools.ServerConnectionHistogram.WithLabelValues("msgraph", config.Domain, "https://graph.microsoft.com/.default", "443", "200").Observe(time.Since(connectionStart).Seconds())
 	rlog.Infof("Connected to msgraph api for domain %s.", config.Domain)
 	client.Client = conn
 	return client, nil
@@ -67,7 +71,7 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 // GetUsersWithGroups gets a user and the name of the groups the user is a member of
 // TODO: Implement isExpired
 // TODO: Implement isDisabled...
-func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
+func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
 	var ret *identitymodels.User
 	var groupnames []string = []string{}
 	var user models.Userable
@@ -75,7 +79,7 @@ func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
 	groupsChan := make(chan []string)
 	userChan := make(chan models.Userable)
 	errorChan := make(chan error)
-
+	queryStart := time.Now()
 	go g.getUser(userId, userChan, errorChan)
 	go g.getGroups(userId, groupsChan, errorChan)
 
@@ -90,11 +94,13 @@ func (g *MsGraphClient) GetUser(userId string) (*identitymodels.User, error) {
 		case returneUser := <-userChan:
 			user = returneUser
 		case err := <-errorChan:
+			authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, "500").Observe(time.Since(queryStart).Seconds())
 			return nil, err
 		}
 	}
 
 	addDomainpartToGroups(&groupnames, userId)
+	authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, "200").Observe(time.Since(queryStart).Seconds())
 
 	ret = &identitymodels.User{
 		Email:           *user.GetUserPrincipalName(),
