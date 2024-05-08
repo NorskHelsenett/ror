@@ -6,8 +6,8 @@ import (
 )
 
 type ResourceInterface interface {
-	GetClusterOrderByUid(uid, ownerSubject, kind, apiversion string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error)
-	GetClusterOrders(ownerSubject, kind, apiversion string, scope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error)
+	GetClusterOrderByUid(uid string, ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error)
+	GetClusterOrders(ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error)
 	UpdateClusterOrder(clusterOrder *apiresourcecontracts.ResourceUpdateModel) error
 
 	GetTanzuKubernetesClusterByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceTanzuKubernetesCluster, error)

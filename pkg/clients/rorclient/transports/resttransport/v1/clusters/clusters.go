@@ -2,6 +2,7 @@ package clusters
 
 import (
 	"fmt"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
@@ -107,4 +108,14 @@ func (c *V1Client) GetKubeconfig(clusterid, username, password string) (*apicont
 	}
 
 	return &kubeconfig, nil
+}
+
+func (c *V1Client) Create(clusterInput apicontracts.Cluster) (string, error) {
+	var clusterId string
+	err := c.Client.PostJSON(c.basePath, clusterInput, &clusterId)
+	if err != nil {
+		return "", err
+	}
+
+	return clusterId, nil
 }

@@ -2,6 +2,7 @@ package workspaces
 
 import (
 	"fmt"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"

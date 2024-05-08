@@ -8,6 +8,7 @@ import (
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 )
 
@@ -20,5 +21,6 @@ type RorTransport interface {
 	Projects() v1projects.ProjectsInterface
 	Resources() v1resources.ResourceInterface
 	Metrics() v1metrics.MetricsInterface
+	ResourcesV2() v2resources.ResourcesInterface
 	Ping() error
 }

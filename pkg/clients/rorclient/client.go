@@ -9,6 +9,7 @@ import (
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 )
 
@@ -26,6 +27,7 @@ type RorClient struct {
 	projectsClientV1   v1projects.ProjectsInterface
 	resourceClientV1   v1resources.ResourceInterface
 	metricsClientV1    v1metrics.MetricsInterface
+	resourcesClientV2  v2resources.ResourcesInterface
 }
 
 func NewRorClient(transport transports.RorTransport) *RorClient {
@@ -39,6 +41,7 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		selfClientV2:       transport.Self(),
 		resourceClientV1:   transport.Resources(),
 		metricsClientV1:    transport.Metrics(),
+		resourcesClientV2:  transport.ResourcesV2(),
 	}
 }
 
@@ -75,4 +78,8 @@ func (c *RorClient) Resources() v1resources.ResourceInterface {
 
 func (c *RorClient) Ping() error {
 	return c.Transport.Ping()
+}
+
+func (c *RorClient) ResourceV2() v2resources.ResourcesInterface {
+	return c.resourcesClientV2
 }
