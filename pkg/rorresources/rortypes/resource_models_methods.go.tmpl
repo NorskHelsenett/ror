@@ -1,0 +1,68 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package rortypes
+
+import (
+    "fmt"
+
+	"github.com/mitchellh/hashstructure/v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+{{ range .}}
+// (r Resource{{.Kind}}) GetName returns the name of the resource
+func (r Resource{{.Kind}}) GetName() string {
+	return r.Metadata.Name
+}
+
+// (r Resource{{.Kind}}) GetUID returns the UID of the resource
+func (r Resource{{.Kind}}) GetUID() string {
+	return string(r.Metadata.UID)
+}
+
+// (r Resource{{.Kind}}) GetAPIVersion returns the APIVersion of the resource
+func (r Resource{{.Kind}}) GetAPIVersion() string {
+	return string(r.APIVersion)
+}
+
+// (r Resource{{.Kind}}) GetKind returns the kind of the resource
+func (r Resource{{.Kind}}) GetKind() string {
+	return string(r.Kind)
+}
+
+// (r Resource{{.Kind}}) GetMetadata returns the metav1.ObjectMeta of the resource
+func (r Resource{{.Kind}}) GetMetadata() metav1.ObjectMeta {
+	return r.Metadata
+}
+// (r Resource{{.Kind}}) GetRorMeta returns the ResourceRorMeta of the resource
+func (r Resource{{.Kind}}) GetRorMeta() ResourceRorMeta {
+	return r.RorMeta
+}
+
+// (r *Resource{{.Kind}}) SetRorMeta sets the ResourceRorMeta of the resource
+func (r *Resource{{.Kind}}) SetRorMeta(rormeta ResourceRorMeta) error {
+	r.RorMeta = rormeta
+	r.RorMeta.Hash = r.GetRorHash()
+	return nil
+}
+
+// (r *Resource{{.Kind}}) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *Resource{{.Kind}}) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r Resource{{.Kind}}) Get returns a pointer to the resource of type Resource{{.Kind}}
+func (r *Resource{{.Kind}}) Get() (*Resource{{.Kind}}){
+	return r
+}
+
+{{end}}

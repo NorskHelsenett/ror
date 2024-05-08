@@ -88,17 +88,6 @@ func (m ResourcePersistentvolumeclaims) GetByName(search string) ResourcePersist
 	return emptyResponse
 }
 
-// Function to return PersistentVolumeClaim resource by namespace.
-func (m ResourcePersistentvolumeclaims) GetByNamespace(search string) ResourcePersistentVolumeClaim {
-	for _, res := range m.Persistentvolumeclaims {
-		if res.Metadata.Namespace == search {
-			return res
-		}
-	}
-	var emptyResponse ResourcePersistentVolumeClaim
-	return emptyResponse
-}
-
 // Function to return PersistentVolumeClaim resource by uid.
 func (m ResourcePersistentvolumeclaims) GetByUid(search string) ResourcePersistentVolumeClaim {
 	for _, res := range m.Persistentvolumeclaims {
@@ -669,6 +658,17 @@ func (m ResourceIngressclasses) GetByName(search string) ResourceIngressClass {
 	for _, resource := range m.Ingressclasses {
 		if resource.Metadata.Name == search {
 			return resource
+		}
+	}
+	var emptyResponse ResourceIngressClass
+	return emptyResponse
+}
+
+// Function to return IngressClass resource by namespace.
+func (m ResourceIngressclasses) GetByNamespace(search string) ResourceIngressClass {
+	for _, res := range m.Ingressclasses {
+		if res.Metadata.Namespace == search {
+			return res
 		}
 	}
 	var emptyResponse ResourceIngressClass

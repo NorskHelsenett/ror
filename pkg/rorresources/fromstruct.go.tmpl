@@ -1,0 +1,42 @@
+package rorresources
+
+import (
+	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+)
+
+// NewResourceSetFromStruct creates a new ResourceSet from a struct of the type ResourceSet
+// the function restores common methods after transit eg by json.
+func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
+	out := ResourceSet{}
+	if len(in.Resources) == 0 {
+		rlog.Warn("ResourceSet has no resources")
+		return &out
+	}
+
+	if in.query == nil {
+		in.query = &ResourceQuery{}
+	}
+
+	query := *in.query
+
+	out.query = &query
+
+	for _, res := range in.Resources {
+		r := NewRorResource(res.Kind, res.ApiVersion)
+
+		gvk := schema.FromAPIVersionAndKind(res.ApiVersion, res.Kind)
+		switch gvk.String() {
+{{ range .}}
+
+		case "{{.GroupVersionKind.String }}":
+			r.Set{{.Kind}}(res.{{.Kind}}Resource)
+			r.SetCommon(res.{{.Kind}}Resource)
+{{end}}
+		default:
+			rlog.Info("Unknown resource kind", rlog.String("gvk",gvk.String()),rlog.String("kind", res.Kind), rlog.String("apiVersion", res.ApiVersion))
+		}
+		out.Add(r)
+	}
+	return &out
+}
