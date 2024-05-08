@@ -1,7 +1,6 @@
 package resttransport
 
 import (
-	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
 	"net/http"
 
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
@@ -13,13 +12,16 @@ import (
 	restv1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/projects"
 	restv1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/resources"
 	restv1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/workspaces"
+	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
 	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
 	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
+	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 )
 
@@ -32,6 +34,7 @@ type RorHttpTransport struct {
 	projectsClientV1   v1projects.ProjectsInterface
 	resourcesClientV1  v1resources.ResourceInterface
 	metricsClientV1    v1metrics.MetricsInterface
+	resourcesClientV2  v2resources.ResourcesInterface
 	selfClientV2       v2self.SelfInterface
 }
 
@@ -50,6 +53,7 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 		projectsClientV1:   restv1projects.NewV1Client(client),
 		resourcesClientV1:  restv1resources.NewV1Client(client),
 		metricsClientV1:    restv1metrics.NewV1Client(client),
+		resourcesClientV2:  restv2resources.NewV2Client(client),
 	}
 	return t
 }
@@ -78,6 +82,11 @@ func (t *RorHttpTransport) Metrics() v1metrics.MetricsInterface {
 func (t *RorHttpTransport) Resources() v1resources.ResourceInterface {
 	return t.resourcesClientV1
 }
+
+func (t *RorHttpTransport) ResourcesV2() v2resources.ResourcesInterface {
+	return t.resourcesClientV2
+}
+
 func (t *RorHttpTransport) Self() v2self.SelfInterface {
 	return t.selfClientV2
 }

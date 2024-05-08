@@ -16,6 +16,7 @@ const (
 	K8sActionUpdate ResourceAction = "Update"
 )
 
+// Deprecated: Use rortypes.RorResourceOwnerReference instead
 // The ResourceOwnerReference or ownereref references the owner og a resource.
 // Its used to chek acl and select resources for valid Scopes.
 type ResourceOwnerReference struct {

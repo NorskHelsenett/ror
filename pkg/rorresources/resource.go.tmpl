@@ -1,0 +1,90 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package rorresources
+
+import (
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+
+// The Resource struct represents one resource in ror.
+// 
+// It implement common and resource specific methods by providing interfaces to the underlying resources
+type Resource struct {
+	Kind       string `json:"kind,omitempty"`
+	ApiVersion string `json:"api_version,omitempty"`
+{{ range .}}
+	{{.Kind}}Resource *rortypes.Resource{{.Kind}} `json:"{{.Kind | lower}},omitempty"`{{end}}
+
+	common     rortypes.CommonResourceInterface
+}
+
+// NewRorResource provides a empty resource of a given kind/apiversion
+func NewRorResource (kind string, apiversion string) *Resource {
+	r := Resource{Kind: kind, ApiVersion: apiversion}
+	return &r
+}
+
+// SetCommon sets the common interface of the resource, the common interface implements common methods of the resource
+func (r *Resource) SetCommon ( common rortypes.CommonResourceInterface){
+	r.common = common
+}
+{{ range .}}
+func (r *Resource) Set{{.Kind}}(res *rortypes.Resource{{.Kind}}) {
+	r.{{.Kind}}Resource = res
+}
+{{end}}
+
+
+{{ range .}}
+// {{.Kind}} is a wrapper for the underlying resource, it provides a {{.Kind}}interface to work with {{.Plural}}
+func (r *Resource) {{.Kind}}() rortypes.{{.Kind}}interface {
+	return r.{{.Kind}}Resource
+}
+
+{{end}}
+
+// (r *Resource) GetName() returns the name from the common interface
+func (r *Resource) GetName() string {
+	return r.common.GetName()
+}
+
+// (r *Resource) GetUID() returns the UID from the common interface
+func (r *Resource) GetUID() string {
+	return r.common.GetUID()
+}
+
+// (r *Resource) GetKind() returns the Kind from the common interface
+func (r *Resource) GetKind() string {
+	return r.common.GetKind()
+}
+
+// (r *Resource) GetAPIVersion() returns the APIVersion from the common interface
+func (r *Resource) GetAPIVersion() string {
+	return r.common.GetAPIVersion()
+}
+
+// (r *Resource) GetMetadata() returns the Metadata from the common interface
+func (r *Resource) GetMetadata() metav1.ObjectMeta {
+	return r.common.GetMetadata()
+}
+// (r *Resource) GetRorMeta() returns the RorMetadata from the common interface
+func (r *Resource) GetRorMeta() rortypes.ResourceRorMeta {
+	return r.common.GetRorMeta()
+}
+// (r *Resource) SetRorMeta() returns the RorMetadata from the common interface
+func (r *Resource) SetRorMeta(input rortypes.ResourceRorMeta) error {
+	return r.common.SetRorMeta(input)
+}
+// (r *Resource) GetRorHash() returns the hash from the common interface
+func (r *Resource) GetRorHash() string {
+	return r.common.GetRorHash()
+}
+
+func (r *Resource) ApplyInputFilter() error {
+	return r.common.ApplyInputFilter()
+}
+

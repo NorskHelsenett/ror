@@ -1,0 +1,55 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package rorkubernetes
+
+import (
+	"reflect"
+	"github.com/NorskHelsenett/ror/pkg/rorresources"
+	"testing"
+
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+    "github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+)
+{{ range .}}
+func TestNewResourceSetFromDynamicClient{{.Kind}}(t *testing.T) {
+    input := &unstructured.Unstructured{
+        Object: map[string]interface{}{
+            "kind":       "{{.Kind}}",
+            "apiVersion": "{{.APIVersion}}",
+            "metadata": map[string]interface{}{
+                "name": "test-{{.Kind | lower}}",
+            },
+        },
+    }
+
+    expected := rorresources.NewRorResource("{{.Kind}}", "{{.APIVersion}}")
+    expected.Set{{.Kind}}(new{{.Kind}}FromDynamicClient(input))
+    expected.SetCommon(new{{.Kind}}FromDynamicClient(input))
+
+    result := NewResourceSetFromDynamicClient(input)
+
+    if !reflect.DeepEqual(result.Get(), expected) {
+        t.Errorf("Expected %v, but got %v", expected, result)
+    }
+}
+
+{{ end }}
+func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "N00b",
+			"apiVersion": "v900",
+			"metadata": map[string]interface{}{
+				"name": "test-wrong",
+			},
+		},
+	}
+	expected := new(rorresources.ResourceSet)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !cmp.Equal(result.Get(), expected.Get(), cmpopts.EquateEmpty()) {
+		t.Errorf("Expected %v, but got %v", expected.Get(), result.Get())
+	}
+}

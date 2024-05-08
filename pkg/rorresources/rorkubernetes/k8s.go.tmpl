@@ -1,0 +1,60 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package rorkubernetes
+
+import (
+	"encoding/json"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/rorresources"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
+
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+)
+
+func NewResourceSetFromDynamicClient(input *unstructured.Unstructured) *rorresources.ResourceSet {
+	var rs rorresources.ResourceSet
+	r := NewResourceFromDynamicClient(input)
+	rs.Add(r)
+	return &rs
+
+}
+
+// NewResourceFromDynamicClient creates a new resource from a unstructured.Unstructured
+// type provided by the kubernetes universal client.
+func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresources.Resource {
+	r := rorresources.NewRorResource(input.GetKind(), input.GetAPIVersion())
+
+	switch input.GroupVersionKind().String() {
+{{ range .}}
+
+	case "{{.GroupVersionKind.String }}":
+		res := new{{.Kind}}FromDynamicClient(input)
+		r.Set{{.Kind}}(res)
+		r.SetCommon(res)
+	{{end}}
+	default:
+		rlog.Warn("could not create ResourceSet")
+		return r
+    }
+	return r
+}
+
+{{ range .}}
+// new{{.Kind}}FromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided 
+// by the kubernetes universal client.
+func new{{.Kind}}FromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resource{{.Kind}}{
+	nr := rortypes.Resource{{.Kind}}{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to {{.Kind}}", err)
+	}
+	return &nr
+}
+
+{{end}}

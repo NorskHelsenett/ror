@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 	"io"
 	"net/http"
+
+	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
 
 type HttpTransportClientParams string
@@ -70,6 +71,10 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 		return err
 	}
 
+	if len(body) == 0 {
+		return fmt.Errorf("empty response")
+	}
+
 	err = json.Unmarshal(body, out)
 	if err != nil {
 		return err
@@ -78,10 +83,10 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 	return nil
 }
 
-func (t *HttpTransportClient) PostJSON(path string, inn any, out any, params ...HttpTransportClientParams) error {
+func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	var noAuth bool
 
-	jsonData, err := json.Marshal(inn)
+	jsonData, err := json.Marshal(in)
 	req, err := http.NewRequest("POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
@@ -124,10 +129,10 @@ func (t *HttpTransportClient) PostJSON(path string, inn any, out any, params ...
 	return nil
 }
 
-func (t *HttpTransportClient) PutJSON(path string, inn any, out any, params ...HttpTransportClientParams) error {
+func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	var noAuth bool
 
-	jsonData, err := json.Marshal(inn)
+	jsonData, err := json.Marshal(in)
 	req, err := http.NewRequest("PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
