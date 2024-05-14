@@ -18,6 +18,7 @@ const (
 )
 
 var (
+	// aclmodels.ErrInvalidScope is returned when the scope is invalid
 	ErrInvalidScope   = errors.New("invalid scope")
 	ErrInvalidSubject = errors.New("invalid subject")
 )
@@ -63,4 +64,9 @@ func (r *RorResourceOwnerReference) Validate() (bool, error) {
 	return true, nil
 }
 
-// aclmodels.ErrInvalidScope is returned when the scope is invalid
+func (r RorResourceOwnerReference) GetQueryParams() map[string]string {
+	response := make(map[string]string)
+	response["ownerScope"] = string(r.Scope)
+	response["ownerSubject"] = string(r.Subject)
+	return response
+}

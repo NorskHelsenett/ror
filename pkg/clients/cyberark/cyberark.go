@@ -65,22 +65,23 @@ type CyberarkPasswordRequest struct {
 	Reason string `json:"reason"`
 }
 
-func NewCyberarkClient(url string, validDomains ...string) *CyberarkClient {
+func NewCyberarkClient(url string, validDomains ...string) (*CyberarkClient, error) {
 
 	cyberarkclient := CyberarkClient{
 		client: http.Client{},
 		Url:    url,
 		token:  "",
 	}
-	if len(validDomains) > 0 {
-		cyberarkclient.validDomains = validDomains
+	if len(validDomains) == 0 {
+		return nil, fmt.Errorf("no valid domains provided")
 	}
+	cyberarkclient.validDomains = validDomains
 
-	return &cyberarkclient
+	return &cyberarkclient, nil
 }
 
 func (c *CyberarkClient) Ping() bool {
-	timeout := time.Duration(1 * time.Second)
+	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
 		Timeout: timeout,
 	}

@@ -28,6 +28,7 @@ func (a *AuthProvider) AddAuthHeaders(req *http.Request) {
 	switch a.Type {
 	case AuthPoviderTypeAPIKey:
 		req.Header.Add("X-API-KEY", a.Secret)
+
 	case AuthProviderTypeBearer:
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Secret))
 		req.Header.Add("Flow", "device")

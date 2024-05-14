@@ -2,7 +2,8 @@ package clusterinterregator
 
 import (
 	"fmt"
-	kubernetesclient "ror/internal/clients/kubernetes"
+
+	kubernetesclient "github.com/NorskHelsenett/ror/pkg/clients/kubernetes"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providerinterregator"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providerinterregator/types"

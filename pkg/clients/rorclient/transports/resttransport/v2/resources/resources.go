@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
@@ -53,7 +54,12 @@ func (c *V2Client) ExistsByUid(uid string) (bool, error) {
 	return false, nil
 }
 
-func (c *V2Client) GetHashes() (string, error) {
-	// implementation goes here
-	return "", nil
+func (c *V2Client) GetOwnHashes() (apicontractsv2resources.HashList, error) {
+	var hashList apicontractsv2resources.HashList
+	err := c.Client.GetJSON(c.basePath+"/self/hashes", &hashList)
+	if err != nil {
+		return hashList, err
+	}
+
+	return hashList, nil
 }
