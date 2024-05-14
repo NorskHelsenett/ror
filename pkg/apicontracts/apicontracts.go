@@ -128,6 +128,7 @@ type ClusterInfo struct {
 	ClusterId   string          `json:"clusterId"`
 	ClusterName string          `json:"clusterName"`
 	Metadata    ClusterMetadata `json:"metadata"`
+	Environment string          `json:"environment"`
 }
 
 type ClusterStatus struct {
