@@ -15,7 +15,7 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/prometheus/client_golang v1.19.0
-	github.com/rabbitmq/amqp091-go v1.9.0
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/redis/go-redis/extra/redisotel/v9 v9.0.5
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/spf13/viper v1.18.2
