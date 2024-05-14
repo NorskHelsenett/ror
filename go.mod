@@ -29,8 +29,8 @@ require (
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 	golang.org/x/text v0.14.0
 	google.golang.org/grpc v1.63.2
-	k8s.io/api v0.29.3
-	k8s.io/apimachinery v0.29.3
+	k8s.io/api v0.30.0
+	k8s.io/apimachinery v0.30.0
 )
 
 require (
@@ -120,7 +120,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
