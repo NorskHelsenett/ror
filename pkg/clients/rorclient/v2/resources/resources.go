@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 )
 
@@ -11,5 +12,5 @@ type ResourcesInterface interface {
 	UpdateByUid(uid string, res *rorresources.ResourceSet) (string, error)
 	DeleteByUid(uid string) (string, error)
 	ExistsByUid(uid string) (bool, error)
-	GetHashes() (string, error)
+	GetOwnHashes() (apicontractsv2resources.HashList, error)
 }
