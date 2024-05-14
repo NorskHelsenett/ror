@@ -10,10 +10,17 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
 
-type HttpTransportClientParams string
+type HttpTransportClientParams struct {
+	Key   HttpTransportClientOpts
+	Value any
+}
+
+type HttpTransportClientOpts string
 
 const (
-	HttpTransportClientParamsNoAuth HttpTransportClientParams = "NOAUTH"
+	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"
+	HttpTransportClientOptsHeaders HttpTransportClientOpts = "HEADERS"
+	HttpTransportClientOptsQuery   HttpTransportClientOpts = "QUERY"
 )
 
 type HttpTransportClientConfig struct {
@@ -33,29 +40,16 @@ type HttpTransportClient struct {
 }
 
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
-	var noAuth bool
 	req, err := http.NewRequest("GET", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return err
 	}
 
-	if len(params) != 0 {
-		for _, param := range params {
-			switch param {
-			case HttpTransportClientParamsNoAuth:
-				noAuth = true
-			}
-		}
-	}
-
 	t.AddCommonHeaders(req)
-	if !noAuth {
-		t.AddAuthHeaders(req)
-	}
-
-	req.Header.Add("Accept", `application/json`)
+	t.ParseParams(req, params...)
 
 	res, err := t.Client.Do(req)
+
 	if err != nil {
 		return err
 	}
@@ -84,27 +78,17 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 }
 
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
-	var noAuth bool
-
 	jsonData, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
 
-	if len(params) != 0 {
-		for _, param := range params {
-			switch param {
-			case HttpTransportClientParamsNoAuth:
-				noAuth = true
-			}
-		}
-	}
-
 	t.AddCommonHeaders(req)
-	if !noAuth {
-		t.AddAuthHeaders(req)
-	}
+	t.ParseParams(req, params...)
 
 	res, err := t.Client.Do(req)
 	if err != nil {
@@ -130,27 +114,17 @@ func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...H
 }
 
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
-	var noAuth bool
-
 	jsonData, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
 
-	if len(params) != 0 {
-		for _, param := range params {
-			switch param {
-			case HttpTransportClientParamsNoAuth:
-				noAuth = true
-			}
-		}
-	}
-
 	t.AddCommonHeaders(req)
-	if !noAuth {
-		t.AddAuthHeaders(req)
-	}
+	t.ParseParams(req, params...)
 
 	res, err := t.Client.Do(req)
 	if err != nil {
@@ -182,4 +156,29 @@ func (t *HttpTransportClient) AddCommonHeaders(req *http.Request) {
 	req.Header.Set("User-Agent", fmt.Sprintf("%s - v%s (%s)", t.Config.Role, t.Config.Version.GetVersion(), t.Config.Version.GetCommit()))
 	req.Header.Add("Accept", `application/json`)
 	req.Header.Add("Content-Type", `application/json`)
+}
+
+func (t *HttpTransportClient) ParseParams(req *http.Request, params ...HttpTransportClientParams) {
+	var noAuth bool
+	if len(params) != 0 {
+		for _, param := range params {
+			switch param.Key {
+			case HttpTransportClientOptsNoAuth:
+				noAuth = true
+			case HttpTransportClientOptsHeaders:
+				for key, value := range param.Value.(map[string]string) {
+					req.Header.Add(key, value)
+				}
+			case HttpTransportClientOptsQuery:
+				q := req.URL.Query()
+				for key, value := range param.Value.(map[string]string) {
+					q.Add(key, value)
+				}
+				req.URL.RawQuery = q.Encode()
+			}
+		}
+	}
+	if !noAuth {
+		t.AddAuthHeaders(req)
+	}
 }

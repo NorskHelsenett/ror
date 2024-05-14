@@ -21,7 +21,7 @@ func (c *V1Client) GetVersion() (string, error) {
 		Version string `json:"version"`
 	}
 
-	err := c.Client.GetJSON(c.basePath+"/version", &versiondata, httpclient.HttpTransportClientParamsNoAuth)
+	err := c.Client.GetJSON(c.basePath+"/version", &versiondata, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsNoAuth})
 	if err != nil {
 		return "", err
 	}
