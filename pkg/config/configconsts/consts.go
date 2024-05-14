@@ -3,6 +3,7 @@ package configconsts
 const (
 	ROLE                 = "ROLE"
 	HTTP_PORT            = "HTTP_PORT"
+	HEALTH_ENDPOINT      = "HEALTH_ENDPOINT"
 	API_KEY_SALT         = "API_KEY_SALT"
 	API_KEY              = "API_KEY"
 	API_KEY_SECRET       = "API_KEY_SECRET"
