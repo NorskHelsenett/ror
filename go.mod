@@ -9,8 +9,10 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/gomodule/redigo v1.9.2
+	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/microsoftgraph/msgraph-sdk-go v1.37.0
+	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rabbitmq/amqp091-go v1.9.0
