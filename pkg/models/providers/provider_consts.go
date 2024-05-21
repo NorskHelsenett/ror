@@ -8,4 +8,5 @@ const (
 	ProviderTypeAks     ProviderType = "aks"
 	ProviderTypeK3d     ProviderType = "k3d"
 	ProviderTypeKind    ProviderType = "kind"
+	ProviderTypeGke     ProviderType = "gke"
 )
