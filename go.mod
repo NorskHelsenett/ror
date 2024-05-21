@@ -11,7 +11,7 @@ require (
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
-	github.com/microsoftgraph/msgraph-sdk-go v1.41.0
+	github.com/microsoftgraph/msgraph-sdk-go v1.42.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/prometheus/client_golang v1.19.0
