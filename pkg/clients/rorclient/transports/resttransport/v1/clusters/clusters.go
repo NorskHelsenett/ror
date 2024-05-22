@@ -119,3 +119,13 @@ func (c *V1Client) Create(clusterInput apicontracts.Cluster) (string, error) {
 
 	return clusterId, nil
 }
+
+func (c *V1Client) Register(data apicontracts.AgentApiKeyModel) (string, error) {
+	var clusterResponse string
+	err := c.Client.PostJSON(c.basePath+"/register", data, &clusterResponse)
+	if err != nil {
+		return "", err
+	}
+
+	return clusterResponse, nil
+}
