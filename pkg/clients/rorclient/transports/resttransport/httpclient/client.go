@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
@@ -49,7 +50,6 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 	t.ParseParams(req, params...)
 
 	res, err := t.Client.Do(req)
-
 	if err != nil {
 		return err
 	}
@@ -57,19 +57,9 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 	if res.StatusCode > 399 || res.StatusCode < 200 {
 		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
-
 	defer res.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	if len(body) == 0 {
-		return fmt.Errorf("empty response")
-	}
-
-	err = json.Unmarshal(body, out)
+	err = handleResponse(res, out)
 	if err != nil {
 		return err
 	}
@@ -96,16 +86,7 @@ func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...H
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(body, out)
+	err = handleResponse(res, out)
 	if err != nil {
 		return err
 	}
@@ -132,6 +113,16 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 	}
 	defer res.Body.Close()
 
+	err = handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func handleResponse(res *http.Response, out any) error {
+
 	if res.StatusCode > 399 || res.StatusCode < 200 {
 		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
@@ -139,6 +130,15 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
+	}
+
+	if res.Header.Get("Content-Type") == "text/plain" {
+		v := reflect.ValueOf(out)
+		if v.Kind() != reflect.Ptr || v.IsNil() {
+			return fmt.Errorf("out must be a pointer and not nil")
+		}
+		v.Elem().Set(reflect.ValueOf(string(body)))
+		return nil
 	}
 
 	err = json.Unmarshal(body, out)
