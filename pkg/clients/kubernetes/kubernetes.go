@@ -155,6 +155,30 @@ func (c *K8sClientsets) GetSecret(namespace string, name string) (*v1.Secret, er
 	return secret, nil
 }
 
+// CreateSecret creates a Kubernetes secret in the specified namespace using the provided clientsets.
+//
+// Parameters:
+// - c (*K8sClientsets): The K8sClientsets object that contains the necessary clientsets for interacting with secrets.
+// - namespace (string): The namespace in which to create the secret.
+// - secret (*corev1.Secret): The secret to create.
+//
+// Returns:
+// - (*corev1.Secret): The created secret.
+// - (error): An error if the secret creation fails.
+func (c *K8sClientsets) CreateSecret(namespace string, secret *v1.Secret) (*v1.Secret, error) {
+	client, err := c.GetKubernetesClientset()
+	if err != nil {
+		return nil, err
+	}
+
+	ret, err := client.CoreV1().Secrets(namespace).Create(context.Background(), secret, metav1.CreateOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // GetNodes retrieves the list of Kubernetes nodes using the provided clientsets.
 //
 // Parameters:
