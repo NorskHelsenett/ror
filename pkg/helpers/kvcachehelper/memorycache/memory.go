@@ -71,8 +71,9 @@ func (c *KvCache) Get(key string) (string, bool) {
 }
 
 // Remove removes a key-value pair from the cache.
-func (c *KvCache) Remove(key string) {
+func (c *KvCache) Remove(key string) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	delete(c.values, key)
+	return true
 }

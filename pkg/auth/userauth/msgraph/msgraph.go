@@ -32,7 +32,7 @@ type MsGraphConfig struct {
 type CacheInterface interface {
 	Add(key string, value string)
 	Get(key string) (string, bool)
-	Remove(key string)
+	Remove(key string) bool
 }
 
 type MsGraphClient struct {
