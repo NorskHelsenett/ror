@@ -6,6 +6,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	kubernetesclient "github.com/NorskHelsenett/ror/pkg/clients/kubernetes"
+	"github.com/NorskHelsenett/ror/pkg/clients/kubernetes/clusterinterregator"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -55,7 +56,8 @@ type ClientConfig struct {
 }
 
 func InitRorClientConfig(conf ClientConfig) {
-	RorConfig = NewRorConfig(conf.Role)
+
+	RorConfig = NewRorConfig(conf)
 	if conf.MustInitializeKubernetes {
 		MustInitializeKubernetesClient()
 	}
@@ -68,9 +70,10 @@ func InitRorClientConfig(conf ClientConfig) {
 		rlog.Fatal("failed to init ror client", err)
 	}
 }
-func NewRorConfig(role string) *RorClientConfig {
+func NewRorConfig(conf ClientConfig) *RorClientConfig {
 	return &RorClientConfig{
-		role: role,
+		config: conf,
+		role:   conf.Role,
 	}
 }
 
@@ -103,16 +106,25 @@ func (a *RorClientConfig) getConfig() error {
 	}
 
 	if a.GetApiKey() == ERR_SECRET_NOT_FOUND {
+		rlog.Info("api key secret not found, interregating cluster and registering new key")
+
+		interregationreport, err := clusterinterregator.InterregateCluster(Kubernetes)
+
+		if err != nil {
+			return fmt.Errorf("failed to interregate cluster %s", err)
+		}
+
 		a.initUnathorizedRorClient()
 		key, err := a.rorClient.Clusters().Register(apicontracts.AgentApiKeyModel{
-			Identifier:     "",
-			DatacenterName: "",
-			WorkspaceName:  "",
-			Provider:       "",
+			Identifier:     interregationreport.ClusterName,
+			DatacenterName: interregationreport.Datacenter,
+			WorkspaceName:  interregationreport.Workspace,
+			Provider:       interregationreport.Provider,
 			Type:           "Cluster",
 		})
-		fmt.Println("got key:", key)
-
+		if err != nil {
+			return fmt.Errorf("failed to register cluster %s", err)
+		}
 		err = a.kubernetesCreateApiKeySecret(key)
 		if err != nil {
 			return fmt.Errorf("failed to create api key secret %s", err)
@@ -131,8 +143,9 @@ func (a *RorClientConfig) kubernetesAuth() {
 	secret, err := Kubernetes.GetSecret(a.config.Namespace, a.config.ApiKeySecret)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			rlog.Warn("api key secret not found, creating")
+			rlog.Warn("api key secret not found")
 			a.SetApiKey(ERR_SECRET_NOT_FOUND)
+			return
 		} else {
 			rlog.Error("failed to get api key secret", err)
 			return
@@ -157,7 +170,7 @@ func (a *RorClientConfig) kubernetesCreateApiKeySecret(apiKey string) error {
 		rlog.Error("failed to create api key secret", err)
 		return err
 	}
-	a.SetApiKey(a.config.ApiKey)
+	a.SetApiKey(apiKey)
 	return nil
 
 }
