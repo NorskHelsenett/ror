@@ -29,5 +29,5 @@ func (t TanzuProviderinterregator) GetWorkspace(nodes []v1.Node) string {
 	return nodes[0].GetAnnotations()["cluster.x-k8s.io/cluster-namespace"]
 }
 func (t TanzuProviderinterregator) GetDatacenter([]v1.Node) string {
-	return ""
+	return "tempDatacenter"
 }
