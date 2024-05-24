@@ -1,8 +1,20 @@
-package clusternamehelper
+package providerclusternamehelper
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
-func GetClusterNameOfArray(hostnameArray []string) string {
+func GetKindClustername(hostname string) string {
+	return getClusterNameOfArray(hostname)
+}
+
+func GetK3dClustername(hostname string) string {
+	return getClusterNameOfArray(hostname)
+}
+
+func getClusterNameOfArray(hostname string) string {
+	hostnameArray := strings.Split(hostname, "-")
 	lastblock := hostnameArray[len(hostnameArray)-1]
 	var clusterName string
 	var length int
