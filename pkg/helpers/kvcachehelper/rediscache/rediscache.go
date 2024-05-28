@@ -34,6 +34,11 @@ func (c *RedisCache) Get(ctx context.Context, key string) (string, bool) {
 		rlog.Error(fmt.Sprintf("Error getting value from redis cache by key: %s", key), nil)
 		return "", false
 	}
+
+	if cacheValue == "" {
+		return "", false
+	}
+
 	return cacheValue, true
 }
 
