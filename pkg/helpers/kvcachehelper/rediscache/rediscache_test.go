@@ -2,33 +2,12 @@ package rediscache
 
 import (
 	"context"
-	"reflect"
+	"errors"
 	"testing"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	"github.com/dotse/go-health"
 )
-
-func TestNewRedisCache(t *testing.T) {
-	type args struct {
-		redisDb redisdb.RedisDB
-	}
-	tests := []struct {
-		name string
-		args args
-		want *RedisCache
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewRedisCache(tt.args.redisDb); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewRedisCache() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 type mockRedisDB struct {
 	memorycache *memorycache.KvCache
@@ -55,6 +34,12 @@ func (m *mockRedisDB) Set(ctx context.Context, key string, value interface{}) er
 }
 
 func (m *mockRedisDB) Delete(ctx context.Context, key string) error {
+	if key == "" {
+		return errors.New("Key is empty")
+	}
+	if _, exists := m.memorycache.Get(ctx, key); !exists {
+		return errors.New("Key does not exist")
+	}
 	m.memorycache.Remove(ctx, key)
 	return nil
 }
@@ -76,6 +61,15 @@ func (m *mockRedisDB) CheckHealth() []health.Check {
 
 func (m *mockRedisDB) Ping() bool {
 	return true
+}
+
+func TestNewRedisCache(t *testing.T) {
+	redisDb := &mockRedisDB{}
+	cache := NewRedisCache(redisDb)
+
+	if cache.redisDb != redisDb {
+		t.Errorf("Expected RedisDB to be set to mockRedisDB, but got %v", cache.redisDb)
+	}
 }
 
 func TestRedisCache_Get(t *testing.T) {
@@ -104,5 +98,68 @@ func TestRedisCache_Get(t *testing.T) {
 	}
 	if value != "" {
 		t.Errorf("Expected empty value for non-existent key, but got '%s'", value)
+	}
+}
+
+func TestRedisCache_Set(t *testing.T) {
+	redisDb := NewMockRedisDb()
+	cache := NewRedisCache(redisDb)
+
+	// Test case 1: Set value in cache
+	key := "test-key"
+	value := "test-value"
+	cache.Set(context.Background(), key, value)
+
+	// Verify that the value is set in the cache
+	cacheValue, exists := cache.Get(context.Background(), key)
+	if !exists {
+		t.Errorf("Expected key '%s' to exist in cache, but it doesn't", key)
+	}
+	if cacheValue != value {
+		t.Errorf("Expected value '%s' for key '%s', but got '%s'", value, key, cacheValue)
+	}
+
+	// Test case 2: Set value with empty key
+	emptyKey := ""
+	emptyValue := "empty-value"
+	cache.Set(context.Background(), emptyKey, emptyValue)
+
+	// Verify that the value is not set in the cache
+	emptyCacheValue, exists := cache.Get(context.Background(), emptyKey)
+	if exists {
+		t.Errorf("Expected key '%s' to not exist in cache, but it does", emptyKey)
+	}
+	if emptyCacheValue != "" {
+		t.Errorf("Expected empty value for key '%s', but got '%s'", emptyKey, emptyCacheValue)
+	}
+}
+
+func TestRedisCache_Remove(t *testing.T) {
+	redisDb := NewMockRedisDb()
+	cache := NewRedisCache(redisDb)
+
+	// Test case 1: Remove existing key
+	key := "test-key"
+	value := "test-value"
+	err := redisDb.Set(context.Background(), key, value)
+	if err != nil {
+		t.Errorf("Failed to set value in Redis cache: %v", err)
+	}
+
+	removed := cache.Remove(context.Background(), key)
+	if !removed {
+		t.Errorf("Expected key '%s' to be removed from cache, but it wasn't", key)
+	}
+
+	_, exists := cache.Get(context.Background(), key)
+	if exists {
+		t.Errorf("Expected key '%s' to not exist in cache after removal, but it does", key)
+	}
+
+	// Test case 2: Remove non-existent key
+	nonExistentKey := "non-existent-key"
+	removed = cache.Remove(context.Background(), nonExistentKey)
+	if removed {
+		t.Errorf("Expected key '%s' to not be removed from cache, but it was", nonExistentKey)
 	}
 }
