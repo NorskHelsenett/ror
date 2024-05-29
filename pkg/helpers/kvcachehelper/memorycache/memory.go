@@ -1,6 +1,7 @@
 package memorycache
 
 import (
+	"context"
 	"sync"
 	"time"
 )
@@ -42,9 +43,9 @@ func NewKvCache(opts ...CacheOption) *KvCache {
 	return c
 }
 
-// Add adds a new key-value pair to the cache.
+// Set adds a new key-value pair to the cache.
 // If the key already exists, it will be overwritten.
-func (c *KvCache) Add(key string, value string) {
+func (c *KvCache) Set(ctx context.Context, key string, value string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.values[key] = CacheValue{
@@ -55,7 +56,7 @@ func (c *KvCache) Add(key string, value string) {
 
 // Get retrieves a value from the cache.
 // If the key does not exist or the value has expired, it will return false.
-func (c *KvCache) Get(key string) (string, bool) {
+func (c *KvCache) Get(ctx context.Context, key string) (string, bool) {
 	if val, ok := c.values[key]; ok {
 		if time.Now().After(val.ExpirationTime) {
 			c.lock.Lock()
@@ -71,8 +72,9 @@ func (c *KvCache) Get(key string) (string, bool) {
 }
 
 // Remove removes a key-value pair from the cache.
-func (c *KvCache) Remove(key string) {
+func (c *KvCache) Remove(ctx context.Context, key string) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	delete(c.values, key)
+	return true
 }

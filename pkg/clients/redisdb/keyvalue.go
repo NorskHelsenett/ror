@@ -20,3 +20,11 @@ func (rc rediscon) Set(ctx context.Context, key string, value interface{}) error
 	}
 	return nil
 }
+
+func (rc rediscon) Delete(ctx context.Context, key string) error {
+	err := rc.Client.Del(ctx, key).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}

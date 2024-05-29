@@ -28,13 +28,6 @@ type MsGraphConfig struct {
 	ClientSecret string `json:"clientSecret"`
 }
 
-// The cache interface defines the methods that a cache should implement.
-type CacheInterface interface {
-	Add(key string, value string)
-	Get(key string) (string, bool)
-	Remove(key string)
-}
-
 type MsGraphClient struct {
 	Client     *msgraphsdk.GraphServiceClient
 	GroupCache kvcachehelper.CacheInterface
@@ -152,7 +145,7 @@ func (g *MsGraphClient) getGroups(userId string, groupsChan chan<- []string, err
 
 // getGroupDisplayNames gets the display names of a list of groups in parallel
 // It returns a list of group names based on the group ids
-func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache CacheInterface) ([]string, error) {
+func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache kvcachehelper.CacheInterface) ([]string, error) {
 	groupsNameChan := make(chan string, len(groups))
 	groupsErrorChan := make(chan error)
 	for _, value := range groups {
@@ -176,18 +169,20 @@ func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache CacheIn
 // getGroupDisplayName gets the display name of a group
 // If the group is not in the cache, it will fetch it from the graph api
 // and add it to the cache
-func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error, groupCache CacheInterface) {
-	name, cached := groupCache.Get(groupId)
+func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error, groupCache kvcachehelper.CacheInterface) {
+	ctx := context.Background()
+	name, cached := groupCache.Get(ctx, groupId)
 	if cached {
 		groupsNameChan <- name
 		return
 	}
-	group, err := g.Client.Groups().ByGroupId(groupId).Get(context.Background(), nil)
+
+	group, err := g.Client.Groups().ByGroupId(groupId).Get(ctx, nil)
 	if err != nil {
 		groupsErrorChan <- err
 		return
 	}
-	groupCache.Add(groupId, *group.GetDisplayName())
+	groupCache.Set(ctx, groupId, *group.GetDisplayName())
 	groupsNameChan <- *group.GetDisplayName()
 }
 
