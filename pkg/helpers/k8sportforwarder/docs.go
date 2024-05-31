@@ -1,11 +1,11 @@
-// Package k8sportforwarder e is responsible for forwarding ports from a pod to the local machine.
+// Package k8sportforwarder is responsible for forwarding ports from a pod to the local machine.
 //
 // It uses the k8s.io/client-go library to create a port forwarder that listens on a local port and forwards traffic to a pod in a Kubernetes cluster.
 // The PortForwarder struct contains the necessary information to create a port forwarder, such as the Kubernetes configuration, clientset, pod, local port, and container port.
 //
 // Example:
 //
-//	package login
+//	package main
 //
 //	import (
 //	  "fmt"
