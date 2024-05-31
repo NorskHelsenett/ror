@@ -39,6 +39,7 @@ type PortForwarder struct {
 	Streams genericclioptions.IOStreams
 }
 
+// NewPortForwarder creates a new PortForwarder instance
 func NewPortForwarder() *PortForwarder {
 	restconf, err := k8sconfig.GetConfig()
 	cobra.CheckErr(err)
@@ -56,6 +57,7 @@ func NewPortForwarder() *PortForwarder {
 	}
 }
 
+// NewPortForwarderFromRorKubernetesClient creates a new PortForwarder instance from a RorKubernetesClient
 func NewPortForwarderFromRorKubernetesClient(k8sclientset *rorkubernetesclient.K8sClientsets) (*PortForwarder, error) {
 
 	streams := genericclioptions.IOStreams{
@@ -111,6 +113,7 @@ func (p *PortForwarder) Forward(readyChan chan struct{}, stopChan <-chan struct{
 	return fw.ForwardPorts()
 }
 
+// GetPodNameNamespace returns the pod name and namespace
 func (p *PortForwarder) getPodNameNamespace() (string, string, error) {
 	var err error
 	if p.Pod == nil {
@@ -119,10 +122,13 @@ func (p *PortForwarder) getPodNameNamespace() (string, string, error) {
 	return p.Pod.Name, p.Pod.Namespace, err
 }
 
+// SetLocalPort sets the local port for the pod
 func (p *PortForwarder) SetLocalPort(local int32) {
 	p.LocalPort = local
 
 }
+
+// GetLocalPort returns the local port for the pod
 func (p *PortForwarder) GetLocalPort() (int32, error) {
 	if p.LocalPort != 0 {
 		return p.LocalPort, nil
@@ -136,6 +142,7 @@ func (p *PortForwarder) GetLocalPort() (int32, error) {
 	return p.LocalPort, nil
 }
 
+// SetContainerPort sets the container port for the pod
 func (p *PortForwarder) SetContainerPort(port int32) {
 	p.ContainerPort = port
 }
@@ -154,7 +161,8 @@ func (p *PortForwarder) GetContainerPort() (int32, error) {
 	return containerPort, nil
 }
 
-// Add
+// AddPodByName adds a pod by its name/namespace
+// It returns an error if the pod is not found or is not running.
 func (p *PortForwarder) AddPodByName(name string, namespace string) error {
 	ctx := context.Background()
 	pod, err := p.Clientset.CoreV1().Pods(namespace).Get(ctx, name, metav1.GetOptions{})
@@ -162,8 +170,31 @@ func (p *PortForwarder) AddPodByName(name string, namespace string) error {
 		return errors.Wrap(err, "Getting pod in kubernetes")
 	}
 
+	if pod.Status.Phase != v1.PodRunning {
+		return errors.New(fmt.Sprintf("Pod %s is not running", name))
+	}
+
 	p.Pod = pod
 	return nil
+}
+
+// AddPodByServiceName adds a pod by its service name/namespace
+// It returns an error if the service is not found or is not running.
+func (p *PortForwarder) AddPodByServiceName(service string, namespace string) error {
+	ctx := context.Background()
+	svc, err := p.Clientset.CoreV1().Services(namespace).Get(ctx, service, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("Error getting service")
+	}
+
+	err = p.AddPodByLabels(metav1.LabelSelector{
+		MatchLabels: svc.Spec.Selector,
+	}, namespace)
+	if err != nil {
+		return errors.Wrap(err, "Adding pod by service")
+	}
+	return nil
+
 }
 
 // Add  a pod by label, returns an error if the label returns
@@ -194,6 +225,7 @@ func (p *PortForwarder) AddPodByLabels(labels metav1.LabelSelector, namespace st
 	return nil
 }
 
+// getFreePort returns a free port
 func (p *PortForwarder) getFreePort() error {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
