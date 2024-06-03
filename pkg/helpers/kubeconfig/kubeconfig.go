@@ -1,0 +1,160 @@
+package kubeconfig
+
+import (
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"k8s.io/client-go/tools/clientcmd"
+	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
+)
+
+// KubeConfig is the kubeconfig file
+type KubeConfig struct {
+	Config *clientcmdapi.Config
+	Path   string
+	Errors []error
+}
+
+// LoadKubeConfig loads the kubeconfig file
+func MustLoadFromDefaultFile() *KubeConfig {
+	return MustLoadFromFile(getDefaultFilename())
+}
+
+// LoadFromFile loads the kubeconfig file
+func MustLoadFromFile(path string) *KubeConfig {
+	config, err := LoadFromFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return config
+}
+
+// NewKubeConfig loads the kubeconfig file
+func LoadFromDefaultFile() (*KubeConfig, error) {
+	return LoadFromFile(getDefaultFilename())
+}
+
+// LoadFromFile loads the kubeconfig file
+func LoadFromFile(path string) (*KubeConfig, error) {
+	config, err := clientcmd.LoadFromFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return &KubeConfig{
+		Config: config,
+		Path:   path,
+	}, nil
+}
+
+// NewKubeConfig loads the kubeconfig file
+func NewKubeConfig() *KubeConfig {
+	config := clientcmdapi.NewConfig()
+	path := getDefaultFilename()
+	return &KubeConfig{
+		Config: config,
+		Path:   path,
+	}
+}
+
+// LoadFromBytes loads the kubeconfig file
+func (k *KubeConfig) MergeYaml(yaml []byte) *KubeConfig {
+
+	mergeConfig, err := clientcmd.Load(yaml)
+	if err != nil {
+		k.Errors = append(k.Errors, err)
+	}
+
+	if k.Config != nil {
+		for key, v := range mergeConfig.Clusters {
+			k.Config.Clusters[key] = v
+		}
+
+		for key, v := range mergeConfig.AuthInfos {
+			k.Config.AuthInfos[key] = v
+		}
+
+		for key, v := range mergeConfig.Contexts {
+			old, exists := k.Config.Contexts[key]
+			k.Config.Contexts[key] = v
+			if exists && old.Namespace != "" {
+				k.Config.Contexts[key].Namespace = old.Namespace
+			}
+		}
+	}
+
+	if k.Config == nil {
+		k.Config = mergeConfig
+	}
+
+	return k
+}
+
+// Write writes the kubeconfig file
+func (k *KubeConfig) Write() error {
+	if errs := k.HandleErrors(); errs != nil {
+		return errs
+	}
+
+	if k.Config == nil {
+		return errors.New("kubeconfig is nil")
+	}
+	path := filepath.Dir(k.Path)
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		homedir, err := os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+		homeinfo, err := os.Stat(homedir)
+		if err != nil {
+			return err
+		}
+		err = os.MkdirAll(path, homeinfo.Mode())
+		if err != nil {
+			return err
+		}
+	}
+
+	return clientcmd.WriteToFile(*k.Config, k.Path)
+}
+
+// Handle errors return a string of errors
+func (k *KubeConfig) HandleErrors() error {
+	if len(k.Errors) == 0 {
+		return nil
+	}
+
+	var errs string
+	for _, err := range k.Errors {
+		errs += err.Error() + "\n"
+	}
+	return fmt.Errorf("errors: %s", errs)
+}
+
+// SetCurrentContext sets the current context
+func (k *KubeConfig) SetContext(context string) *KubeConfig {
+	k.Config.CurrentContext = context
+	return k
+}
+
+// GetCurrentContext gets the current context
+func (k *KubeConfig) GetContext() (string, error) {
+	if errs := k.HandleErrors(); errs != nil {
+		return "", errs
+	}
+	return k.Config.CurrentContext, nil
+}
+
+// getDefaultFilename returns the default filename
+func getDefaultFilename() string {
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	return loadingRules.GetDefaultFilename()
+}
+
+func test() {
+	err := MustLoadFromDefaultFile().MergeYaml([]byte("")).Write()
+	if err != nil {
+		panic(err)
+	}
+}
