@@ -151,10 +151,3 @@ func getDefaultFilename() string {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	return loadingRules.GetDefaultFilename()
 }
-
-func test() {
-	err := MustLoadFromDefaultFile().MergeYaml([]byte("")).Write()
-	if err != nil {
-		panic(err)
-	}
-}
