@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
@@ -48,6 +50,15 @@ func LoadFromFile(path string) (*KubeConfig, error) {
 	}, nil
 }
 
+// LoadOrNewKubeConfig loads the kubeconfig file or creates a new one
+func LoadOrNewKubeConfig() *KubeConfig {
+	config, err := LoadFromDefaultFile()
+	if err != nil {
+		return NewKubeConfig()
+	}
+	return config
+}
+
 // NewKubeConfig loads the kubeconfig file
 func NewKubeConfig() *KubeConfig {
 	config := clientcmdapi.NewConfig()
@@ -56,6 +67,39 @@ func NewKubeConfig() *KubeConfig {
 		Config: config,
 		Path:   path,
 	}
+}
+
+// IsExpired check if the selected contexts token is expired
+func (k *KubeConfig) IsExpired(context string) (bool, error) {
+	if errs := k.HandleErrors(); errs != nil {
+		return true, errs
+	}
+
+	authInfo, exists := k.Config.AuthInfos[k.Config.Contexts[context].AuthInfo]
+	if !exists {
+		return true, nil
+	}
+
+	if authInfo.Token == "" {
+		// we can't check if the token is expired if it's not set
+		return true, nil
+	}
+	token, _, err := new(jwt.Parser).ParseUnverified(authInfo.Token, jwt.MapClaims{})
+
+	if err != nil {
+		return true, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	expiry := int64(claims["exp"].(float64))
+	now := time.Now().Unix()
+
+	if now > expiry {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // LoadFromBytes loads the kubeconfig file
