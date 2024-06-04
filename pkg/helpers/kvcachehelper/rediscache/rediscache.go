@@ -21,25 +21,25 @@ func NewRedisCache(redisDb redisdb.RedisDB) *RedisCache {
 
 func (c *RedisCache) Set(ctx context.Context, key string, value string) {
 	if key == "" {
-		rlog.Error("Key is empty", nil)
+		rlog.Warnc(ctx, "Key is empty")
 		return
 	}
-	err := c.redisDb.Set(context.Background(), key, value)
+	err := c.redisDb.Set(ctx, key, value)
 	if err != nil {
-		rlog.Error(fmt.Sprintf("Error adding value to redis cache by key: %s", key), nil)
+		rlog.Debugc(ctx, fmt.Sprintf("Error adding value to redis cache by key: %s", key))
 		return
 	}
 }
 
 func (c *RedisCache) Get(ctx context.Context, key string) (string, bool) {
 	if key == "" {
-		rlog.Error("Key is empty", nil)
+		rlog.Warnc(ctx, "Key is empty")
 		return "", false
 	}
 	var cacheValue string
-	err := c.redisDb.Get(context.Background(), key, &cacheValue)
+	err := c.redisDb.Get(ctx, key, &cacheValue)
 	if err != nil {
-		rlog.Error(fmt.Sprintf("Error getting value from redis cache by key: %s", key), nil)
+		rlog.Debugc(ctx, fmt.Sprintf("Error getting value from redis cache by key: %s", key))
 		return "", false
 	}
 
@@ -52,12 +52,12 @@ func (c *RedisCache) Get(ctx context.Context, key string) (string, bool) {
 
 func (c *RedisCache) Remove(ctx context.Context, key string) bool {
 	if key == "" {
-		rlog.Error("Key is empty", nil)
+		rlog.Warnc(ctx, "Key is empty")
 		return false
 	}
-	err := c.redisDb.Delete(context.Background(), key)
+	err := c.redisDb.Delete(ctx, key)
 	if err != nil {
-		rlog.Error(fmt.Sprintf("Error deleting value from redis cache by key: %s", key), nil)
+		rlog.Debugc(ctx, fmt.Sprintf("Error deleting value from redis cache by key: %s", key))
 		return false
 	}
 
