@@ -132,7 +132,9 @@ func (g *MsGraphClient) getUser(userId string, userChan chan<- models.Userable, 
 // getGroups gets the groups a user is a member of from the graph api
 // It returns a list of group ids
 func (g *MsGraphClient) getGroups(userId string, groupsChan chan<- []string, errorChan chan<- error) {
-	requestBody := graphusers.NewItemGetMemberGroupsPostRequestBody()
+	// MS Fu%¤d up, change back if they fix their api
+	//requestBody := graphusers.NewItemGetMemberGroupsPostRequestBody()
+	requestBody := graphusers.NewItemGetmembergroupsGetMemberGroupsPostRequestBody()
 	securityEnabledOnly := true
 	requestBody.SetSecurityEnabledOnly(&securityEnabledOnly)
 
