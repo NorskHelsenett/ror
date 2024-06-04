@@ -75,6 +75,10 @@ func (k *KubeConfig) IsExpired(context string) (bool, error) {
 		return true, errs
 	}
 
+	if k.Config.Contexts[context] == nil || k.Config.Contexts[context].AuthInfo == "" {
+		return true, nil
+	}
+
 	authInfo, exists := k.Config.AuthInfos[k.Config.Contexts[context].AuthInfo]
 	if !exists {
 		return true, nil
