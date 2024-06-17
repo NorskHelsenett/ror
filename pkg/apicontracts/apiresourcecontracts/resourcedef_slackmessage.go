@@ -16,15 +16,15 @@ type ResourceSlackMessageSpec struct {
 }
 
 type ResourceSlackMessageStatus struct {
-	Result    SlackMessageResult `json:"result"`
-	Timestamp time.Time          `json:"timestamp"`
-	Error     any                `json:"error"`
+	Result    ResourceSlackMessageResult `json:"result"`
+	Timestamp time.Time                  `json:"timestamp"`
+	Error     any                        `json:"error"`
 }
 
-type SlackMessageResult int
+type ResourceSlackMessageResult int
 
 const (
-	SLACK_MESSAGE_OK SlackMessageResult = iota
+	SLACK_MESSAGE_OK ResourceSlackMessageResult = iota
 	SLACK_MESSAGE_ERROR
 	SLACK_MESSAGE_UNKNOWN
 )

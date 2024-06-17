@@ -6,5 +6,6 @@ type ResourceNotification struct {
 }
 
 type ResourceNotificationSpec struct {
-	Message string `json:"message"`
+	Owner   RorResourceOwnerReference `json:"owner"`
+	Message string                    `json:"message"`
 }
