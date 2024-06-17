@@ -305,6 +305,14 @@ var Resourcedefs = []ApiResource{
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	}, {
 		TypeMeta: metav1.TypeMeta{
+			Kind:       "SlackMessage",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "slackmessages",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Notification",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
