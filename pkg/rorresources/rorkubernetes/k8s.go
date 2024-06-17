@@ -172,6 +172,26 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetClusterComplianceReport(res)
 		r.SetCommon(res)
 
+	case "general.ror.internal/v1alpha1, Kind=ClusterVulnerabilityReport":
+		res := newClusterVulnerabilityReportFromDynamicClient(input)
+		r.SetClusterVulnerabilityReport(res)
+		r.SetCommon(res)
+
+	case "general.ror.internal/v1alpha1, Kind=Route":
+		res := newRouteFromDynamicClient(input)
+		r.SetRoute(res)
+		r.SetCommon(res)
+
+	case "general.ror.internal/v1alpha1, Kind=SlackMessage":
+		res := newSlackMessageFromDynamicClient(input)
+		r.SetSlackMessage(res)
+		r.SetCommon(res)
+
+	case "general.ror.internal/v1alpha1, Kind=Notification":
+		res := newNotificationFromDynamicClient(input)
+		r.SetNotification(res)
+		r.SetCommon(res)
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return r
@@ -639,6 +659,70 @@ func newClusterComplianceReportFromDynamicClient(obj *unstructured.Unstructured)
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ClusterComplianceReport", err)
+	}
+	return &nr
+}
+
+// newClusterVulnerabilityReportFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newClusterVulnerabilityReportFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceClusterVulnerabilityReport {
+	nr := rortypes.ResourceClusterVulnerabilityReport{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to ClusterVulnerabilityReport", err)
+	}
+	return &nr
+}
+
+// newRouteFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newRouteFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceRoute {
+	nr := rortypes.ResourceRoute{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Route", err)
+	}
+	return &nr
+}
+
+// newSlackMessageFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newSlackMessageFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceSlackMessage {
+	nr := rortypes.ResourceSlackMessage{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to SlackMessage", err)
+	}
+	return &nr
+}
+
+// newNotificationFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newNotificationFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceNotification {
+	nr := rortypes.ResourceNotification{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Notification", err)
 	}
 	return &nr
 }

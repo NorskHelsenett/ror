@@ -1263,3 +1263,143 @@ func (m ResourceClustercompliancereports) GetByLabels(search map[string]string) 
 	}
 	return Response
 }
+
+// Function to return ClusterVulnerabilityReport resource by name.
+func (m ResourceClustervulnerabilityreports) GetByName(search string) ResourceClusterVulnerabilityReport {
+	for _, resource := range m.Clustervulnerabilityreports {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceClusterVulnerabilityReport
+	return emptyResponse
+}
+
+// Function to return ClusterVulnerabilityReport resource by uid.
+func (m ResourceClustervulnerabilityreports) GetByUid(search string) ResourceClusterVulnerabilityReport {
+	for _, res := range m.Clustervulnerabilityreports {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceClusterVulnerabilityReport
+	return emptyResponse
+}
+
+// Function to return ClusterVulnerabilityReport resource by label.
+func (m ResourceClustervulnerabilityreports) GetByLabels(search map[string]string) []ResourceClusterVulnerabilityReport {
+	var Response []ResourceClusterVulnerabilityReport
+	for _, res := range m.Clustervulnerabilityreports {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}
+
+// Function to return Route resource by name.
+func (m ResourceRoutes) GetByName(search string) ResourceRoute {
+	for _, resource := range m.Routes {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceRoute
+	return emptyResponse
+}
+
+// Function to return Route resource by uid.
+func (m ResourceRoutes) GetByUid(search string) ResourceRoute {
+	for _, res := range m.Routes {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceRoute
+	return emptyResponse
+}
+
+// Function to return Route resource by label.
+func (m ResourceRoutes) GetByLabels(search map[string]string) []ResourceRoute {
+	var Response []ResourceRoute
+	for _, res := range m.Routes {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}
+
+// Function to return SlackMessage resource by name.
+func (m ResourceSlackmessages) GetByName(search string) ResourceSlackMessage {
+	for _, resource := range m.Slackmessages {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceSlackMessage
+	return emptyResponse
+}
+
+// Function to return SlackMessage resource by uid.
+func (m ResourceSlackmessages) GetByUid(search string) ResourceSlackMessage {
+	for _, res := range m.Slackmessages {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceSlackMessage
+	return emptyResponse
+}
+
+// Function to return SlackMessage resource by label.
+func (m ResourceSlackmessages) GetByLabels(search map[string]string) []ResourceSlackMessage {
+	var Response []ResourceSlackMessage
+	for _, res := range m.Slackmessages {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}
+
+// Function to return Notification resource by name.
+func (m ResourceNotifications) GetByName(search string) ResourceNotification {
+	for _, resource := range m.Notifications {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceNotification
+	return emptyResponse
+}
+
+// Function to return Notification resource by uid.
+func (m ResourceNotifications) GetByUid(search string) ResourceNotification {
+	for _, res := range m.Notifications {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceNotification
+	return emptyResponse
+}
+
+// Function to return Notification resource by label.
+func (m ResourceNotifications) GetByLabels(search map[string]string) []ResourceNotification {
+	var Response []ResourceNotification
+	for _, res := range m.Notifications {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}
