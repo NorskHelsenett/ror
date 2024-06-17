@@ -287,5 +287,13 @@ var Resourcedefs = []ApiResource{
 		Plural:     "clustercompliancereports",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ClusterVulnerabilityReport",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "clustervulnerabilityreports",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	},
 }
