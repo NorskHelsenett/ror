@@ -295,5 +295,13 @@ var Resourcedefs = []ApiResource{
 		Plural:     "clustervulnerabilityreports",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Notification",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "notifications",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	},
 }
