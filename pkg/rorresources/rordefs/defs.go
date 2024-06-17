@@ -297,6 +297,14 @@ var Resourcedefs = []ApiResource{
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	}, {
 		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "routes",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Notification",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
