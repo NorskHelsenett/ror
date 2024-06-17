@@ -651,6 +651,94 @@ func TestNewResourceSetFromDynamicClientClusterComplianceReport(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientClusterVulnerabilityReport(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "ClusterVulnerabilityReport",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-clustervulnerabilityreport",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("ClusterVulnerabilityReport", "general.ror.internal/v1alpha1")
+	expected.SetClusterVulnerabilityReport(newClusterVulnerabilityReportFromDynamicClient(input))
+	expected.SetCommon(newClusterVulnerabilityReportFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientRoute(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Route",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-route",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("Route", "general.ror.internal/v1alpha1")
+	expected.SetRoute(newRouteFromDynamicClient(input))
+	expected.SetCommon(newRouteFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientSlackMessage(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "SlackMessage",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-slackmessage",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("SlackMessage", "general.ror.internal/v1alpha1")
+	expected.SetSlackMessage(newSlackMessageFromDynamicClient(input))
+	expected.SetCommon(newSlackMessageFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientNotification(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Notification",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-notification",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("Notification", "general.ror.internal/v1alpha1")
+	expected.SetNotification(newNotificationFromDynamicClient(input))
+	expected.SetCommon(newNotificationFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

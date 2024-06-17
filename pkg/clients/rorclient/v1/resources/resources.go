@@ -15,4 +15,20 @@ type ResourceInterface interface {
 
 	GetApplicationByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceApplication, error)
 	GetPVCByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourcePersistentVolumeClaim, error)
+
+	GetVulnerabilityReportByUid(uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceVulnerabilityReport, error)
+	GetVulnerabilityReportsByOwner(owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceVulnerabilityReport, error)
+
+	GetClusterVulnerabilityReportByUid(uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
+	CreateClusterVulnerabilityReport(report *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
+	UpdateClusterVulnerabilityReportByUid(report *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
+
+	GetRoutesByOwner(owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceRoute, error)
+
+	GetSlackMessageByUid(uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceSlackMessage, error)
+	CreateSlackMessage(sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
+	UpdateSlackMessageByUid(sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
+
+	GetNotificationByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceNotification, error)
+	CreateNotification(u *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceNotification, error)
 }

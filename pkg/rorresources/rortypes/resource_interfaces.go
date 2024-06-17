@@ -193,3 +193,27 @@ type ClusterComplianceReportinterface interface {
 	CommonResourceInterface
 	Get() *ResourceClusterComplianceReport
 }
+
+// ClusterVulnerabilityReportinterface represents the interface for resources of the type clustervulnerabilityreport
+type ClusterVulnerabilityReportinterface interface {
+	CommonResourceInterface
+	Get() *ResourceClusterVulnerabilityReport
+}
+
+// Routeinterface represents the interface for resources of the type route
+type Routeinterface interface {
+	CommonResourceInterface
+	Get() *ResourceRoute
+}
+
+// SlackMessageinterface represents the interface for resources of the type slackmessage
+type SlackMessageinterface interface {
+	CommonResourceInterface
+	Get() *ResourceSlackMessage
+}
+
+// Notificationinterface represents the interface for resources of the type notification
+type Notificationinterface interface {
+	CommonResourceInterface
+	Get() *ResourceNotification
+}
