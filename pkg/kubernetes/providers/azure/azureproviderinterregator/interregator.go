@@ -1,8 +1,6 @@
 package azureproviderinterregator
 
 import (
-	"strings"
-
 	"github.com/NorskHelsenett/ror/pkg/models/providers"
 	v1 "k8s.io/api/core/v1"
 )
@@ -15,7 +13,7 @@ func NewInterregator() *Azuretypes {
 }
 
 func (t Azuretypes) IsTypeOf(nodes []v1.Node) bool {
-	return strings.Contains(strings.ToLower(nodes[0].Status.NodeInfo.OSImage), "talos")
+	return nodes[0].GetLabels()["kubernetes.azure.com/role"] != ""
 }
 
 func (t Azuretypes) GetProvider(nodes []v1.Node) providers.ProviderType {

@@ -1,6 +1,8 @@
 package talosproviderinterregator
 
 import (
+	"strings"
+
 	"github.com/NorskHelsenett/ror/pkg/models/providers"
 	v1 "k8s.io/api/core/v1"
 )
@@ -13,7 +15,7 @@ func NewInterregator() *Talostypes {
 }
 
 func (t Talostypes) IsTypeOf(nodes []v1.Node) bool {
-	return nodes[0].GetLabels()["talos.dev/owned-labels"] != ""
+	return strings.Contains(strings.ToLower(nodes[0].Status.NodeInfo.OSImage), "talos")
 }
 
 func (t Talostypes) GetProvider(nodes []v1.Node) providers.ProviderType {
