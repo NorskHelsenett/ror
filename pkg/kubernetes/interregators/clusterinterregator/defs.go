@@ -5,6 +5,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/gke/gkeproviderinterregator"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dproviderinterregator"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindproviderinterregator"
+	talosproviderinterregator "github.com/NorskHelsenett/ror/pkg/kubernetes/providers/talos"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/tanzu/tanzuproviderinterregator"
 )
 
@@ -16,4 +17,5 @@ var interregators = []ClusterProviderInterregator{
 	k3dproviderinterregator.NewInterregator(),
 	kindproviderinterregator.NewInterregator(),
 	gkeproviderinterregator.NewInterregator(),
+	talosproviderinterregator.NewInterregator(),
 }
