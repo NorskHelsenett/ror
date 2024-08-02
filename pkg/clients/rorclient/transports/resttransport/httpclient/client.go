@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
@@ -22,6 +23,7 @@ const (
 	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"
 	HttpTransportClientOptsHeaders HttpTransportClientOpts = "HEADERS"
 	HttpTransportClientOptsQuery   HttpTransportClientOpts = "QUERY"
+	HttpTransportClientTimeout     HttpTransportClientOpts = "TIMEOUT"
 )
 
 type HttpTransportClientConfig struct {
@@ -79,7 +81,7 @@ func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...H
 
 	t.AddCommonHeaders(req)
 	t.ParseParams(req, params...)
-
+	t.Client.Timeout = time.Second * 60
 	res, err := t.Client.Do(req)
 	if err != nil {
 		return err
@@ -175,7 +177,10 @@ func (t *HttpTransportClient) ParseParams(req *http.Request, params ...HttpTrans
 					q.Add(key, value)
 				}
 				req.URL.RawQuery = q.Encode()
+			case HttpTransportClientTimeout:
+				t.Client.Timeout = param.Value.(time.Duration)
 			}
+
 		}
 	}
 	if !noAuth {
