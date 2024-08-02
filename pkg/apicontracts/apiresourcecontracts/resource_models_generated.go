@@ -5,7 +5,7 @@ package apiresourcecontracts
 
 // Resourcetypes allowed in the generic resource models.
 type Resourcetypes interface {
-	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport
+	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceNotification
 }
 
 // type for returning Namespace resources to internal functions
@@ -180,4 +180,28 @@ type ResourceConfigurations struct {
 type ResourceClustercompliancereports struct {
 	Owner                    ResourceOwnerReference            `json:"owner"`
 	Clustercompliancereports []ResourceClusterComplianceReport `json:"clustercompliancereports"`
+}
+
+// type for returning ClusterVulnerabilityReport resources to internal functions
+type ResourceClustervulnerabilityreports struct {
+	Owner                       ResourceOwnerReference               `json:"owner"`
+	Clustervulnerabilityreports []ResourceClusterVulnerabilityReport `json:"clustervulnerabilityreports"`
+}
+
+// type for returning Route resources to internal functions
+type ResourceRoutes struct {
+	Owner  ResourceOwnerReference `json:"owner"`
+	Routes []ResourceRoute        `json:"routes"`
+}
+
+// type for returning SlackMessage resources to internal functions
+type ResourceSlackmessages struct {
+	Owner         ResourceOwnerReference `json:"owner"`
+	Slackmessages []ResourceSlackMessage `json:"slackmessages"`
+}
+
+// type for returning Notification resources to internal functions
+type ResourceNotifications struct {
+	Owner         ResourceOwnerReference `json:"owner"`
+	Notifications []ResourceNotification `json:"notifications"`
 }

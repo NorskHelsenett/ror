@@ -287,5 +287,37 @@ var Resourcedefs = []ApiResource{
 		Plural:     "clustercompliancereports",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ClusterVulnerabilityReport",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "clustervulnerabilityreports",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "routes",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "SlackMessage",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "slackmessages",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Notification",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "notifications",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	},
 }

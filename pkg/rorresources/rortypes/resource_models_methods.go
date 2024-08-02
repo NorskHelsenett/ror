@@ -1604,3 +1604,223 @@ func (r *ResourceClusterComplianceReport) GetRorHash() string {
 func (r *ResourceClusterComplianceReport) Get() *ResourceClusterComplianceReport {
 	return r
 }
+
+// (r ResourceClusterVulnerabilityReport) GetName returns the name of the resource
+func (r ResourceClusterVulnerabilityReport) GetName() string {
+	return r.Metadata.Name
+}
+
+// (r ResourceClusterVulnerabilityReport) GetUID returns the UID of the resource
+func (r ResourceClusterVulnerabilityReport) GetUID() string {
+	return string(r.Metadata.UID)
+}
+
+// (r ResourceClusterVulnerabilityReport) GetAPIVersion returns the APIVersion of the resource
+func (r ResourceClusterVulnerabilityReport) GetAPIVersion() string {
+	return string(r.APIVersion)
+}
+
+// (r ResourceClusterVulnerabilityReport) GetKind returns the kind of the resource
+func (r ResourceClusterVulnerabilityReport) GetKind() string {
+	return string(r.Kind)
+}
+
+// (r ResourceClusterVulnerabilityReport) GetMetadata returns the metav1.ObjectMeta of the resource
+func (r ResourceClusterVulnerabilityReport) GetMetadata() metav1.ObjectMeta {
+	return r.Metadata
+}
+
+// (r ResourceClusterVulnerabilityReport) GetRorMeta returns the ResourceRorMeta of the resource
+func (r ResourceClusterVulnerabilityReport) GetRorMeta() ResourceRorMeta {
+	return r.RorMeta
+}
+
+// (r *ResourceClusterVulnerabilityReport) SetRorMeta sets the ResourceRorMeta of the resource
+func (r *ResourceClusterVulnerabilityReport) SetRorMeta(rormeta ResourceRorMeta) error {
+	r.RorMeta = rormeta
+	r.RorMeta.Hash = r.GetRorHash()
+	return nil
+}
+
+// (r *ResourceClusterVulnerabilityReport) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceClusterVulnerabilityReport) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceClusterVulnerabilityReport) Get returns a pointer to the resource of type ResourceClusterVulnerabilityReport
+func (r *ResourceClusterVulnerabilityReport) Get() *ResourceClusterVulnerabilityReport {
+	return r
+}
+
+// (r ResourceRoute) GetName returns the name of the resource
+func (r ResourceRoute) GetName() string {
+	return r.Metadata.Name
+}
+
+// (r ResourceRoute) GetUID returns the UID of the resource
+func (r ResourceRoute) GetUID() string {
+	return string(r.Metadata.UID)
+}
+
+// (r ResourceRoute) GetAPIVersion returns the APIVersion of the resource
+func (r ResourceRoute) GetAPIVersion() string {
+	return string(r.APIVersion)
+}
+
+// (r ResourceRoute) GetKind returns the kind of the resource
+func (r ResourceRoute) GetKind() string {
+	return string(r.Kind)
+}
+
+// (r ResourceRoute) GetMetadata returns the metav1.ObjectMeta of the resource
+func (r ResourceRoute) GetMetadata() metav1.ObjectMeta {
+	return r.Metadata
+}
+
+// (r ResourceRoute) GetRorMeta returns the ResourceRorMeta of the resource
+func (r ResourceRoute) GetRorMeta() ResourceRorMeta {
+	return r.RorMeta
+}
+
+// (r *ResourceRoute) SetRorMeta sets the ResourceRorMeta of the resource
+func (r *ResourceRoute) SetRorMeta(rormeta ResourceRorMeta) error {
+	r.RorMeta = rormeta
+	r.RorMeta.Hash = r.GetRorHash()
+	return nil
+}
+
+// (r *ResourceRoute) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceRoute) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceRoute) Get returns a pointer to the resource of type ResourceRoute
+func (r *ResourceRoute) Get() *ResourceRoute {
+	return r
+}
+
+// (r ResourceSlackMessage) GetName returns the name of the resource
+func (r ResourceSlackMessage) GetName() string {
+	return r.Metadata.Name
+}
+
+// (r ResourceSlackMessage) GetUID returns the UID of the resource
+func (r ResourceSlackMessage) GetUID() string {
+	return string(r.Metadata.UID)
+}
+
+// (r ResourceSlackMessage) GetAPIVersion returns the APIVersion of the resource
+func (r ResourceSlackMessage) GetAPIVersion() string {
+	return string(r.APIVersion)
+}
+
+// (r ResourceSlackMessage) GetKind returns the kind of the resource
+func (r ResourceSlackMessage) GetKind() string {
+	return string(r.Kind)
+}
+
+// (r ResourceSlackMessage) GetMetadata returns the metav1.ObjectMeta of the resource
+func (r ResourceSlackMessage) GetMetadata() metav1.ObjectMeta {
+	return r.Metadata
+}
+
+// (r ResourceSlackMessage) GetRorMeta returns the ResourceRorMeta of the resource
+func (r ResourceSlackMessage) GetRorMeta() ResourceRorMeta {
+	return r.RorMeta
+}
+
+// (r *ResourceSlackMessage) SetRorMeta sets the ResourceRorMeta of the resource
+func (r *ResourceSlackMessage) SetRorMeta(rormeta ResourceRorMeta) error {
+	r.RorMeta = rormeta
+	r.RorMeta.Hash = r.GetRorHash()
+	return nil
+}
+
+// (r *ResourceSlackMessage) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceSlackMessage) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceSlackMessage) Get returns a pointer to the resource of type ResourceSlackMessage
+func (r *ResourceSlackMessage) Get() *ResourceSlackMessage {
+	return r
+}
+
+// (r ResourceNotification) GetName returns the name of the resource
+func (r ResourceNotification) GetName() string {
+	return r.Metadata.Name
+}
+
+// (r ResourceNotification) GetUID returns the UID of the resource
+func (r ResourceNotification) GetUID() string {
+	return string(r.Metadata.UID)
+}
+
+// (r ResourceNotification) GetAPIVersion returns the APIVersion of the resource
+func (r ResourceNotification) GetAPIVersion() string {
+	return string(r.APIVersion)
+}
+
+// (r ResourceNotification) GetKind returns the kind of the resource
+func (r ResourceNotification) GetKind() string {
+	return string(r.Kind)
+}
+
+// (r ResourceNotification) GetMetadata returns the metav1.ObjectMeta of the resource
+func (r ResourceNotification) GetMetadata() metav1.ObjectMeta {
+	return r.Metadata
+}
+
+// (r ResourceNotification) GetRorMeta returns the ResourceRorMeta of the resource
+func (r ResourceNotification) GetRorMeta() ResourceRorMeta {
+	return r.RorMeta
+}
+
+// (r *ResourceNotification) SetRorMeta sets the ResourceRorMeta of the resource
+func (r *ResourceNotification) SetRorMeta(rormeta ResourceRorMeta) error {
+	r.RorMeta = rormeta
+	r.RorMeta.Hash = r.GetRorHash()
+	return nil
+}
+
+// (r *ResourceNotification) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceNotification) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceNotification) Get returns a pointer to the resource of type ResourceNotification
+func (r *ResourceNotification) Get() *ResourceNotification {
+	return r
+}

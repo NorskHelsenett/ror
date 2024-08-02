@@ -45,6 +45,10 @@ type Resource struct {
 	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty"`
 	ConfigurationResource              *rortypes.ResourceConfiguration              `json:"configuration,omitempty"`
 	ClusterComplianceReportResource    *rortypes.ResourceClusterComplianceReport    `json:"clustercompliancereport,omitempty"`
+	ClusterVulnerabilityReportResource *rortypes.ResourceClusterVulnerabilityReport `json:"clustervulnerabilityreport,omitempty"`
+	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty"`
+	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty"`
+	NotificationResource               *rortypes.ResourceNotification               `json:"notification,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -174,6 +178,22 @@ func (r *Resource) SetConfiguration(res *rortypes.ResourceConfiguration) {
 
 func (r *Resource) SetClusterComplianceReport(res *rortypes.ResourceClusterComplianceReport) {
 	r.ClusterComplianceReportResource = res
+}
+
+func (r *Resource) SetClusterVulnerabilityReport(res *rortypes.ResourceClusterVulnerabilityReport) {
+	r.ClusterVulnerabilityReportResource = res
+}
+
+func (r *Resource) SetRoute(res *rortypes.ResourceRoute) {
+	r.RouteResource = res
+}
+
+func (r *Resource) SetSlackMessage(res *rortypes.ResourceSlackMessage) {
+	r.SlackMessageResource = res
+}
+
+func (r *Resource) SetNotification(res *rortypes.ResourceNotification) {
+	r.NotificationResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -319,6 +339,26 @@ func (r *Resource) Configuration() rortypes.Configurationinterface {
 // ClusterComplianceReport is a wrapper for the underlying resource, it provides a ClusterComplianceReportinterface to work with clustercompliancereports
 func (r *Resource) ClusterComplianceReport() rortypes.ClusterComplianceReportinterface {
 	return r.ClusterComplianceReportResource
+}
+
+// ClusterVulnerabilityReport is a wrapper for the underlying resource, it provides a ClusterVulnerabilityReportinterface to work with clustervulnerabilityreports
+func (r *Resource) ClusterVulnerabilityReport() rortypes.ClusterVulnerabilityReportinterface {
+	return r.ClusterVulnerabilityReportResource
+}
+
+// Route is a wrapper for the underlying resource, it provides a Routeinterface to work with routes
+func (r *Resource) Route() rortypes.Routeinterface {
+	return r.RouteResource
+}
+
+// SlackMessage is a wrapper for the underlying resource, it provides a SlackMessageinterface to work with slackmessages
+func (r *Resource) SlackMessage() rortypes.SlackMessageinterface {
+	return r.SlackMessageResource
+}
+
+// Notification is a wrapper for the underlying resource, it provides a Notificationinterface to work with notifications
+func (r *Resource) Notification() rortypes.Notificationinterface {
+	return r.NotificationResource
 }
 
 // (r *Resource) GetName() returns the name from the common interface

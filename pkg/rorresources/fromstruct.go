@@ -144,6 +144,22 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 			r.SetClusterComplianceReport(res.ClusterComplianceReportResource)
 			r.SetCommon(res.ClusterComplianceReportResource)
 
+		case "general.ror.internal/v1alpha1, Kind=ClusterVulnerabilityReport":
+			r.SetClusterVulnerabilityReport(res.ClusterVulnerabilityReportResource)
+			r.SetCommon(res.ClusterVulnerabilityReportResource)
+
+		case "general.ror.internal/v1alpha1, Kind=Route":
+			r.SetRoute(res.RouteResource)
+			r.SetCommon(res.RouteResource)
+
+		case "general.ror.internal/v1alpha1, Kind=SlackMessage":
+			r.SetSlackMessage(res.SlackMessageResource)
+			r.SetCommon(res.SlackMessageResource)
+
+		case "general.ror.internal/v1alpha1, Kind=Notification":
+			r.SetNotification(res.NotificationResource)
+			r.SetCommon(res.NotificationResource)
+
 		default:
 			rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.ApiVersion))
 		}
