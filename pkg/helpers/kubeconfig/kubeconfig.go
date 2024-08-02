@@ -194,6 +194,22 @@ func (k *KubeConfig) GetContext() (string, error) {
 	return k.Config.CurrentContext, nil
 }
 
+// SetNamespace sets the namespace for the current context
+func (k *KubeConfig) SetNamespace(namespace string) *KubeConfig {
+	if errs := k.HandleErrors(); errs != nil {
+		return k
+	}
+
+	context := k.Config.Contexts[k.Config.CurrentContext]
+	context.Namespace = namespace
+	k.Config.Contexts[k.Config.CurrentContext] = context
+	err := k.Write()
+	if err != nil {
+		k.Errors = append(k.Errors, err)
+	}
+	return k
+}
+
 // getDefaultFilename returns the default filename
 func getDefaultFilename() string {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
