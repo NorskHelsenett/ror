@@ -86,6 +86,9 @@ func (c *CyberarkClient) Ping() bool {
 		Timeout: timeout,
 	}
 	_, err := client.Get(c.Url)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return err == nil
 }
 
