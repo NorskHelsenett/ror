@@ -30,6 +30,9 @@ func getClusterNameOfArray(hostname string) string {
 		if hostnameArray[i] == "control" || hostnameArray[i] == "plane" {
 			break
 		}
+		if hostnameArray[i] == "controlplane" {
+			break
+		}
 		if len(clusterName) > 0 {
 			separator = "-"
 		}
