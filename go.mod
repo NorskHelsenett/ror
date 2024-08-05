@@ -22,7 +22,7 @@ require (
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.19.0
-	go.mongodb.org/mongo-driver v1.15.0
+	go.mongodb.org/mongo-driver v1.16.0
 	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.49.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.24.0
