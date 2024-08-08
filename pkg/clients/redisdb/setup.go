@@ -3,6 +3,7 @@ package redisdb
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient/databasecredhelper"
 
@@ -16,7 +17,7 @@ import (
 
 type RedisDB interface {
 	Get(ctx context.Context, key string, output *string) error
-	Set(ctx context.Context, key string, value interface{}) error
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Delete(ctx context.Context, key string) error
 	GetJSON(context.Context, string, string, interface{}) error
 	SetJSON(ctx context.Context, key string, path string, value interface{}) error

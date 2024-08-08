@@ -4,6 +4,19 @@ import (
 	"time"
 )
 
+type AccessType string
+
+const (
+	AccessTypeRead             AccessType = "read"
+	AccessTypeCreate           AccessType = "create"
+	AccessTypeUpdate           AccessType = "update"
+	AccessTypeDelete           AccessType = "delete"
+	AccessTypeOwner            AccessType = "owner"
+	AccessTypeRorMetadata      AccessType = "rormetadata"
+	AccessTypeRorVulnerability AccessType = "rorvulnerability"
+	AccessTypeClusterLogon     AccessType = "clusterlogon"
+)
+
 type AclV2ListItems struct {
 	Scope   Acl2Scope           // Type of object ['cluster','project']
 	Subject Acl2Subject         // The subject eg. clusterid, projectid (can be 'All')
@@ -13,13 +26,14 @@ type AclV2ListItems struct {
 
 // Full acl v2 model
 type AclV2ListItem struct {
-	Id         string                  `json:"id" bson:"_id,omitempty"`                   // Id
-	Version    int                     `json:"version" default:"2" validate:"eq=2" `      // Acl Version, must be 2
-	Group      string                  `json:"group" validate:"required,min=1,rortext" `  // The group wich the acces is granted
-	Scope      Acl2Scope               `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
-	Subject    Acl2Subject             `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
-	Access     AclV2ListItemAccess     `json:"access" validate:"required"`                // v2 access model for ror api
-	Kubernetes AclV2ListItemKubernetes `json:"kubernetes" validate:""`                    // v2 access model for kubernetes
+	Id      string              `json:"id" bson:"_id,omitempty"`                   // Id
+	Version int                 `json:"version" default:"2" validate:"eq=2" `      // Acl Version, must be 2
+	Group   string              `json:"group" validate:"required,min=1,rortext" `  // The group wich the acces is granted
+	Scope   Acl2Scope           `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
+	Subject Acl2Subject         `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
+	Access  AclV2ListItemAccess `json:"access" validate:"required"`                // v2 access model for ror api
+	//	Accessv2   []map[AccessType]bool    `json:"accessv2" validate:""`                      // v2 access model for ror api
+	Kubernetes AclV2ListItemKubernetes `json:"kubernetes" validate:""` // v2 access model for kubernetes
 	Created    time.Time               `json:"created,omitempty"`
 	IssuedBy   string                  `json:"issuedBy,omitempty" validate:"email"`
 }

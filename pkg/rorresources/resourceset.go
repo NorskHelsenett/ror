@@ -12,6 +12,13 @@ import (
 
 type FilterType string
 
+// ResourceSet is the common way to present one or more resources in ror.
+type ResourceSet struct {
+	nextcursor int
+	query      *ResourceQuery
+	Resources  []*Resource `json:"resources,omitempty"`
+}
+
 const (
 	FilterTypeString FilterType = "string"
 	FilterTypeInt    FilterType = "int"
@@ -31,13 +38,15 @@ type ResourceQueryOrder struct {
 }
 
 type ResourceQuery struct {
-	VersionKind         schema.GroupVersionKind              `json:"version_kind,omitempty"`
-	Uids                []string                             `json:"uids,omitempty"`
-	OwnerRefs           []rortypes.RorResourceOwnerReference `json:"owner_refs,omitempty"`
-	Fields              []string                             `json:"fields,omitempty"`
-	Order               map[int]ResourceQueryOrder           `json:"order,omitempty"`
-	Filters             []ResourceQueryFilter                `json:"filters,omitempty"`
-	AdditionalResources []schema.GroupVersionKind            `json:"additional_resources,omitempty"`
+	VersionKind         schema.GroupVersionKind              `json:"version_kind,omitempty"`         // memory
+	Uids                []string                             `json:"uids,omitempty"`                 // memory
+	OwnerRefs           []rortypes.RorResourceOwnerReference `json:"owner_refs,omitempty"`           // memory
+	Fields              []string                             `json:"fields,omitempty"`               // post or db
+	Order               map[int]ResourceQueryOrder           `json:"order,omitempty"`                // post or db
+	Filters             []ResourceQueryFilter                `json:"filters,omitempty"`              // db
+	Offset              int                                  `json:"offset,omitempty"`               // post or db
+	Limit               int                                  `json:"limit,omitempty"`                // post or db
+	AdditionalResources []schema.GroupVersionKind            `json:"additional_resources,omitempty"` // memory or db
 }
 
 type ResourceUpdateResults struct {
@@ -46,6 +55,13 @@ type ResourceUpdateResults struct {
 type ResourceUpdateResult struct {
 	Status  int    `json:"status,omitempty"`
 	Message string `json:"message,omitempty"`
+}
+
+func (rs *ResourceSet) SetQuery(query *ResourceQuery) {
+	rs.query = query
+}
+func (rs *ResourceSet) GetQuery() *ResourceQuery {
+	return rs.query
 }
 
 // FailedResources is a method to return a list of failed resources.
@@ -57,13 +73,6 @@ func (r *ResourceUpdateResults) GetFailedResources() map[string]ResourceUpdateRe
 		}
 	}
 	return failedResources
-}
-
-// ResourceSet is the common way to present one or more resources in ror.
-type ResourceSet struct {
-	nextcursor int
-	query      *ResourceQuery
-	Resources  []*Resource `json:"resources,omitempty"`
 }
 
 func NewResourceSet() *ResourceSet {

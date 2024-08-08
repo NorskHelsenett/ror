@@ -3,20 +3,45 @@ package rediscache
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
+	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 type RedisCache struct {
-	redisDb redisdb.RedisDB
+	redisDb    redisdb.RedisDB
+	prefix     string
+	expiration time.Duration
 }
 
-func NewRedisCache(redisDb redisdb.RedisDB) *RedisCache {
+func NewRedisCache(redisDb redisdb.RedisDB, opts ...kvcachehelper.CacheOptions) *RedisCache {
+	rc := RedisCache{}
 	rlog.Debug("Creating new RedisCache")
-	return &RedisCache{
-		redisDb: redisDb,
+	if redisDb == nil {
+		rlog.Error("RedisDB is nil", nil)
+		return nil
 	}
+
+	if len(opts) == 1 {
+		for _, opt := range opts {
+			if opt.Timeout.Seconds() != 0 {
+				rc.expiration = opt.Timeout
+			}
+			if opt.Prefix != "" {
+				rc.prefix = opt.Prefix
+			}
+
+		}
+	}
+
+	if rc.expiration.Seconds() == 0 {
+		rc.expiration = 6 * time.Hour
+	}
+	rc.redisDb = redisDb
+
+	return &rc
 }
 
 func (c *RedisCache) Set(ctx context.Context, key string, value string) {
@@ -24,9 +49,11 @@ func (c *RedisCache) Set(ctx context.Context, key string, value string) {
 		rlog.Warnc(ctx, "Key is empty")
 		return
 	}
-	err := c.redisDb.Set(ctx, key, value)
+
+	rkey := c.prefix + key
+	err := c.redisDb.Set(ctx, rkey, value, c.expiration)
 	if err != nil {
-		rlog.Debugc(ctx, fmt.Sprintf("Error adding value to redis cache by key: %s", key))
+		rlog.Debugc(ctx, fmt.Sprintf("Error adding value to redis cache by key: %s", rkey))
 		return
 	}
 }
