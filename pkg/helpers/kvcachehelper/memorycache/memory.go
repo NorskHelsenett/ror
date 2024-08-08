@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 )
 
 // Path: cache/cache.go
@@ -16,9 +18,10 @@ type CacheValue struct {
 }
 
 type KvCache struct {
-	lock           sync.RWMutex
-	values         map[string]CacheValue
-	expirationTime time.Time
+	lock      sync.RWMutex
+	values    map[string]CacheValue
+	prefix    string
+	expiresIn time.Duration
 }
 type CacheOption map[string]interface{}
 
@@ -27,18 +30,22 @@ type CacheOption map[string]interface{}
 // The expiration time can be overridden by passing an expirationTime option.
 // Example:
 // cache := NewKvCache(ExpirationTime: time.Now().Add(1 * time.Hour))
-func NewKvCache(opts ...CacheOption) *KvCache {
+func NewKvCache(opts ...kvcachehelper.CacheOptions) *KvCache {
 	c := &KvCache{values: make(map[string]CacheValue)}
-	if len(opts) > 0 {
+	if len(opts) == 1 {
 		for _, opt := range opts {
-			if expirationTime, ok := opt["expirationTime"].(time.Time); ok {
-				c.expirationTime = expirationTime
+			if opt.Timeout.Seconds() != 0 {
+				c.expiresIn = opt.Timeout
 			}
+			if opt.Prefix != "" {
+				c.prefix = opt.Prefix
+			}
+
 		}
 	}
 
-	if c.expirationTime.IsZero() {
-		c.expirationTime = time.Now().Add(6 * time.Hour)
+	if c.expiresIn.Seconds() == 0 {
+		c.expiresIn = 6 * time.Hour
 	}
 	return c
 }
@@ -48,8 +55,8 @@ func NewKvCache(opts ...CacheOption) *KvCache {
 func (c *KvCache) Set(ctx context.Context, key string, value string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	c.values[key] = CacheValue{
-		ExpirationTime: c.expirationTime,
+	c.values[c.prefix+key] = CacheValue{
+		ExpirationTime: time.Now().Add(c.expiresIn),
 		Value:          value,
 	}
 }
@@ -57,7 +64,7 @@ func (c *KvCache) Set(ctx context.Context, key string, value string) {
 // Get retrieves a value from the cache.
 // If the key does not exist or the value has expired, it will return false.
 func (c *KvCache) Get(ctx context.Context, key string) (string, bool) {
-	if val, ok := c.values[key]; ok {
+	if val, ok := c.values[c.prefix+key]; ok {
 		if time.Now().After(val.ExpirationTime) {
 			c.lock.Lock()
 			defer c.lock.Unlock()

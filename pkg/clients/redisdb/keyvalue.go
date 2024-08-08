@@ -1,6 +1,9 @@
 package redisdb
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 func (rc rediscon) Get(ctx context.Context, key string, output *string) error {
 	var result string
@@ -13,8 +16,8 @@ func (rc rediscon) Get(ctx context.Context, key string, output *string) error {
 
 }
 
-func (rc rediscon) Set(ctx context.Context, key string, value interface{}) error {
-	err := rc.Client.Set(ctx, key, value, 0).Err()
+func (rc rediscon) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	err := rc.Client.Set(ctx, key, value, expiration).Err()
 	if err != nil {
 		return err
 	}
