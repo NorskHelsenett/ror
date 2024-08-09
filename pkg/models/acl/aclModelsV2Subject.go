@@ -8,14 +8,15 @@ import (
 type Acl2Subject string
 
 const (
-	Acl2RorSubjectCluster    = "cluster"
-	Acl2RorSubjectProject    = "project"
-	Acl2RorSubjectGlobal     = "globalscope" // for subject, not scope, TODO: new const
-	Acl2RorSubjectAcl        = "acl"         // for subject, not scope, TODO: new const
-	Acl2RorSubjectApiKey     = "apikey"      //api key
-	Acl2RorSubjectDatacenter = "datacenter"
-	Acl2RorSubjectWorkspace  = "workspace"
-	Acl2RorSubjectPrice      = "price"
+	Acl2RorSubjectCluster        = "cluster"
+	Acl2RorSubjectProject        = "project"
+	Acl2RorSubjectGlobal         = "globalscope" // for subject, not scope, TODO: new const
+	Acl2RorSubjectAcl            = "acl"         // for subject, not scope, TODO: new const
+	Acl2RorSubjectApiKey         = "apikey"      //api key
+	Acl2RorSubjectDatacenter     = "datacenter"
+	Acl2RorSubjectWorkspace      = "workspace"
+	Acl2RorSubjectPrice          = "price"
+	Acl2RorSubjectVirtualMachine = "virtualmachine"
 )
 
 var (
@@ -27,6 +28,7 @@ var (
 		Acl2RorSubjectDatacenter,
 		Acl2RorSubjectWorkspace,
 		Acl2RorSubjectPrice,
+		Acl2RorSubjectVirtualMachine,
 	}
 )
 
