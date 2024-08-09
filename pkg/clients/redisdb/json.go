@@ -8,6 +8,7 @@ import (
 	"github.com/nitishm/go-rejson/v4"
 )
 
+// Deprecated: ReJSON is no longer supported
 func (rc rediscon) GetJSON(ctx context.Context, key string, path string, output interface{}) error {
 	rh := rejson.NewReJSONHandler()
 	rh.SetGoRedisClientWithContext(ctx, rc.Client)
@@ -22,6 +23,7 @@ func (rc rediscon) GetJSON(ctx context.Context, key string, path string, output 
 	return nil
 }
 
+// Deprecated: ReJSON is no longer supported
 func (rc rediscon) SetJSON(ctx context.Context, key string, path string, value interface{}) error {
 	rh := rejson.NewReJSONHandler()
 	rh.SetGoRedisClientWithContext(ctx, rc.Client)
