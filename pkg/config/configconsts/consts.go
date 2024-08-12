@@ -10,7 +10,6 @@ const (
 	API_KEY_SECRET       = "API_KEY_SECRET"
 	API_ENDPOINT         = "ROR_URL"
 	DEVELOPMENT          = "DEVELOPMENT"
-	LOCALHOST            = "LOCALHOST"
 	PORT                 = "PORT"
 	POD_NAMESPACE        = "POD_NAMESPACE"
 	CLUSTER_ID           = "CLUSTER_ID"

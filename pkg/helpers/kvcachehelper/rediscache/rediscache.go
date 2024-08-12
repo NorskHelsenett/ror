@@ -64,7 +64,8 @@ func (c *RedisCache) Get(ctx context.Context, key string) (string, bool) {
 		return "", false
 	}
 	var cacheValue string
-	err := c.redisDb.Get(ctx, key, &cacheValue)
+	rkey := c.prefix + key
+	err := c.redisDb.Get(ctx, rkey, &cacheValue)
 	if err != nil {
 		rlog.Debugc(ctx, fmt.Sprintf("Error getting value from redis cache by key: %s", key))
 		return "", false
@@ -82,7 +83,8 @@ func (c *RedisCache) Remove(ctx context.Context, key string) bool {
 		rlog.Warnc(ctx, "Key is empty")
 		return false
 	}
-	err := c.redisDb.Delete(ctx, key)
+	rkey := c.prefix + key
+	err := c.redisDb.Delete(ctx, rkey)
 	if err != nil {
 		rlog.Debugc(ctx, fmt.Sprintf("Error deleting value from redis cache by key: %s", key))
 		return false
