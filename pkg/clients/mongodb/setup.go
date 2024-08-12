@@ -12,7 +12,7 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
-var mongodb mongodbcon
+var mongodb MongodbCon
 
 type DatabaseCredentialHelper interface {
 	GetCredentials() (string, string)
@@ -20,7 +20,7 @@ type DatabaseCredentialHelper interface {
 }
 
 // This type implements the mongodb connection in ror
-type mongodbcon struct {
+type MongodbCon struct {
 	Client      *mongo.Client
 	Context     context.Context
 	Credentials DatabaseCredentialHelper
@@ -48,8 +48,17 @@ func Init(cp DatabaseCredentialHelper, host string, port string, database string
 	health.Register("mongodb", mongodb)
 }
 
+func GetMongodbConnection() *MongodbCon {
+	return &mongodb
+}
+
+func (rc MongodbCon) GetMongoDb() *mongo.Database {
+	mongoClient := rc.getDbConnectionWithReconnect().Database(mongodb.Database)
+	return mongoClient
+}
+
 // CheckHealth checks the health of the redis connection and returns a health check
-func (rc mongodbcon) CheckHealth() []health.Check {
+func (rc MongodbCon) CheckHealth() []health.Check {
 	c := health.Check{}
 	if !Ping() {
 		c.Status = health.StatusFail
@@ -63,12 +72,12 @@ func Ping() bool {
 	return mongodb.ping()
 }
 
-func (mdb mongodbcon) getConnectionstring() string {
+func (mdb MongodbCon) getConnectionstring() string {
 	username, password := mdb.Credentials.GetCredentials()
 	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", username, password, mdb.Host, mdb.Port, mdb.Database)
 }
 
-func (mdb *mongodbcon) init(cp DatabaseCredentialHelper, host string, port string, database string) {
+func (mdb *MongodbCon) init(cp DatabaseCredentialHelper, host string, port string, database string) {
 	mdb.Context = context.Background()
 	mdb.Host = host
 	mdb.Port = port
@@ -77,7 +86,7 @@ func (mdb *mongodbcon) init(cp DatabaseCredentialHelper, host string, port strin
 	mdb.connect()
 }
 
-func (mdb mongodbcon) ping() bool {
+func (mdb MongodbCon) ping() bool {
 	err := mdb.Client.Ping(context.Background(), nil)
 	if err != nil {
 		rlog.Debug(err.Error())
@@ -86,7 +95,7 @@ func (mdb mongodbcon) ping() bool {
 	return true
 }
 
-func (mdb *mongodbcon) connect() {
+func (mdb *MongodbCon) connect() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().SetMonitor(otelmongo.NewMonitor()).ApplyURI(mdb.getConnectionstring()).SetServerAPIOptions(serverAPI)
 
@@ -103,11 +112,11 @@ func (mdb *mongodbcon) connect() {
 	mdb.Client = cli
 }
 
-func (mdb *mongodbcon) disconnect() {
+func (mdb *MongodbCon) disconnect() {
 	_ = mdb.Client.Disconnect(mdb.Context)
 }
 
-func (mdb *mongodbcon) getDbConnectionWithReconnect() *mongo.Client {
+func (mdb *MongodbCon) getDbConnectionWithReconnect() *mongo.Client {
 	if mdb.Client == nil {
 		mdb.connect()
 	}
