@@ -23,6 +23,14 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 	out.query = &query
 
 	for _, res := range in.Resources {
+		r := NewResourceFromStruct(*res)
+		out.Add(r)
+	}
+	return &out
+
+}
+
+func NewResourceFromStruct(res Resource) *Resource {
 		r := NewRorResource(res.Kind, res.ApiVersion)
 
 		gvk := schema.FromAPIVersionAndKind(res.ApiVersion, res.Kind)
@@ -36,7 +44,5 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 		default:
 			rlog.Info("Unknown resource kind", rlog.String("gvk",gvk.String()),rlog.String("kind", res.Kind), rlog.String("apiVersion", res.ApiVersion))
 		}
-		out.Add(r)
-	}
-	return &out
+	return r
 }

@@ -31,7 +31,6 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 }
 
 func NewResourceFromStruct(res Resource) *Resource {
-
 	r := NewRorResource(res.Kind, res.ApiVersion)
 
 	gvk := schema.FromAPIVersionAndKind(res.ApiVersion, res.Kind)
