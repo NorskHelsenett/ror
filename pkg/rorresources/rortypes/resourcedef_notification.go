@@ -1,8 +1,7 @@
 package rortypes
 
 type ResourceNotification struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceNotificationSpec `json:"spec"`
+	Spec ResourceNotificationSpec `json:"spec"`
 }
 
 type ResourceNotificationSpec struct {

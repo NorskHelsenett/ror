@@ -2,8 +2,7 @@ package rortypes
 
 // K8s deployment struct
 type ResourceStatefulSet struct {
-	CommonResource `json:",inline"`
-	Status         ResourceStatefulSetStatus `json:"status"`
+	Status ResourceStatefulSetStatus `json:"status"`
 }
 type ResourceStatefulSetStatus struct {
 	Replicas          int `json:"replicas"`

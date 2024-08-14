@@ -6,15 +6,13 @@ package rorresources
 import (
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // The Resource struct represents one resource in ror.
 //
 // It implement common and resource specific methods by providing interfaces to the underlying resources
 type Resource struct {
-	Kind       string `json:"kind,omitempty"`
-	ApiVersion string `json:"api_version,omitempty"`
+	rortypes.CommonResource `json:",inline" bson:",inline"`
 
 	NamespaceResource                  *rortypes.ResourceNamespace                  `json:"namespace,omitempty"`
 	NodeResource                       *rortypes.ResourceNode                       `json:"node,omitempty"`
@@ -55,12 +53,18 @@ type Resource struct {
 
 // NewRorResource provides a empty resource of a given kind/apiversion
 func NewRorResource(kind string, apiversion string) *Resource {
-	r := Resource{Kind: kind, ApiVersion: apiversion}
+	r := Resource{}
+	r.Kind = kind
+	r.APIVersion = apiversion
 	return &r
 }
 
-// SetCommon sets the common interface of the resource, the common interface implements common methods of the resource
-func (r *Resource) SetCommon(common rortypes.CommonResourceInterface) {
+func (r *Resource) SetCommonResource(common rortypes.CommonResource) {
+	r.CommonResource = common
+}
+
+// SetCommonInterface sets the common interface of the resource, the common interface implements common methods of the resource
+func (r *Resource) SetCommonInterface(common rortypes.CommonResourceInterface) {
 	r.common = common
 }
 
@@ -361,40 +365,6 @@ func (r *Resource) Notification() rortypes.Notificationinterface {
 	return r.NotificationResource
 }
 
-// (r *Resource) GetName() returns the name from the common interface
-func (r *Resource) GetName() string {
-	return r.common.GetName()
-}
-
-// (r *Resource) GetUID() returns the UID from the common interface
-func (r *Resource) GetUID() string {
-	return r.common.GetUID()
-}
-
-// (r *Resource) GetKind() returns the Kind from the common interface
-func (r *Resource) GetKind() string {
-	return r.common.GetKind()
-}
-
-// (r *Resource) GetAPIVersion() returns the APIVersion from the common interface
-func (r *Resource) GetAPIVersion() string {
-	return r.common.GetAPIVersion()
-}
-
-// (r *Resource) GetMetadata() returns the Metadata from the common interface
-func (r *Resource) GetMetadata() metav1.ObjectMeta {
-	return r.common.GetMetadata()
-}
-
-// (r *Resource) GetRorMeta() returns the RorMetadata from the common interface
-func (r *Resource) GetRorMeta() rortypes.ResourceRorMeta {
-	return r.common.GetRorMeta()
-}
-
-// (r *Resource) SetRorMeta() returns the RorMetadata from the common interface
-func (r *Resource) SetRorMeta(input rortypes.ResourceRorMeta) error {
-	return r.common.SetRorMeta(input)
-}
 
 // (r *Resource) GetRorHash() returns the hash from the common interface
 func (r *Resource) GetRorHash() string {
@@ -402,5 +372,5 @@ func (r *Resource) GetRorHash() string {
 }
 
 func (r *Resource) ApplyInputFilter() error {
-	return r.common.ApplyInputFilter()
+	return r.common.ApplyInputFilter(&r.CommonResource)
 }

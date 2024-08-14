@@ -3,9 +3,8 @@ package rortypes
 // ResourcePod
 // K8s namepace struct
 type ResourcePod struct {
-	CommonResource `json:",inline"`
-	Spec           ResourcePodSpec   `json:"spec"`
-	Status         ResourcePodStatus `json:"status"`
+	Spec   ResourcePodSpec   `json:"spec"`
+	Status ResourcePodStatus `json:"status"`
 }
 
 type ResourcePodSpec struct {

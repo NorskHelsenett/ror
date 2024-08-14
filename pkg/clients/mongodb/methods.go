@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -121,12 +122,43 @@ func (rc MongodbCon) CountWithQuery(ctx context.Context, col string, query any) 
 
 func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.ResourceQuery) []bson.M {
 	query := make([]bson.M, 0)
+	match := bson.M{}
 	if rorResourceQuery == nil {
 		return query
 	}
 	// Add filters
-	if len(rorResourceQuery.Uids) > 0 {
-		query = append(query, bson.M{"$match": bson.M{"uid": bson.M{"$in": rorResourceQuery.Uids}}})
+
+	if !rorResourceQuery.VersionKind.Empty() {
+		apiversion, kind := rorResourceQuery.VersionKind.ToAPIVersionAndKind()
+		if apiversion != "" {
+			match["apiversion"] = apiversion
+		}
+		if kind != "" {
+			match["kind"] = kind
+		}
 	}
+
+	if len(rorResourceQuery.Uids) > 0 {
+		match["uid"] = bson.M{"$in": rorResourceQuery.Uids}
+	}
+	query = append(query, bson.M{"$match": match})
+
+	// Add sorting
+	sort := bson.M{}
+	if len(rorResourceQuery.Order) != 0 {
+		sort["rorResourceQuery.SortBy"] = 1
+	} else {
+		sort["uid"] = 1
+	}
+	query = append(query, bson.M{"$sort": sort})
+	// Add projection
+	if len(rorResourceQuery.Fields) != 0 {
+		project := bson.M{}
+		for _, field := range rorResourceQuery.Fields {
+			project[field] = 1
+		}
+		query = append(query, bson.M{"$project": project})
+	}
+	stringhelper.PrettyprintStruct(query)
 	return query
 }

@@ -4,8 +4,7 @@ package rortypes
 // K8s node struct
 // Tanzu kubernetes release struct
 type ResourceVirtualMachineClassBinding struct {
-	CommonResource `json:",inline"`
-	ClassRef       ResourceVirtualMachineClassBindingClassRef `json:"classRef"`
+	ClassRef ResourceVirtualMachineClassBindingClassRef `json:"classRef"`
 }
 
 type ResourceVirtualMachineClassBindingMetadata struct {

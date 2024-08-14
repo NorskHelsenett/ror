@@ -1,8 +1,7 @@
 package rortypes
 
 type ResourceProject struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceProjectSpec `json:"spec"`
+	Spec ResourceProjectSpec `json:"spec"`
 }
 
 type ResourceProjectSpec struct {

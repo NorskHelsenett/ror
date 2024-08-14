@@ -3,9 +3,8 @@ package rortypes
 import "time"
 
 type ResourceSlackMessage struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceSlackMessageSpec     `json:"spec"`
-	Status         []ResourceSlackMessageStatus `json:"status"`
+	Spec   ResourceSlackMessageSpec     `json:"spec"`
+	Status []ResourceSlackMessageStatus `json:"status"`
 }
 
 type ResourceSlackMessageSpec struct {

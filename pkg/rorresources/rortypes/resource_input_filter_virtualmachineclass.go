@@ -1,8 +1,6 @@
 package rortypes
 
-import ()
-
 // (r *ResourceVirtualMachineClass) ApplyInputFilter Applies the input filter to the resource
-func (r *ResourceVirtualMachineClass) ApplyInputFilter() error {
+func (r *ResourceVirtualMachineClass) ApplyInputFilter(cr *CommonResource) error {
 	return nil
 }

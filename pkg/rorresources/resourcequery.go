@@ -24,15 +24,15 @@ type ResourceQueryOrder struct {
 }
 
 type ResourceQuery struct {
-	VersionKind         schema.GroupVersionKind              `json:"version_kind,omitempty"`              // memory
-	Uids                []string                             `json:"uids,omitempty" validate:"dive,uuid"` // memory
-	OwnerRefs           []rortypes.RorResourceOwnerReference `json:"owner_refs,omitempty"`                // memory
-	Fields              []string                             `json:"fields,omitempty"`                    // post or db
-	Order               map[int]ResourceQueryOrder           `json:"order,omitempty"`                     // post or db
-	Filters             []ResourceQueryFilter                `json:"filters,omitempty"`                   // db
-	Offset              int                                  `json:"offset,omitempty"`                    // post or db
-	Limit               int                                  `json:"limit,omitempty"`                     // post or db
-	AdditionalResources []schema.GroupVersionKind            `json:"additional_resources,omitempty"`      // memory or db
+	VersionKind         schema.GroupVersionKind              `json:"version_kind,omitempty"`         // memory
+	Uids                []string                             `json:"uids,omitempty"`                 // memory
+	OwnerRefs           []rortypes.RorResourceOwnerReference `json:"owner_refs,omitempty"`           // memory
+	Fields              []string                             `json:"fields,omitempty"`               // post or db
+	Order               map[int]ResourceQueryOrder           `json:"order,omitempty"`                // post or db
+	Filters             []ResourceQueryFilter                `json:"filters,omitempty"`              // db
+	Offset              int                                  `json:"offset,omitempty"`               // post or db
+	Limit               int                                  `json:"limit,omitempty"`                // post or db
+	AdditionalResources []schema.GroupVersionKind            `json:"additional_resources,omitempty"` // memory or db
 }
 
 func NewResourceQuery() *ResourceQuery {

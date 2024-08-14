@@ -31,145 +31,147 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 }
 
 func NewResourceFromStruct(res Resource) *Resource {
-	r := NewRorResource(res.Kind, res.ApiVersion)
 
-	gvk := schema.FromAPIVersionAndKind(res.ApiVersion, res.Kind)
+	r := NewRorResource(res.Kind, res.APIVersion)
+	r.CommonResource = res.CommonResource
+
+	gvk := schema.FromAPIVersionAndKind(res.APIVersion, res.Kind)
 	switch gvk.String() {
 
 	case "/v1, Kind=Namespace":
 		r.SetNamespace(res.NamespaceResource)
-		r.SetCommon(res.NamespaceResource)
+		r.SetCommonInterface(res.NamespaceResource)
 
 	case "/v1, Kind=Node":
 		r.SetNode(res.NodeResource)
-		r.SetCommon(res.NodeResource)
+		r.SetCommonInterface(res.NodeResource)
 
 	case "/v1, Kind=PersistentVolumeClaim":
 		r.SetPersistentVolumeClaim(res.PersistentVolumeClaimResource)
-		r.SetCommon(res.PersistentVolumeClaimResource)
+		r.SetCommonInterface(res.PersistentVolumeClaimResource)
 
 	case "apps/v1, Kind=Deployment":
 		r.SetDeployment(res.DeploymentResource)
-		r.SetCommon(res.DeploymentResource)
+		r.SetCommonInterface(res.DeploymentResource)
 
 	case "storage.k8s.io/v1, Kind=StorageClass":
 		r.SetStorageClass(res.StorageClassResource)
-		r.SetCommon(res.StorageClassResource)
+		r.SetCommonInterface(res.StorageClassResource)
 
 	case "wgpolicyk8s.io/v1alpha2, Kind=PolicyReport":
 		r.SetPolicyReport(res.PolicyReportResource)
-		r.SetCommon(res.PolicyReportResource)
+		r.SetCommonInterface(res.PolicyReportResource)
 
 	case "argoproj.io/v1alpha1, Kind=Application":
 		r.SetApplication(res.ApplicationResource)
-		r.SetCommon(res.ApplicationResource)
+		r.SetCommonInterface(res.ApplicationResource)
 
 	case "argoproj.io/v1alpha1, Kind=AppProject":
 		r.SetAppProject(res.AppProjectResource)
-		r.SetCommon(res.AppProjectResource)
+		r.SetCommonInterface(res.AppProjectResource)
 
 	case "cert-manager.io/v1, Kind=Certificate":
 		r.SetCertificate(res.CertificateResource)
-		r.SetCommon(res.CertificateResource)
+		r.SetCommonInterface(res.CertificateResource)
 
 	case "/v1, Kind=Service":
 		r.SetService(res.ServiceResource)
-		r.SetCommon(res.ServiceResource)
+		r.SetCommonInterface(res.ServiceResource)
 
 	case "/v1, Kind=Pod":
 		r.SetPod(res.PodResource)
-		r.SetCommon(res.PodResource)
+		r.SetCommonInterface(res.PodResource)
 
 	case "apps/v1, Kind=ReplicaSet":
 		r.SetReplicaSet(res.ReplicaSetResource)
-		r.SetCommon(res.ReplicaSetResource)
+		r.SetCommonInterface(res.ReplicaSetResource)
 
 	case "apps/v1, Kind=StatefulSet":
 		r.SetStatefulSet(res.StatefulSetResource)
-		r.SetCommon(res.StatefulSetResource)
+		r.SetCommonInterface(res.StatefulSetResource)
 
 	case "apps/v1, Kind=DaemonSet":
 		r.SetDaemonSet(res.DaemonSetResource)
-		r.SetCommon(res.DaemonSetResource)
+		r.SetCommonInterface(res.DaemonSetResource)
 
 	case "networking.k8s.io/v1, Kind=Ingress":
 		r.SetIngress(res.IngressResource)
-		r.SetCommon(res.IngressResource)
+		r.SetCommonInterface(res.IngressResource)
 
 	case "networking.k8s.io/v1, Kind=IngressClass":
 		r.SetIngressClass(res.IngressClassResource)
-		r.SetCommon(res.IngressClassResource)
+		r.SetCommonInterface(res.IngressClassResource)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=VulnerabilityReport":
 		r.SetVulnerabilityReport(res.VulnerabilityReportResource)
-		r.SetCommon(res.VulnerabilityReportResource)
+		r.SetCommonInterface(res.VulnerabilityReportResource)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ExposedSecretReport":
 		r.SetExposedSecretReport(res.ExposedSecretReportResource)
-		r.SetCommon(res.ExposedSecretReportResource)
+		r.SetCommonInterface(res.ExposedSecretReportResource)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ConfigAuditReport":
 		r.SetConfigAuditReport(res.ConfigAuditReportResource)
-		r.SetCommon(res.ConfigAuditReportResource)
+		r.SetCommonInterface(res.ConfigAuditReportResource)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=RbacAssessmentReport":
 		r.SetRbacAssessmentReport(res.RbacAssessmentReportResource)
-		r.SetCommon(res.RbacAssessmentReportResource)
+		r.SetCommonInterface(res.RbacAssessmentReportResource)
 
 	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesCluster":
 		r.SetTanzuKubernetesCluster(res.TanzuKubernetesClusterResource)
-		r.SetCommon(res.TanzuKubernetesClusterResource)
+		r.SetCommonInterface(res.TanzuKubernetesClusterResource)
 
 	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesRelease":
 		r.SetTanzuKubernetesRelease(res.TanzuKubernetesReleaseResource)
-		r.SetCommon(res.TanzuKubernetesReleaseResource)
+		r.SetCommonInterface(res.TanzuKubernetesReleaseResource)
 
 	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClass":
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
-		r.SetCommon(res.VirtualMachineClassResource)
+		r.SetCommonInterface(res.VirtualMachineClassResource)
 
 	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClassBinding":
 		r.SetVirtualMachineClassBinding(res.VirtualMachineClassBindingResource)
-		r.SetCommon(res.VirtualMachineClassBindingResource)
+		r.SetCommonInterface(res.VirtualMachineClassBindingResource)
 
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		r.SetKubernetesCluster(res.KubernetesClusterResource)
-		r.SetCommon(res.KubernetesClusterResource)
+		r.SetCommonInterface(res.KubernetesClusterResource)
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterOrder":
 		r.SetClusterOrder(res.ClusterOrderResource)
-		r.SetCommon(res.ClusterOrderResource)
+		r.SetCommonInterface(res.ClusterOrderResource)
 
 	case "general.ror.internal/v1alpha1, Kind=Project":
 		r.SetProject(res.ProjectResource)
-		r.SetCommon(res.ProjectResource)
+		r.SetCommonInterface(res.ProjectResource)
 
 	case "general.ror.internal/v1alpha1, Kind=Configuration":
 		r.SetConfiguration(res.ConfigurationResource)
-		r.SetCommon(res.ConfigurationResource)
+		r.SetCommonInterface(res.ConfigurationResource)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ClusterComplianceReport":
 		r.SetClusterComplianceReport(res.ClusterComplianceReportResource)
-		r.SetCommon(res.ClusterComplianceReportResource)
+		r.SetCommonInterface(res.ClusterComplianceReportResource)
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterVulnerabilityReport":
 		r.SetClusterVulnerabilityReport(res.ClusterVulnerabilityReportResource)
-		r.SetCommon(res.ClusterVulnerabilityReportResource)
+		r.SetCommonInterface(res.ClusterVulnerabilityReportResource)
 
 	case "general.ror.internal/v1alpha1, Kind=Route":
 		r.SetRoute(res.RouteResource)
-		r.SetCommon(res.RouteResource)
+		r.SetCommonInterface(res.RouteResource)
 
 	case "general.ror.internal/v1alpha1, Kind=SlackMessage":
 		r.SetSlackMessage(res.SlackMessageResource)
-		r.SetCommon(res.SlackMessageResource)
+		r.SetCommonInterface(res.SlackMessageResource)
 
 	case "general.ror.internal/v1alpha1, Kind=Notification":
 		r.SetNotification(res.NotificationResource)
-		r.SetCommon(res.NotificationResource)
+		r.SetCommonInterface(res.NotificationResource)
 
 	default:
-		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.ApiVersion))
+		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 	}
 	return r
 }

@@ -1,14 +1,13 @@
 package rortypes
 
 // type ResourceNamespace struct {
-// 	CommonResource `json:",inline"`
+//
 // }
 
 // K8s node struct
 type ResourceNode struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceNodeSpec   `json:"spec"`
-	Status         ResourceNodeStatus `json:"status"`
+	Spec   ResourceNodeSpec   `json:"spec"`
+	Status ResourceNodeStatus `json:"status"`
 }
 
 type ResourceNodeSpec struct {

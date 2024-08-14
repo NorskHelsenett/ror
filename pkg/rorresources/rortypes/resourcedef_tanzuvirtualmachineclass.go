@@ -4,9 +4,8 @@ package rortypes
 // K8s node struct
 // Tanzu kubernetes release struct
 type ResourceVirtualMachineClass struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceVirtualMachineClassSpec `json:"spec"`
-	Status         map[string]string               `json:"status"`
+	Spec   ResourceVirtualMachineClassSpec `json:"spec"`
+	Status map[string]string               `json:"status"`
 }
 
 type ResourceVirtualMachineClassMetadata struct {

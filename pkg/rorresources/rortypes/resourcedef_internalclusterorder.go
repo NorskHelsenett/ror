@@ -1,9 +1,8 @@
 package rortypes
 
 type ResourceClusterOrder struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceClusterOrderSpec   `json:"spec"`
-	Status         ResourceClusterOrderStatus `json:"status"`
+	Spec   ResourceClusterOrderSpec   `json:"spec"`
+	Status ResourceClusterOrderStatus `json:"status"`
 }
 
 type ResourceClusterOrderSpec struct {

@@ -2,9 +2,8 @@ package rortypes
 
 // K8s PersistentVolumeClaim struct
 type ResourcePersistentVolumeClaim struct {
-	CommonResource `json:",inline"`
-	Spec           ResourcePersistentVolumeClaimSpec   `json:"spec"`
-	Status         ResourcePersistentVolumeClaimStatus `json:"status"`
+	Spec   ResourcePersistentVolumeClaimSpec   `json:"spec"`
+	Status ResourcePersistentVolumeClaimStatus `json:"status"`
 }
 
 type ResourcePersistentVolumeClaimSpec struct {
