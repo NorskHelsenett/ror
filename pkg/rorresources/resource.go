@@ -371,6 +371,12 @@ func (r *Resource) GetRorHash() string {
 	return r.common.GetRorHash()
 }
 
+// (r *Resource) GetRorHash() returns the hash from the common interface
+func (r *Resource) GenRorHash() {
+	hash :=r.common.GetRorHash()
+	r.CommonResource.RorMeta.Hash = hash
+}
+
 func (r *Resource) ApplyInputFilter() error {
 	return r.common.ApplyInputFilter(&r.CommonResource)
 }
