@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -188,6 +187,5 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	} else {
 		query = append(query, bson.M{"$limit": 100})
 	}
-	stringhelper.PrettyprintStruct(query)
 	return query
 }
