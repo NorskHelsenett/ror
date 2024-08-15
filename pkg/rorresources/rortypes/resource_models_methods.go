@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/hashstructure/v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // (r *ResourceNamespace) GetRorHash calculates the hash of the resource
@@ -81,7 +82,6 @@ func (r *ResourceDeployment) Get() *ResourceDeployment {
 	return r
 }
 
-
 // (r *ResourceStorageClass) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource
@@ -117,7 +117,6 @@ func (r *ResourcePolicyReport) GetRorHash() string {
 func (r *ResourcePolicyReport) Get() *ResourcePolicyReport {
 	return r
 }
-
 
 // (r *ResourceApplication) GetRorHash calculates the hash of the resource
 //

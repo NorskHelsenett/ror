@@ -11,42 +11,6 @@ import (
 )
 
 {{ range .}}
-// (r Resource{{.Kind}}) GetName returns the name of the resource
-func (r Resource{{.Kind}}) GetName() string {
-	return r.Metadata.Name
-}
-
-// (r Resource{{.Kind}}) GetUID returns the UID of the resource
-func (r Resource{{.Kind}}) GetUID() string {
-	return string(r.Metadata.UID)
-}
-
-// (r Resource{{.Kind}}) GetAPIVersion returns the APIVersion of the resource
-func (r Resource{{.Kind}}) GetAPIVersion() string {
-	return string(r.APIVersion)
-}
-
-// (r Resource{{.Kind}}) GetKind returns the kind of the resource
-func (r Resource{{.Kind}}) GetKind() string {
-	return string(r.Kind)
-}
-
-// (r Resource{{.Kind}}) GetMetadata returns the metav1.ObjectMeta of the resource
-func (r Resource{{.Kind}}) GetMetadata() metav1.ObjectMeta {
-	return r.Metadata
-}
-// (r Resource{{.Kind}}) GetRorMeta returns the ResourceRorMeta of the resource
-func (r Resource{{.Kind}}) GetRorMeta() ResourceRorMeta {
-	return r.RorMeta
-}
-
-// (r *Resource{{.Kind}}) SetRorMeta sets the ResourceRorMeta of the resource
-func (r *Resource{{.Kind}}) SetRorMeta(rormeta ResourceRorMeta) error {
-	r.RorMeta = rormeta
-	r.RorMeta.Hash = r.GetRorHash()
-	return nil
-}
-
 // (r *Resource{{.Kind}}) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource

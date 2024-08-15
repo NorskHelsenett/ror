@@ -5,7 +5,6 @@ package rorresources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
-
 )
 
 // The Resource struct represents one resource in ror.
@@ -59,6 +58,7 @@ func NewRorResource(kind string, apiversion string) *Resource {
 	return &r
 }
 
+// SetCommonResource sets the common resource of the resource, the common resource implements common metadata of the resource
 func (r *Resource) SetCommonResource(common rortypes.CommonResource) {
 	r.CommonResource = common
 }
@@ -365,15 +365,14 @@ func (r *Resource) Notification() rortypes.Notificationinterface {
 	return r.NotificationResource
 }
 
-
 // (r *Resource) GetRorHash() returns the hash from the common interface
 func (r *Resource) GetRorHash() string {
 	return r.common.GetRorHash()
 }
 
-// (r *Resource) GetRorHash() returns the hash from the common interface
+// (r *Resource) GenRorHash() calculates the hash of the resource and set the metadata header
 func (r *Resource) GenRorHash() {
-	hash :=r.common.GetRorHash()
+	hash := r.common.GetRorHash()
 	r.CommonResource.RorMeta.Hash = hash
 }
 

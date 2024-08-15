@@ -31,18 +31,20 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 }
 
 func NewResourceFromStruct(res Resource) *Resource {
-		r := NewRorResource(res.Kind, res.ApiVersion)
 
-		gvk := schema.FromAPIVersionAndKind(res.ApiVersion, res.Kind)
+		r := NewRorResource(res.Kind, res.APIVersion)
+	    r.CommonResource = res.CommonResource
+
+		gvk := schema.FromAPIVersionAndKind(res.APIVersion, res.Kind)
 		switch gvk.String() {
 {{ range .}}
 
 		case "{{.GroupVersionKind.String }}":
 			r.Set{{.Kind}}(res.{{.Kind}}Resource)
-			r.SetCommon(res.{{.Kind}}Resource)
+			r.SetCommonInterface(res.{{.Kind}}Resource)
 {{end}}
 		default:
-			rlog.Info("Unknown resource kind", rlog.String("gvk",gvk.String()),rlog.String("kind", res.Kind), rlog.String("apiVersion", res.ApiVersion))
+			rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 		}
 	return r
 }

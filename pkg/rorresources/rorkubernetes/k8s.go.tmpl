@@ -20,10 +20,26 @@ func NewResourceSetFromDynamicClient(input *unstructured.Unstructured) *rorresou
 
 }
 
+func NewCommonResourceFromDynamicClient(input *unstructured.Unstructured) rortypes.CommonResource {
+	r := rortypes.CommonResource{}
+	rjson, err := input.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(rjson, &r)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Common", err)
+	}
+	return r
+
+}
+
 // NewResourceFromDynamicClient creates a new resource from a unstructured.Unstructured
 // type provided by the kubernetes universal client.
 func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresources.Resource {
 	r := rorresources.NewRorResource(input.GetKind(), input.GetAPIVersion())
+	r.CommonResource = NewCommonResourceFromDynamicClient(input)
 
 	switch input.GroupVersionKind().String() {
 {{ range .}}
@@ -31,7 +47,7 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 	case "{{.GroupVersionKind.String }}":
 		res := new{{.Kind}}FromDynamicClient(input)
 		r.Set{{.Kind}}(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 	{{end}}
 	default:
 		rlog.Warn("could not create ResourceSet")

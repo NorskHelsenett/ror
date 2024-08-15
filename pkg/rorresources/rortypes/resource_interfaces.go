@@ -3,12 +3,11 @@
 
 package rortypes
 
-
 // CommonResourceInterface represents the minimum interface for all resources
 type CommonResourceInterface interface {
 	GetRorHash() string
 	ApplyInputFilter(cr *CommonResource) error
-} 
+}
 
 // Namespaceinterface represents the interface for resources of the type namespace
 type Namespaceinterface interface {
