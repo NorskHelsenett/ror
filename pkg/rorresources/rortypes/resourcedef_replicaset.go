@@ -2,9 +2,8 @@ package rortypes
 
 // K8s namepace struct
 type ResourceReplicaSet struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceReplicaSetSpec   `json:"spec"`
-	Status         ResourceReplicaSetStatus `json:"status"`
+	Spec   ResourceReplicaSetSpec   `json:"spec"`
+	Status ResourceReplicaSetStatus `json:"status"`
 }
 
 type ResourceReplicaSetSpec struct {

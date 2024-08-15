@@ -20,177 +20,193 @@ func NewResourceSetFromDynamicClient(input *unstructured.Unstructured) *rorresou
 
 }
 
+func NewCommonResourceFromDynamicClient(input *unstructured.Unstructured) rortypes.CommonResource {
+	r := rortypes.CommonResource{}
+	rjson, err := input.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(rjson, &r)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Common", err)
+	}
+	return r
+
+}
+
 // NewResourceFromDynamicClient creates a new resource from a unstructured.Unstructured
 // type provided by the kubernetes universal client.
 func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresources.Resource {
 	r := rorresources.NewRorResource(input.GetKind(), input.GetAPIVersion())
+	r.CommonResource = NewCommonResourceFromDynamicClient(input)
 
 	switch input.GroupVersionKind().String() {
 
 	case "/v1, Kind=Namespace":
 		res := newNamespaceFromDynamicClient(input)
 		r.SetNamespace(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "/v1, Kind=Node":
 		res := newNodeFromDynamicClient(input)
 		r.SetNode(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "/v1, Kind=PersistentVolumeClaim":
 		res := newPersistentVolumeClaimFromDynamicClient(input)
 		r.SetPersistentVolumeClaim(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "apps/v1, Kind=Deployment":
 		res := newDeploymentFromDynamicClient(input)
 		r.SetDeployment(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "storage.k8s.io/v1, Kind=StorageClass":
 		res := newStorageClassFromDynamicClient(input)
 		r.SetStorageClass(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "wgpolicyk8s.io/v1alpha2, Kind=PolicyReport":
 		res := newPolicyReportFromDynamicClient(input)
 		r.SetPolicyReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "argoproj.io/v1alpha1, Kind=Application":
 		res := newApplicationFromDynamicClient(input)
 		r.SetApplication(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "argoproj.io/v1alpha1, Kind=AppProject":
 		res := newAppProjectFromDynamicClient(input)
 		r.SetAppProject(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "cert-manager.io/v1, Kind=Certificate":
 		res := newCertificateFromDynamicClient(input)
 		r.SetCertificate(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "/v1, Kind=Service":
 		res := newServiceFromDynamicClient(input)
 		r.SetService(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "/v1, Kind=Pod":
 		res := newPodFromDynamicClient(input)
 		r.SetPod(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "apps/v1, Kind=ReplicaSet":
 		res := newReplicaSetFromDynamicClient(input)
 		r.SetReplicaSet(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "apps/v1, Kind=StatefulSet":
 		res := newStatefulSetFromDynamicClient(input)
 		r.SetStatefulSet(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "apps/v1, Kind=DaemonSet":
 		res := newDaemonSetFromDynamicClient(input)
 		r.SetDaemonSet(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "networking.k8s.io/v1, Kind=Ingress":
 		res := newIngressFromDynamicClient(input)
 		r.SetIngress(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "networking.k8s.io/v1, Kind=IngressClass":
 		res := newIngressClassFromDynamicClient(input)
 		r.SetIngressClass(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=VulnerabilityReport":
 		res := newVulnerabilityReportFromDynamicClient(input)
 		r.SetVulnerabilityReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ExposedSecretReport":
 		res := newExposedSecretReportFromDynamicClient(input)
 		r.SetExposedSecretReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ConfigAuditReport":
 		res := newConfigAuditReportFromDynamicClient(input)
 		r.SetConfigAuditReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=RbacAssessmentReport":
 		res := newRbacAssessmentReportFromDynamicClient(input)
 		r.SetRbacAssessmentReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesCluster":
 		res := newTanzuKubernetesClusterFromDynamicClient(input)
 		r.SetTanzuKubernetesCluster(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesRelease":
 		res := newTanzuKubernetesReleaseFromDynamicClient(input)
 		r.SetTanzuKubernetesRelease(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClass":
 		res := newVirtualMachineClassFromDynamicClient(input)
 		r.SetVirtualMachineClass(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClassBinding":
 		res := newVirtualMachineClassBindingFromDynamicClient(input)
 		r.SetVirtualMachineClassBinding(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		res := newKubernetesClusterFromDynamicClient(input)
 		r.SetKubernetesCluster(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterOrder":
 		res := newClusterOrderFromDynamicClient(input)
 		r.SetClusterOrder(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=Project":
 		res := newProjectFromDynamicClient(input)
 		r.SetProject(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=Configuration":
 		res := newConfigurationFromDynamicClient(input)
 		r.SetConfiguration(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ClusterComplianceReport":
 		res := newClusterComplianceReportFromDynamicClient(input)
 		r.SetClusterComplianceReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterVulnerabilityReport":
 		res := newClusterVulnerabilityReportFromDynamicClient(input)
 		r.SetClusterVulnerabilityReport(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=Route":
 		res := newRouteFromDynamicClient(input)
 		r.SetRoute(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=SlackMessage":
 		res := newSlackMessageFromDynamicClient(input)
 		r.SetSlackMessage(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	case "general.ror.internal/v1alpha1, Kind=Notification":
 		res := newNotificationFromDynamicClient(input)
 		r.SetNotification(res)
-		r.SetCommon(res)
+		r.SetCommonInterface(res)
 
 	default:
 		rlog.Warn("could not create ResourceSet")

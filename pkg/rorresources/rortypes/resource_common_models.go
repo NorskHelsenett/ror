@@ -64,9 +64,54 @@ func (r *RorResourceOwnerReference) Validate() (bool, error) {
 	return true, nil
 }
 
+func (r RorResourceOwnerReference) String() string {
+	return string(r.Scope) + ":" + string(r.Subject)
+}
+
 func (r RorResourceOwnerReference) GetQueryParams() map[string]string {
 	response := make(map[string]string)
 	response["ownerScope"] = string(r.Scope)
 	response["ownerSubject"] = string(r.Subject)
 	return response
+}
+
+// GetName returns the name of the resource
+func (r *CommonResource) GetName() string {
+	return r.Metadata.Name
+}
+
+// GetUID returns the UID of the resource
+func (r CommonResource) GetUID() string {
+	return string(r.Metadata.UID)
+}
+
+// GetKind returns the kind of the resource
+func (r CommonResource) GetKind() string {
+	return r.TypeMeta.Kind
+}
+
+// GetAPIVersion returns the API version of the resource
+func (r CommonResource) GetAPIVersion() string {
+	return r.TypeMeta.APIVersion
+}
+
+// GetMetadata returns the metadata of the resource
+func (r CommonResource) GetMetadata() metav1.ObjectMeta {
+	return r.Metadata
+}
+
+// GetRorMeta returns the RorMeta of the resource
+func (r CommonResource) GetRorMeta() ResourceRorMeta {
+	return r.RorMeta
+}
+
+// SetMetadata sets the metadata of the resource
+func (r *CommonResource) SetMetadata(meta metav1.ObjectMeta) {
+	r.Metadata = meta
+}
+
+// SetRorMeta sets the RorMeta of the resource
+func (r *CommonResource) SetRorMeta(meta ResourceRorMeta) error {
+	r.RorMeta = meta
+	return nil
 }

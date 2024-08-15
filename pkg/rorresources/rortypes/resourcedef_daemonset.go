@@ -2,8 +2,7 @@ package rortypes
 
 // K8s deployment struct
 type ResourceDaemonSet struct {
-	CommonResource `json:",inline"`
-	Status         ResourceDaemonSetStatus `json:"status"`
+	Status ResourceDaemonSetStatus `json:"status"`
 }
 type ResourceDaemonSetStatus struct {
 	NumberReady            int `json:"numberReady"`

@@ -2,8 +2,7 @@ package rortypes
 
 // K8s namepace struct
 type ResourceIngressClass struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceIngressClassSpec `json:"spec"`
+	Spec ResourceIngressClassSpec `json:"spec"`
 }
 
 type ResourceIngressClassSpec struct {

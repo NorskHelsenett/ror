@@ -26,7 +26,7 @@ func TestNewResourceSetFromDynamicClient{{.Kind}}(t *testing.T) {
 
     expected := rorresources.NewRorResource("{{.Kind}}", "{{.APIVersion}}")
     expected.Set{{.Kind}}(new{{.Kind}}FromDynamicClient(input))
-    expected.SetCommon(new{{.Kind}}FromDynamicClient(input))
+    expected.SetCommonInterface(new{{.Kind}}FromDynamicClient(input))
 
     result := NewResourceSetFromDynamicClient(input)
 

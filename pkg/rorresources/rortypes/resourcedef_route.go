@@ -2,8 +2,7 @@ package rortypes
 
 // Resource used by the switchboard microservice to determine notification routing
 type ResourceRoute struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceRouteSpec `json:"spec"`
+	Spec ResourceRouteSpec `json:"spec"`
 }
 
 type ResourceRouteSpec struct {

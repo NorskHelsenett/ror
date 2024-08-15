@@ -121,12 +121,71 @@ func (rc MongodbCon) CountWithQuery(ctx context.Context, col string, query any) 
 
 func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.ResourceQuery) []bson.M {
 	query := make([]bson.M, 0)
+	match := bson.M{}
 	if rorResourceQuery == nil {
 		return query
 	}
 	// Add filters
+
+	if !rorResourceQuery.VersionKind.Empty() {
+		apiversion, kind := rorResourceQuery.VersionKind.ToAPIVersionAndKind()
+		if apiversion != "" {
+			match["typemeta.apiversion"] = apiversion
+		}
+		if kind != "" {
+			match["typemeta.kind"] = kind
+		}
+	}
+
 	if len(rorResourceQuery.Uids) > 0 {
-		query = append(query, bson.M{"$match": bson.M{"uid": bson.M{"$in": rorResourceQuery.Uids}}})
+		match["uid"] = bson.M{"$in": rorResourceQuery.Uids}
+	}
+
+	if len(rorResourceQuery.OwnerRefs) > 0 {
+		match["rormeta.ownerref"] = bson.M{"$in": rorResourceQuery.OwnerRefs}
+	}
+	query = append(query, bson.M{"$match": match})
+
+	// Add sorting
+	sortaggregate := bson.M{}
+	if len(rorResourceQuery.Order) != 0 {
+		for _, orderline := range rorResourceQuery.GetOrderSorted() {
+			if orderline.Descending {
+				sortaggregate[orderline.Field] = -1
+			} else {
+				sortaggregate[orderline.Field] = 1
+			}
+		}
+
+	} else {
+		sortaggregate["metadata.name"] = 1
+	}
+	query = append(query, bson.M{"$sort": sortaggregate})
+	// Add projection
+	if len(rorResourceQuery.Fields) != 0 {
+		project := bson.M{}
+		project["metadata"] = 1
+		project["rormeta"] = 1
+		project["typemeta"] = 1
+		for _, field := range rorResourceQuery.Fields {
+			project[field] = 1
+		}
+		query = append(query, bson.M{"$project": project})
+	}
+
+	// Add offset and limit
+	if rorResourceQuery.Offset != 0 {
+		query = append(query, bson.M{"$skip": rorResourceQuery.Offset})
+	}
+
+	if rorResourceQuery.Limit > 1000 {
+		rorResourceQuery.Limit = 1000
+	}
+
+	if rorResourceQuery.Limit != 0 {
+		query = append(query, bson.M{"$limit": rorResourceQuery.Limit})
+	} else {
+		query = append(query, bson.M{"$limit": 100})
 	}
 	return query
 }

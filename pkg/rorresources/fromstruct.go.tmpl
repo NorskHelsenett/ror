@@ -23,20 +23,28 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 	out.query = &query
 
 	for _, res := range in.Resources {
-		r := NewRorResource(res.Kind, res.ApiVersion)
+		r := NewResourceFromStruct(*res)
+		out.Add(r)
+	}
+	return &out
 
-		gvk := schema.FromAPIVersionAndKind(res.ApiVersion, res.Kind)
+}
+
+func NewResourceFromStruct(res Resource) *Resource {
+
+		r := NewRorResource(res.Kind, res.APIVersion)
+	    r.CommonResource = res.CommonResource
+
+		gvk := schema.FromAPIVersionAndKind(res.APIVersion, res.Kind)
 		switch gvk.String() {
 {{ range .}}
 
 		case "{{.GroupVersionKind.String }}":
 			r.Set{{.Kind}}(res.{{.Kind}}Resource)
-			r.SetCommon(res.{{.Kind}}Resource)
+			r.SetCommonInterface(res.{{.Kind}}Resource)
 {{end}}
 		default:
-			rlog.Info("Unknown resource kind", rlog.String("gvk",gvk.String()),rlog.String("kind", res.Kind), rlog.String("apiVersion", res.ApiVersion))
+			rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 		}
-		out.Add(r)
-	}
-	return &out
+	return r
 }

@@ -2,8 +2,7 @@ package rortypes
 
 // K8s namepace struct
 type ResourceRbacAssessmentReport struct {
-	CommonResource `json:",inline"`
-	Report         ResourceVulnerabilityReportReport `json:"report"`
+	Report ResourceVulnerabilityReportReport `json:"report"`
 }
 type ResourceRbacAssessmentReportReport struct {
 	Summary AquaReportSummary `json:"summary"`

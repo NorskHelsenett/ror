@@ -2,9 +2,8 @@ package rortypes
 
 // K8s application struct used with ArgoCD
 type ResourceApplication struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceApplicationSpec   `json:"spec"`
-	Status         ResourceApplicationStatus `json:"status"`
+	Spec   ResourceApplicationSpec   `json:"spec"`
+	Status ResourceApplicationStatus `json:"status"`
 }
 
 type ResourceApplicationStatus struct {

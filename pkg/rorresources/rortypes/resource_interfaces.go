@@ -3,21 +3,10 @@
 
 package rortypes
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 // CommonResourceInterface represents the minimum interface for all resources
 type CommonResourceInterface interface {
-	GetName() string
-	GetUID() string
-	GetKind() string
-	GetAPIVersion() string
-	GetMetadata() metav1.ObjectMeta
-	GetRorMeta() ResourceRorMeta
-	SetRorMeta(ResourceRorMeta) error
 	GetRorHash() string
-	ApplyInputFilter() error
+	ApplyInputFilter(cr *CommonResource) error
 }
 
 // Namespaceinterface represents the interface for resources of the type namespace

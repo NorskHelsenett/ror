@@ -7,7 +7,6 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type FilterType string
@@ -17,36 +16,6 @@ type ResourceSet struct {
 	nextcursor int
 	query      *ResourceQuery
 	Resources  []*Resource `json:"resources,omitempty"`
-}
-
-const (
-	FilterTypeString FilterType = "string"
-	FilterTypeInt    FilterType = "int"
-	FilterTypeBool   FilterType = "bool"
-)
-
-type ResourceQueryFilter struct {
-	Field    string     `json:"field,omitempty"`
-	Value    string     `json:"value,omitempty"`
-	Type     FilterType `json:"type,omitempty"`
-	Operator string     `json:"operator,omitempty"`
-}
-
-type ResourceQueryOrder struct {
-	Field      string `json:"field,omitempty"`
-	Descending bool   `json:"descending,omitempty"`
-}
-
-type ResourceQuery struct {
-	VersionKind         schema.GroupVersionKind              `json:"version_kind,omitempty"`         // memory
-	Uids                []string                             `json:"uids,omitempty"`                 // memory
-	OwnerRefs           []rortypes.RorResourceOwnerReference `json:"owner_refs,omitempty"`           // memory
-	Fields              []string                             `json:"fields,omitempty"`               // post or db
-	Order               map[int]ResourceQueryOrder           `json:"order,omitempty"`                // post or db
-	Filters             []ResourceQueryFilter                `json:"filters,omitempty"`              // db
-	Offset              int                                  `json:"offset,omitempty"`               // post or db
-	Limit               int                                  `json:"limit,omitempty"`                // post or db
-	AdditionalResources []schema.GroupVersionKind            `json:"additional_resources,omitempty"` // memory or db
 }
 
 type ResourceUpdateResults struct {

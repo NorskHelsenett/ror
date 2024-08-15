@@ -7,12 +7,12 @@ import (
 )
 
 // (r *ResourcePolicyReport) ApplyInputFilter Applies the input filter to the resource
-func (r *ResourcePolicyReport) ApplyInputFilter() error {
-	if globalconfig.InternalNamespaces[r.Metadata.Namespace] {
-		r.RorMeta.Internal = true
+func (r *ResourcePolicyReport) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
 	}
 
-	r.RorMeta.LastReported = time.Now().Local().String()
+	cr.RorMeta.LastReported = time.Now().Local().String()
 
 	return nil
 }

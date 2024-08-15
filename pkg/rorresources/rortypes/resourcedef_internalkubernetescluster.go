@@ -1,9 +1,8 @@
 package rortypes
 
 type ResourceKubernetesCluster struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceKubernetesClusterSpec   `json:"spec"`
-	Status         ResourceKubernetesClusterStatus `json:"status"`
+	Spec   ResourceKubernetesClusterSpec   `json:"spec"`
+	Status ResourceKubernetesClusterStatus `json:"status"`
 }
 
 type ResourceKubernetesClusterSpec struct {

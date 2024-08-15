@@ -2,9 +2,8 @@ package rortypes
 
 // K8s certificate struct
 type ResourceCertificate struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceCertificateSpec   `json:"spec"`
-	Status         ResourceCertificateStatus `json:"status"`
+	Spec   ResourceCertificateSpec   `json:"spec"`
+	Status ResourceCertificateStatus `json:"status"`
 }
 
 type ResourceCertificateSpec struct {

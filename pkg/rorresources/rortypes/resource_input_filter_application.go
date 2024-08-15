@@ -5,9 +5,9 @@ import (
 )
 
 // (r *ResourceApplication) ApplyInputFilter Applies the input filter to the resource
-func (r *ResourceApplication) ApplyInputFilter() error {
+func (r *ResourceApplication) ApplyInputFilter(cr *CommonResource) error {
 	if globalconfig.InternalAppProjects[r.Spec.Project] {
-		r.RorMeta.Internal = true
+		cr.RorMeta.Internal = true
 	}
 	return nil
 }

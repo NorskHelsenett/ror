@@ -26,7 +26,7 @@ func TestNewResourceSetFromDynamicClientNamespace(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Namespace", "v1")
 	expected.SetNamespace(newNamespaceFromDynamicClient(input))
-	expected.SetCommon(newNamespaceFromDynamicClient(input))
+	expected.SetCommonInterface(newNamespaceFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -48,7 +48,7 @@ func TestNewResourceSetFromDynamicClientNode(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Node", "v1")
 	expected.SetNode(newNodeFromDynamicClient(input))
-	expected.SetCommon(newNodeFromDynamicClient(input))
+	expected.SetCommonInterface(newNodeFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -70,7 +70,7 @@ func TestNewResourceSetFromDynamicClientPersistentVolumeClaim(t *testing.T) {
 
 	expected := rorresources.NewRorResource("PersistentVolumeClaim", "v1")
 	expected.SetPersistentVolumeClaim(newPersistentVolumeClaimFromDynamicClient(input))
-	expected.SetCommon(newPersistentVolumeClaimFromDynamicClient(input))
+	expected.SetCommonInterface(newPersistentVolumeClaimFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -92,7 +92,7 @@ func TestNewResourceSetFromDynamicClientDeployment(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Deployment", "apps/v1")
 	expected.SetDeployment(newDeploymentFromDynamicClient(input))
-	expected.SetCommon(newDeploymentFromDynamicClient(input))
+	expected.SetCommonInterface(newDeploymentFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -114,7 +114,7 @@ func TestNewResourceSetFromDynamicClientStorageClass(t *testing.T) {
 
 	expected := rorresources.NewRorResource("StorageClass", "storage.k8s.io/v1")
 	expected.SetStorageClass(newStorageClassFromDynamicClient(input))
-	expected.SetCommon(newStorageClassFromDynamicClient(input))
+	expected.SetCommonInterface(newStorageClassFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -136,7 +136,7 @@ func TestNewResourceSetFromDynamicClientPolicyReport(t *testing.T) {
 
 	expected := rorresources.NewRorResource("PolicyReport", "wgpolicyk8s.io/v1alpha2")
 	expected.SetPolicyReport(newPolicyReportFromDynamicClient(input))
-	expected.SetCommon(newPolicyReportFromDynamicClient(input))
+	expected.SetCommonInterface(newPolicyReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -158,7 +158,7 @@ func TestNewResourceSetFromDynamicClientApplication(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Application", "argoproj.io/v1alpha1")
 	expected.SetApplication(newApplicationFromDynamicClient(input))
-	expected.SetCommon(newApplicationFromDynamicClient(input))
+	expected.SetCommonInterface(newApplicationFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -180,7 +180,7 @@ func TestNewResourceSetFromDynamicClientAppProject(t *testing.T) {
 
 	expected := rorresources.NewRorResource("AppProject", "argoproj.io/v1alpha1")
 	expected.SetAppProject(newAppProjectFromDynamicClient(input))
-	expected.SetCommon(newAppProjectFromDynamicClient(input))
+	expected.SetCommonInterface(newAppProjectFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -202,7 +202,7 @@ func TestNewResourceSetFromDynamicClientCertificate(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Certificate", "cert-manager.io/v1")
 	expected.SetCertificate(newCertificateFromDynamicClient(input))
-	expected.SetCommon(newCertificateFromDynamicClient(input))
+	expected.SetCommonInterface(newCertificateFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -224,7 +224,7 @@ func TestNewResourceSetFromDynamicClientService(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Service", "v1")
 	expected.SetService(newServiceFromDynamicClient(input))
-	expected.SetCommon(newServiceFromDynamicClient(input))
+	expected.SetCommonInterface(newServiceFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -246,7 +246,7 @@ func TestNewResourceSetFromDynamicClientPod(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Pod", "v1")
 	expected.SetPod(newPodFromDynamicClient(input))
-	expected.SetCommon(newPodFromDynamicClient(input))
+	expected.SetCommonInterface(newPodFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -268,7 +268,7 @@ func TestNewResourceSetFromDynamicClientReplicaSet(t *testing.T) {
 
 	expected := rorresources.NewRorResource("ReplicaSet", "apps/v1")
 	expected.SetReplicaSet(newReplicaSetFromDynamicClient(input))
-	expected.SetCommon(newReplicaSetFromDynamicClient(input))
+	expected.SetCommonInterface(newReplicaSetFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -290,7 +290,7 @@ func TestNewResourceSetFromDynamicClientStatefulSet(t *testing.T) {
 
 	expected := rorresources.NewRorResource("StatefulSet", "apps/v1")
 	expected.SetStatefulSet(newStatefulSetFromDynamicClient(input))
-	expected.SetCommon(newStatefulSetFromDynamicClient(input))
+	expected.SetCommonInterface(newStatefulSetFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -312,7 +312,7 @@ func TestNewResourceSetFromDynamicClientDaemonSet(t *testing.T) {
 
 	expected := rorresources.NewRorResource("DaemonSet", "apps/v1")
 	expected.SetDaemonSet(newDaemonSetFromDynamicClient(input))
-	expected.SetCommon(newDaemonSetFromDynamicClient(input))
+	expected.SetCommonInterface(newDaemonSetFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -334,7 +334,7 @@ func TestNewResourceSetFromDynamicClientIngress(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Ingress", "networking.k8s.io/v1")
 	expected.SetIngress(newIngressFromDynamicClient(input))
-	expected.SetCommon(newIngressFromDynamicClient(input))
+	expected.SetCommonInterface(newIngressFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -356,7 +356,7 @@ func TestNewResourceSetFromDynamicClientIngressClass(t *testing.T) {
 
 	expected := rorresources.NewRorResource("IngressClass", "networking.k8s.io/v1")
 	expected.SetIngressClass(newIngressClassFromDynamicClient(input))
-	expected.SetCommon(newIngressClassFromDynamicClient(input))
+	expected.SetCommonInterface(newIngressClassFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -378,7 +378,7 @@ func TestNewResourceSetFromDynamicClientVulnerabilityReport(t *testing.T) {
 
 	expected := rorresources.NewRorResource("VulnerabilityReport", "aquasecurity.github.io/v1alpha1")
 	expected.SetVulnerabilityReport(newVulnerabilityReportFromDynamicClient(input))
-	expected.SetCommon(newVulnerabilityReportFromDynamicClient(input))
+	expected.SetCommonInterface(newVulnerabilityReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -400,7 +400,7 @@ func TestNewResourceSetFromDynamicClientExposedSecretReport(t *testing.T) {
 
 	expected := rorresources.NewRorResource("ExposedSecretReport", "aquasecurity.github.io/v1alpha1")
 	expected.SetExposedSecretReport(newExposedSecretReportFromDynamicClient(input))
-	expected.SetCommon(newExposedSecretReportFromDynamicClient(input))
+	expected.SetCommonInterface(newExposedSecretReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -422,7 +422,7 @@ func TestNewResourceSetFromDynamicClientConfigAuditReport(t *testing.T) {
 
 	expected := rorresources.NewRorResource("ConfigAuditReport", "aquasecurity.github.io/v1alpha1")
 	expected.SetConfigAuditReport(newConfigAuditReportFromDynamicClient(input))
-	expected.SetCommon(newConfigAuditReportFromDynamicClient(input))
+	expected.SetCommonInterface(newConfigAuditReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -444,7 +444,7 @@ func TestNewResourceSetFromDynamicClientRbacAssessmentReport(t *testing.T) {
 
 	expected := rorresources.NewRorResource("RbacAssessmentReport", "aquasecurity.github.io/v1alpha1")
 	expected.SetRbacAssessmentReport(newRbacAssessmentReportFromDynamicClient(input))
-	expected.SetCommon(newRbacAssessmentReportFromDynamicClient(input))
+	expected.SetCommonInterface(newRbacAssessmentReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -466,7 +466,7 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesCluster(t *testing.T) {
 
 	expected := rorresources.NewRorResource("TanzuKubernetesCluster", "run.tanzu.vmware.com/v1alpha2")
 	expected.SetTanzuKubernetesCluster(newTanzuKubernetesClusterFromDynamicClient(input))
-	expected.SetCommon(newTanzuKubernetesClusterFromDynamicClient(input))
+	expected.SetCommonInterface(newTanzuKubernetesClusterFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -488,7 +488,7 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesRelease(t *testing.T) {
 
 	expected := rorresources.NewRorResource("TanzuKubernetesRelease", "run.tanzu.vmware.com/v1alpha2")
 	expected.SetTanzuKubernetesRelease(newTanzuKubernetesReleaseFromDynamicClient(input))
-	expected.SetCommon(newTanzuKubernetesReleaseFromDynamicClient(input))
+	expected.SetCommonInterface(newTanzuKubernetesReleaseFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -510,7 +510,7 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClass(t *testing.T) {
 
 	expected := rorresources.NewRorResource("VirtualMachineClass", "vmoperator.vmware.com/v1alpha1")
 	expected.SetVirtualMachineClass(newVirtualMachineClassFromDynamicClient(input))
-	expected.SetCommon(newVirtualMachineClassFromDynamicClient(input))
+	expected.SetCommonInterface(newVirtualMachineClassFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -532,7 +532,7 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClassBinding(t *testing.T)
 
 	expected := rorresources.NewRorResource("VirtualMachineClassBinding", "vmoperator.vmware.com/v1alpha1")
 	expected.SetVirtualMachineClassBinding(newVirtualMachineClassBindingFromDynamicClient(input))
-	expected.SetCommon(newVirtualMachineClassBindingFromDynamicClient(input))
+	expected.SetCommonInterface(newVirtualMachineClassBindingFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -554,7 +554,7 @@ func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 
 	expected := rorresources.NewRorResource("KubernetesCluster", "general.ror.internal/v1alpha1")
 	expected.SetKubernetesCluster(newKubernetesClusterFromDynamicClient(input))
-	expected.SetCommon(newKubernetesClusterFromDynamicClient(input))
+	expected.SetCommonInterface(newKubernetesClusterFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -576,7 +576,7 @@ func TestNewResourceSetFromDynamicClientClusterOrder(t *testing.T) {
 
 	expected := rorresources.NewRorResource("ClusterOrder", "general.ror.internal/v1alpha1")
 	expected.SetClusterOrder(newClusterOrderFromDynamicClient(input))
-	expected.SetCommon(newClusterOrderFromDynamicClient(input))
+	expected.SetCommonInterface(newClusterOrderFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -598,7 +598,7 @@ func TestNewResourceSetFromDynamicClientProject(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Project", "general.ror.internal/v1alpha1")
 	expected.SetProject(newProjectFromDynamicClient(input))
-	expected.SetCommon(newProjectFromDynamicClient(input))
+	expected.SetCommonInterface(newProjectFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -620,7 +620,7 @@ func TestNewResourceSetFromDynamicClientConfiguration(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Configuration", "general.ror.internal/v1alpha1")
 	expected.SetConfiguration(newConfigurationFromDynamicClient(input))
-	expected.SetCommon(newConfigurationFromDynamicClient(input))
+	expected.SetCommonInterface(newConfigurationFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -642,7 +642,7 @@ func TestNewResourceSetFromDynamicClientClusterComplianceReport(t *testing.T) {
 
 	expected := rorresources.NewRorResource("ClusterComplianceReport", "aquasecurity.github.io/v1alpha1")
 	expected.SetClusterComplianceReport(newClusterComplianceReportFromDynamicClient(input))
-	expected.SetCommon(newClusterComplianceReportFromDynamicClient(input))
+	expected.SetCommonInterface(newClusterComplianceReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -664,7 +664,7 @@ func TestNewResourceSetFromDynamicClientClusterVulnerabilityReport(t *testing.T)
 
 	expected := rorresources.NewRorResource("ClusterVulnerabilityReport", "general.ror.internal/v1alpha1")
 	expected.SetClusterVulnerabilityReport(newClusterVulnerabilityReportFromDynamicClient(input))
-	expected.SetCommon(newClusterVulnerabilityReportFromDynamicClient(input))
+	expected.SetCommonInterface(newClusterVulnerabilityReportFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -686,7 +686,7 @@ func TestNewResourceSetFromDynamicClientRoute(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Route", "general.ror.internal/v1alpha1")
 	expected.SetRoute(newRouteFromDynamicClient(input))
-	expected.SetCommon(newRouteFromDynamicClient(input))
+	expected.SetCommonInterface(newRouteFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -708,7 +708,7 @@ func TestNewResourceSetFromDynamicClientSlackMessage(t *testing.T) {
 
 	expected := rorresources.NewRorResource("SlackMessage", "general.ror.internal/v1alpha1")
 	expected.SetSlackMessage(newSlackMessageFromDynamicClient(input))
-	expected.SetCommon(newSlackMessageFromDynamicClient(input))
+	expected.SetCommonInterface(newSlackMessageFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
@@ -730,7 +730,7 @@ func TestNewResourceSetFromDynamicClientNotification(t *testing.T) {
 
 	expected := rorresources.NewRorResource("Notification", "general.ror.internal/v1alpha1")
 	expected.SetNotification(newNotificationFromDynamicClient(input))
-	expected.SetCommon(newNotificationFromDynamicClient(input))
+	expected.SetCommonInterface(newNotificationFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 

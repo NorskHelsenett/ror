@@ -3,9 +3,8 @@ package rortypes
 // ResourceTanzuKubernetesCluster
 // K8s node struct
 type ResourceTanzuKubernetesCluster struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceTanuzKuberntesClusterSpec    `json:"spec"`
-	Status         ResourceTanzuKubernetesClusterStatus `json:"status,omitempty"`
+	Spec   ResourceTanuzKuberntesClusterSpec    `json:"spec"`
+	Status ResourceTanzuKubernetesClusterStatus `json:"status,omitempty"`
 }
 
 type ResourceTanuzKuberntesMetadata struct {

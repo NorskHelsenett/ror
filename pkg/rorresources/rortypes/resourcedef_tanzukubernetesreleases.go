@@ -4,9 +4,8 @@ package rortypes
 // K8s node struct
 // Tanzu kubernetes release struct
 type ResourceTanzuKubernetesRelease struct {
-	CommonResource `json:",inline"`
-	Spec           ResourceTanzuKubernetesReleaseSpec   `json:"spec"`
-	Status         ResourceTanzuKubernetesReleaseStatus `json:"status"`
+	Spec   ResourceTanzuKubernetesReleaseSpec   `json:"spec"`
+	Status ResourceTanzuKubernetesReleaseStatus `json:"status"`
 }
 
 type ResourceTanzuKubernetesReleaseMetadata struct {
