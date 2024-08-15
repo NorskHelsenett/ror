@@ -131,33 +131,62 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	if !rorResourceQuery.VersionKind.Empty() {
 		apiversion, kind := rorResourceQuery.VersionKind.ToAPIVersionAndKind()
 		if apiversion != "" {
-			match["apiversion"] = apiversion
+			match["typemeta.apiversion"] = apiversion
 		}
 		if kind != "" {
-			match["kind"] = kind
+			match["typemeta.kind"] = kind
 		}
 	}
 
 	if len(rorResourceQuery.Uids) > 0 {
 		match["uid"] = bson.M{"$in": rorResourceQuery.Uids}
 	}
+
+	if len(rorResourceQuery.OwnerRefs) > 0 {
+		match["rormeta.ownerref"] = bson.M{"$in": rorResourceQuery.OwnerRefs}
+	}
 	query = append(query, bson.M{"$match": match})
 
 	// Add sorting
-	sort := bson.M{}
+	sortaggregate := bson.M{}
 	if len(rorResourceQuery.Order) != 0 {
-		sort["rorResourceQuery.SortBy"] = 1
+		for _, orderline := range rorResourceQuery.GetOrderSorted() {
+			if orderline.Descending {
+				sortaggregate[orderline.Field] = -1
+			} else {
+				sortaggregate[orderline.Field] = 1
+			}
+		}
+
 	} else {
-		sort["uid"] = 1
+		sortaggregate["metadata.name"] = 1
 	}
-	query = append(query, bson.M{"$sort": sort})
+	query = append(query, bson.M{"$sort": sortaggregate})
 	// Add projection
 	if len(rorResourceQuery.Fields) != 0 {
 		project := bson.M{}
+		project["metadata"] = 1
+		project["rormeta"] = 1
+		project["typemeta"] = 1
 		for _, field := range rorResourceQuery.Fields {
 			project[field] = 1
 		}
 		query = append(query, bson.M{"$project": project})
+	}
+
+	// Add offset and limit
+	if rorResourceQuery.Offset != 0 {
+		query = append(query, bson.M{"$skip": rorResourceQuery.Offset})
+	}
+
+	if rorResourceQuery.Limit > 1000 {
+		rorResourceQuery.Limit = 1000
+	}
+
+	if rorResourceQuery.Limit != 0 {
+		query = append(query, bson.M{"$limit": rorResourceQuery.Limit})
+	} else {
+		query = append(query, bson.M{"$limit": 100})
 	}
 	stringhelper.PrettyprintStruct(query)
 	return query

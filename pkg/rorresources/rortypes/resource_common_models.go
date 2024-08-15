@@ -64,6 +64,10 @@ func (r *RorResourceOwnerReference) Validate() (bool, error) {
 	return true, nil
 }
 
+func (r RorResourceOwnerReference) String() string {
+	return string(r.Scope) + ":" + string(r.Subject)
+}
+
 func (r RorResourceOwnerReference) GetQueryParams() map[string]string {
 	response := make(map[string]string)
 	response["ownerScope"] = string(r.Scope)
