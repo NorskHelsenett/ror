@@ -71,6 +71,9 @@ func NewKubeConfig() *KubeConfig {
 
 // IsExpired check if the selected contexts token is expired
 func (k *KubeConfig) IsExpired(context string) (bool, error) {
+	if k == nil {
+		return true, nil
+	}
 	if errs := k.HandleErrors(); errs != nil {
 		return true, errs
 	}
