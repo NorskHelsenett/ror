@@ -12,6 +12,7 @@ type CacheInterface interface {
 }
 
 type CacheOptions struct {
-	Prefix  string
-	Timeout time.Duration
+	Prefix       string
+	Timeout      time.Duration
+	CronSchedule time.Duration
 }
