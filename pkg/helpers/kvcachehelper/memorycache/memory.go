@@ -47,7 +47,6 @@ func NewKvCache(opts ...kvcachehelper.CacheOptions) *KvCache {
 			if opt.Prefix != "" {
 				c.prefix = opt.Prefix
 			}
-
 		}
 	}
 	if c.cSchedule == nil {
@@ -64,7 +63,6 @@ func NewKvCache(opts ...kvcachehelper.CacheOptions) *KvCache {
 func (c *KvCache) scheduleJanitor(timer time.Duration) (scheduler *gocron.Scheduler) {
 
 	scheduler = gocron.NewScheduler(time.UTC)
-	//cronJob, err := scheduler.Every(timer).Tag("cleanEvents").Do(c.janitor)
 	scheduler.Every(timer).Tag("cleanEvents").Do(c.janitor)
 	scheduler.StartAsync()
 	return scheduler
