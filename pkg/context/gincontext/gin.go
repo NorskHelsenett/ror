@@ -18,7 +18,17 @@ import (
 
 // GetRorContextFromGinContext Function creates ror context from gin context, identity is added to the context
 func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+	var timeout time.Duration
+	timeoutstring, exists := c.Get("timeout")
+	if !exists {
+		rlog.Warn("timeout not set in gin context")
+		timeout = 10 * time.Second
+	} else {
+		rlog.Info("timeout set in gin context", rlog.String("timeout", timeoutstring.(time.Duration).String()))
+		timeout = timeoutstring.(time.Duration)
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
 	identity, err := getIdentityFromGinContext(c)
 	if err != nil {
 		rlog.Error("could not get user from gin context: %v", err)
