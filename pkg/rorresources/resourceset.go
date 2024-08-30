@@ -9,8 +9,6 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
-type FilterType string
-
 // ResourceSet is the common way to present one or more resources in ror.
 type ResourceSet struct {
 	nextcursor int

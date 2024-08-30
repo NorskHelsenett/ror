@@ -3,7 +3,9 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"strconv"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -146,6 +148,72 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	}
 	query = append(query, bson.M{"$match": match})
 
+	if len(rorResourceQuery.Filters) > 0 {
+		filterquery := bson.M{}
+		for _, filter := range rorResourceQuery.Filters {
+			switch filter.Type {
+			case rorresources.FilterTypeString:
+				if filter.Operator == "eq" {
+					filterquery[filter.Field] = bson.M{"$eq": filter.Value}
+				}
+				if filter.Operator == "ne" {
+					filterquery[filter.Field] = bson.M{"$ne": filter.Value}
+				}
+				if filter.Operator == "regexp" {
+					filterquery[filter.Field] = bson.M{"$regex": filter.Value, "$options": "i"}
+				}
+			case rorresources.FilterTypeInt:
+				if filter.Operator == "eq" {
+					filterquery[filter.Field] = bson.M{"$eq": filter.Value}
+				}
+				if filter.Operator == "gt" {
+					filterquery[filter.Field] = bson.M{"$gt": filter.Value}
+				}
+				if filter.Operator == "lt" {
+					filterquery[filter.Field] = bson.M{"$lt": filter.Value}
+				}
+				if filter.Operator == "ge" {
+					filterquery[filter.Field] = bson.M{"$gte": filter.Value}
+				}
+				if filter.Operator == "le" {
+					filterquery[filter.Field] = bson.M{"$lte": filter.Value}
+				}
+			case rorresources.FilterTypeBool:
+				if filter.Operator == "eq" {
+					boolfilter, err := strconv.ParseBool(filter.Value)
+					if err == nil {
+						filterquery[filter.Field] = bson.M{"$eq": boolfilter}
+					}
+				}
+				// case rorresources.FilterTypeTime:
+
+				// 	format := "2006-01-02 15:04:05.999999999 -0700 MST"
+				// 	timevalue, err := time.Parse(format, filter.Value)
+
+				// 	if err == nil {
+				// 		//timevalue := time.ParseTimestamps(filter.Value)
+				// 		if filter.Operator == "eq" {
+				// 			filterquery[filter.Field] = bson.M{"$eq": timevalue}
+				// 		}
+				// 		if filter.Operator == "gt" {
+				// 			filterquery[filter.Field] = bson.M{"$gt": timevalue}
+				// 		}
+				// 		if filter.Operator == "lt" {
+				// 			filterquery[filter.Field] = bson.M{"$lt": timevalue}
+				// 		}
+				// 		if filter.Operator == "ge" {
+				// 			filterquery[filter.Field] = bson.M{"$gte": timevalue}
+				// 		}
+				// 		if filter.Operator == "le" {
+				// 			filterquery[filter.Field] = bson.M{"$lte": timevalue}
+				// 		}
+				// 	}
+			}
+		}
+		filterquery = bson.M{"$match": filterquery}
+		query = append(query, filterquery)
+	}
+
 	// Add sorting
 	sortaggregate := bson.M{}
 	if len(rorResourceQuery.Order) != 0 {
@@ -187,5 +255,6 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	} else {
 		query = append(query, bson.M{"$limit": 100})
 	}
+	stringhelper.PrettyprintStruct(query)
 	return query
 }
