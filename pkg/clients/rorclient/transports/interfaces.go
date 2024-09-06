@@ -7,12 +7,14 @@ import (
 	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
+	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 )
 
 type RorTransport interface {
+	Stream() v1stream.StreamInterface
 	Info() v1info.InfoInterface
 	Datacenters() v1datacenter.DatacenterInterface
 	Clusters() v1clusters.ClustersInterface
