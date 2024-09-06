@@ -11,6 +11,7 @@ import (
 	restv1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/metrics"
 	restv1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/projects"
 	restv1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/resources"
+	restv1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/stream"
 	restv1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/workspaces"
 	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
@@ -20,6 +21,7 @@ import (
 	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
+	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
@@ -27,6 +29,7 @@ import (
 
 type RorHttpTransport struct {
 	Client             *httpclient.HttpTransportClient
+	streamClientV1     v1stream.StreamInterface
 	infoClientV1       v1info.InfoInterface
 	datacenterClientV1 v1datacenter.DatacenterInterface
 	clustersClientV1   v1clusters.ClustersInterface
@@ -45,6 +48,7 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 	}
 	t := &RorHttpTransport{
 		Client:             client,
+		streamClientV1:     restv1stream.NewV1Client(client),
 		infoClientV1:       restv1info.NewV1Client(client),
 		datacenterClientV1: restv1datacenter.NewV1Client(client),
 		clustersClientV1:   restv1clusters.NewV1Client(client),
@@ -56,6 +60,10 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 		resourcesClientV2:  restv2resources.NewV2Client(client),
 	}
 	return t
+}
+
+func (t *RorHttpTransport) Stream() v1stream.StreamInterface {
+	return t.streamClientV1
 }
 
 func (t *RorHttpTransport) Info() v1info.InfoInterface {
