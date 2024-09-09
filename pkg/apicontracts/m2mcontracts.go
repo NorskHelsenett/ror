@@ -66,7 +66,7 @@ type OperatorJobConfig struct {
 	Data map[string]string `json:"data" validate:"required"`
 }
 
-// Spesification of properties for a task
+// Specification of properties for a task
 type TaskSpec struct {
 	// +kubebuilder:validation:Required
 	ImageName string `json:"imageName" validate:"required"`

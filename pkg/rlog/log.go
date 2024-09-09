@@ -258,7 +258,7 @@ func createDevelopRLogConfig() zap.Config {
 func getLogLevelFromConfig() zapcore.Level {
 
 	//since the api does not use viper yet we do this check to preserve
-	//backwards compatability, when the API uses viper for config we can remove
+	//backwards compatibility, when the API uses viper for config we can remove
 	//this
 	logLevelConfig, present := os.LookupEnv("LOG_LEVEL")
 	if !present {
@@ -287,13 +287,13 @@ func getLogLevelFromConfig() zapcore.Level {
 	return logLevel
 }
 
-// looks for LOG_OUTPUT in environment to set ouput destination
+// looks for LOG_OUTPUT in environment to set output destination
 // to define more than one output separate them with ','
 // outputs must adhere to zaps requirements
 func getOutputsFromConfig() []string {
 
 	//since the api does not use viper yet we do this check to preserve
-	//backwards compatability, when the API uses viper for config we can remove
+	//backwards compatibility, when the API uses viper for config we can remove
 	//this
 	outputsString, present := os.LookupEnv("LOG_OUTPUT")
 	if !present {
@@ -309,13 +309,13 @@ func getOutputsFromConfig() []string {
 	return outputs
 }
 
-// looks for optional LOG_OUTPUT_ERROR in environment to set ouput destination
+// looks for optional LOG_OUTPUT_ERROR in environment to set output destination
 // to define more than one output separate them with ','
 // outputs must adhere to zaps requirements
 func getErrorOutputsFromConfig() []string {
 
 	//since the api does not use viper yet we do this check to preserve
-	//backwards compatability, when the API uses viper for config we can remove
+	//backwards compatibility, when the API uses viper for config we can remove
 	//this
 	outputsString, present := os.LookupEnv("LOG_OUTPUT_ERROR")
 	if !present {
