@@ -70,6 +70,7 @@ func InitRorClientConfig(conf ClientConfig) {
 		rlog.Fatal("failed to init ror client", err)
 	}
 }
+
 func NewRorConfig(conf ClientConfig) *RorClientConfig {
 	return &RorClientConfig{
 		config: conf,

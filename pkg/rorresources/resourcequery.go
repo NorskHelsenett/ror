@@ -9,16 +9,30 @@ import (
 )
 
 const (
-	FilterTypeString FilterType = "string"
-	FilterTypeInt    FilterType = "int"
-	FilterTypeBool   FilterType = "bool"
+	FilterTypeString     FilterType     = "string"
+	FilterTypeInt        FilterType     = "int"
+	FilterTupeIntString  FilterType     = "intstring"
+	FilterTypeBool       FilterType     = "bool"
+	FilterTypeTime       FilterType     = "time"
+	FilterTypeTimeString FilterType     = "timestring"
+	FilterOperatorEq     FilterOperator = "eq"
+	FilterOperatorNe     FilterOperator = "ne"
+	FilterOperatorRegexp FilterOperator = "regexp"
+	FilterOperatorGt     FilterOperator = "gt"
+	FilterOperatorLt     FilterOperator = "lt"
+	FilterOperatorGe     FilterOperator = "ge"
+	FilterOperatorLe     FilterOperator = "le"
 )
 
+type FilterType string
+
+type FilterOperator string
+
 type ResourceQueryFilter struct {
-	Field    string     `json:"field,omitempty"`
-	Value    string     `json:"value,omitempty"`
-	Type     FilterType `json:"type,omitempty"`
-	Operator string     `json:"operator,omitempty"`
+	Field    string         `json:"field,omitempty"`
+	Value    string         `json:"value,omitempty"`
+	Type     FilterType     `json:"type,omitempty"`
+	Operator FilterOperator `json:"operator,omitempty"`
 }
 
 type ResourceQueryOrder struct {
@@ -28,23 +42,23 @@ type ResourceQueryOrder struct {
 }
 
 type ResourceQuery struct {
-	VersionKind         schema.GroupVersionKind              `json:"versionkind,omitempty"`         // memory
-	Uids                []string                             `json:"uids,omitempty"`                // memory
-	OwnerRefs           []rortypes.RorResourceOwnerReference `json:"ownerrefs,omitempty"`           // memory
-	Fields              []string                             `json:"fields,omitempty"`              // post or db
-	Order               []ResourceQueryOrder                 `json:"order,omitempty"`               // post or db
-	Filters             []ResourceQueryFilter                `json:"filters,omitempty"`             // db
-	Offset              int                                  `json:"offset,omitempty"`              // post or db
-	Limit               int                                  `json:"limit,omitempty"`               // post or db
-	AdditionalResources []schema.GroupVersionKind            `json:"additionalresources,omitempty"` // memory or db
+	VersionKind      schema.GroupVersionKind              `json:"versionkind,omitempty"`      // memory
+	Uids             []string                             `json:"uids,omitempty"`             // memory
+	OwnerRefs        []rortypes.RorResourceOwnerReference `json:"ownerrefs,omitempty"`        // memory
+	Fields           []string                             `json:"fields,omitempty"`           // post or db
+	Order            []ResourceQueryOrder                 `json:"order,omitempty"`            // post or db
+	Filters          []ResourceQueryFilter                `json:"filters,omitempty"`          // db
+	Offset           int                                  `json:"offset,omitempty"`           // post or db
+	Limit            int                                  `json:"limit,omitempty"`            // post or db
+	RelatedResources []ResourceQuery                      `json:"relatedresources,omitempty"` // memory or db
 }
 
 func NewResourceQuery() *ResourceQuery {
 	return &ResourceQuery{
-		Fields:              make([]string, 0),
-		Order:               make([]ResourceQueryOrder, 0),
-		Filters:             make([]ResourceQueryFilter, 0),
-		AdditionalResources: make([]schema.GroupVersionKind, 0),
+		Fields:           make([]string, 0),
+		Order:            make([]ResourceQueryOrder, 0),
+		Filters:          make([]ResourceQueryFilter, 0),
+		RelatedResources: make([]ResourceQuery, 0),
 	}
 }
 
