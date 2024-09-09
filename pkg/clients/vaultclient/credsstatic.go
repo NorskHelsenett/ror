@@ -22,7 +22,7 @@ func (sch StaticVaultCredsHelper) GetToken() string {
 
 func (sch *StaticVaultCredsHelper) Login(vc *VaultClient) error {
 	ctx := vc.Context
-	rlog.Warnc(ctx, "authenticating against Vault with a static token. This is not recomended in production!!!!")
+	rlog.Warnc(ctx, "authenticating against Vault with a static token. This is not recommended in production!!!!")
 	// TODO: Check if development or get static token from env.
 	// sch.token = "S3cret!"
 

@@ -93,7 +93,7 @@ func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) 
 		if err := shutdown(ctx); err != nil {
 			rlog.Errorc(ctx, "failed to shutdown TracerProvider", err)
 		} else {
-			rlog.Infoc(ctx, "TracerProvider shut down succesfully")
+			rlog.Infoc(ctx, "TracerProvider shut down successfully")
 		}
 	}()
 	<-stop

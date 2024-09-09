@@ -28,7 +28,7 @@ type AclV2ListItems struct {
 type AclV2ListItem struct {
 	Id      string              `json:"id" bson:"_id,omitempty"`                   // Id
 	Version int                 `json:"version" default:"2" validate:"eq=2" `      // Acl Version, must be 2
-	Group   string              `json:"group" validate:"required,min=1,rortext" `  // The group wich the acces is granted
+	Group   string              `json:"group" validate:"required,min=1,rortext" `  // The group which the acces is granted
 	Scope   Acl2Scope           `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
 	Subject Acl2Subject         `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
 	Access  AclV2ListItemAccess `json:"access" validate:"required"`                // v2 access model for ror api

@@ -36,7 +36,7 @@ func (hl *HashList) MarkActive(uid string) {
 
 }
 
-// Returns a bool value of true if the resource need to be commited
+// Returns a bool value of true if the resource need to be committed
 func (hl HashList) CheckUpdateNeeded(uid string, hash string) bool {
 	hashitem, _ := hl.GetHashByUid(uid)
 	if hashitem.Hash == hash {
@@ -57,7 +57,7 @@ func (hl HashList) GetHashByUid(uid string) (HashItem, int) {
 	return HashItem{}, 0
 }
 
-// updates hash in internal hashlist on update. The api will update its list on commiting the resource to its database.
+// updates hash in internal hashlist on update. The api will update its list on committing the resource to its database.
 func (hl *HashList) UpdateHash(uid string, hash string) {
 	_, i := hl.GetHashByUid(uid)
 	if i != 0 {

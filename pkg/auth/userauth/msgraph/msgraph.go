@@ -114,7 +114,7 @@ func addDomainpartToGroups(groupnames *[]string, userId string) {
 		domain = ""
 	}
 
-	// TODO: Add check if domainpart is allready part of the group name
+	// TODO: Add check if domainpart is already part of the group name
 	for i, group := range *groupnames {
 		(*groupnames)[i] = group + "@" + domain
 	}

@@ -99,7 +99,7 @@ func (r *ResourceSet) Get() *Resource {
 	return r.Resources[cursor]
 }
 
-// All retuns a slice with all resources
+// All returns a slice with all resources
 func (r *ResourceSet) GetAll() []*Resource {
 	return r.Resources
 }
