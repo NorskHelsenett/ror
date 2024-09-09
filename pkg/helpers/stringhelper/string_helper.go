@@ -138,3 +138,7 @@ func DoHashsMatchWithString(hash, text string, salt []byte) bool {
 	var textHash = HashSHA512(text, salt)
 	return hash == textHash
 }
+
+func EscapeString(str string) string {
+	return fmt.Sprintf("%q", str)
+}
