@@ -20,3 +20,12 @@ func RunOtelHttpHealthServer(serverAddress string, healthHandler http.HandlerFun
 	return httpServer.ListenAndServe()
 
 }
+
+// The function writes a 200 status code and the string "Healthy" to the response writer.
+func HealthHandlerTODO(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(200)
+	_, err := w.Write([]byte("Healthy"))
+	if err != nil {
+		panic(err)
+	}
+}
