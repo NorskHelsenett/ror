@@ -26,4 +26,5 @@ var InternalNamespaces map[string]bool = map[string]bool{
 	"nhn-ror":                      true,
 	"ror":                          true,
 	"trivy-system":                 true,
+	"prometheus-blackbox-exporter": true,
 }
