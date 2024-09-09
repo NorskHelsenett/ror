@@ -67,7 +67,8 @@ func (l *LdapsClient) Connect() error {
 				return fmt.Errorf("failed to parse root certificate")
 			}
 			tlsConf := &tls.Config{
-				RootCAs: caCertPool,
+				RootCAs:    caCertPool,
+				MinVersion: tls.VersionTLS12,
 			}
 
 			client, err = ldap.DialTLS("tcp", fmt.Sprintf("%s:%d", ldapserver.Host, ldapserver.Port), tlsConf)
