@@ -40,7 +40,7 @@ type rabbitmqcon struct {
 	Port               string
 	BroadcastName      string
 	Connected          bool
-	Listners           []RabbitMQListnerInterface
+	Listeners          []RabbitMQListnerInterface
 	CancelChannel      chan *amqp.Error
 	TracerID           string
 	SenderQueName      string
@@ -74,7 +74,7 @@ func (rc *rabbitmqcon) Trace(ctx context.Context, spanname string) (context.Cont
 	return noop.NewTracerProvider().Tracer("noop").Start(ctx, spanname)
 }
 func (rc *rabbitmqcon) RegisterHandler(listner RabbitMQListnerInterface) error {
-	rc.Listners = append(rc.Listners, listner)
+	rc.Listeners = append(rc.Listeners, listner)
 	if rc.Connected {
 		go listner.Listen(rc.CancelChannel)
 	}
@@ -137,7 +137,7 @@ func (rc *rabbitmqcon) connect() {
 	rc.Connected = true
 	rlog.Info("connected to RabbitMQ")
 
-	for _, listner := range rc.Listners {
+	for _, listner := range rc.Listeners {
 		go listner.Listen(c)
 	}
 }

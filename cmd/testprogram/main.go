@@ -18,8 +18,8 @@ func main() {
 	hashSHA512Value := stringhelper.HashSHA512(stringHelperObject.Name, []byte(stringHelperObject.RandomString))
 	_, _ = fmt.Printf("Hash (SHA512) value: %s\n", hashSHA512Value)
 
-	md5HashValue := stringhelper.GetMD5Hash([]byte(stringHelperObject.RandomString))
-	_, _ = fmt.Printf("Hash (MD5) value: %s\n", md5HashValue)
+	md5HashValue := stringhelper.GetSHA256Hash([]byte(stringHelperObject.RandomString))
+	_, _ = fmt.Printf("Hash (SHA256) value: %s\n", md5HashValue)
 }
 
 type StringHelperObject struct {

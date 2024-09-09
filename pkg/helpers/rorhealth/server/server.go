@@ -100,8 +100,9 @@ func Start(opts ...Option) error {
 		}
 
 		httpServer = &http.Server{
-			Addr:    cfg.ipPort.String(),
-			Handler: http.HandlerFunc(healthserver.Handle),
+			Addr:              cfg.ipPort.String(),
+			Handler:           http.HandlerFunc(healthserver.Handle),
+			ReadHeaderTimeout: 0,
 		}
 
 		go func() {
