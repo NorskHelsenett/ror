@@ -98,7 +98,7 @@ func NewVaultClient(role string, url string) *VaultClient {
 	var err error
 	var credsHelper VaultCredsHelper
 
-	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
+	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 Jest the path to the token file in the secrets engine
 	if _, err := os.Stat(tokenFilePath); err == nil {
 		credsHelper = NewKubernetesVaultCredsHelper(role, 3600)
 

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	gocron "github.com/go-co-op/gocron"
 )
 
@@ -24,6 +25,7 @@ type KvCache struct {
 	prefix    string
 	expiresIn time.Duration
 	cSchedule *gocron.Scheduler
+	cronJob   *gocron.Job
 }
 type CacheOption map[string]interface{}
 
@@ -61,9 +63,12 @@ func NewKvCache(opts ...kvcachehelper.CacheOptions) *KvCache {
 
 // Schedules cacheJanitor task
 func (c *KvCache) scheduleJanitor(timer time.Duration) (scheduler *gocron.Scheduler) {
-
+	var err error
 	scheduler = gocron.NewScheduler(time.UTC)
-	scheduler.Every(timer).Tag("cleanEvents").Do(c.janitor)
+	c.cronJob, err = scheduler.Every(timer).Tag("cleanEvents").Do(c.janitor)
+	if err != nil {
+		rlog.Error("Error scheduling janitor task", err)
+	}
 	scheduler.StartAsync()
 	return scheduler
 }

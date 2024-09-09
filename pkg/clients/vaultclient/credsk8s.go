@@ -30,7 +30,7 @@ func (kvch KubernetesVaultCredsHelper) GetToken() string {
 }
 
 func (kvch *KubernetesVaultCredsHelper) Login(vc *VaultClient) error {
-	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token"
+	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 Jest the path to the token file in the secrets engine
 	kvch.client = vc
 	ctx := vc.Context
 

@@ -1,8 +1,9 @@
 package stringhelper
 
 import (
-	"crypto/md5"
+	"crypto/md5" // #nosec G501 - MD5 is used for hashing, not for encryption
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
 	"encoding/json"
@@ -53,9 +54,29 @@ func RandomString(strSize int, randType StringType) string {
 	return string(bytes)
 }
 
+// Deprecated: Use GetSHA256Hash, GetSHA384Hash or GetSHA512Hash instead
 // GetMD5Hash returns the md5 hash of a byte array
+// WARNING: This function is not safe for hashing passwords
 func GetMD5Hash(data []byte) string {
-	hash := md5.Sum(data)
+	hash := md5.Sum(data) // #nosec G401 - MD5 is used for hashing, not for encryption
+	return hex.EncodeToString(hash[:])
+}
+
+// GetSHA256Hash returns the SHA256 hash of a byte array
+func GetSHA256Hash(data []byte) string {
+	hash := sha256.Sum256(data)
+	return hex.EncodeToString(hash[:])
+}
+
+// GetSHA384Hash returns the SHA384 hash of a byte array
+func GetSHA384Hash(data []byte) string {
+	hash := sha512.Sum384(data)
+	return hex.EncodeToString(hash[:])
+}
+
+// GetSHA512Hash returns the SHA512 hash of a byte array
+func GetSHA512Hash(data []byte) string {
+	hash := sha512.Sum512(data)
 	return hex.EncodeToString(hash[:])
 }
 
