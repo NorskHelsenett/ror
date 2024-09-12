@@ -4,6 +4,6 @@ import (
 )
 
 // (r *Resource{{.Kind}}) ApplyInputFilter Applies the input filter to the resource
-func (r *Resource{{.Kind}}) ApplyInputFilter() error {
+func (r *Resource{{.Kind}}) ApplyInputFilter(cr *CommonResource) error {
 	return nil
 }
