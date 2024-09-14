@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
+	"github.com/NorskHelsenett/ror/pkg/clients/kvdbclient"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 type RedisCache struct {
-	redisDb    redisdb.RedisDB
+	redisDb    kvdbclient.KvdbClient
 	prefix     string
 	expiration time.Duration
 }
 
-func NewRedisCache(redisDb redisdb.RedisDB, opts ...kvcachehelper.CacheOptions) *RedisCache {
+func NewRedisCache(redisDb kvdbclient.KvdbClient, opts ...kvcachehelper.CacheOptions) *RedisCache {
 	rc := RedisCache{}
 	rlog.Debug("Creating new RedisCache")
 	if redisDb == nil {

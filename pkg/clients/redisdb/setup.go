@@ -19,7 +19,9 @@ type RedisDB interface {
 	Get(ctx context.Context, key string, output *string) error
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Delete(ctx context.Context, key string) error
+	// Deprecated: ReJSON is to be removed in the future
 	GetJSON(context.Context, string, string, interface{}) error
+	// Deprecated: ReJSON is to be removed in the future
 	SetJSON(ctx context.Context, key string, path string, value interface{}) error
 	clients.CommonClient
 }
