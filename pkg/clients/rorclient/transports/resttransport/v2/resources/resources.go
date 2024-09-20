@@ -1,6 +1,9 @@
 package resources
 
 import (
+	"encoding/base64"
+	"encoding/json"
+
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 
@@ -21,7 +24,14 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 
 func (c *V2Client) Get(query rorresources.ResourceQuery) (rorresources.ResourceSet, error) {
 	// implementation goes here
-	return rorresources.ResourceSet{}, nil
+	var res rorresources.ResourceSet
+	jsonQuery, err := json.Marshal(&query)
+	if err != nil {
+		return res, err
+	}
+	queryString := base64.StdEncoding.EncodeToString(jsonQuery)
+	err = c.Client.GetJSON(c.basePath+"?query="+queryString, &res)
+	return res, err
 }
 
 func (c *V2Client) Update(res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
