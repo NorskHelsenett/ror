@@ -203,9 +203,9 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetSlackMessage(res)
 		r.SetCommonInterface(res)
 
-	case "general.ror.internal/v1alpha1, Kind=Notification":
-		res := newNotificationFromDynamicClient(input)
-		r.SetNotification(res)
+	case "general.ror.internal/v1alpha1, Kind=VulnerabilityEvent":
+		res := newVulnerabilityEventFromDynamicClient(input)
+		r.SetVulnerabilityEvent(res)
 		r.SetCommonInterface(res)
 
 	default:
@@ -727,10 +727,10 @@ func newSlackMessageFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	return &nr
 }
 
-// newNotificationFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// newVulnerabilityEventFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newNotificationFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceNotification {
-	nr := rortypes.ResourceNotification{}
+func newVulnerabilityEventFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceVulnerabilityEvent {
+	nr := rortypes.ResourceVulnerabilityEvent{}
 	nrjson, err := obj.MarshalJSON()
 	if err != nil {
 		rlog.Error("Could not mashal unstructired to json", err)
@@ -738,7 +738,7 @@ func newNotificationFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
-		rlog.Error("Could not unmarshal json to Notification", err)
+		rlog.Error("Could not unmarshal json to VulnerabilityEvent", err)
 	}
 	return &nr
 }

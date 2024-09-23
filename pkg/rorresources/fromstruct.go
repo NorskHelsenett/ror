@@ -166,9 +166,9 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetSlackMessage(res.SlackMessageResource)
 		r.SetCommonInterface(res.SlackMessageResource)
 
-	case "general.ror.internal/v1alpha1, Kind=Notification":
-		r.SetNotification(res.NotificationResource)
-		r.SetCommonInterface(res.NotificationResource)
+	case "general.ror.internal/v1alpha1, Kind=VulnerabilityEvent":
+		r.SetVulnerabilityEvent(res.VulnerabilityEventResource)
+		r.SetCommonInterface(res.VulnerabilityEventResource)
 
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))

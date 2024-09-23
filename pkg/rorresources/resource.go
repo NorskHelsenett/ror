@@ -45,7 +45,7 @@ type Resource struct {
 	ClusterVulnerabilityReportResource *rortypes.ResourceClusterVulnerabilityReport `json:"clustervulnerabilityreport,omitempty" bson:"clustervulnerabilityreport,omitempty"`
 	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty" bson:"route,omitempty"`
 	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
-	NotificationResource               *rortypes.ResourceNotification               `json:"notification,omitempty" bson:"notification,omitempty"`
+	VulnerabilityEventResource         *rortypes.ResourceVulnerabilityEvent         `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -196,8 +196,8 @@ func (r *Resource) SetSlackMessage(res *rortypes.ResourceSlackMessage) {
 	r.SlackMessageResource = res
 }
 
-func (r *Resource) SetNotification(res *rortypes.ResourceNotification) {
-	r.NotificationResource = res
+func (r *Resource) SetVulnerabilityEvent(res *rortypes.ResourceVulnerabilityEvent) {
+	r.VulnerabilityEventResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -360,9 +360,9 @@ func (r *Resource) SlackMessage() rortypes.SlackMessageinterface {
 	return r.SlackMessageResource
 }
 
-// Notification is a wrapper for the underlying resource, it provides a Notificationinterface to work with notifications
-func (r *Resource) Notification() rortypes.Notificationinterface {
-	return r.NotificationResource
+// VulnerabilityEvent is a wrapper for the underlying resource, it provides a VulnerabilityEventinterface to work with vulnerabilityevents
+func (r *Resource) VulnerabilityEvent() rortypes.VulnerabilityEventinterface {
+	return r.VulnerabilityEventResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

@@ -585,11 +585,11 @@ func (r *ResourceSlackMessage) Get() *ResourceSlackMessage {
 	return r
 }
 
-// (r *ResourceNotification) GetRorHash calculates the hash of the resource
+// (r *ResourceVulnerabilityEvent) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource
 // fields can be ignored by adding the tag `hash:"ignore"` to the field
-func (r *ResourceNotification) GetRorHash() string {
+func (r *ResourceVulnerabilityEvent) GetRorHash() string {
 	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
 	if err != nil {
 		return ""
@@ -598,7 +598,7 @@ func (r *ResourceNotification) GetRorHash() string {
 	return fmt.Sprintf("%d", hash)
 }
 
-// (r ResourceNotification) Get returns a pointer to the resource of type ResourceNotification
-func (r *ResourceNotification) Get() *ResourceNotification {
+// (r ResourceVulnerabilityEvent) Get returns a pointer to the resource of type ResourceVulnerabilityEvent
+func (r *ResourceVulnerabilityEvent) Get() *ResourceVulnerabilityEvent {
 	return r
 }

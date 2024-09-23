@@ -717,20 +717,20 @@ func TestNewResourceSetFromDynamicClientSlackMessage(t *testing.T) {
 	}
 }
 
-func TestNewResourceSetFromDynamicClientNotification(t *testing.T) {
+func TestNewResourceSetFromDynamicClientVulnerabilityEvent(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
-			"kind":       "Notification",
+			"kind":       "VulnerabilityEvent",
 			"apiVersion": "general.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
-				"name": "test-notification",
+				"name": "test-vulnerabilityevent",
 			},
 		},
 	}
 
-	expected := rorresources.NewRorResource("Notification", "general.ror.internal/v1alpha1")
-	expected.SetNotification(newNotificationFromDynamicClient(input))
-	expected.SetCommonInterface(newNotificationFromDynamicClient(input))
+	expected := rorresources.NewRorResource("VulnerabilityEvent", "general.ror.internal/v1alpha1")
+	expected.SetVulnerabilityEvent(newVulnerabilityEventFromDynamicClient(input))
+	expected.SetCommonInterface(newVulnerabilityEventFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 
