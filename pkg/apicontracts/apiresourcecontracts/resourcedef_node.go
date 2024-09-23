@@ -34,7 +34,7 @@ type ResourceNodeStatusAddresses struct {
 }
 type ResourceNodeStatusCapacity struct {
 	Cpu              string `json:"cpu"`
-	EphemeralStorage string `json:"ephemeral-storage"`
+	EphemeralStorage string `json:"ephemeralStorage"`
 	Memory           string `json:"memory"`
 	Pods             string `json:"pods"`
 }
