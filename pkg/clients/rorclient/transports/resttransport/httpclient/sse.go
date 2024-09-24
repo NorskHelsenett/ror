@@ -87,8 +87,6 @@ func (s *SSEClient) Listen() (<-chan stream.RorEvent, error) {
 	events := make(chan stream.RorEvent)
 	reader := bufio.NewReader(resp.Body)
 
-	//events <- stream.NewRorEvent("debug", fmt.Sprintf("OpenURL resp: %+v", resp))
-
 	go loop(reader, events)
 	return events, nil
 }
@@ -104,8 +102,8 @@ func (t *HttpTransportClient) OpenSSEStreamWithCallback(callback func(stream.Ror
 		retryLimit: 20,
 		callback:   callback,
 	}
-	rorEvents := make(<-chan stream.RorEvent)
-	rorEvents, err = sseClient.Listen()
+
+	rorEvents, err := sseClient.Listen()
 	go func() {
 		for {
 			if sseClient.isClosing {
@@ -173,48 +171,57 @@ func loop(reader *bufio.Reader, events chan stream.RorEvent) {
 			close(events)
 			return
 		}
-		eventdata := []byte{}
-		eventtype := "unknown"
 
-		switch {
-		case hasPrefix(line, "\n"):
-			// Empty line, do nothing
-		case hasPrefix(line, ":"):
-			// Comment, do nothing
-		case hasPrefix(line, "retry:"):
-			// Retry, do nothing for now
-		case hasPrefix(line, "data: "):
-			eventdata = line[6:]
-		case hasPrefix(line, "data:"):
-			eventdata = line[5:]
-
-		// name of event
-		case hasPrefix(line, "event: "):
-			eventdata = line[7 : len(line)-1]
-		case hasPrefix(line, "event:"):
-			eventdata = line[6 : len(line)-1]
-		default:
-			events <- stream.NewRorEvent("error", fmt.Sprintf("Error: len:%d\n%s", len(line), line))
-			close(events)
-		}
+		eventtype, eventdata := getEventtypeAndData(line)
 		if len(eventdata) == 0 {
 			continue
-		}
-		if hasPostfix(eventdata, "\n") {
-			eventdata = trimPostfix(eventdata, "\n")
-		}
-		if contains(eventdata, "event") {
-			event := apicontracts.SSEMessage{}
-			err := json.Unmarshal(eventdata, &event)
-			if err != nil {
-				continue
-			}
-			eventtype = event.Event
 		}
 
 		events <- stream.RorEvent{Type: string(eventtype), Data: eventdata}
 	}
 
+}
+
+func getEventtypeAndData(line []byte) (string, []byte) {
+	eventdata := []byte{}
+	eventtype := "unknown"
+
+	switch {
+	case hasPrefix(line, "\n"):
+		// Empty line, do nothing
+	case hasPrefix(line, ":"):
+		// Comment, do nothing
+	case hasPrefix(line, "retry:"):
+		// Retry, do nothing for now
+	case hasPrefix(line, "data: "):
+		eventdata = line[6:]
+	case hasPrefix(line, "data:"):
+		eventdata = line[5:]
+	case hasPrefix(line, "event: "):
+		eventdata = line[7 : len(line)-1]
+	case hasPrefix(line, "event:"):
+		eventdata = line[6 : len(line)-1]
+	default:
+		return "error", []byte(fmt.Sprintf("Error: len:%d\n%s", len(line), line))
+	}
+
+	if len(eventdata) == 0 {
+		return "", nil
+	}
+
+	if hasPostfix(eventdata, "\n") {
+		eventdata = trimPostfix(eventdata, "\n")
+	}
+
+	if contains(eventdata, "event") {
+		event := apicontracts.SSEMessage{}
+		err := json.Unmarshal(eventdata, &event)
+		if err != nil {
+			return "error", []byte("error unmarshalling event")
+		}
+		eventtype = event.Event
+	}
+	return eventtype, eventdata
 }
 
 func hasPrefix(s []byte, prefix string) bool {

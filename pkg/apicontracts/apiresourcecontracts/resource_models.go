@@ -3,6 +3,7 @@ package apiresourcecontracts
 
 import (
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,16 +20,12 @@ const (
 // Deprecated: Use rortypes.RorResourceOwnerReference instead
 // The ResourceOwnerReference or ownereref references the owner og a resource.
 // Its used to chek acl and select resources for valid Scopes.
-type ResourceOwnerReference struct {
-	Scope   aclmodels.Acl2Scope `json:"scope"`   // cluster, workspace,...
-	Subject string              `json:"subject"` // ror id eg clusterId or workspaceName
-}
 
 func NewResourceQueryFromClient(c *gin.Context) ResourceQuery {
 
-	owner := ResourceOwnerReference{
+	owner := rortypes.RorResourceOwnerReference{
 		Scope:   aclmodels.Acl2Scope(c.Query("ownerScope")),
-		Subject: c.Query("ownerSubject"),
+		Subject: aclmodels.Acl2Subject(c.Query("ownerSubject")),
 	}
 
 	query := ResourceQuery{
@@ -44,53 +41,44 @@ func NewResourceQueryFromClient(c *gin.Context) ResourceQuery {
 	return query
 }
 
-// Returns a map to use in the `*Resty.Request.SetQueryParams(<ResourceOwnerReference>.GetQueryParams())“ function
-func (m ResourceOwnerReference) GetQueryParams() map[string]string {
-	response := make(map[string]string)
-
-	response["ownerScope"] = string(m.Scope)
-	response["ownerSubject"] = m.Subject
-	return response
-}
-
 // Resource query used in the web facing resource services/repos
 type ResourceQuery struct {
-	Owner      ResourceOwnerReference `json:"owner"`
-	ApiVersion string                 `json:"apiVersion"`
-	Kind       string                 `json:"kind"`
-	Uid        string                 `json:"uid"`
+	Owner      rortypes.RorResourceOwnerReference `json:"owner"`
+	ApiVersion string                             `json:"apiVersion"`
+	Kind       string                             `json:"kind"`
+	Uid        string                             `json:"uid"`
 	Internal   bool
 	Global     bool
 }
 
 // Resource update model to exchange resources. The value MUST  be casted to its explicit value before its saved to mongodb.
 type ResourceUpdateModel struct {
-	Owner      ResourceOwnerReference `json:"owner"`
-	ApiVersion string                 `json:"apiVersion"`
-	Kind       string                 `json:"kind"`
-	Uid        string                 `json:"uid"`
-	Action     ResourceAction         `json:"action,omitempty"`
-	Hash       string                 `json:"hash"`
-	Resource   any                    `json:"resource"`
+	Owner      rortypes.RorResourceOwnerReference `json:"owner"`
+	ApiVersion string                             `json:"apiVersion"`
+	Kind       string                             `json:"kind"`
+	Uid        string                             `json:"uid"`
+	Action     ResourceAction                     `json:"action,omitempty"`
+	Hash       string                             `json:"hash"`
+	Resource   any                                `json:"resource"`
 }
 
 // Generic resourcemodels for single resource.
 type ResourceModel[T Resourcetypes] struct {
-	Owner      ResourceOwnerReference `json:"owner"`
-	ApiVersion string                 `json:"apiVersion"`
-	Kind       string                 `json:"kind"`
-	Uid        string                 `json:"uid"`
-	Hash       string                 `json:"hash"`
-	Internal   bool                   `json:"internal"`
-	Resource   T                      `json:"resource"`
+	Owner      rortypes.RorResourceOwnerReference `json:"owner"`
+	ApiVersion string                             `json:"apiVersion"`
+	Kind       string                             `json:"kind"`
+	Uid        string                             `json:"uid"`
+	Hash       string                             `json:"hash"`
+	Internal   bool                               `json:"internal"`
+	Resource   T                                  `json:"resource"`
 }
 
 // Generic resourcemodels for multiple resources.
 type ResourceModels[T Resourcetypes] struct {
-	Owner      ResourceOwnerReference `json:"owner"`
-	ApiVersion string                 `json:"apiVersion"`
-	Kind       string                 `json:"kind"`
-	Resources  []T                    `json:"resources"`
+	Owner      rortypes.RorResourceOwnerReference `json:"owner"`
+	ApiVersion string                             `json:"apiVersion"`
+	Kind       string                             `json:"kind"`
+	Resources  []T                                `json:"resources"`
 }
 
 // K8s metadata struct

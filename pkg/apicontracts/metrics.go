@@ -3,7 +3,7 @@ package apicontracts
 import (
 	"time"
 
-	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 )
 
 type MetricMetadata struct {
@@ -78,8 +78,8 @@ type NodeMetric struct {
 }
 
 type MetricsReport struct {
-	Owner apiresourcecontracts.ResourceOwnerReference `json:"owner"`
-	Nodes []NodeMetric                                `json:"nodes"`
+	Owner rortypes.RorResourceOwnerReference `json:"owner"`
+	Nodes []NodeMetric                       `json:"nodes"`
 }
 
 type MetricsResult struct {
