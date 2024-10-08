@@ -16,6 +16,13 @@ const (
 	K8sActionUpdate ResourceAction = "Update"
 )
 
+type ResourceVersion string
+
+const (
+	ResourceVersionV1 ResourceVersion = "v1"
+	ResourceVersionV2 ResourceVersion = "v2"
+)
+
 // Deprecated: Use rortypes.RorResourceOwnerReference instead
 // The ResourceOwnerReference or ownereref references the owner og a resource.
 // Its used to chek acl and select resources for valid Scopes.
@@ -71,6 +78,7 @@ type ResourceUpdateModel struct {
 	Uid        string                 `json:"uid"`
 	Action     ResourceAction         `json:"action,omitempty"`
 	Hash       string                 `json:"hash"`
+	Version    ResourceVersion        `json:"version"`
 	Resource   any                    `json:"resource"`
 }
 
@@ -82,6 +90,7 @@ type ResourceModel[T Resourcetypes] struct {
 	Uid        string                 `json:"uid"`
 	Hash       string                 `json:"hash"`
 	Internal   bool                   `json:"internal"`
+	Version    ResourceVersion        `json:"version"`
 	Resource   T                      `json:"resource"`
 }
 
