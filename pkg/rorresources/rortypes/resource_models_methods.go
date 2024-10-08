@@ -602,3 +602,21 @@ func (r *ResourceVulnerabilityEvent) GetRorHash() string {
 func (r *ResourceVulnerabilityEvent) Get() *ResourceVulnerabilityEvent {
 	return r
 }
+
+// (r *ResourceVulnerabilityWhitelist) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceVulnerabilityWhitelist) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceVulnerabilityWhitelist) Get returns a pointer to the resource of type ResourceVulnerabilityWhitelist
+func (r *ResourceVulnerabilityWhitelist) Get() *ResourceVulnerabilityWhitelist {
+	return r
+}

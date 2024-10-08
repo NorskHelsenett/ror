@@ -739,6 +739,28 @@ func TestNewResourceSetFromDynamicClientVulnerabilityEvent(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientVulnerabilityWhitelist(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "VulnerabilityWhitelist",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-vulnerabilitywhitelist",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("VulnerabilityWhitelist", "general.ror.internal/v1alpha1")
+	expected.SetVulnerabilityWhitelist(newVulnerabilityWhitelistFromDynamicClient(input))
+	expected.SetCommonInterface(newVulnerabilityWhitelistFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
