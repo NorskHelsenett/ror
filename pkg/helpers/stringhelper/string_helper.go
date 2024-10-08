@@ -102,7 +102,7 @@ func CompareLabels(search map[string]string, labels map[string]string) bool {
 func PrettyprintStruct(obj interface{}) {
 	empJSON, err := json.MarshalIndent(obj, "", "  ")
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s", err.Error())
 	}
 	_, err = fmt.Printf("MarshalIndent funnction output %s\n", string(empJSON))
 	if err != nil {

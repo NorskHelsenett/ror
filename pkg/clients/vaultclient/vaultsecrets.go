@@ -25,7 +25,7 @@ func GetSecret(secretPath string) (map[string]interface{}, error) {
 		} else {
 			rlog.Error(msg, err)
 		}
-		return nil, fmt.Errorf(msg)
+		return nil, fmt.Errorf("%s", msg)
 	}
 	if data != nil {
 		return data.Data, nil
@@ -50,7 +50,7 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 		} else {
 			rlog.Error(msg, err)
 		}
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 	if data != nil {
 		vaultval, _ := data.Data["data"].(map[string]interface{})
@@ -76,7 +76,7 @@ func (vc VaultClient) GetSecret(secretPath string) (map[string]interface{}, erro
 		} else {
 			rlog.Error(msg, err)
 		}
-		return nil, fmt.Errorf(msg)
+		return nil, fmt.Errorf("%s", msg)
 	}
 	if data != nil {
 		return data.Data, nil
@@ -100,7 +100,7 @@ func (vc VaultClient) GetSecretValue(secretPath string, key string) (string, err
 		} else {
 			rlog.Error(msg, err)
 		}
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 	if data != nil {
 		vaultval, _ := data.Data["data"].(map[string]interface{})

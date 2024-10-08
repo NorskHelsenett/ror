@@ -3,6 +3,8 @@
 
 package apiresourcecontracts
 
+import "github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
+
 // Resourcetypes allowed in the generic resource models.
 type Resourcetypes interface {
     {{range $i, $property := . -}}
@@ -13,7 +15,7 @@ type Resourcetypes interface {
 {{ range .}}
 // type for returning {{.Kind}} resources to internal functions
 type Resource{{.PluralCapitalized}} struct {
-	Owner      ResourceOwnerReference `json:"owner"`
+	Owner      rortypes.RorResourceOwnerReference `json:"owner"`
 	{{.PluralCapitalized}} []Resource{{.Kind}}    `json:"{{.Plural}}"`
 }
 {{end}}
