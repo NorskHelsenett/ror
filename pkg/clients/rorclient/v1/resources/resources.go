@@ -29,6 +29,6 @@ type ResourceInterface interface {
 	CreateSlackMessage(sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
 	UpdateSlackMessageByUid(sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
 
-	GetNotificationByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceNotification, error)
-	CreateNotification(u *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceNotification, error)
+	GetVulnerabilityEventByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceVulnerabilityEvent, error)
+	CreateVulnerabilityEvent(u *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceVulnerabilityEvent, error)
 }

@@ -5,7 +5,7 @@ package apiresourcecontracts
 
 // Resourcetypes allowed in the generic resource models.
 type Resourcetypes interface {
-	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceNotification
+	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent
 }
 
 // type for returning Namespace resources to internal functions
@@ -200,8 +200,8 @@ type ResourceSlackmessages struct {
 	Slackmessages []ResourceSlackMessage `json:"slackmessages"`
 }
 
-// type for returning Notification resources to internal functions
-type ResourceNotifications struct {
-	Owner         ResourceOwnerReference `json:"owner"`
-	Notifications []ResourceNotification `json:"notifications"`
+// type for returning VulnerabilityEvent resources to internal functions
+type ResourceVulnerabilityevents struct {
+	Owner               ResourceOwnerReference       `json:"owner"`
+	Vulnerabilityevents []ResourceVulnerabilityEvent `json:"vulnerabilityevents"`
 }

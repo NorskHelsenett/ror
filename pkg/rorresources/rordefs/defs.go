@@ -313,10 +313,10 @@ var Resourcedefs = []ApiResource{
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	}, {
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "Notification",
+			Kind:       "VulnerabilityEvent",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
-		Plural:     "notifications",
+		Plural:     "vulnerabilityevents",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	},

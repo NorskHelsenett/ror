@@ -146,43 +146,41 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	if len(rorResourceQuery.OwnerRefs) > 0 {
 		match["rormeta.ownerref"] = bson.M{"$in": rorResourceQuery.OwnerRefs}
 	}
-	query = append(query, bson.M{"$match": match})
 
 	if len(rorResourceQuery.Filters) > 0 {
-		filterquery := bson.M{}
 		for _, filter := range rorResourceQuery.Filters {
 			switch filter.Type {
 			case rorresources.FilterTypeString:
 				if filter.Operator == "eq" {
-					filterquery[filter.Field] = bson.M{"$eq": filter.Value}
+					match[filter.Field] = bson.M{"$eq": filter.Value}
 				}
 				if filter.Operator == "ne" {
-					filterquery[filter.Field] = bson.M{"$ne": filter.Value}
+					match[filter.Field] = bson.M{"$ne": filter.Value}
 				}
 				if filter.Operator == "regexp" {
-					filterquery[filter.Field] = bson.M{"$regex": filter.Value, "$options": "i"}
+					match[filter.Field] = bson.M{"$regex": filter.Value, "$options": "i"}
 				}
 			case rorresources.FilterTypeInt:
 				if filter.Operator == "eq" {
-					filterquery[filter.Field] = bson.M{"$eq": filter.Value}
+					match[filter.Field] = bson.M{"$eq": filter.Value}
 				}
 				if filter.Operator == "gt" {
-					filterquery[filter.Field] = bson.M{"$gt": filter.Value}
+					match[filter.Field] = bson.M{"$gt": filter.Value}
 				}
 				if filter.Operator == "lt" {
-					filterquery[filter.Field] = bson.M{"$lt": filter.Value}
+					match[filter.Field] = bson.M{"$lt": filter.Value}
 				}
 				if filter.Operator == "ge" {
-					filterquery[filter.Field] = bson.M{"$gte": filter.Value}
+					match[filter.Field] = bson.M{"$gte": filter.Value}
 				}
 				if filter.Operator == "le" {
-					filterquery[filter.Field] = bson.M{"$lte": filter.Value}
+					match[filter.Field] = bson.M{"$lte": filter.Value}
 				}
 			case rorresources.FilterTypeBool:
 				if filter.Operator == "eq" {
 					boolfilter, err := strconv.ParseBool(filter.Value)
 					if err == nil {
-						filterquery[filter.Field] = bson.M{"$eq": boolfilter}
+						match[filter.Field] = bson.M{"$eq": boolfilter}
 					}
 				}
 				// case rorresources.FilterTypeTime:
@@ -193,26 +191,25 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 				// 	if err == nil {
 				// 		//timevalue := time.ParseTimestamps(filter.Value)
 				// 		if filter.Operator == "eq" {
-				// 			filterquery[filter.Field] = bson.M{"$eq": timevalue}
+				// 			match[filter.Field] = bson.M{"$eq": timevalue}
 				// 		}
 				// 		if filter.Operator == "gt" {
-				// 			filterquery[filter.Field] = bson.M{"$gt": timevalue}
+				// 			match[filter.Field] = bson.M{"$gt": timevalue}
 				// 		}
 				// 		if filter.Operator == "lt" {
-				// 			filterquery[filter.Field] = bson.M{"$lt": timevalue}
+				// 			match[filter.Field] = bson.M{"$lt": timevalue}
 				// 		}
 				// 		if filter.Operator == "ge" {
-				// 			filterquery[filter.Field] = bson.M{"$gte": timevalue}
+				// 			match[filter.Field] = bson.M{"$gte": timevalue}
 				// 		}
 				// 		if filter.Operator == "le" {
-				// 			filterquery[filter.Field] = bson.M{"$lte": timevalue}
+				// 			match[filter.Field] = bson.M{"$lte": timevalue}
 				// 		}
 				// 	}
 			}
 		}
-		filterquery = bson.M{"$match": filterquery}
-		query = append(query, filterquery)
 	}
+	query = append(query, bson.M{"$match": match})
 
 	// Add sorting
 	sortaggregate := bson.M{}

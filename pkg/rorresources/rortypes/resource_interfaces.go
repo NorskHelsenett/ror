@@ -201,8 +201,8 @@ type SlackMessageinterface interface {
 	Get() *ResourceSlackMessage
 }
 
-// Notificationinterface represents the interface for resources of the type notification
-type Notificationinterface interface {
+// VulnerabilityEventinterface represents the interface for resources of the type vulnerabilityevent
+type VulnerabilityEventinterface interface {
 	CommonResourceInterface
-	Get() *ResourceNotification
+	Get() *ResourceVulnerabilityEvent
 }

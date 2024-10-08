@@ -1369,32 +1369,32 @@ func (m ResourceSlackmessages) GetByLabels(search map[string]string) []ResourceS
 	return Response
 }
 
-// Function to return Notification resource by name.
-func (m ResourceNotifications) GetByName(search string) ResourceNotification {
-	for _, resource := range m.Notifications {
+// Function to return VulnerabilityEvent resource by name.
+func (m ResourceVulnerabilityevents) GetByName(search string) ResourceVulnerabilityEvent {
+	for _, resource := range m.Vulnerabilityevents {
 		if resource.Metadata.Name == search {
 			return resource
 		}
 	}
-	var emptyResponse ResourceNotification
+	var emptyResponse ResourceVulnerabilityEvent
 	return emptyResponse
 }
 
-// Function to return Notification resource by uid.
-func (m ResourceNotifications) GetByUid(search string) ResourceNotification {
-	for _, res := range m.Notifications {
+// Function to return VulnerabilityEvent resource by uid.
+func (m ResourceVulnerabilityevents) GetByUid(search string) ResourceVulnerabilityEvent {
+	for _, res := range m.Vulnerabilityevents {
 		if res.Metadata.Uid == search {
 			return res
 		}
 	}
-	var emptyResponse ResourceNotification
+	var emptyResponse ResourceVulnerabilityEvent
 	return emptyResponse
 }
 
-// Function to return Notification resource by label.
-func (m ResourceNotifications) GetByLabels(search map[string]string) []ResourceNotification {
-	var Response []ResourceNotification
-	for _, res := range m.Notifications {
+// Function to return VulnerabilityEvent resource by label.
+func (m ResourceVulnerabilityevents) GetByLabels(search map[string]string) []ResourceVulnerabilityEvent {
+	var Response []ResourceVulnerabilityEvent
+	for _, res := range m.Vulnerabilityevents {
 		if len(res.Metadata.Labels) != 0 {
 			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
 				Response = append(Response, res)
