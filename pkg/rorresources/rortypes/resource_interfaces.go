@@ -206,3 +206,9 @@ type VulnerabilityEventinterface interface {
 	CommonResourceInterface
 	Get() *ResourceVulnerabilityEvent
 }
+
+// VulnerabilityWhitelistinterface represents the interface for resources of the type vulnerabilitywhitelist
+type VulnerabilityWhitelistinterface interface {
+	CommonResourceInterface
+	Get() *ResourceVulnerabilityWhitelist
+}
