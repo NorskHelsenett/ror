@@ -3,7 +3,7 @@ module github.com/NorskHelsenett/ror
 go 1.23.0
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.0
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.11.0
 	github.com/dexidp/dex/api/v2 v2.2.0
