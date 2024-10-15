@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "ror-api.fullname" . }}
+  labels:
+    app: {{ include "ror-api.fullname" . }}
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "ror-api.fullname" . }}
+  endpoints:
+    - port: http
+      interval: 15s

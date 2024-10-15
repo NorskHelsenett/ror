@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ror-web-cm-config
+data:
+  config.json: |
+    {
+      "auth": {
+          "issuer": "{{ .Values.web.authUrl }}",
+          "clientId": "ror.sky.test.nhn.no",
+          "redirectUri": "/auth/callback",
+          "scope": "profile email groups",
+          "response_type": "id_token token",
+          "requireHttps": true,
+          "strictDiscoveryDocumentValidation": true
+      },
+      "regex": {
+          "forms": "^[@()\\/:?\\r\\n.,a-zA-Z æøåÆØÅ0-9_-]+$"
+      },
+      "rowsPerPage": [10, 25, 50, 75, 100],
+      "rows": 25,
+      "rorApi": "{{ .Values.web.apiUrl }}",
+      "sse": {
+        "postfixUrl": "/v1/events/listen",
+        "method": "GET",
+        "timeout": 30000
+      }
+    }

@@ -1,0 +1,18 @@
+ARG DOCKER_MIRROR=docker.io/
+FROM ${DOCKER_MIRROR}golang:alpine AS builder
+
+WORKDIR /app
+COPY . .
+
+RUN go get ./...
+RUN CGO_ENABLED=0 go build -o tanzuAuth -ldflags '-w -extldflags "-static"' cmd/tanzu/auth/main.go
+
+FROM ${DOCKER_MIRROR}golang:alpine
+
+RUN apk update && apk add bash && apk add busybox-extras
+
+WORKDIR /
+COPY --from=builder /app/tanzuAuth /bin/tanzuAuth
+COPY --from=builder /app/version.json /version.json
+
+ENTRYPOINT ["/bin/tanzuAuth"]

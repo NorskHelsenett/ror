@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  name: rork8s-internett-ingress
+spec:
+  ingressClassName: avi-ingress-class-internett
+  rules:
+  - host: {{ .Values.rork8s.host }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ include "rork8s.fullname" . }}
+            port:
+              number: {{ .Values.service.port }}
+        path: {{ .Values.ingress.path }}
+        pathType: {{ .Values.ingress.pathType }}
+  tls:
+  - hosts:
+    - {{ .Values.rork8s.host }}
+    secretName: nhn-rork8s-tls
+# ---
+# apiVersion: ako.vmware.com/v1alpha1
+# kind: HostRule
+# metadata:
+#   name: admin-allow-dcn-paw
+#   namespace: {{ .Release.namespace}}
+# spec:
+#   virtualhost:
+#     datascripts:
+#     - expose-nhn-office-isp
+#     - expose-nhn-office-client
+#     - expose-nhn-office-devops
+#     - expose-nsg-amk-paws
+#     - expose-nhn-dc-any
+#     - expose-nsg-cloud-paws
+#     - expose-nsg-container-paws
+#     - expose-nsg-soc-paws
+#     - expose-nsg-mon-paws
+#     - expose-nhn-office-devops
+#     - expose-nsg-esm-paws
+#     - bottom-deny-rule
+#     fqdn:  rork8s.nhn.no
+#     analyticsProfile: NHN-System-Analytics-Profile
+#     analyticsPolicy:
+#         fullClientLogs:
+#           enabled: false
+#           throttle: DISABLED

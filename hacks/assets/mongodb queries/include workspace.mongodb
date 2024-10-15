@@ -1,0 +1,31 @@
+// Select the database to use.
+use('nhn-ror');
+
+//delete cluster
+// let clusterId = ""
+// var result = db.clusters.deleteOne({"clusterid": clusterId})
+// printjson(result)
+// result = db.resources.deleteMany({ "owner.subject": clusterId})
+// printjson(result)
+// result = db.apikeys.deleteMany({ "displayname": clusterId})
+// printjson(result)
+
+//db.resources.find({ "owner.subject": ""})
+//db.resources.find({"kind": "ClusterOrder"})
+
+//db.clusters.deleteOne({"clustername": ""})
+
+// db.resources.aggregate([
+//     { $match: { "kind": "Deployment" } },
+//     { $match: { "resource.metadata.name": "ror-operator" } },
+//     { $project: { "owner.subject": 1, "_id": 0 } }
+// ])
+
+// db.resources.aggregate([
+//     {
+//         $match: {
+//             'kind': { '$regex': 'kubernetes', '$options': 'i' }
+//         }
+//     },
+
+// ])

@@ -1,0 +1,24 @@
+test-codecov:
+  stage: buildandtest
+  image:  ncr.sky.nhn.no/dockerhub/library/golang:latest
+  needs: []
+  extends: .go-cache
+  allow_failure: true
+  rules:
+  - changes:
+      - 'cmd/**/*'
+      - 'internal/**/*'
+      - 'pkg/**/*'
+      - 'go.mod'
+  - when: never
+  script:
+    - go get ./...
+    - go get -t ./...
+    - go test ./... -coverprofile=coverage.txt -covermode count
+    - go get github.com/boumenot/gocover-cobertura
+    - go run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml

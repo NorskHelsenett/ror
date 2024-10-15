@@ -1,0 +1,20 @@
+cluster:
+  controlPlane:
+    endpoint: https://host.docker.internal:44211
+  inlineManifests:
+    - contents: |
+        --
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          namespace: kube-system
+      name: clusterAgent
+machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: true
+  certSANs:
+    - 127.0.0.1
+    - localhost
+    - host.docker.internal

@@ -1,0 +1,54 @@
+<table class="dark:text-light min-w-full text-gray-900">
+  <thead class="border-b">
+    <tr>
+      <th scope="col" class="text-md px-2 py-2 text-left font-medium">
+        {{ 'pages.datacenters.table.column.name' | translate }}
+      </th>
+      <th scope="col" class="text-md px-2 py-2 text-left font-medium">
+        {{ 'pages.datacenters.table.column.cpu' | translate }}
+      </th>
+      <!-- <th scope="col" class="text-md font-medium px-2 py-2 text-left">
+        {{ 'pages.datacenters.table.column.cpuConsumed' | translate }}
+      </th> -->
+      <th scope="col" class="text-md px-2 py-2 text-left font-medium">
+        {{ 'pages.datacenters.table.column.memory' | translate }}
+      </th>
+      <!-- <th scope="col" class="text-md font-medium px-2 py-2 text-left">
+        {{ 'pages.datacenters.table.column.memoryConsumed' | translate }}
+      </th> -->
+      <!-- <th scope="col" class="text-md font-medium px-2 py-2 text-left">
+        {{ 'pages.datacenters.table.column.nodePools' | translate }}
+      </th> -->
+      <th scope="col" class="text-md px-2 py-2 text-left font-medium">
+        {{ 'pages.datacenters.table.column.cluster' | translate }}
+      </th>
+      <!-- <th scope="col" class="text-md font-medium px-2 py-2 text-left">
+        {{ 'pages.datacenters.table.column.priceMonth' | translate }}
+      </th>
+      <th scope="col" class="text-md font-medium px-2 py-2 text-left">
+        {{ 'pages.datacenters.table.column.priceYear' | translate }}
+      </th> -->
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="transition duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-500" *ngFor="let datacenter of datacenters">
+      <td class="whitespace-nowrap px-2 py-2 text-sm font-medium">
+        <a class="hover:text-blue-800 hover:underline dark:hover:text-blue-400" [routerLink]="['./admin/datacenter', datacenter.id]">{{
+          datacenter.id
+        }}</a>
+      </td>
+      <td class="whitespace-nowrap px-2 py-2 text-sm font-light">
+        {{ datacenter?.metrics?.cpuPercentage }} % ({{ datacenter?.metrics?.cpu }} {{ 'pages.datacenters.table.column.cores' | translate }})
+      </td>
+      <!-- <td class="text-sm font-light px-2 py-2 whitespace-nowrap">{{ datacenter?.metrics?.cpuConsumed }} Milli value</td> -->
+      <td class="whitespace-nowrap px-2 py-2 text-sm font-light">
+        {{ datacenter?.metrics?.memoryPercentage }} % ({{ datacenter?.metrics?.memory | formatBytes: 2 : true }})
+      </td>
+      <!-- <td class="text-sm font-light px-2 py-2 whitespace-nowrap">{{ datacenter?.metrics?.memoryConsumed | formatBytes: 2:true }}</td> -->
+      <!-- <td class="text-sm font-light px-2 py-2 whitespace-nowrap">{{ datacenter?.metrics?.nodePoolCount }}</td> -->
+      <td class="whitespace-nowrap px-2 py-2 text-sm font-light">{{ datacenter?.metrics?.clusterCount }}</td>
+      <!-- <td class="text-sm font-light px-2 py-2 whitespace-nowrap">{{ datacenter?.metrics?.priceMonth }}</td>
+      <td class="text-sm font-light px-2 py-2 whitespace-nowrap">{{ datacenter?.metrics?.priceYear }}</td> -->
+    </tr>
+  </tbody>
+</table>

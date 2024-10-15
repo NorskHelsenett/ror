@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ms-tanzu.fullname" . }}
+  labels:
+    {{- include "ms-tanzu.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ms-tanzu.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ms-tanzu.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ms-tanzu.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LOG_LEVEL
+              value: {{ default "INFO" .Values.tanzu.logLevel | quote }}
+            - name: ENVIRONMENT
+              value: {{ default "Production" .Values.tanzu.environment | quote }}
+            - name: ROLE
+              value: {{ default "ror-ms-tanzu" .Values.tanzu.role | quote }}
+            - name: ROR_URL
+              value: {{ default "https://api.ror.sky.test.nhn.no" .Values.rorApiUrl | quote }}
+            - name: OPENTELEMETRY_COLLECTOR_ENDPOINT
+              value: {{ default "ror-opentelemetry-collector.nhn-ror.svc:4317" .Values.tanzu.otelCollectorEndpoint | quote}}
+            - name: VAULT_URL
+              value: {{ default "http://ror-vault-active.tanzu-ror.svc:8200" .Values.tanzu.vaultUrl | quote }}
+            - name: RABBITMQ_HOST
+              value: {{ default "rabbitmq-ror.tanzu-ror.svc" .Values.tanzu.rabbitmqHost | quote }}
+            - name: RABBITMQ_PORT
+              value: {{ default "5672" .Values.tanzu.rabbitmqPort | quote }}
+            - name: REDIS_PORT
+              value: {{ default "6379" .Values.tanzu.redisPort | quote }}
+            - name: REDIS_HOST
+              value: {{ default "ror-redis-headless.nhn-ror.svc" .Values.tanzu.redisHost | quote }}
+          envFrom:
+            - secretRef:
+                name: ror-ms-tanzu-env
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

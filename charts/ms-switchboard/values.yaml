@@ -1,0 +1,85 @@
+# Default values for ms-switchboard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+switchboard:
+  logLevel: "INFO"
+  environment: "Production"
+  rabbitmqHost: "rabbitmq-ror.nhn-ror.svc"
+  rabbitmqPort: "5672"
+  vaultUrl: "http://ror-vault-active.nhn-ror.svc:8200"
+  mongodbHost: "ror-mongodb.nhn-ror.svc"
+  mongodbPort: "27017"
+  mongodbDatabase: "nhn-ror"
+  otelCollectorEndpoint: "ror-opentelemetry-collector.nhn-ror.svc:4317"
+  vaultTokenTtl: "24h"
+  vaultTokenK8sPath: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+  role: "ror-ms-switchboard"
+enabled: true
+replicaCount: 1
+image:
+  repository: ncr.sky.nhn.no/ror/ms-switchboard
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.1.495"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+podAnnotations: {}
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 2000
+  runAsUser: 1001
+  runAsGroup: 1001
+  supplementalGroups: [501]
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+service:
+  type: ClusterIP
+  port: 8080
+resources: {}
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+nodeSelector: {}
+tolerations: []
+affinity: {}

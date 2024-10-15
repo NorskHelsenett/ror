@@ -1,0 +1,39 @@
+debuglevel: INFO
+replicaCount: 1
+api: https://api.ror.sky.test.nhn.no
+secretname: nhn-ror-secret
+image:
+  repository: ncr.sky.nhn.no/ror/ror-agent
+  pullPolicy: Always
+  tag: "0.1.496"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "nhn-ror-agent"
+serviceAccount:
+  create: true
+  name: nhn-ror-sa
+podAnnotations: {}
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 2000
+  runAsUser: 1001
+  runAsGroup: 1001
+  supplementalGroups: [501]
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+resources:
+  limits:
+    cpu: 1000m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+nodeSelector: {}
+tolerations: []
+affinity: {}

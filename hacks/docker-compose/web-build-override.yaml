@@ -1,0 +1,8 @@
+services:
+  web:
+    build:
+      context: ../../web/admin/
+      dockerfile: Dockerfile.compose
+      args:
+        DEX_PORT: 5556
+        API_PORT: 10000

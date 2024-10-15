@@ -1,0 +1,285 @@
+<div *ngIf="user$ | async as user">
+  <div class="dark:border-primary-darker flex items-center gap-4 border-b px-4 py-4 lg:py-6">
+    <h1 class="flex-grow text-2xl font-semibold">{{ 'pages.acl.title' | translate }}</h1>
+  </div>
+
+  <div class="m-4">
+    <div class="dark:bg-darker items-center justify-between rounded-md bg-white p-2">
+      <div class="dark:bg-darker rounded-md bg-white">
+        <div class="dark:border-primary flex items-center justify-between border-b p-4">
+          <span class="flex-grow"></span>
+          <a
+            [routerLink]="['./create']"
+            class="delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </a>
+          <button
+            (click)="fetch(lastLazyLoad)"
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          >
+            {{ 'common.refresh' | translate }}
+          </button>
+        </div>
+        <div class="relative p-3">
+          <div>
+            <p-table
+              [value]="(acl$ | async)?.data"
+              [rows]="rows"
+              [paginator]="true"
+              [lazy]="true"
+              [loading]="loading"
+              (onLazyLoad)="fetch($event)"
+              [rowsPerPageOptions]="rowsPerPage"
+              [tableStyle]="{ 'min-width': '75rem' }"
+              [rowHover]="true"
+              responsiveLayout="stack"
+              sortField="group"
+              [sortOrder]="1"
+              [totalRecords]="(acl$ | async)?.totalCount"
+              [reorderableColumns]="true"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
+                'common.of' | translate | lowercase
+              }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="group" class="p-1">
+                    {{ 'pages.acl.table.columns.group' | translate }} <p-sortIcon field="group"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="scope" class="p-1">
+                    {{ 'pages.acl.table.columns.scope' | translate }} <p-sortIcon field="scope"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="subject" class="p-1">
+                    {{ 'pages.acl.table.columns.subject' | translate }} <p-sortIcon field="subject"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="access.read" class="p-1">
+                    {{ 'pages.acl.table.columns.access.read' | translate }} <p-sortIcon field="access.read"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="access.create" class="p-1">
+                    {{ 'pages.acl.table.columns.access.create' | translate }} <p-sortIcon field="access.write"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="access.update" class="p-1">
+                    {{ 'pages.acl.table.columns.access.update' | translate }} <p-sortIcon field="access.update"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="access.delete" class="p-1">
+                    {{ 'pages.acl.table.columns.access.delete' | translate }} <p-sortIcon field="access.delete"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="access.owner" class="p-1">
+                    {{ 'pages.acl.table.columns.access.owner' | translate }} <p-sortIcon field="access.owner"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="kubernetes.logon" class="p-1">
+                    {{ 'pages.acl.table.columns.kubernetes.logon' | translate }} <p-sortIcon field="kuberntes.logon"></p-sortIcon>
+                  </th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th [style]="{ width: '30rem' }" class="p-1">
+                    <p-columnFilter type="text" field="group" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter type="text" field="scope" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter type="text" field="subject" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter field="access.read" matchMode="equals" [showMenu]="false" style="width: 0.2rem">
+                      <ng-template pTemplate="filter" let-value let-filter="filterCallback" style="width: 0.2rem">
+                        <p-dropdown
+                          [style]="{ width: '3rem' }"
+                          autowidth="false"
+                          appendTo="body"
+                          [ngModel]="value"
+                          [options]="accessTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="{{ 'common.any' | translate }}"
+                          [showClear]="true"
+                          [filter]="false"
+                        >
+                        </p-dropdown>
+                      </ng-template>
+                    </p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter field="access.create" matchMode="equals" [showMenu]="false">
+                      <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <p-dropdown
+                          [style]="{ width: '3rem' }"
+                          appendTo="body"
+                          [ngModel]="value"
+                          [options]="accessTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="{{ 'common.any' | translate }}"
+                          [showClear]="true"
+                          [filter]="false"
+                        >
+                        </p-dropdown>
+                      </ng-template>
+                    </p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter field="access.update" matchMode="equals" [showMenu]="false">
+                      <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <p-dropdown
+                          [style]="{ width: '3rem' }"
+                          appendTo="body"
+                          [ngModel]="value"
+                          [options]="accessTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="{{ 'common.any' | translate }}"
+                          [showClear]="true"
+                          [filter]="false"
+                        >
+                        </p-dropdown>
+                      </ng-template>
+                    </p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter field="access.delete" matchMode="equals" [showMenu]="false">
+                      <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <p-dropdown
+                          [style]="{ width: '3rem' }"
+                          appendTo="body"
+                          [ngModel]="value"
+                          [options]="accessTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="{{ 'common.any' | translate }}"
+                          [showClear]="true"
+                          [filter]="false"
+                        >
+                        </p-dropdown>
+                      </ng-template>
+                    </p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter field="access.owner" matchMode="equals" [showMenu]="false">
+                      <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <p-dropdown
+                          [style]="{ width: '3rem' }"
+                          appendTo="body"
+                          [ngModel]="value"
+                          [options]="accessTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="{{ 'common.any' | translate }}"
+                          [showClear]="true"
+                          [filter]="false"
+                        >
+                        </p-dropdown>
+                      </ng-template>
+                    </p-columnFilter>
+                  </th>
+                  <th class="p-1">
+                    <p-columnFilter field="kubernetes.logon" matchMode="equals" [showMenu]="false">
+                      <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <p-dropdown
+                          [style]="{ width: '3rem' }"
+                          appendTo="body"
+                          [ngModel]="value"
+                          [options]="accessTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="{{ 'common.any' | translate }}"
+                          [showClear]="true"
+                          [filter]="false"
+                        >
+                        </p-dropdown>
+                      </ng-template>
+                    </p-columnFilter>
+                  </th>
+                  <th class="p-1"></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-acl let-expanded="expanded">
+                <tr>
+                  <td>
+                    <a class="ml-2 cursor-pointer hover:text-blue-800 hover:underline dark:hover:text-blue-400" routerLink="./{{ acl?.id }}/edit">{{
+                      acl?.group
+                    }}</a>
+                  </td>
+                  <td>{{ acl?.scope }}</td>
+                  <td>
+                    {{ acl?.subject }}
+                  </td>
+                  <td>
+                    <app-true-false [trueOrFalse]="acl?.access?.read"></app-true-false>
+                  </td>
+                  <td>
+                    <app-true-false [trueOrFalse]="acl?.access?.create"></app-true-false>
+                  </td>
+                  <td>
+                    <app-true-false [trueOrFalse]="acl?.access?.update"></app-true-false>
+                  </td>
+                  <td>
+                    <app-true-false [trueOrFalse]="acl?.access?.delete"></app-true-false>
+                  </td>
+                  <td>
+                    <app-true-false [trueOrFalse]="acl?.access?.owner"></app-true-false>
+                  </td>
+                  <td>
+                    <app-true-false [trueOrFalse]="acl?.kubernetes?.logon"></app-true-false>
+                  </td>
+                  <td>
+                    <div class="flex">
+                      <button
+                        routerLink="./{{ acl?.id }}/edit"
+                        class="focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white hover:bg-green-500 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+                      >
+                        {{ 'common.edit' | translate }}
+                      </button>
+                      <button
+                        (click)="delete(acl)"
+                        class="focus:ring-primary dark:focus:ring-offset-dark ml-2 flex rounded-md bg-red-700 px-4 py-2 text-sm text-white hover:bg-red-500 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+                      >
+                        <span class="">{{ 'common.delete' | translate }}</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6">{{ 'common.emptyList' | translate }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <ng-template #loadingOrError>
+            <ng-container *ngIf="fetchError; else dataLoading">
+              <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                <span class="p-2 text-red-800"> {{ 'pages.apikeys.error' | translate }} </span>
+                <button class="btn text-black" (click)="fetch(lastLazyLoad)">{{ 'common.tryAgain' | translate }}</button>
+              </div>
+            </ng-container>
+
+            <ng-template #dataLoading>
+              <app-spinner></app-spinner>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p-confirmDialog
+  [style]="{ width: '25vw' }"
+  [baseZIndex]="10000"
+  acceptButtonStyleClass="ml-2 px-4 py-2 text-sm text-white rounded-md bg-red-700 hover:bg-red-500 focus:outline-none focus:ring focus:ring-primary focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark"
+  rejectButtonStyleClass="ml-2 px-4 py-2 text-sm text-white rounded-md bg-green-700 hover:bg-green-500 focus:outline-none focus:ring focus:ring-primary focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark"
+  acceptLabel="{{ 'common.yes' | translate }}"
+  rejectLabel="{{ 'common.no' | translate }}"
+></p-confirmDialog>

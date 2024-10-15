@@ -1,0 +1,52 @@
+<table class="dark:text-light min-w-full text-gray-900">
+  <thead class="border-b">
+    <tr>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.name' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.datacenter' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.cpu' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.memory' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.cluster' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.nodes' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.priceMonth' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.workspaces.table.column.priceYear' | translate }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="transition duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-500" *ngFor="let workspace of workspaces">
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+        <a class="hover:text-blue-800 hover:underline dark:hover:text-blue-400" [routerLink]="['./', workspace.id]">{{ workspace.id }}</a>
+      </td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">
+        <a class="hover:text-blue-800 hover:underline dark:hover:text-blue-400" [routerLink]="['../admin/datacenter', workspace.datacenter]">{{
+          workspace?.datacenter
+        }}</a>
+      </td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">
+        {{ workspace?.metrics?.cpuPercentage }} % ({{ workspace?.metrics?.cpu }} {{ 'pages.workspaces.table.column.cores' | translate }})
+      </td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">
+        {{ workspace?.metrics?.memoryPercentage }} % ({{ workspace?.metrics?.memory | formatBytes: 2 : true }})
+      </td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ workspace?.metrics?.clusterCount }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ workspace?.metrics?.nodeCount }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ workspace?.metrics?.priceMonth | currency: 'NOK' : 'symbol' : '.0' : 'no' }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ workspace?.metrics?.priceYear | currency: 'NOK' : 'symbol' : '.0' : 'no' }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,110 @@
+<table class="border-collapse text-left">
+  <tbody>
+    <tr class="hover:bg-grey-light">
+      <td class="px-2 py-1">{{ 'pages.configuration.tasks.table.columns.name' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ task?.name }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light">
+      <td class="px-2 py-1">{{ 'pages.configuration.tasks.table.columns.imageName' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ task?.config?.imageName }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light">
+      <td class="px-2 py-1">{{ 'pages.configuration.tasks.table.columns.version' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ task?.config?.version }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light">
+      <td class="px-2 py-1">{{ 'pages.configuration.tasks.table.columns.cmd' | translate }}</td>
+      <td class="px-2 py-1">
+        <code class="bg-black p-1 text-white">{{ task?.config?.cmd }}</code>
+      </td>
+    </tr>
+
+    <tr class="hover:bg-grey-light">
+      <td class="px-2 py-1">{{ 'pages.configuration.tasks.table.columns.backofflimit' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ task?.config?.backoffLimit }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light">
+      <td class="px-2 py-1">{{ 'pages.configuration.tasks.table.columns.timeoutInSeconds' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ task?.config?.timeoutInSeconds }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.secret">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.secret.filepath' | translate }}</td>
+      <td class="px-2 py-1">
+        <span>{{ task?.config?.secret?.path }}{{ task?.config?.secret?.filename }}</span>
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.secret?.gitSource">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.secret.source.title' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ 'pages.configuration.tasks.table.columns.secret.source.git' | translate }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.secret?.gitSource?.gitConfig">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.secret.source.url' | translate }}</td>
+      <td class="px-2 py-1">
+        <a
+          href="{{ task?.config?.secret?.gitSource?.gitConfig?.repository }}"
+          target="_blank"
+          class="cursor-pointer hover:text-blue-800 hover:underline dark:hover:text-blue-400"
+          >{{ task?.config?.secret?.gitSource?.gitConfig?.repository }}</a
+        >
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.secret?.gitSource?.gitConfig?.branch">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.secret.source.url' | translate }}</td>
+      <td class="px-2 py-1">
+        <span>{{ task?.config?.secret?.gitSource?.gitConfig?.branch }}</span>
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.secret?.gitSource?.contentPath">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.secret.source.contentPath' | translate }}</td>
+      <td class="px-2 py-1">
+        <span>{{ task?.config?.secret?.gitSource?.contentPath }}</span>
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.secret?.vaultSource">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.secret.source.title' | translate }}</td>
+      <td class="px-2 py-1">
+        {{ 'pages.configuration.tasks.table.columns.secret.source.vault' | translate }}
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.envVars?.length > 0">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.envVars.title' | translate }}</td>
+      <td class="px-2 py-1">
+        <table class="table-auto">
+          <thead>
+            <tr>
+              <th>{{ 'pages.configuration.tasks.table.columns.envVars.key' | translate }}</th>
+              <th>{{ 'pages.configuration.tasks.table.columns.envVars.value' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let envVar of task?.config?.envVars">
+              <td>{{ envVar?.key }}</td>
+              <td class="font-bold">{{ envVar?.value }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr class="hover:bg-grey-light" *ngIf="task?.config?.envVars?.length > 0">
+      <td class="px-2 py-1 align-top">{{ 'pages.configuration.tasks.table.columns.scripts' | translate }}</td>
+      <td class="px-2 py-1">
+        <div *ngFor="let script of task?.config?.scripts?.fileNameAndData">
+          <h1 class="mb-1 dark:text-white flex-grow text-lg text-gray-800">{{ script?.filename }}:</h1>
+          <pre class="mb-3"><code [highlight]="script?.data" language="bash" (highlighted)="onHighlight($event)" lineNumbers></code></pre>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

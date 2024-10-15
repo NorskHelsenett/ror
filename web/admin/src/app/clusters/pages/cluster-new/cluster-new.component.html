@@ -1,0 +1,317 @@
+<div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+  <h1 class="text-2xl font-semibold">{{ 'pages.clusters.new.title' | translate }}</h1>
+</div>
+
+<div class="grid gap-8 p-4">
+  <div class="dark:bg-darker flex justify-between overflow-x-auto rounded-md bg-white p-4">
+    <div class="dark:bg-darker w-full rounded-md bg-white">
+      <div class="relative" *ngIf="data$ | async as data; else loadingOrError">
+        <form [formGroup]="clusterForm">
+          <div class="col-span-2">
+            <div class="">
+              <div class="flex items-center justify-between p-4">
+                <h4 class="dark:text-light text-lg font-semibold text-gray-500">{{ 'pages.clusters.new.clusterDetails' | translate }}</h4>
+              </div>
+              <div class="grid p-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <h5>{{ 'pages.clusters.new.form.provider' | translate }}</h5>
+                  <p-dropdown
+                    [options]="providerOptions"
+                    placeholder="{{ 'pages.clusters.new.form.providerPlaceholder' | translate }}"
+                    optionLabel="name"
+                    optionValue="value"
+                    [showClear]="false"
+                    (click)="providerChanged($event)"
+                    formControlName="provider"
+                  ></p-dropdown>
+                  <span
+                    *ngIf="clusterForm.get('provider').touched && clusterForm.get('provider').dirty && clusterForm.get('provider').errors"
+                    class="text-red-400"
+                    >{{ 'pages.clusters.new.form.providerError' | translate }}</span
+                  >
+                </div>
+
+                <div class="sm:mt-3 md:mt-0 lg:ml-3">
+                  <h5>{{ 'pages.clusters.new.form.env' | translate }}</h5>
+                  <div class="flex flex-col">
+                    <p-dropdown
+                      [options]="environments"
+                      placeholder="{{ 'pages.clusters.new.form.envPlaceholder' | translate }}"
+                      optionLabel="name"
+                      optionValue="value"
+                      [showClear]="false"
+                      formControlName="environment"
+                    ></p-dropdown>
+                    <span
+                      *ngIf="clusterForm.get('environment').touched && clusterForm.get('environment').dirty && clusterForm.get('environment').errors"
+                      class="text-red-400"
+                      >{{ 'pages.clusters.new.form.envError' | translate }}</span
+                    >
+                  </div>
+                </div>
+
+                <div class="sm:mt-3 md:mt-0 lg:ml-3">
+                  <h5>{{ 'pages.clusters.new.form.datacenter' | translate }}</h5>
+                  <div class="flex flex-col">
+                    <p-dropdown
+                      [options]="datacenters"
+                      placeholder="{{ 'pages.clusters.new.form.datacenterPlaceholder' | translate }}"
+                      optionLabel="name"
+                      [showClear]="true"
+                      formControlName="datacenter"
+                      (onChange)="datacenterChanged($event)"
+                    ></p-dropdown>
+                    <span
+                      *ngIf="clusterForm.get('datacenter').touched && clusterForm.get('datacenter').dirty && clusterForm.get('datacenter').errors"
+                      class="text-red-400"
+                      >{{ 'pages.clusters.new.form.datacenterError' | translate }}</span
+                    >
+                  </div>
+                </div>
+
+                <div class="ml-3 sm:mt-3 md:mt-0">
+                  <h5>{{ 'pages.clusters.new.form.workspace' | translate }}</h5>
+                  <div class="flex flex-col">
+                    <p-dropdown
+                      [options]="workspacesFiltered"
+                      placeholder="{{ 'pages.clusters.new.form.workspacePlaceholder' | translate }}"
+                      optionLabel="name"
+                      [showClear]="true"
+                      formControlName="workspace"
+                      (onChange)="clusterNameChanged()"
+                    ></p-dropdown>
+                    <span
+                      *ngIf="clusterForm.get('workspace').touched && clusterForm.get('workspace').dirty && clusterForm.get('workspace').errors"
+                      class="text-red-400"
+                      >{{ 'pages.clusters.new.form.workspaceError' | translate }}</span
+                    >
+                  </div>
+                </div>
+
+                <div class="col-span-2 sm:mt-3">
+                  <div>
+                    <h5>{{ 'pages.clusters.new.form.clusterName' | translate }}</h5>
+                    <div class="flex flex-col">
+                      <input
+                        class="p-inputtext-lg border text-lg"
+                        type="text"
+                        pInputText
+                        formControlName="clusterNameInput"
+                        (keyup)="clusterNameChanged()"
+                      />
+                      <span
+                        *ngIf="
+                          (clusterForm.get('clusterNameInput').errors || clusterForm.get('clusterName').errors) &&
+                          clusterForm.get('clusterNameInput').touched &&
+                          clusterForm.get('clusterNameInput').dirty
+                        "
+                        class="text-red-400"
+                        >{{ 'pages.clusters.new.form.clusterNameError' | translate }}
+                      </span>
+                    </div>
+
+                    <div
+                      class=""
+                      *ngIf="clusterForm?.get('workspace')?.value?.name?.length > 0 && clusterForm?.get('clusterNameInput')?.value?.length > 0"
+                    >
+                      <span class="text-lg">Full cluster name: </span>
+                      <span>{{ clusterForm?.get('clusterName')?.value }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-span-2 ml-3 mt-3">
+                  <h5>{{ 'pages.clusters.new.form.tags' | translate }}</h5>
+                  <div class="">
+                    <p-chips formControlName="tags"></p-chips>
+                    <span
+                      *ngIf="clusterForm.get('tags').touched && clusterForm.get('tags').dirty && clusterForm.get('tags').errors"
+                      class="text-red-400"
+                      >{{ 'pages.clusters.new.form.tagsError' | translate }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="">
+              <div class="dark:border-primary flex items-center justify-between border-b p-4">
+                <h4 class="dark:text-light text-lg font-semibold text-gray-500">{{ 'pages.clusters.new.form.nodePools.title' | translate }}</h4>
+              </div>
+              <div class="grid grid-cols-1 p-3 xl:grid-cols-3">
+                <table class="dark:text-light relative text-gray-900 sm:col-span-1 lg:col-span-2">
+                  <thead class="border-b">
+                    <tr>
+                      <th scope="col" class="px-1 py-1 text-left text-sm font-medium">
+                        {{ 'pages.clusters.new.form.nodePools.machineClass' | translate }}
+                      </th>
+                      <th scope="col" class="px-1 py-1 text-left text-sm font-medium">{{ 'pages.clusters.new.form.nodePools.cpu' | translate }}</th>
+                      <th scope="col" class="px-1 py-1 text-left text-sm font-medium">{{ 'pages.clusters.new.form.nodePools.mem' | translate }}</th>
+                      <th scope="col" class="px-1 py-1 text-left text-sm font-medium">
+                        {{ 'pages.clusters.new.form.nodePools.pricePrNode' | translate }}
+                      </th>
+                      <th scope="col" class="w-14 px-1 py-1 text-left text-sm font-medium">
+                        {{ 'pages.clusters.new.form.nodePools.count' | translate }}
+                      </th>
+                      <th scope="col" class="px-1 py-1 text-left text-sm font-medium"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="transition duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-500" *ngFor="let price of pricesFiltered">
+                      <td class="whitespace-nowrap px-1 py-1 text-sm font-light">{{ price?.machineClass | titlecase }}</td>
+                      <td class="whitespace-nowrap px-1 py-1 text-sm font-light">{{ price?.cpu }}</td>
+                      <td class="whitespace-nowrap px-1 py-1 text-sm font-light">{{ price?.memory }} Gb</td>
+                      <td class="whitespace-nowrap px-1 py-1 text-sm font-light">{{ price?.price }} NOK</td>
+                      <td class="whitespace-nowrap px-1 py-1 text-sm font-light">
+                        <div class="">
+                          <p-inputNumber
+                            [(ngModel)]="price.count"
+                            [ngModelOptions]="{ standalone: true }"
+                            [format]="false"
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            inputId="horizontal"
+                            spinnerMode="horizontal"
+                            [step]="1"
+                            inputStyleClass=""
+                            styleClass="bg-green-600"
+                            [min]="1"
+                            [max]="10"
+                            [size]="1"
+                            [allowEmpty]="false"
+                          >
+                          </p-inputNumber>
+                        </div>
+                      </td>
+                      <td class="whitespace-nowrap px-1 py-1 text-sm font-light">
+                        <button (click)="addNodePool(price)"><i class="pi pi-plus-circle text-green-700"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="sm:ml-0 md:col-span-1 xl:ml-3">
+                  <h4 class="dark:text-light text-lg font-semibold text-gray-500">
+                    {{ 'pages.clusters.new.form.addedNodePools.title' | translate }}
+                  </h4>
+                  <div>
+                    <table class="border-collapse text-left">
+                      <tbody>
+                        <tr class="hover:bg-grey-light" *ngFor="let nodePool of nodePools">
+                          <td class="px-2 py-1">
+                            <span class="p-2">{{ nodePool?.machineClass | titlecase }}</span>
+                          </td>
+                          <td class="px-2 py-1">
+                            <p-inputNumber
+                              [(ngModel)]="nodePool.count"
+                              [ngModelOptions]="{ standalone: true }"
+                              [format]="false"
+                              [showButtons]="true"
+                              buttonLayout="horizontal"
+                              inputId="horizontal"
+                              spinnerMode="horizontal"
+                              styleClass="bg-green-600"
+                              [step]="1"
+                              [min]="1"
+                              [max]="10"
+                              [size]="1"
+                              [allowEmpty]="false"
+                            >
+                            </p-inputNumber>
+                          </td>
+                          <td class="px-2 py-1">
+                            <span class="text-md">{{ nodePool.price * nodePool.count }} NOK</span>
+                          </td>
+                          <td class="px-2 py-1">
+                            <button (click)="removeNodePool(nodePool)" class="text-lg text-gray-600 dark:text-white">
+                              <i class="pi pi-times text-red-700 dark:text-red-400"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <span>{{ 'pages.clusters.new.form.addedNodePools.sum' | translate }}: </span> <strong>{{ getNodePoolSum() }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="sm:w-full md:w-1/2">
+                <div class="dark:border-primary flex items-center justify-between border-b p-4">
+                  <h4 class="dark:text-light text-lg font-semibold text-gray-500">{{ 'pages.clusters.new.form.summary.title' | translate }}</h4>
+                </div>
+                <table class="border-collapse text-left">
+                  <tbody>
+                    <!-- <tr class="hover:bg-grey-light">
+                      <td class="py-1 px-2">Project</td>
+                      <td class="py-1 px-2">Dream project</td>
+                    </tr> -->
+
+                    <tr class="hover:bg-grey-light">
+                      <td class="px-2 py-1">{{ 'pages.clusters.new.form.summary.orderedBy' | translate }}</td>
+                      <td class="px-2 py-1">{{ account.email }}</td>
+                    </tr>
+                    <tr class="hover:bg-grey-light">
+                      <td class="px-2 py-1">{{ 'pages.clusters.new.form.summary.clusterName' | translate }}</td>
+                      <td class="px-2 py-1">
+                        <span
+                          *ngIf="clusterForm?.get('workspace')?.value?.name?.length > 0 && clusterForm?.get('clusterNameInput')?.value?.length > 0"
+                          >{{ clusterForm?.get('clusterName')?.value }}</span
+                        >
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-grey-light">
+                      <td class="px-2 py-1">{{ 'pages.clusters.new.form.summary.pricePrMonth' | translate }}</td>
+                      <td class="px-2 py-1">{{ getNodePoolSum() }} NOK</td>
+                    </tr>
+                    <tr class="hover:bg-grey-light">
+                      <td class="px-2 py-1">{{ 'pages.clusters.new.form.summary.pricePrYear' | translate }}</td>
+                      <td class="px-2 py-1">{{ getNodePoolSum() * 12 }} NOK</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-5 flex">
+              <button
+                [disabled]="!clusterForm?.valid"
+                (click)="createCluster()"
+                class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:bg-gray-500 disabled:hover:bg-gray-800"
+              >
+                {{ 'common.create' | translate }}
+              </button>
+              <button
+                (click)="reset(true)"
+                class="hover:bg-primary-lighter focus:ring-primary dark:focus:ring-offset-dark ml-3 rounded-md bg-neutral-500 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+              >
+                {{ 'common.reset' | translate }}
+              </button>
+            </div>
+
+            <div class="mb-10" *ngIf="submitted === true">
+              <div class="dark:border-primary flex items-center justify-between border-b p-4">
+                <h4 class="dark:text-light text-lg font-semibold text-gray-500"></h4>
+              </div>
+              <pre class="bg-black">
+                  {{ clusterCreateModel | json }}
+              </pre>
+            </div>
+          </div>
+        </form>
+      </div>
+      <ng-template #loadingOrError>
+        <ng-container *ngIf="dataError; else dataLoading">
+          <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+            <span class="p-2 text-red-800"> {{ 'pages.dashboard.error' | translate }} </span>
+            <button class="btn text-black" (click)="fetchData()">{{ 'common.tryAgain' | translate }}</button>
+          </div>
+        </ng-container>
+
+        <ng-template #dataLoading>
+          <app-spinner></app-spinner>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</div>

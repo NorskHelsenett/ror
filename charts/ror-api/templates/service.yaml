@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ror-api.fullname" . }}
+  labels:
+    app: {{ include "ror-api.fullname" . }}
+    {{- include "ror-api.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ror-api.selectorLabels" . | nindent 4 }}

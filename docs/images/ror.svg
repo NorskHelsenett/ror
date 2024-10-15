@@ -1,0 +1,43 @@
+<svg width="708" height="708" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="grad1" cx="100%" cy="30%" r="60%">
+      <stop offset="0%" style="stop-color:rgb(0,120,100);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(0,160,110);stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="grad2" cx="80%" cy="40%" r="100%">
+      <stop offset="0%" style="stop-color:rgb(0,150,170);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(0,199,210);stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="grad3" cx="70%" cy="10%" r="100%">
+      <stop offset="0%" style="stop-color:rgb(0,180,170);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(0,250,180);stop-opacity:1" />
+    </radialGradient>
+  </defs>
+
+  <line x1="315" y1="191" x2="350" y2="310" stroke-width="10" stroke="#70b5ea"/>
+  <line x1="260" y1="220" x2="190" y2="310" stroke-width="10" stroke="rgb(25,88,160)"/>
+  <line x1="190" y1="335" x2="290" y2="392" stroke-width="10" stroke="#70bea"/>
+  <line x1="420" y1="455" x2="290" y2="392" stroke-width="10" stroke="rgb(32,164,77)"/>
+  <line x1="470" y1="350" x2="340" y2="520" stroke-width="10" stroke="#70b5ea"/>
+  <line x1="480" y1="350" x2="440" y2="440" stroke-width="10" stroke="#7b5ea"/>
+  <line x1="480" y1="350" x2="440" y2="440" stroke-width="10" stroke="rgb(25,88,160)"/>
+  <line x1="408" y1="180" x2="420" y2="320" stroke-width="10" stroke="#70b5ea"/>/>
+
+  <circle cx="337" cy="116" r="20"  fill="rgb(46,193,235)" />
+  <circle cx="253" cy="213" r="50"  fill="url(#grad1)" />
+  <circle cx="329" cy="191" r="40"  fill="rgb(25,88,160)" />
+  <circle cx="408" cy="180" r="40"  fill="rgb(46,193,235)" />
+  <circle cx="170" cy="320" r="60"  fill="rgb(25,88,160)" />
+  <circle cx="292" cy="392" r="55"  fill="url(#grad3)"/>
+  <circle cx="336" cy="310" r="45"  fill="url(#grad2)" />
+  <circle cx="420" cy="291" r="60"  fill="rgb(25,88,160)" />
+  <circle cx="115" cy="392" r="20"  fill="rgb(25,88,160)" />
+  <circle cx="465" cy="360" r="35"  fill="rgb(32,88,160)" />
+  <circle cx="425" cy="450" r="50"  fill="rgb(32,195,77)" />
+  <circle cx="200" cy="460" r="30"  fill="rgb(32,210,77)" />
+  <circle cx="340" cy="526" r="55"  fill="rgb(32,184,77)" />
+  <circle cx="280" cy="477" r="30"  fill="rgb(32,164,77)" />
+  <circle cx="270" cy="563" r="20"  fill="rgb(32,184,77)" />
+  <circle cx="531" cy="310" r="20"  fill="rgb(46,193,235)" />
+ </svg>
+ 

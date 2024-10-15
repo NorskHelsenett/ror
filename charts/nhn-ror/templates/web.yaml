@@ -1,0 +1,31 @@
+{{ if .Values.api.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    app-group: nhn-tooling
+  name: ror-web
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    chart: helm/web
+    helm:
+      parameters:
+      - name: web.host
+        value: {{ .Values.web.host }}
+      - name: web.apiUrl
+        value: {{ .Values.web.apiUrl }}
+      - name: web.authUrl
+        value: {{ .Values.web.authUrl }}
+    repoURL: ncr.sky.nhn.no/ror
+    targetRevision: 0.*
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+ {{ end}}

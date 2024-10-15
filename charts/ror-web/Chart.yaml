@@ -1,0 +1,8 @@
+apiVersion: v2
+name: web
+description: ROR web
+
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+icon: https://raw.githubusercontent.com/NorskHelsenett/ror/main/media/ror.svg

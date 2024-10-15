@@ -1,0 +1,144 @@
+<div *ngIf="user$ | async as user">
+  <div class="dark:border-primary-darker flex items-center gap-4 border-b px-4 py-4 lg:py-6">
+    <h1 class="flex-grow text-2xl font-semibold">{{ 'pages.configuration.title' | translate }}</h1>
+
+    <button
+      (click)="fetchData()"
+      class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+    >
+      {{ 'common.refresh' | translate }}
+    </button>
+  </div>
+
+  <div class="m-4">
+    <div class="dark:bg-darker items-center justify-between rounded-md bg-white p-2">
+      <div class="dark:bg-darker rounded-md bg-white">
+        <div class="dark:border-primary flex items-center justify-between border-b p-4">
+          <h4 class="dark:text-light flex-grow text-lg font-semibold text-gray-500">
+            {{ 'pages.configuration.operatorconfigs.title' | translate }}
+          </h4>
+
+          <button
+            disabled
+            [routerLink]="['./operatorconfig/create']"
+            class="delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:cursor-not-allowed disabled:bg-gray-500 disabled:opacity-75 disabled:hover:bg-gray-800"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button
+            (click)="fetchOperatorConfigs()"
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          >
+            {{ 'common.refresh' | translate }}
+          </button>
+        </div>
+        <div class="relative p-3">
+          <div *ngIf="operatorConfigs$ | async as operatorConfigs; else operatorConfigLoadingOrError">
+            <app-config-operator-config-list [operatorConfigs]="operatorConfigs"></app-config-operator-config-list>
+          </div>
+          <ng-template #operatorConfigLoadingOrError>
+            <ng-container *ngIf="operatorConfigFetchError; else dataLoading">
+              <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                <span class="p-2 text-red-800"> {{ 'pages.configuration.operatorconfigs.error' | translate }} </span>
+                <button class="btn text-black" (click)="fetchOperatorConfigs()">{{ 'common.tryAgain' | translate }}</button>
+              </div>
+            </ng-container>
+
+            <ng-template #dataLoading>
+              <app-spinner></app-spinner>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-4">
+    <div class="dark:bg-darker items-center justify-between rounded-md bg-white p-2">
+      <div class="dark:bg-darker rounded-md bg-white">
+        <div class="dark:border-primary flex items-center justify-between border-b p-4">
+          <h4 class="dark:text-light flex-grow text-lg font-semibold text-gray-500">
+            {{ 'pages.configuration.tasks.title' | translate }}
+          </h4>
+          <button
+            disabled
+            [routerLink]="['./task/create']"
+            class="delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:cursor-not-allowed disabled:bg-gray-500 disabled:opacity-75 disabled:hover:bg-gray-800"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button
+            (click)="fetchTasks()"
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          >
+            {{ 'common.refresh' | translate }}
+          </button>
+        </div>
+        <div class="relative p-3">
+          <div *ngIf="tasks$ | async as tasks; else tasksLoadingOrError">
+            <app-config-task-list [tasks]="tasks"></app-config-task-list>
+          </div>
+          <ng-template #tasksLoadingOrError>
+            <ng-container *ngIf="tasksFetchError; else dataLoading">
+              <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                <span class="p-2 text-red-800"> {{ 'pages.configuration.tasks.error' | translate }} </span>
+                <button class="btn text-black" (click)="fetchTasks()">{{ 'common.tryAgain' | translate }}</button>
+              </div>
+            </ng-container>
+
+            <ng-template #dataLoading>
+              <app-spinner></app-spinner>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-4">
+    <div class="dark:bg-darker items-center justify-between rounded-md bg-white p-2">
+      <div class="dark:bg-darker rounded-md bg-white">
+        <div class="dark:border-primary flex items-center justify-between border-b p-4">
+          <h4 class="dark:text-light flex-grow text-lg font-semibold text-gray-500">
+            {{ 'pages.configuration.desiredVersion.title' | translate }}
+          </h4>
+          <button
+            [routerLink]="['./desiredversion/create']"
+            class="delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:cursor-not-allowed disabled:bg-gray-500 disabled:opacity-75 disabled:hover:bg-gray-800"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button
+            (click)="fetchDesiredVersions()"
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          >
+            {{ 'common.refresh' | translate }}
+          </button>
+        </div>
+        <div class="relative p-3">
+          <div *ngIf="desiredVersions$ | async as desiredVersions; else desiredVersionsLoadingOrError">
+            <app-config-desiredversion-list [desiredVersion]="desiredVersions"></app-config-desiredversion-list>
+          </div>
+          <ng-template #desiredVersionsLoadingOrError>
+            <ng-container *ngIf="desiredVersionsFetchError; else dataLoading">
+              <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                <span class="p-2 text-red-800"> {{ 'pages.configuration.desiredVersion.error' | translate }} </span>
+                <button class="btn text-black" (click)="fetchDesiredVersions()">{{ 'common.tryAgain' | translate }}</button>
+              </div>
+            </ng-container>
+
+            <ng-template #dataLoading>
+              <app-spinner></app-spinner>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

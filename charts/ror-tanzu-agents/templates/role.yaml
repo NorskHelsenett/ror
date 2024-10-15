@@ -1,0 +1,13 @@
+{{- range .Values.agents }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ror-tanzu-agent:role
+  namespace: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+{{- end }}

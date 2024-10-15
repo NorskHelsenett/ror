@@ -1,0 +1,37 @@
+{{- range .Values.agents }}
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: NetworkPolicy
+metadata:
+  name: anp-allow-healthprobes
+  namespace: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  priority: 254
+  tier: application
+  appliedTo:
+    - podSelector: {}
+  ingress:
+    - action: Allow
+      enableLogging: false
+      ports: 
+        - protocol: TCP
+          port: 9999
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: NetworkPolicy
+metadata:
+  name: anp-deny-all-ingress
+  namespace: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  priority: 255
+  tier: application
+  appliedTo:
+    - podSelector: {}
+  ingress:
+    - action: Drop
+      enableLogging: true
+{{- end }}

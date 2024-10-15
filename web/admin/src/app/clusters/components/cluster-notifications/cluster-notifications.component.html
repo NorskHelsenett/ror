@@ -1,0 +1,62 @@
+@if (edit) {
+  <app-cluster-notifications-form [resource]="resource" (updateOk)="handleUpdate()" (cancelUpdate)="handleCancel()"></app-cluster-notifications-form>
+} @else {
+  @if (!routeError) {
+    <p-table [value]="resources$ | async" dataKey="metadata.uid" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template pTemplate="caption">
+        <div class="flex gap-2">
+          <button pButton pRipple (click)="handleCreate()" class="text-white px-3 py-2 rounded-md bg-green-700 hover:bg-green-600 focus:bg-green-600">
+            {{ 'pages.clusters.details.notifications.route.configure' | translate }}
+          </button>
+          @if (resource) {
+            <button pButton pRipple (click)="popup(resource)" class="text-white px-3 py-2 rounded-md bg-red-700 hover:bg-red-600 focus:bg-red-600">
+              {{ 'common.delete' | translate }}
+            </button>
+          }
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{ 'pages.clusters.details.notifications.route.resource' | translate }}</th>
+          <th>{{ 'pages.clusters.details.notifications.route.slack.workspace' | translate }}</th>
+          <th>{{ 'pages.clusters.details.notifications.route.slack.channel' | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-resource>
+        @for (slack of resource.route.spec.receivers.slack; track $index) {
+          <tr>
+            <td>{{ 'Vulnerability' }}</td>
+            <td>{{ 'Norsk helsenett' }}</td>
+            <td>{{ slack?.channelId }}</td>
+          </tr>
+        }
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">{{ 'common.emptyList' | translate }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-dialog [header]="'common.areyousure' | translate" [modal]="true" [(visible)]="showPopup">
+      <div class="flex gap-2">
+        <p-button pRipple class="px-3 py-2 rounded-md bg-red-700 hover:bg-red-600 focus:bg-red-600" (onClick)="deleteRoute()">
+          {{ 'common.yes' | translate }}
+        </p-button>
+        <p-button pRipple class="px-3 py-2 rounded-md bg-gray-700 hover:bg-gray-600 focus:bg-gray-600" (onClick)="popup()">
+          {{ 'common.no' | translate }}
+        </p-button>
+      </div>
+    </p-dialog>
+  } @else {
+    <ng-template
+      ><ng-container>
+        <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+          <span class="p-2 text-red-800">
+            {{ 'common.errorLoading' | translate }} <br />
+            {{ ('common.error' | translate) + ': ' + routeError }}
+          </span>
+        </div></ng-container
+      ></ng-template
+    >
+  }
+}

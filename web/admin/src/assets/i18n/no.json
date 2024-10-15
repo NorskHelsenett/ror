@@ -1,0 +1,1348 @@
+{
+  "app": {
+    "title": "ROR",
+    "owner": "NHN"
+  },
+  "common": {
+    "refresh": "Oppdater",
+    "ok": "Ok",
+    "no": "Nei",
+    "yes": "Ja",
+    "cancel": "Avbryt",
+    "fetching": "Henter ...",
+    "edit": "Endre",
+    "create": "Opprett",
+    "save": "Lagre",
+    "delete": "Slett",
+    "close": "Lukk",
+    "unknown": "Ukjent",
+    "readMore": "Les mer",
+    "copy": "Kopier",
+    "error": "Feilmelding",
+    "errorLoading": "Feil ved henting ...",
+    "created": "Opprettet",
+    "updated": "Oppdatert",
+    "update": "Oppdater",
+    "settings": "Innstillinger",
+    "menu": "Meny",
+    "dashboard": "Dashboard",
+    "theme": "Tema",
+    "light": "Lys",
+    "dark": "Mørk",
+    "madeWith": "Laget med",
+    "viewOnGit": "Link til Helsegitlab repo",
+    "tryAgain": "Prøv på nytt",
+    "from": "Fra",
+    "to": "Til",
+    "pageSize": "Sideantall",
+    "count": "Antall",
+    "reset": "Nullstill",
+    "price": "Pris",
+    "priceEst": "Alle priser er et estimat",
+    "show": "Vis",
+    "hide": "Gjem",
+    "fullscreen": "Fullskjerm",
+    "columns": "Kolonner",
+    "selected": "Valgt",
+    "choose": "Velg",
+    "showing": "Viser",
+    "of": "Av",
+    "entries": "Elementer",
+    "missing": "Mangler",
+    "required": "Påkrevd",
+    "export": "Eksport",
+    "emptyList": "Tom liste",
+    "any": "Alle",
+    "copied": "Kopiert",
+    "createdBy": "Opprettet av",
+    "metadata": "Metadata",
+    "next": "Neste",
+    "previous": "Forrige",
+    "environment": {
+      "1": "Utvikling",
+      "2": "Testing",
+      "3": "Kvalitetssikring",
+      "4": "Produksjon"
+    },
+    "provider": {
+      "tanzu": "Privat sky",
+      "aks": "AKS",
+      "k3d": "K3d",
+      "kind": "Kind",
+      "gke": "Google",
+      "eks": "Amazon",
+      "minikube": "Minikube",
+      "openshift": "OpenShift",
+      "rancher": "Rancher",
+      "k3s": "K3s",
+      "talos": "Talos"
+    },
+    "search": "Søk",
+    "typeInstead": "Skriv inn istedenfor?",
+    "details": "Detaljer",
+    "plural": "er",
+    "table": {
+      "empty": "Tom liste",
+      "columnsSelected": "kolonner valgt",
+      "chooseColumns": "Velg kolonner",
+      "noColumns": "Ingen kolonner tilgjengelig",
+      "noColumnsFilter": "Ingen kolonner"
+    },
+    "dropdown": {
+      "placeholder": "Velg",
+      "search": "Søk",
+      "noResults": "Ingen resultater"
+    },
+    "areyousure": "Er du sikker?",
+    "availableCriticalities": {
+      "0": "Ukjent",
+      "1": "1. Normal",
+      "2": "2. Moderat",
+      "3": "3. Høy",
+      "4": "4. Kritisk"
+    },
+    "availableSensitivities": {
+      "0": "Ukjent",
+      "1": "1. Åpen",
+      "2": "2. Internt",
+      "3": "3. Skjermet",
+      "4": "4. Sterkt skjermet"
+    }
+  },
+  "nav": {
+    "home": "Oversikt",
+    "acl": "Tilgangsstyring",
+    "apikeys": "Apinøkler",
+    "configuration": "Konfigurasjon",
+    "datacenters": "Datasenter",
+    "workspaces": "Arbeidsområder",
+    "clusters": "Cluster",
+    "projects": "Prosjekter",
+    "nodes": "Noder",
+    "help": "Hjelp",
+    "search": "Søk",
+    "profile": "Brukerprofil",
+    "logout": "Logg ut",
+    "language": "Språk",
+    "metricsMenu": "Statistikk",
+    "adminMenu": "Administrasjon",
+    "metrics": "Nøkkeltall",
+    "pricesMenu": "Økonomi",
+    "prices": "Prisliste",
+    "doc": "Dokumentasjon",
+    "about": "Om ROR",
+    "auditlogs": "Audit logger",
+    "policyreports": "Policyrapporter",
+    "vulnerabilityreports": "Sårbarhetsrapporter",
+    "releasenotes": "Endringer",
+    "compliancereports": "Samsvarsrapporter",
+    "orders": "Ordrer",
+    "resources": "Ressurser"
+  },
+  "error": {
+    "forbidden": "Forbudt område",
+    "notfound": "Fant ikke det du ville ha tak i ...",
+    "servererror": "En uventet feil har skjedd ...",
+    "unauthorized": "Uautorisert",
+    "logged": "Hendelsen er logget",
+    "frontpage": "Naviger deg til forsiden"
+  },
+  "layout": {
+    "search": {
+      "placeholder": "Søk ..."
+    },
+    "userFetchError": "Problemer med å hente bruker"
+  },
+  "pages": {
+    "about": {
+      "title": "Om Ror",
+      "versions": "Versjoner",
+      "shoutouts": "Tommel opp for",
+      "content": "ROR (Release-Operate-Report) er metadata-aggregator og konfigurasjonsverktøy for mange cluster og over alle datasenter on-prem eller i skyen",
+      "health": {
+        "title": "Helsestatus",
+        "table": {
+          "column": {
+            "service": "Tjeneste",
+            "status": "Status"
+          },
+          "row": {
+            "identityProvider": "Identitetsleverandør",
+            "database": "Database",
+            "messageBus": "Meldingsbuss",
+            "secrets": "Hemmeligheter",
+            "tracing": "Spordata",
+            "redis": "Hurtigbuffer"
+          }
+        },
+        "status": {
+          "1": "OK",
+          "-1": "Fikk ikke kontakt med tjenesten",
+          "-2": "Dessverre skjedde en uventet feil, prøv igjen senere"
+        }
+      }
+    },
+    "acl": {
+      "title": "Tilgangsstyring",
+      "table": {
+        "columns": {
+          "group": "Gruppe",
+          "scope": "Mål",
+          "subject": "Subjekt",
+          "access": {
+            "read": "Les",
+            "create": "Opprett",
+            "update": "Updatering",
+            "delete": "Slett",
+            "owner": "Eier"
+          },
+          "kubernetes": {
+            "logon": "Pålogging"
+          }
+        }
+      },
+      "create": {
+        "title": "Opprett tilgang",
+        "success": "Tilgang opprettet vellykketfor gruppe: {{group}}",
+        "error": "Feil ved oppretting av tilgang",
+        "groupPlaceholder": "Velg gruppe",
+        "scopePlaceholder": "Velg et mål",
+        "subjectPlaceholder": "Velg subject",
+        "yourGroups": "Dine grupper",
+        "groups": "Andre grupper"
+      },
+      "update": {
+        "title": "Oppdater tilgang",
+        "error": "Feil under oppdatering av tilgang",
+        "success": "Tilgang oppdatert"
+      },
+      "delete": {
+        "title": "Slette tilgang?",
+        "details": "Sikker på du vil slette tilgang: {{name}}?",
+        "errortitle": "Feil ved sletting",
+        "errordetails": "Feil ved sletting av acl",
+        "success": "Tilgang slettet"
+      },
+      "form": {
+        "group": "Gruppe",
+        "groupError": "Mangler gruppe, eller ikke gyldige tegn",
+        "groupHelp": "Hvilke gruppe (AD/Ldap, med @<domene>)?",
+        "scope": "Mål",
+        "scopeError": "Mangler mål",
+        "scopeHelp": "Hvilket mål?",
+        "subject": "Subjekt",
+        "subjectError": "Mangler subjekt",
+        "subjectHelp": "Hvilket subjekt?",
+        "read": "Les",
+        "readError": "Mangler",
+        "readHelp": "Tillat lesetilgang?",
+        "create": "Opprett",
+        "createError": "Mangler",
+        "createHelp": "Tillat opprett-tilgang?",
+        "update": "Endre",
+        "updateError": "Mangler",
+        "updateHelp": "Tillat endretilgang?",
+        "delete": "Slett",
+        "deleteError": "Mangler",
+        "deleteHelp": "Tillat sletting?",
+        "owner": "Eier",
+        "ownerError": "Mangler",
+        "ownerHelp": "Tillat eiertilgang?",
+        "logon": "Clusterpålogging",
+        "logonError": "Mangler",
+        "logonHelp": "Allow clusterpålogging?"
+      }
+    },
+    "admin": {
+      "datacenters": {
+        "table": {
+          "columns": {
+            "name": "Navn",
+            "provider": "Tilbyder",
+            "region": "Region",
+            "country": "Land"
+          }
+        },
+        "create": {
+          "title": "Opprett ett datasenter",
+          "createError": "Fikk ikke opprettet et nytt datasenter ..."
+        },
+        "edit": {
+          "title": "Rediger datacenter",
+          "editError": "Feil ved oppdatering av datasenter ..."
+        },
+        "form": {
+          "name": "Navn",
+          "namePlaceholder": "Navn på datasenter",
+          "nameHelp": "Skriv inn navn på datasenter",
+          "nameError": "Mangler datasenter navn",
+          "provider": "Tilbyder",
+          "providerPlaceholder": "Hvilken tilbyer? (eksempel: tanzu, azure)",
+          "providerHelp": "Hvilken tilbyder er dette? (eksempel: tanzu, azure)",
+          "providerError": "Mangler tilbyder-beskrivelse",
+          "region": "Region",
+          "regionPlaceholder": "Hvilken region? (eksempel: Trøndelag, Northern Ireland)",
+          "regionHelp": "Hvilken region? (eksempel: Trøndelag, Northern Ireland)",
+          "regionError": "Mangler region",
+          "country": "Land",
+          "countryPlaceholder": "Hvilket land? (eksempel: Norway, Ireland)",
+          "countryHelp": "Hvilket land ligger datasenteret i? (eksempel: Norway, Ireland)",
+          "countryError": "Mangler landsbeskrivelse",
+          "apiEndpoint": "Datasenter api-endepunkt",
+          "apiEndpointPlaceholder": "Hvilken url for pålogging til datasenteret?",
+          "apiEndpointHelp": "Hvilken url for pålogging til datasenteret?",
+          "apiEndpointError": "",
+          "required": "Påkrevd"
+        }
+      },
+      "prices": {
+        "table": {
+          "column": {
+            "machineClass": "Maskinklasse",
+            "price": "Pris per node",
+            "cpu": "CPU",
+            "memory": "Memory",
+            "memoryRounded": "Memory avrundet",
+            "provider": "Leverandør"
+          },
+          "empty": "Ingen priser ..."
+        },
+        "create": {
+          "title": "Opprett ny pris",
+          "createError": "Feil ved oppretting av ny pris ..."
+        },
+        "edit": {
+          "title": "Rediger pris",
+          "createError": "Feil ved oppdatering av pris ..."
+        },
+        "form": {
+          "provider": "Leverandør",
+          "providerPlaceholder": "Fyll inn leverandør",
+          "providerHelp": "Fyll inn leverandør",
+          "providerError": "Mangler leverandør",
+          "machineClass": "Maskinklasse",
+          "machineClassPlaceholder": "Fyll inn maskinklasse",
+          "machineClassHelp": "Fyll inn maskinklasse",
+          "machineClassError": "Mangler maskinklasse",
+          "cpu": "CPU",
+          "cpuPlaceholder": "Fyll inn antall CPUer",
+          "cpuHelp": "Fyll inn antall CPUer",
+          "cpuError": "Mangler CPU",
+          "memoryBytes": "Memory bytes",
+          "memoryBytesPlaceholder": "Fyll inn memory bytes",
+          "memoryBytesHelp": "Fyll inn memory bytes",
+          "memoryBytesError": "Mangler memory bytes",
+          "memory": "Memory",
+          "memoryPlaceholder": "Fyll inn memory",
+          "memoryHelp": "Fyll inn memory",
+          "memoryError": "Mangler memory",
+          "price": "Pris per node",
+          "pricePlaceholder": "Fyll inn pris per node",
+          "priceHelp": "Fyll inn pris per node",
+          "priceError": "Mangler pris",
+          "from": "Fra dato",
+          "fromPlaceholder": "Fyll inn fra-dato",
+          "fromHelp": "Fyll inn fra-dato",
+          "fromError": "Mangler fra-dato",
+          "to": "Til dato",
+          "toPlaceholder": "Fyll inn til-dato",
+          "toHelp": "Fyll inn til-dato",
+          "toError": "Mangler til-dato",
+          "required": "Påkrevd"
+        }
+      },
+      "auditlogs": {
+        "page": {
+          "showing": "Viser",
+          "to": "til",
+          "of": "av",
+          "entries": "elementer"
+        },
+        "search": {
+          "placeholder": "Søk etter logger"
+        },
+        "view": {
+          "back": "Gå tilbake",
+          "new": {
+            "title": "Ny verdi"
+          },
+          "old": {
+            "title": "Gammel verdi"
+          }
+        },
+        "table": {
+          "column": {
+            "user": "Bruker",
+            "message": "Melding",
+            "date": "Dato",
+            "time": "Tidspunkt",
+            "action": "Handling",
+            "category": "Kategori",
+            "newValue": "Ny verdi",
+            "oldValue": "Gammel verdi",
+            "details": "View details"
+          }
+        },
+        "title": "Audit logger"
+      },
+      "projects": {
+        "title": "Prosjekter",
+        "details": {
+          "title": "Prosjekt",
+          "name": "Name",
+          "description": "Beskrivelse",
+          "workorder": "Arbeidsordre",
+          "roles": "Roller",
+          "status": "Status",
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "servicetags": "Stikkord",
+          "clusterInfo": "Cluster som tilhører prosjektet",
+          "table": {
+            "clusterName": "Clusternavn",
+            "description": "Beskrivelse",
+            "workorder": "Arbeidsordre",
+            "environment": "Miljø",
+            "empty": "Ingen tilkoblede cluster"
+          }
+        },
+        "table": {
+          "name": "Navn",
+          "description": "Beskrivelse",
+          "active": "Aktiv",
+          "created": "Opprettet",
+          "updated": "Oppdatert",
+          "owner": {
+            "title": "Eier",
+            "upn": "Hovedbrukernavn",
+            "email": "E-post"
+          },
+          "responsible": {
+            "title": "Ansvarlig",
+            "name": "Navn",
+            "email": "E-post"
+          },
+          "billing": {
+            "title": "Fakturering",
+            "workorder": "Arbeidsordre"
+          }
+        },
+        "create": {
+          "title": "Lag et nytt prosjekt",
+          "createError": "Feil ved opprettelse av nytt prosjekt..."
+        },
+        "update": {
+          "title": "Oppdater prosjekt",
+          "updateError": "Feil ved oppdatering av prosjekt..."
+        },
+        "delete": {
+          "title": "Slette prosjekt?",
+          "details": "Sikker på du vil slette prosjekt {{projectName}}?",
+          "success": {
+            "title": "Sletting gjennomført"
+          },
+          "error": {
+            "title": "Feil ved sletting, eller så er prosjektet i bruk",
+            "details": "Kunne ikke slette, er prosjektet i bruk?"
+          }
+        },
+        "form": {
+          "fetcherror": "Fant ikke projectet",
+          "name": "Navn",
+          "nameError": "Navn mangler, eller ugyldige tegn",
+          "nameHelp": "Fyll inn navnet på prosjektet",
+          "description": "Beskrivelse",
+          "descriptionHelp": "Skriv inn en beskrivelsen",
+          "descriptionError": "Beskrivelsen mangler",
+          "active": "Status",
+          "activeHelp": "Trykk for å endre status på prosjektet",
+          "activeStatus": {
+            "true": "Aktiv",
+            "false": "Inaktiv"
+          },
+          "rolesHelp": "To roller må legges til, en for eier og en for ansvarlig",
+          "rolesError": "Mangler roller, minimum to roller, eier og ansvarlig må være satt",
+          "roles": {
+            "title": "Roler",
+            "add": "Legg til rolle",
+            "remove": "Fjern rolle",
+            "roleName": "Rolle",
+            "upn": "Brukernavn (UPN)",
+            "upnError": "Mangler brukernavn (UPN)",
+            "email": "Email",
+            "emailError": "Email er mangler eller er ikke valid",
+            "phone": "Phone",
+            "placeholder": "Velg en rolle",
+            "availableRoles": {
+              "owner": "Owner",
+              "responsible": "Responsible"
+            }
+          },
+          "serviceTags": "Stikkord",
+          "serviceTagsHelp": "Ekstra strikkord for prosjekt?",
+          "serviceTagsError": "Mangler stikkord",
+          "workorder": "Arbeidsordre",
+          "workorderHelp": "Fyll inn arbeidsordre",
+          "workorderError": "Mangler arbeidsordre",
+          "createError": "Kunne ikke opprette prosjekt, se over verdier",
+          "updateError": "Kunne ikke oppdatere prosjektet, se over verdier"
+        }
+      },
+      "policyreports": {
+        "title": "Policyrapporter",
+        "cluster": "Cluster",
+        "policy": "Policy",
+        "fail": "Feilet",
+        "pass": "Passert",
+        "error": "Feil ved henting av sammendrag fra APIet"
+      },
+      "vulnerabilityreports": {
+        "title": "Sårbarhetsrapporter",
+        "clusterSummary": {
+          "title": "Oversikt per cluster",
+          "clusterId": "Cluster",
+          "criticalCount": "Kritisk",
+          "highCount": "Høy",
+          "mediumCount": "Medium",
+          "lowCount": "Lav",
+          "error": "Feil ved henting av sammendrag",
+          "environment": "Miljø",
+          "project.name": "Prosjekt"
+        },
+        "cveid": {
+          "title": "Søk etter ID",
+          "clusterId": "Cluster",
+          "environment": "Miljø",
+          "criticality": "Kritikalitet",
+          "sensitivity": "Sensitivitet",
+          "project.name": "Prosjekt",
+          "searchHelp": "Søk etter cluster med en CVE ID",
+          "error": "Feil ved søk etter id",
+          "notfound": "Ingen resultat på CVE-ID søk"
+        }
+      },
+      "compliancereports": {
+        "cluster": "Cluster",
+        "name": "Navn",
+        "title": "Tittel",
+        "passcount": "OK",
+        "failcount": "Feilet"
+      }
+    },
+    "apikeys": {
+      "title": "Api-nøkler",
+      "table": {
+        "columns": {
+          "displayName": "Visningsnavn",
+          "identifier": "Idenfikator",
+          "created": "Opprettet",
+          "expires": "Opphører",
+          "lastUsed": "Sist brukt",
+          "type": "Type"
+        }
+      },
+      "error": "Feil ved henting av apinøkler",
+      "delete": {
+        "title": "Slette api-nøkkel?",
+        "details": "Sikker på du vil slette api-nøkkel: {{name}}?",
+        "errortitle": "Feil ved sletting",
+        "errordetails": "Feil ved sletting av api key",
+        "success": "Api-nøkkel slettet"
+      },
+      "create": {
+        "title": "Opprett api-nøkkel",
+        "apikeydoc": {
+          "title": "Hva nå?!",
+          "first": "Først og fremst, kopier apinøkkelen til et trygt sted og del kun med systemer og folk du stoler på!",
+          "usePart1": "For å bruke apinøkkelen, legg til en 'request header' som har navn",
+          "usePart2": ", og sett apinøkkelen som verdi",
+          "swaggerText1": "Hvilke endepunkt kan jeg bruke sier du?",
+          "swaggerlinkText": "Swagger dokumentasjon",
+          "swaggerText2": "for mer informasjon."
+        },
+        "types": {
+          "service": "Tjeneste"
+        },
+        "displayName": "Visningsnavn",
+        "displayNameHelp": "Lesevennlig navn for apinøkkel",
+        "displayNameError": "Manger visningsnavn eller så er det for lite tegn, eller ugyldige tegn",
+        "identifier": "Identifikator",
+        "identifierHelp": "Identifikator for apinøkkel",
+        "identifierError": "Manger Identifikator eller så er det for lite tegn, eller ugyldige tegn",
+        "type": "Type",
+        "typeError": "Mangler type",
+        "typePlaceholder": "Velg en type",
+        "expires": "Utløpsdato",
+        "expiresHelp": "Vil du sette en utløpsdato?",
+        "expiresError": "Mangler verdi",
+        "createError": "Feil ved oppretting! Finnes fra før? Eller ugyldige tegn",
+        "copyApikey": "Kopier apinøkkel",
+        "apikeyCopied": "Apinøkkel kopiert",
+        "apikeyHeaderCopied": "Apinøkkel-header kopiert",
+        "startOver": "Opprett enda en nøkkel"
+      }
+    },
+    "auth": {
+      "callback": {
+        "title": "Du er nå logget inn",
+        "link": "Gå til førstesiden"
+      }
+    },
+    "configuration": {
+      "title": "Konfigurasjon",
+      "operatorconfigs": {
+        "title": "Operator-konfigurasjoner",
+        "error": "Kunne ikke hente operator-konfigurasjoner",
+        "table": {
+          "columns": {
+            "imagePostfix": "Bilde-suffiks"
+          },
+          "table": {
+            "columns": {
+              "index": "Rekkefølge",
+              "taskName": "Oppgavenavn",
+              "version": "Versjon",
+              "runOnce": "Kjør en gang?"
+            }
+          }
+        }
+      },
+      "tasks": {
+        "title": "Oppgaver",
+        "error": "Kunne ikke hente oppgaver",
+        "table": {
+          "columns": {
+            "name": "Navn",
+            "imageName": "Bilde(image)-navn (postfiks)",
+            "version": "Versjon",
+            "cmd": "Kommando",
+            "backofflimit": "Gjentagelsegrense",
+            "timeoutInSeconds": "Tidsavbrukd (i sekunder)",
+            "secret": {
+              "title": "Hemmelighet",
+              "filepath": "Filsti (inne i poden)",
+              "source": {
+                "title": "Hemmelig kilde",
+                "git": "Git",
+                "vault": "Vault",
+                "url": "Repository url",
+                "branch": "Gren",
+                "contentPath": "Innholdssti"
+              }
+            },
+            "envVars": {
+              "title": "Miljøvariabler",
+              "key": "Variabel",
+              "value": "Verdi"
+            },
+            "scripts": "Skript"
+          }
+        }
+      },
+      "desiredVersion": {
+        "title": "Ønsket versjon",
+        "error": "Kunne ikke hente ønsket-versjoner",
+        "table": {
+          "columns": {
+            "key": "Nøkkel",
+            "value": "Verdi"
+          }
+        },
+        "form": {
+          "key": "Nøkkel",
+          "keyHelp": "Ønsket versjon nøkkel?",
+          "keyError": "Mangler nøkkel eller ikke gyldige tegn",
+          "value": "Verdi",
+          "valueHelp": "Ønsket versjon verdi?",
+          "valueError": "Mangler verdi eller ikke gyldige tegn"
+        },
+        "create": {
+          "title": "Opprett ønsket versjon",
+          "success": "Ønsket versjon opprettet",
+          "error": "Feil ved opprettelse av ønsket versjon"
+        },
+        "update": {
+          "title": "Oppdater ønsket versjon",
+          "success": "Ønsket versjon oppdatert",
+          "error": "Feil ved oppdatering av ønsket versjon"
+        },
+        "delete": {
+          "title": "Slette ønsket versjon?",
+          "details": "Sikker på at du vil slette ønsket versjon: {{key}}?",
+          "success": "Ønsket versjon slettet",
+          "error": "Feil ved sletting av ønsket versjon",
+          "errortitle": "Feil ved sletting",
+          "errordetails": "Feil ved sletting av ønsket versjon"
+        }
+      }
+    },
+    "clusters": {
+      "title": "Cluster",
+      "search": {
+        "placeholder": "Søk fritt etter clusternavn",
+        "info": "Fant ingen cluster"
+      },
+      "create": "Lag cluster",
+      "details": {
+        "title": "Cluster-detaljer",
+        "raw": "Rådata",
+        "conditions": {
+          "toolingAutosyncError": "Mangler NHN-tooling autosync, oppdateringer kan utebli",
+          "argocdautosynclink": "ArgoCD dokumentasjon"
+        },
+        "edit": {
+          "title": "Rediger",
+          "form": {
+            "description": "Beskrivelse",
+            "descriptionHelp": "Skriv inn beskrivelsen av clusteret",
+            "descriptionError": "Beskrivelse har ugyldige tegn (gyldig: norske bokstaver, heltall og -_)",
+            "project": "Prosjekt",
+            "projectHelp": "Hvilket prosjekt hører clusteret til?",
+            "projectError": "Prosjekt tilhørighet mangler",
+            "criticalityLevel": "Kritikalitetsnivå",
+            "criticalityLevelHelp": "Hvilket kritikalitetsnivå har dette clusteret?",
+            "criticalityLevelError": "Mangler kritikalitetsnivå",
+            "availableCriticalities": {
+              "1": "1. Normal",
+              "2": "2. Moderat",
+              "3": "3. Høy",
+              "4": "4. Kritisk"
+            },
+            "sensitivityLevel": "Sensitivitetsnivå",
+            "sensitivityLevelHelp": "Hvilket sensitivitetsnivå har dette clusteret?",
+            "sensitivityLevelError": "Mangler sensitivitetsnivå",
+            "availableSensitivities": {
+              "1": "1. Åpen",
+              "2": "2. Internt",
+              "3": "3. Skjermet",
+              "4": "4. Sterkt skjermet"
+            },
+            "moreInfo": "Mer informasjon, klikk her",
+            "serviceTags": "Stikkord",
+            "serviceTagsHelp": "Ekstra stikkord for clusteret?",
+            "serviceTagsError": "Mangler stikkord",
+            "workorder": "Arbeidsordre",
+            "workorderHelp": "Fyll inn arbeidsordre",
+            "workorderError": "Mangler arbeidsordre",
+            "copyProject": {
+              "title": "Overskrive?",
+              "details": "Overskrive data fra {{projectName}}?",
+              "accept": "Overskrev data fra prosjekt",
+              "canceled": "Avbrutt",
+              "reject": "Ingen overskriving av data fra prosjekt"
+            }
+          }
+        },
+        "delete": {
+          "title": "Slett cluster",
+          "subTitle": "Faresone",
+          "maintext": "Sikker på at du vil slette clusteret?",
+          "subtext": "Dette vil slette clusteret og alle tilknyttede ressurser, som nodegrupper, ingresser, etc... og kan ikke reverseres!",
+          "sub2text": "For å kunne slette et cluster, må du lage et namespace som heter 'delete-me', så får du muligheten til å slette med knappen her nedenfor."
+        },
+        "resources": {
+          "title": "Ressurser"
+        },
+        "acl": {
+          "title": "Tilgangsgrupper",
+          "table": {
+            "columns": {
+              "groupName": "Gruppenavn"
+            }
+          }
+        },
+        "metadata": {
+          "title": "Informasjon",
+          "name": "Visningsnavn",
+          "clusterName": "Clusternavn",
+          "projectName": "Prosjektnavn",
+          "clusterId": "Clusterid",
+          "status": "Status",
+          "statusTooltip": "Tid siden siste rapportering. Alt under 10 minuter er bra, mellom 10 og 15 er potensielt trøbbel, over 20 minutter så er det noe galt.",
+          "datacenter": "Datasenter",
+          "platform": "Plattform",
+          "provider": "Tilbyder",
+          "workspace": "Arbeidsområde",
+          "updated": "Oppdatert",
+          "created": "Opprettet",
+          "lastObserved": "Sist observert",
+          "firstObserved": "Første observasjon",
+          "accessGroups": "Tilgangsgrupper",
+          "ha": "HA control plane",
+          "environment": "Miljø",
+          "k8sVersion": "Kubernetes versjon",
+          "nhnToolingVersion": "NHN-tooling versjon",
+          "nhnToolingBranch": "NHN-tooling gren",
+          "agent": "Agent versjon",
+          "agentSha": "Agent sha",
+          "controlPlaneEndpoint": "Control plane endepunkt",
+          "egressIp": "Egress IP",
+          "clusterIdCopied": "Clusterid kopiert",
+          "egressIpCopied": "Egress IP kopiert",
+          "project": "Prosjekt",
+          "criticality": "Criticality",
+          "sensitivity": "Sensitivity",
+          "roles": "Roller",
+          "tags": "Stikkord",
+          "workorder": "Arbeidsordre",
+          "description": "Beskrivelse",
+          "upn": "Brukernavn (UPN)",
+          "email": "E-post",
+          "phone": "Telefon"
+        },
+        "tools": {
+          "title": "Verkøy",
+          "argo": "ArgoCD",
+          "argoMissing": "Ingen argo eksponering",
+          "grafana": "Grafana",
+          "grafanaMissing": "Ingen grafana eksponering",
+          "kubectlLogin": "Kubectl login",
+          "kubectlLoginCopied": "Kubectl innlogging kommando kopiert",
+          "rorlogin": "ROR CLI innlogging",
+          "rorlogincopied": "ROR CLI innloggings kommando kopiert"
+        },
+        "metrics": {
+          "cpu": "CPU",
+          "cpuConsumed": "CPU-forbruk",
+          "memory": "Minne",
+          "memoryConsumed": "Minneforbruk",
+          "priceMonth": "Pris pr. mnd",
+          "priceYear": "pr. år",
+          "nodePool": "nodegrupper"
+        },
+        "nodePools": {
+          "title": "Nodegrupper",
+          "machineClass": "Maskinklasse",
+          "table": {
+            "column": {
+              "name": "Navn",
+              "role": "Role",
+              "os": "Operativsys.",
+              "osImage": "Image",
+              "arch": "Arkitektur",
+              "cpu": "CPU",
+              "mem": "MEM"
+            }
+          }
+        },
+        "ingresses": {
+          "title": "Ingresser",
+          "statusTooltip": "Grønn hvis alle forutsetninger er på plass, f.eks. at Ingressen har en IP-adresse, peker på en Service av typen NodePort, etc..",
+          "internet": "Internett",
+          "health": "Helsenett",
+          "datacenter": "Datasenter",
+          "hosts": "Url",
+          "address": "IP",
+          "infrastructure": "Infrastruktur",
+          "namespace": "Område",
+          "name": "Navn",
+          "hostname": "Vertsnavn",
+          "path": "Sti",
+          "ip": "IP",
+          "cert": "Cert",
+          "empty": "Ingen ingresser",
+          "noIngressClass": "IngressClass mangler, eller har feil verdi",
+          "ingressClass": "Ingress klasse",
+          "services": {
+            "notFound": "Kunne ikke finne service",
+            "noEndpoints": "Service har ingen endpoint",
+            "notNodePort": "Ikke en NodePort-service",
+            "noService": "Ingen service tilgjengelig"
+          },
+          "noRules": "Ingen stier definert",
+          "noips": "Ingen tilegnet ip-adresse",
+          "noingressrules": "Ingen ingress regler definert",
+          "detail": {
+            "class": "Nettverk",
+            "status": "Ingress status"
+          }
+        },
+        "policyreports": {
+          "title": "Policyrapporter",
+          "namespace": "Namespace",
+          "name": "Navn",
+          "error": "Error",
+          "fail": "Feilet",
+          "pass": "Passert",
+          "skip": "Skippet",
+          "warn": "Advarsel",
+          "result": "Resultat",
+          "policy": "Regel",
+          "apiversion": "API version",
+          "kind": "Kind",
+          "category": "Category",
+          "severity": "Alvorlighetsgrad",
+          "results": {
+            "category": "Kategori",
+            "message": "Melding",
+            "name": "Navn",
+            "uid": "Kubernetes UID"
+          }
+        },
+        "vulnerabilityreports": {
+          "title": "Sårbarhetsrapporter",
+          "name": "Navn",
+          "kind": "Kind",
+          "namespace": "Namespace",
+          "criticalCount": "Antall kritisk",
+          "critical": "Kritisk",
+          "high": "Høy",
+          "medium": "Medium",
+          "low": "Lav",
+          "unknown": "Unknown",
+          "total": "Totalt",
+          "reportTitle": "Tittel",
+          "severity": "Alvorlighetsgrad",
+          "score": "Poengsum",
+          "id": "Id",
+          "primaryLink": "Lenke",
+          "resource": "Ressurs",
+          "installedVersion": "Installert versjon",
+          "fixedVersion": "Fikset i versjon",
+          "description": "Beskrivelse",
+          "artifactRepository": "Repository",
+          "artifactTag": "Versjon"
+        },
+        "compliancereports": {
+          "title": "Samsvarsrapporter",
+          "table": {
+            "name": "Navn",
+            "title": "Tittel",
+            "passcount": "OK",
+            "failcount": "Feilet",
+            "details": {
+              "id": "Id",
+              "name": "Navn",
+              "severity": "Alvorlighetsgrad",
+              "totalfail": "Feilet"
+            }
+          }
+        },
+        "notifications": {
+          "title": "Notifikasjoner",
+          "receivers": "Mottakere",
+          "slack": "Slack",
+          "channelid": "KanalId",
+          "notificationkind": "Hvilken ressurs vil du få notifikasjoner for?",
+          "addSlackChannel": "Legg til slackkanal",
+          "removeSlackChannel": "Fjern slackkanal",
+          "route": {
+            "configure": "Konfigurer notifikasjoner",
+            "delete": "Slett alle",
+            "resource": "Ressurs",
+            "slack": {
+              "workspace": "Workspace",
+              "channel": "Kanal"
+            }
+          },
+          "routeCreate": {
+            "slack": "Legg til ny slackmottaker"
+          },
+          "type": "Type",
+          "channelId": "KanalId"
+        }
+      },
+      "table": {
+        "column": {
+          "status": "Status",
+          "name": "Navn",
+          "clusterName": "Clusternavn",
+          "projectName": "Prosjektnavn",
+          "workspace": "Arbeidsområde",
+          "datacenter": "Datasenter",
+          "updated": "Sist rapportert",
+          "lastObserved": "Sist rapportert",
+          "firstObserved": "Første rapportering",
+          "created": "Opprettet",
+          "cpu": "CPU",
+          "memory": "Minne",
+          "cpuConsumed": "CPU-bruk",
+          "memoryConsumed": "Minnebruk",
+          "nodePools": "Nodegrupper",
+          "nodes": "Noder",
+          "priceMonth": "Pris pr. mnd",
+          "priceYear": "Pris pr. år",
+          "cores": "kjerner",
+          "nhnTooling": "Tooling",
+          "nhnToolingBranch": "Gren",
+          "k8sVersion": "Kubernetes",
+          "agentVersion": "Agent",
+          "ingressesDatacenter": "Publikasjoner datasenter",
+          "ingressesHealth": "Publikasjoner helsenett",
+          "ingressesInternet": "Publikasjoner internett",
+          "egressIP": "Egress IP",
+          "provider": "",
+          "environment": "Miljø",
+          "workorder": "Arbeidsordre"
+        },
+        "empty": "Ingen cluster"
+      },
+      "paginator": {
+        "total": "Total antall"
+      },
+      "new": {
+        "title": "Opprett cluster",
+        "clusterDetails": "Cluster-detaljer",
+        "form": {
+          "provider": "Leverandør",
+          "providerPlaceholder": "Velg en leverandør",
+          "providerError": "Mangler leverandørvalg",
+          "env": "Miljø",
+          "envPlaceholder": "Velg et miljø",
+          "envError": "Mangler miljø",
+          "datacenter": "Datasenter",
+          "datacenterPlaceholder": "Velg et datasenter",
+          "datacenterError": "Manger datasenter",
+          "workspace": "Arbeidsområde",
+          "workspacePlaceholder": "Velg et arbeidsområde",
+          "workspaceError": "Mangler arbeidsområdet",
+          "clusterName": "Cluster-navn",
+          "clusterNameError": "Mangler navn, eller er ikke unikt",
+          "tags": "Stikkord",
+          "tagsError": "Mangler stikkord",
+          "nodePools": {
+            "title": "Nodegrupper",
+            "machineClass": "Maskinklasse",
+            "cpu": "CPU",
+            "mem": "Minne",
+            "pricePrNode": "Pris pr. node",
+            "count": "Antall"
+          },
+          "addedNodePools": {
+            "title": "Nodegrupper lagt til",
+            "sum": "Summering"
+          },
+          "summary": {
+            "title": "Oppsummering",
+            "orderedBy": "Bestilles av",
+            "clusterName": "Clusternavn",
+            "pricePrMonth": "Estimert pris pr. måned",
+            "pricePrYear": "Estimert pris pr. år"
+          }
+        }
+      },
+      "created": "Cluster opprettet"
+    },
+    "create": {
+      "cluster": {
+        "steps": {
+          "metadata": {
+            "title": "Metadata",
+            "project": "Prosjekt",
+            "projectPlaceholder": "Velg et prosjekt",
+            "projectError": "Mangler prosjekt",
+            "projectHelp": "Hvis du ikke finner ditt prosjekt, så be om å få opprettet prosjektet i denne slack-kanalen:",
+            "env": "Miljø",
+            "envPlaceholder": "Velg et miljø",
+            "envError": "Mangler miljø",
+            "clustername": "Clusternavn",
+            "clusternameError": "Mangler clusternavn",
+            "tags": "Stikkord",
+            "tagsError": "Mangler stikkord",
+            "sensitivity": "Sensitivitet",
+            "sensitivityPlaceholder": "Velg sensitivitet",
+            "sensitivityError": "Mangler sensitivitet",
+            "criticality": "Kritikalitet",
+            "criticalityPlaceholder": "Velg kritikalitet",
+            "criticalityError": "Mangler kritikalitet"
+          },
+          "location": {
+            "title": "Nytt cluster",
+            "provider": "Tilbyder",
+            "providerPlaceholder": "Velg en tilbyder",
+            "providerError": "Mangler tilbyder",
+            "workspace": "Arbeidsområde",
+            "workspacePlaceholder": "Velg et arbeidsområde",
+            "workspaceError": "Mangler arbeidsområde",
+            "workspaceHelp": "Hvis du ikke finner relevant arbeidsområde, så be om å få opprettet prosjektet i denne slack-kanalen:",
+            "ownergroup": "Eiergruppe",
+            "ownergroupPlaceholder": "Velg en eiergruppe",
+            "ownergroupError": "Mangler eiergruppe, eller ikke gyldig gruppenavn (eks. <gruppenavn>@<domene>.<postfix>)"
+          },
+          "resources": {
+            "title": "Ressurser",
+            "table": {
+              "machineClass": "Maskinklasse",
+              "cpu": "CPU",
+              "memory": "MEM",
+              "price": "Pris per node",
+              "count": "Antall"
+            },
+            "selectedTitle": "Valgte ressurser",
+            "sum": "Sum",
+            "availability": "Tilgjengelighet",
+            "availabilityError": "Mangler Tilgjengelighet",
+            "lowAvailability": "Normal tilgjengelighet",
+            "highAvailability": "Høy tilgjengelighet",
+            "availabilityWarning": "Produksjons-cluster uten høy tilgjengelighet er ikke anbefalt!",
+            "price": "Pris",
+            "k8sVersion": "Kubernetes versjon",
+            "k8sVersionPlaceholder": "Velg kubernetes versjon",
+            "k8sVersionError": "Mangler kubernetes versjon",
+            "clusterName": "Cluster-navn",
+            "clusterNameError": "Ikke gyldig cluster-navn, bruk kunn bokstaver, tall, bindestrek eller understrek"
+          },
+          "summary": {
+            "title": "Oppsummering",
+            "orderby": "Bestilles av",
+            "project": "Prosjekt",
+            "workorder": "Arbeidsordre",
+            "env": "Miljø",
+            "clustername": "Clusternavn",
+            "tags": "Stikkord",
+            "sensiticity": "Sensitivitet",
+            "criticality": "Kritikalitet",
+            "provider": "Tilbyder",
+            "workspace": "Arbeidsområde",
+            "datacenter": "Datasenter",
+            "location": "Lokasjon",
+            "ownergroup": "Eiergruppe",
+            "availability": "Tilgjengelighet",
+            "nodepools": "Nodegrupper",
+            "sumMonth": "Sum pr. mnd",
+            "sumYear": "Sum pr. år",
+            "errorSubmit": "Feil ved opprettelse av cluster",
+            "serverMessage": "Server-melding",
+            "submitSuccess": "Cluster opprettet",
+            "region": "Region",
+            "subscription": "Subscription",
+            "resourceGroup": "Resource group",
+            "k8sVersion": "Kubernetes versjon"
+          }
+        },
+        "summary": "Oppsummering"
+      }
+    },
+    "dashboard": {
+      "title": "Oversikt",
+      "error": "Feil ved henting av nøkkeltall ...",
+      "seeAll": "Se alle",
+      "metrics": {
+        "cpu": "Prosessor",
+        "memory": "Minne",
+        "cores": "kjerner"
+      },
+      "rates": {
+        "clusterInDatacenters": "Cluster i datasenter",
+        "clusterInWorkspaces": "Cluster i arbeidsområder"
+      },
+      "emptyDatacenters": "Ingen datasenter ...",
+      "emptyWorkspaces": "Ingen arbeidsområder ...",
+      "emptyClusters": "Ingen cluster ...",
+      "total": "totalt",
+      "orders": {
+        "title": "Ordre",
+        "table": {
+          "name": "Navn",
+          "provider": "Tilbyder",
+          "environment": "Miljø",
+          "phase": "Fase",
+          "timeSince": "Tid siden",
+          "status": "Status"
+        },
+        "phases": {
+          "Recieved": "Mottatt",
+          "Creating": "Oppretter",
+          "Error": "Feil",
+          "Done": "Ferdig"
+        },
+        "statuses": {
+          "": "...",
+          "Provisioning": "Provisjonering",
+          "Accepted": "Akseptert"
+        },
+        "delete": {
+          "success": "Bestilling slettet",
+          "error": "Feil ved sletting av bestilling",
+          "title": "Slette bestilling?",
+          "details": "Sikker på du vil slette bestilling?"
+        }
+      }
+    },
+    "datacenters": {
+      "title": "Datasenter",
+      "table": {
+        "column": {
+          "name": "Navn",
+          "datacenter": "Datacenter",
+          "cluster": "Cluster",
+          "cpu": "CPU",
+          "provider": "Tilbyder",
+          "memory": "Minne",
+          "cpuConsumed": "CPU-forbruk",
+          "memoryConsumed": "Minne-forbruk",
+          "nodePools": "Nodegrupper",
+          "nodes": "Noder",
+          "priceMonth": "Pris pr. mnd",
+          "priceYear": "Pris pr. år",
+          "cores": "kjerner"
+        },
+        "empty": "Ingen datasenter"
+      },
+      "details": {
+        "title": "Datasenter"
+      }
+    },
+    "metrics": {
+      "title": "Nøkkeltall",
+      "nhnTooling": "Fordeling NHN Tooling versjoner"
+    },
+    "orders": {
+      "title": "Bestillinger",
+      "details": {
+        "title": "Bestillingsdetaljer",
+        "errorFetch": "Feil ved henting av bestilling",
+        "table": {
+          "provider": "Tilbyder",
+          "clustername": "Clusternavn",
+          "datacentername": "Datacenternavn",
+          "workspacename": "Arbeidsområdenavn",
+          "orderby": "Bestilles av",
+          "ownergroup": "Eiergruppe",
+          "availability": "Høy tilgjengelighet",
+          "status": "Status",
+          "phase": "Fase",
+          "created": "Opprettet",
+          "updated": "Oppdatert",
+          "lastobserved": "Sist observert"
+        }
+      }
+    },
+    "prices": {
+      "title": "Prisliste per måned",
+      "table": {
+        "column": {
+          "machineClass": "Maskinklasse",
+          "price": "Pris per node",
+          "cpu": "CPU",
+          "memory": "Memory",
+          "memoryRounded": "Memory avrundet",
+          "provider": "Leverandør"
+        },
+        "empty": "Ingen priser ..."
+      }
+    },
+    "profile": {
+      "title": "Brukerprofil",
+      "description": "Beskrivelse",
+      "name": "Navn",
+      "email": "Epost",
+      "groups": "Grupper",
+      "accessToken": "Tilgangsnøkkel",
+      "aud": "Publikum",
+      "iss": "Utsteder",
+      "exp": "Utløper",
+      "iat": "Utstedt",
+      "copyWith": "Kopier med 'Bearer'",
+      "details": {
+        "title": "Detaljer"
+      },
+      "raw": {
+        "title": "Rådata"
+      },
+      "apikeys": {
+        "title": "Api-nøkler",
+        "create": {
+          "title": "Opprett api-nøkkel",
+          "displayName": "Visningsnavn",
+          "displayNameHelp": "Lesevennlig navn for apinøkkel",
+          "displayNameError": "Manger visningsnavn eller så er det for lite tegn, eller ugyldige tegn",
+          "readOnly": "Kun lese tilgang?",
+          "readOnlyValues": {
+            "true": "Kun les",
+            "false": "Les og skrivetilganger"
+          },
+          "readOnlyHelp": "Bare lesetilgang?",
+          "readOnlyError": "Verdi mangler",
+          "expires": "Utløpsdato",
+          "expiresHelp": "Vil du sette en utløpsdato?",
+          "expiresError": "Mangler verdi",
+          "copyApikey": "Kopier apinøkkel",
+          "apikeyCopied": "Apinøkkel kopiert",
+          "apikeyHeaderCopied": "Apinøkkel-header kopiert",
+          "startOver": "Opprett enda en nøkkel",
+          "createError": "Feil ved oppretting! Finnes fra før? Eller ugyldige tegn",
+          "apikeydoc": {
+            "title": "Hva nå?!",
+            "first": "Først og fremst, kopier apinøkkelen til et trygt sted og del kun med systemer og folk du stoler på!",
+            "usePart1": "For å bruke apinøkkelen, legg til en 'request header' som har navn",
+            "usePart2": ", og sett apinøkkelen som verdi",
+            "swaggerText1": "Hvilke endepunkt kan jeg bruke sier du?",
+            "swaggerlinkText": "Swagger dokumentasjon",
+            "swaggerText2": "for mer informasjon."
+          }
+        }
+      }
+    },
+    "releaseNotes": {
+      "title": "Endringer i ROR",
+      "changes": {
+        "2023_12_13": {
+          "title": "2023-12-13",
+          "description": "Nå mulig å fortsette sesjonen ved å høyreklikke på lenker og velge 'Åpne i ny fane'.",
+          "description1": "Mulig å se endringslogg for ROR"
+        }
+      }
+    },
+    "resources": {
+      "title": "Ressurser",
+      "error": "Feil ved henting av ressurser",
+      "table": {
+        "empty": "Ingen ressurser",
+        "missingfilter": "Mangler filter"
+      },
+      "details": {
+        "title": "Ressurs",
+        "raw": "Rådata"
+      },
+      "filter": {
+        "resourceType": {
+          "placeholder": "Velg en ressurstype"
+        },
+        "owner": {
+          "placeholder": "Velg et omfang"
+        },
+        "cluster": {
+          "placeholder": "Velg et cluster"
+        }
+      }
+    },
+    "workspaces": {
+      "title": "Arbeidsområder",
+      "details": {
+        "title": "Arbeidsområde"
+      },
+      "table": {
+        "column": {
+          "name": "Navn",
+          "datacenter": "Datacenter",
+          "cluster": "Cluster",
+          "cpu": "CPU",
+          "memory": "Minne",
+          "cpuConsumed": "CPU-forbruk",
+          "memoryConsumed": "Minne-forbruk",
+          "nodePools": "Nodegrupper",
+          "nodes": "Noder",
+          "priceMonth": "Pris pr. mnd",
+          "priceYear": "Pris pr. år",
+          "cores": "kjerner"
+        },
+        "empty": "Ingen arbeidsområder"
+      },
+      "form": {
+        "project": "Prosjekt",
+        "projectHelp": "Velg et prosjekt for arbeidsområdet"
+      }
+    }
+  },
+  "shared": {
+    "export": {
+      "errorSummary": "Feil ved eksportering",
+      "errorDetail": "Ingen data å eksportere"
+    },
+    "trueOrFalse": {
+      "true": "Sann",
+      "false": "Usann"
+    }
+  }
+}

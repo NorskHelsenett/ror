@@ -1,0 +1,51 @@
+# Default values for ror-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+environments:
+  debuglevel: INFO
+  rorApiUrl: https://api.ror.sky.test.nhn.no
+  containerRegistryPrefix: ncr.sky.nhn.no/
+replicaCount: 1
+image:
+  repository: ncr.sky.nhn.no/ror/ror-operator
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.1.495"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "ror-operator"
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ror-sa
+podAnnotations: {}
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 2000
+  runAsUser: 1001
+  runAsGroup: 1001
+  supplementalGroups: [501]
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+nodeSelector: {}
+tolerations: []
+affinity: {}

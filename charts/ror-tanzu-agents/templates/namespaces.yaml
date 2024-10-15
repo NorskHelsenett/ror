@@ -1,0 +1,9 @@
+{{- range .Values.agents }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-6"
+{{- end }}

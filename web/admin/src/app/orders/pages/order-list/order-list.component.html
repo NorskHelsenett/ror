@@ -1,0 +1,94 @@
+<div class="dark:border-primary-darker flex items-center gap-4 border-b px-4 py-4 lg:py-6">
+  <h1 class="flex-grow text-2xl font-semibold">{{ 'pages.apikeys.title' | translate }}</h1>
+</div>
+
+<div class="m-4">
+  <div class="dark:bg-darker items-center justify-between rounded-md bg-white p-2">
+    <div class="dark:bg-darker rounded-md bg-white">
+      <div class="dark:border-primary flex items-center justify-between border-b p-3">
+        <span class="flex-grow"></span>
+
+        <button
+          (click)="fetchOrders()"
+          class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+        >
+          {{ 'common.refresh' | translate }}
+        </button>
+      </div>
+      <div class="p-3">
+        <div *ngIf="orders$ | async as orders">
+          <!-- <p-table [value]="orders$ | async" autoLayout=""></p-table> -->
+          <p-table
+            #ordersTable
+            [value]="orders?.clusterorders"
+            dataKey="spec.cluster"
+            [rows]="25"
+            [showCurrentPageReport]="true"
+            [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [globalFilterFields]="['spec.cluster', 'kind']"
+          >
+            <ng-template pTemplate="caption">
+              <div class="flex">
+                <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="ordersTable.clear()"></button>
+                <span class="p-input-icon-left ml-auto">
+                  <i class="pi pi-search"></i>
+                  <!-- <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" /> -->
+                </span>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="min-width: 15rem" class="p-1">
+                  <div class="flex align-items-center">
+                    Cluster name
+                    <p-columnFilter type="text" field="name" display="menu"></p-columnFilter>
+                  </div>
+                </th>
+                <th style="min-width: 15rem" class="p-1">
+                  <div class="flex align-items-center">
+                    Kind
+                    <p-columnFilter type="text" field="kind" display="menu"></p-columnFilter>
+                  </div>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-order>
+              <tr>
+                <td>
+                  <a
+                    class="ml-2 cursor-pointer hover:text-blue-800 hover:underline dark:hover:text-blue-400"
+                    routerLink="/orders/{{ order?.metadata?.uid }}"
+                    >{{ order?.spec?.cluster }}</a
+                  >
+                </td>
+
+                <td>
+                  {{ order?.kind }}
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7">No orders found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <ng-template #loadingOrError>
+          <ng-container *ngIf="ordersFetchError; else dataLoading">
+            <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+              <span class="p-2 text-red-800"> {{ 'pages.apikeys.error' | translate }} </span>
+              <button class="btn text-black" (click)="fetchOrders()">{{ 'common.tryAgain' | translate }}</button>
+            </div>
+          </ng-container>
+
+          <ng-template #dataLoading>
+            <app-spinner></app-spinner>
+          </ng-template>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

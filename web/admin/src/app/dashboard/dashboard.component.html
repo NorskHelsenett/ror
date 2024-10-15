@@ -1,0 +1,338 @@
+<div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+  <h1 class="text-2xl font-semibold">{{ 'pages.dashboard.title' | translate }}</h1>
+  <button
+    (click)="fetch()"
+    class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+  >
+    {{ 'common.refresh' | translate }}
+  </button>
+</div>
+
+<div class="mt-2" *ngIf="metricsCollection$ | async as metrics; else loadingOrError">
+  <div class="grid gap-4 p-4 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <h6 class="dark:text-primary-lighter text-xs font-medium uppercase leading-none tracking-wider text-gray-500">
+            {{ 'nav.datacenters' | translate }}
+          </h6>
+          <span class="text-xl font-semibold"> {{ metricsForUser?.datacenterCount || 0 }} </span>
+          <span class="ml-1 inline-block rounded-md bg-green-100 px-1 py-px text-xs text-green-900"
+            >{{ metricsTotal?.datacenterCount || 0 }} <span>{{ 'pages.dashboard.total' | translate }}</span></span
+          >
+        </div>
+        <div class="flex flex-col">
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="dark:text-primary-dark h-12 w-12 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="p-2">
+        <a class="hover:underline" routerLink="admin/datacenter">{{ 'pages.dashboard.seeAll' | translate }}</a>
+      </div>
+    </div>
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <h6 class="dark:text-primary-lighter text-xs font-medium uppercase leading-none tracking-wider text-gray-500">
+            {{ 'nav.workspaces' | translate }}
+          </h6>
+          <span class="text-xl font-semibold"> {{ metricsForUser?.workspaceCount || 0 }} </span>
+          <span class="ml-1 inline-block rounded-md bg-green-100 px-1 py-px text-xs text-green-900"
+            >{{ metricsTotal?.workspaceCount || 0 }} <span>{{ 'pages.dashboard.total' | translate }}</span></span
+          >
+        </div>
+        <div class="flex flex-col">
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="dark:text-primary-dark h-12 w-12 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="p-2">
+        <a class="hover:underline" routerLink="workspaces">{{ 'pages.dashboard.seeAll' | translate }}</a>
+      </div>
+    </div>
+
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <h6 class="dark:text-primary-lighter text-xs font-medium uppercase leading-none tracking-wider text-gray-500">
+            {{ 'nav.clusters' | translate }}
+          </h6>
+          <span class="text-xl font-semibold">{{ metricsForUser?.clusterCount || 0 }}</span>
+          <span class="ml-2 inline-block rounded-md bg-green-100 px-2 py-px text-xs text-green-900">
+            {{ metricsTotal?.clusterCount || 0 }} <span>{{ 'pages.dashboard.total' | translate }}</span></span
+          >
+        </div>
+        <div>
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="dark:text-primary-dark h-12 w-12 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="p-2">
+        <!-- <a class="hover:underline" routerLink="">{{ 'pages.dashboard.seeAll' | translate }}</a> -->
+      </div>
+    </div>
+
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <h6 class="dark:text-primary-lighter text-xs font-medium uppercase leading-none tracking-wider text-gray-500">
+            {{ 'nav.nodes' | translate }}
+          </h6>
+          <span class="text-xl font-semibold">{{ metricsForUser?.nodeCount || 0 }}</span>
+          <span class="ml-2 inline-block rounded-md bg-green-100 px-2 py-px text-xs text-green-900">
+            {{ metricsTotal?.nodeCount || 0 }} <span>{{ 'pages.dashboard.total' | translate }}</span></span
+          >
+        </div>
+        <div>
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="dark:text-primary-dark h-12 w-12 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="p-2"></div>
+    </div>
+
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <h6 class="dark:text-primary-lighter text-xs font-medium uppercase leading-none tracking-wider text-gray-500">
+            {{ 'pages.dashboard.metrics.cpu' | translate }}
+          </h6>
+          <span class="text-xl font-semibold">{{ totalCpuPercentage }} %</span>
+          <span class="ml-2 inline-block rounded-md bg-green-100 px-2 py-px text-xs text-green-900"
+            ><span> {{ metricsTotal?.cpu || 0 }}</span> {{ 'pages.dashboard.metrics.cores' | translate }}
+          </span>
+        </div>
+        <div>
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="dark:text-primary-dark h-12 w-12 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="p-2"></div>
+    </div>
+
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+      <div class="flex items-center justify-between p-4">
+        <div>
+          <h6 class="dark:text-primary-lighter text-xs font-medium uppercase leading-none tracking-wider text-gray-500">
+            {{ 'pages.dashboard.metrics.memory' | translate }}
+          </h6>
+          <span class="text-xl font-semibold">{{ totalMemoryPercentage }} %</span>
+          <span class="ml-2 inline-block rounded-md bg-green-100 px-2 py-px text-xs text-green-900">
+            {{ metricsTotal?.memory | formatBytes: 2 : true }}
+          </span>
+        </div>
+        <div>
+          <span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="dark:text-primary-dark h-12 w-12 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="p-2"></div>
+    </div>
+  </div>
+</div>
+<ng-template #loadingOrError>
+  <ng-container *ngIf="metricsError; else loading">
+    <div class="m-4">
+      <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+        <span class="p-2 text-red-800"> {{ 'pages.dashboard.error' | translate }} </span>
+        <button class="btn text-black" (click)="fetchOverallMetrics()">{{ 'common.tryAgain' | translate }}</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loading>
+    <app-spinner></app-spinner>
+  </ng-template>
+</ng-template>
+
+<div class="px-4 py-4 lg:py-6" *ngIf="orders$ | async as orders">
+  <ng-container *ngIf="orders?.length > 0">
+    <div class="flex mb-2">
+      <h2 class="text-xl flex-grow">{{ 'pages.dashboard.orders.title' | translate }}</h2>
+      <button
+        (click)="fetchOrders()"
+        class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+      >
+        {{ 'common.refresh' | translate }}
+      </button>
+    </div>
+
+    <p-table
+      [value]="orders"
+      [rows]="5"
+      [paginator]="true"
+      sortField="status.createdTime"
+      [sortOrder]="-1"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      styleClass="p-datatable-sm"
+      responsiveLayout="scoll"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
+        'common.of' | translate | lowercase
+      }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="p-1">{{ 'pages.dashboard.orders.table.name' | translate }}</th>
+          <th class="p-1">{{ 'pages.dashboard.orders.table.provider' | translate }}</th>
+          <th class="p-1">{{ 'pages.dashboard.orders.table.environment' | translate }}</th>
+          <th class="p-1">{{ 'pages.dashboard.orders.table.status' | translate }}</th>
+          <th class="p-1">{{ 'pages.dashboard.orders.table.phase' | translate }}</th>
+          <th class="p-1">{{ 'pages.dashboard.orders.table.timeSince' | translate }}</th>
+          <th class="p-1"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-order>
+        <tr>
+          <td>
+            <a
+              *ngIf="(adminRead$ | async) === true"
+              routerLink="orders/{{ order?.metadata?.uid }}"
+              class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md hover:bg-sky-700 hover:text-gray-50 hover:dark:text-white dark:hover:bg-sky-600 px-4 py-2 text-lg dark:text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+            >
+              {{ order?.spec?.cluster }}</a
+            >
+          </td>
+          <td>{{ 'common.provider.' + order?.spec?.provider | translate }}</td>
+          <td>
+            {{ 'common.environment.' + order?.spec?.environment | translate }}
+          </td>
+          <td class="">{{ order?.status?.status }}</td>
+          <td class="flex">
+            <ng-container [ngSwitch]="order?.status?.phase">
+              <div *ngSwitchCase="'Recieved'" class="flex">
+                <app-spinner class="mr-3"></app-spinner> {{ 'pages.dashboard.orders.phases.' + order?.status?.phase | translate }}
+              </div>
+              <div *ngSwitchCase="'Creating'" class="flex">
+                <app-spinner class="mr-3"></app-spinner> {{ 'pages.dashboard.orders.phases.' + order?.status?.phase | translate }}
+              </div>
+              <div *ngSwitchCase="'Error'">
+                {{ 'pages.dashboard.orders.phases.' + order?.status?.phase | translate }}
+              </div>
+              <div *ngSwitchCase="'Done'">
+                {{ 'pages.dashboard.orders.phases.' + order?.status?.phase | translate }}
+              </div>
+              <div *ngSwitchDefault>{{ 'common.unknown' | translate }}</div>
+            </ng-container>
+          </td>
+          <td>{{ timeSince(order?.status?.createdTime) }}</td>
+          <td>
+            <div class="flex gap-3">
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="orders/{{ order?.metadata?.uid }}"
+                class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md dark:bg-sky-500 bg-sky-500 hover:bg-sky-700 dark:hover:bg-sky-600 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+              >
+                {{ 'common.details' | translate }}
+              </a>
+              <button
+                *ngIf="(adminDelete$ | async) === true"
+                (click)="deleteOrder(order?.metadata?.uid)"
+                class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md dark:bg-red-700 bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+              >
+                {{ 'common.delete' | translate }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
+</div>
+
+<app-clusters></app-clusters>
+<div *ngIf="clusterCreated$ | async"></div>
+<div *ngIf="clusterOrderUpdated$ | async"></div>
+
+<p-confirmDialog
+  [style]="{ width: '25vw' }"
+  [baseZIndex]="10000"
+  acceptButtonStyleClass="ml-2 px-4 py-2 text-sm text-white rounded-md bg-red-700 hover:bg-red-500 focus:outline-none focus:ring focus:ring-primary focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark"
+  rejectButtonStyleClass="ml-2 px-4 py-2 text-sm text-white rounded-md bg-green-700 hover:bg-green-500 focus:outline-none focus:ring focus:ring-primary focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-dark"
+  acceptLabel="{{ 'common.yes' | translate }}"
+  rejectLabel="{{ 'common.no' | translate }}"
+></p-confirmDialog>

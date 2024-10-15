@@ -1,0 +1,19 @@
+ARG REGISTRY_PREFIX
+FROM "${REGISTRY_PREFIX_LIB}node:lts-alpine" as builder
+WORKDIR /build
+COPY package.json .
+COPY package-lock.json .
+ARG PROXY
+ENV HTTPS_PROXY=$PROXY
+ENV NO_PROXY="*.nhn.no, registry.nmpjs.org"
+RUN apk update && apk add gettext
+
+RUN npm ci
+COPY . .
+
+RUN npm run build
+FROM "${REGISTRY_PREFIX}nginxinc/nginx-unprivileged:alpine"
+
+WORKDIR /app
+
+COPY --from=builder /build/dist/ror-web/browser /app
