@@ -1,0 +1,31 @@
+<div class="">
+  <div class="grid grid-cols-1">
+    <div class="grid gap-2 col-span-1">
+      <div class="dark:bg-darker flex justify-between overflow-x-auto rounded-md bg-white p-4">
+        <div class="dark:bg-darker rounded-md bg-white w-full">
+          <div class="">
+            <div class="overflow-x-auto">
+              <div class="relative">
+                <button
+                  (click)="copy()"
+                  class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+                >
+                  {{ 'common.copy' | translate }}
+                </button>
+                <pre
+                  class="mb-3"
+                ><code class="" [highlight]="cluster | json" language="json" (highlighted)="onHighlight($event)" lineNumbers></code></pre>
+                <button
+                  (click)="copy()"
+                  class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+                >
+                  {{ 'common.copy' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

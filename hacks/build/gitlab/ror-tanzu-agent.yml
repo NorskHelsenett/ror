@@ -1,0 +1,127 @@
+build-tanzu-agent:
+    stage: buildandtest
+    needs:
+    - job: bump-version
+      optional: true
+    retry: 2
+    extends: .go-cache
+    image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+    rules:
+        - changes:
+              - 'cmd/tanzu/agent/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - changes:
+              - 'cmd/tanzu/agent/version.json'
+          when: never
+
+        - when: never
+    variables:
+        AGENTPATCHVERSION: 0
+    before_script:
+        - apt update
+        - apt install jq -y
+        - go get ./...
+        - go get -t ./...
+        - go vet ./cmd/tanzu/agent/...
+        - cd cmd/tanzu/agent
+    script:
+        - AGENTPATCHVERSION=$(jq -r '.patch' version.json)
+        - AGENTPATCHVERSION=$(($AGENTPATCHVERSION + 1))
+        - jq --arg SHORTSHA "$CI_COMMIT_SHORT_SHA" --arg PATCH "$AGENTPATCHVERSION" '.commitSha = $SHORTSHA | .patch = ($PATCH | tonumber) ' version.json > newVersion.json && mv newVersion.json version.json
+        - cd ../../..
+        - CGO_ENABLED=0 go build -o dist/tanzuAgent -ldflags '-w -extldflags "-static"' cmd/tanzu/agent/main.go
+        - touch cmd/tanzu/agent/isbuilt
+    artifacts:
+        paths:
+            - dist/tanzuAgent
+            - cmd/tanzu/agent/version.json
+            - cmd/tanzu/agent/isbuilt
+        expire_in: 1 hour
+
+test-tanzu-agent:
+    stage: buildandtest
+    needs: []
+    retry: 2
+    extends: .go-cache
+    image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+    rules:
+        - changes:
+              - 'cmd/tanzu/agent/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - when: never
+    before_script:
+        - go get ./...
+        - go get -t ./...
+        - cd cmd/tanzu/agent
+    script:
+        - go test -cover -v ./...
+
+image-tanzu-agent:
+    stage: buildandtest
+    needs: 
+      - build-tanzu-agent
+      - test-tanzu-agent
+    extends: .build-container-kaniko
+    variables:
+        DOCKERFILE_PATH: '/cmd/tanzu/agent'
+        CONTEXT_PATH: '${CI_PROJECT_DIR}'
+        CI_APPLICATION_IMAGE: '$HARBOR_HOST/ror/ror-tanzu-agent'
+        CI_APPLICATION_TAG: '$CI_COMMIT_SHORT_SHA'
+    dependencies:
+        - build-tanzu-agent
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - 'cmd/tanzu/agent/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - 'cmd/tanzu/agent/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - when: never
+
+gen-charts-tanzu-agent:
+    stage: buildandtest
+    dependencies:
+        - build-tanzu-agent
+    needs:
+        - job: build-tanzu-agent
+          optional: true
+          artifacts: true
+        - job: image-tanzu-agent
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - cmd/tanzu/agent/**/*
+              - internal/**/*
+              - pkg/**/*
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - cmd/tanzu/agent/**/*
+              - internal/**/*
+              - pkg/**/*
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "cmd/tanzu/agent/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ror-tanzu-agents/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ror-tanzu-agents/values.yaml
+        - helm package charts/ror-tanzu-agents
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push tanzu-agent-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm/
+        - fi

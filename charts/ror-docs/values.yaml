@@ -1,0 +1,7 @@
+# nhn-dns-updater
+nhndokumentasjon:
+  image: "ncr.sky.nhn.no/ror/ror-docs"
+  tag: "0.1.501"
+  url: docs.ror.sky.test.nhn.no
+  publishInternett: false
+  publishHelsenett: true

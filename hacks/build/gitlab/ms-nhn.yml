@@ -1,0 +1,112 @@
+build-ms-nhn:
+  stage: buildandtest
+  retry: 2
+  needs: 
+    - job: bump-version
+      optional: true
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'cmd/nhn/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  script:
+    - go get ./...
+    - go get -t ./...
+    - go vet ./cmd/nhn/...
+    - CGO_ENABLED=0 go build -o dist/nhn -ldflags '-w -extldflags "-static"' cmd/nhn/main.go
+    - touch cmd/nhn/isbuilt
+  artifacts:
+    paths:
+      - dist/nhn
+      - cmd/nhn/isbuilt
+    expire_in: 1 hour
+
+test-ms-nhn:
+  stage: buildandtest
+  retry: 2
+  needs: []
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'cmd/nhn/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  before_script:
+    - go get ./...
+    - go get -t ./...
+    - cd cmd/nhn
+  script:
+    - go test -cover -v ./...
+
+image-ms-nhn:
+  extends: .build-container-kaniko
+  stage: buildandtest
+  needs:
+    - build-ms-nhn
+    - test-ms-nhn
+  variables:
+    DOCKERFILE_PATH: "/cmd/nhn"
+    CONTEXT_PATH: "${CI_PROJECT_DIR}"
+    CI_APPLICATION_IMAGE: "$HARBOR_HOST/nhn/ror-ms-nhn"
+    CI_APPLICATION_TAG: "$CI_COMMIT_SHORT_SHA"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      changes:
+        - 'cmd/nhn/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - 'cmd/nhn/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  dependencies:
+    - build-ms-nhn
+
+gen-charts-ms-nhn:
+    stage: buildandtest
+    dependencies:
+        - build-ms-nhn
+    needs:
+        - job: build-ms-nhn
+          optional: true
+          artifacts: true
+        - job: image-ms-nhn
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - cmd/nhn/**/*
+              - internal/**/*
+              - pkg/**/*
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - cmd/nhn/**/*
+              - internal/**/*
+              - pkg/**/*
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "cmd/nhn/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ms-nhn/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ms-nhn/values.yaml
+        - helm package charts/ms-nhn
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push ms-nhn-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm/
+        - fi

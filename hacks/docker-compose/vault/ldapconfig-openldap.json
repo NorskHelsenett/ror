@@ -1,0 +1,19 @@
+{
+    "domainResolvers": [
+        {
+            "ldapConfig": {
+                "basedn": "dc=ror,dc=dev",
+                "bindPassword": "admin",
+                "binduser": "cn=admin,dc=ror,dc=dev",
+                "domain": "ror.dev",
+                "servers": [
+                    {
+                        "host": "openldap",
+                        "port": 389
+                    }
+                ]
+            },
+            "resolverType": "ldap"
+        }
+    ]
+}

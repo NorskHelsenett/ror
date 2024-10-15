@@ -1,0 +1,170 @@
+<div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+  <h1 *ngIf="!datacenterName" class="flex-grow text-2xl font-semibold">{{ 'pages.admin.datacenters.create.title' | translate }}</h1>
+  <h1 *ngIf="datacenterName?.length > 0" class="flex-grow text-2xl font-semibold">
+    {{ 'pages.admin.datacenters.edit.title' | translate }}: {{ datacenterName }}
+  </h1>
+</div>
+
+<div class="mt-2">
+  <div class="grid gap-4 p-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2">
+    <div class="dark:bg-darker flex items-center justify-between rounded-md bg-white p-4">
+      <div class="dark:bg-darker rounded-md bg-white">
+        <div class="relative p-3">
+          <div *ngIf="datacenterFetchError">
+            <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+              <span class="p-2 text-red-800"> {{ 'pages.admin.datacenters.create.createError' | translate }} </span>
+            </div>
+          </div>
+          <form [formGroup]="datacenterForm" *ngIf="!datacenterFetchError">
+            <div class="flex flex-col">
+              <div class="flex flex-col justify-center">
+                <div class="mb-3 xl:w-96">
+                  <label>* {{ 'pages.admin.datacenters.form.name' | translate }}</label>
+                  <input
+                    class="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-600 transition ease-in-out focus:bg-white focus:text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white"
+                    type="text"
+                    aria-describedby="name-help"
+                    pInputText
+                    formControlName="name"
+                  />
+                  <div class="flex flex-col">
+                    <span
+                      *ngIf="datacenterForm.get('name').touched && datacenterForm.get('name').dirty && datacenterForm.get('name').errors"
+                      class="text-red-400"
+                      >{{ 'pages.admin.datacenters.form.nameError' | translate }}</span
+                    >
+                    <small id="name-help">{{ 'pages.admin.datacenters.form.nameHelp' | translate }}</small>
+                  </div>
+                </div>
+
+                <div class="mb-3 xl:w-96">
+                  <label>* {{ 'pages.admin.datacenters.form.provider' | translate }}</label>
+                  <input
+                    formControlName="provider"
+                    class="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-600 transition ease-in-out focus:bg-white focus:text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white"
+                    type="text"
+                    aria-describedby="provider-help"
+                    pInputText
+                  />
+                  <div class="flex flex-col">
+                    <span
+                      *ngIf="datacenterForm.get('provider').touched && datacenterForm.get('provider').dirty && datacenterForm.get('provider').errors"
+                      class="text-red-400"
+                      >{{ 'pages.admin.datacenters.form.providerError' | translate }}</span
+                    >
+                    <small id="provider-help">{{ 'pages.admin.datacenters.form.providerHelp' | translate }}</small>
+                  </div>
+                </div>
+
+                <div formGroupName="location">
+                  <div class="mb-3 xl:w-96">
+                    <label>* {{ 'pages.admin.datacenters.form.region' | translate }}</label>
+                    <input
+                      formControlName="region"
+                      class="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-600 transition ease-in-out focus:bg-white focus:text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white"
+                      type="text"
+                      aria-describedby="region-help"
+                      pInputText
+                    />
+                    <div class="flex flex-col">
+                      <span
+                        *ngIf="
+                          datacenterForm?.get('location')?.get('region')?.touched &&
+                          datacenterForm?.get('location')?.get('region')?.dirty &&
+                          datacenterForm?.get('location')?.get('region')?.errors
+                        "
+                        class="text-red-400"
+                        >{{ 'pages.admin.datacenters.form.regionError' | translate }}</span
+                      >
+                      <small id="region-help">{{ 'pages.admin.datacenters.form.regionHelp' | translate }}</small>
+                    </div>
+                  </div>
+
+                  <div class="mb-3 xl:w-96">
+                    <label>* {{ 'pages.admin.datacenters.form.country' | translate }}</label>
+                    <input
+                      formControlName="country"
+                      class="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-600 transition ease-in-out focus:bg-white focus:text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white"
+                      type="text"
+                      aria-describedby="country-help"
+                      pInputText
+                    />
+                    <div class="flex flex-col">
+                      <span
+                        *ngIf="
+                          datacenterForm.get('location')?.get('country').touched &&
+                          datacenterForm.get('location')?.get('country').dirty &&
+                          datacenterForm.get('location')?.get('country').errors
+                        "
+                        class="text-red-400"
+                        >{{ 'pages.admin.datacenters.form.countryError' | translate }}</span
+                      >
+                      <small id="country-help">{{ 'pages.admin.datacenters.form.countryHelp' | translate }}</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 xl:w-96">
+                  <label>{{ 'pages.admin.datacenters.form.apiEndpoint' | translate }}</label>
+                  <input
+                    formControlName="apiEndpoint"
+                    class="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-600 transition ease-in-out focus:bg-white focus:text-gray-700 focus:outline-none dark:bg-gray-700 dark:text-white"
+                    type="url"
+                    aria-describedby="apiEndpoint-help"
+                    pInputText
+                  />
+                  <div class="flex flex-col">
+                    <span
+                      *ngIf="
+                        datacenterForm.get('apiEndpoint').touched &&
+                        datacenterForm.get('apiEndpoint').dirty &&
+                        datacenterForm.get('apiEndpoint').errors
+                      "
+                      class="text-red-400"
+                      >{{ 'pages.admin.datacenters.form.apiEndpointError' | translate }}</span
+                    >
+                    <small id="apiEndpoint-help">{{ 'pages.admin.datacenters.form.apiEndpointHelp' | translate }}</small>
+                  </div>
+                </div>
+              </div>
+              <span>* {{ 'pages.admin.datacenters.form.required' | translate }}</span>
+              <div class="mt-5 flex">
+                <button
+                  *ngIf="!datacenterName"
+                  [disabled]="!datacenterForm?.valid"
+                  (click)="createDatacenter()"
+                  class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:bg-gray-500 disabled:hover:bg-gray-800"
+                >
+                  {{ 'common.create' | translate }}
+                </button>
+                <button
+                  *ngIf="datacenterName?.length > 0"
+                  [disabled]="!datacenterForm?.valid"
+                  (click)="updateDatacenter()"
+                  class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:bg-gray-500 disabled:hover:bg-gray-800"
+                >
+                  {{ 'common.update' | translate }}
+                </button>
+                <button
+                  (click)="reset()"
+                  class="hover:bg-primary-lighter focus:ring-primary dark:focus:ring-offset-dark ml-3 rounded-md bg-neutral-500 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+                >
+                  {{ 'common.reset' | translate }}
+                </button>
+              </div>
+              <div *ngIf="createError">
+                <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                  <span class="p-2 text-red-800"> {{ 'pages.admin.datacenters.create.createError' | translate }} </span>
+                </div>
+              </div>
+              <div *ngIf="updateError">
+                <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                  <span class="p-2 text-red-800"> {{ 'pages.admin.datacenters.edit.editError' | translate }} </span>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

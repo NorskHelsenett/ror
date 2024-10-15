@@ -1,0 +1,44 @@
+// {
+//   "datacenters": [
+//     {
+//       "name": "trd1",
+//       "workspaces": [
+//         {
+//           "name": "trd1-sfm",
+//           "clusters": [
+//             {
+//               "clusterid": "sfm-testcluster01.trd1-sfm",
+//               "metrics": {
+//                 "priceMonth": 60000,
+//                 "priceYear": 5000,
+//                 "cpu": 4,
+//                 "memory": 173626548224,
+//                 "cpuConsumed": 6009,
+//                 "memoryConsumed": 79279476736,
+//                 "nodePoolCount": 0,
+//                 "nodeCount": 0,
+//                 "clusterCount": 0,
+//                 "workspaceCount": 0
+//               }
+//             },
+//             {
+//               "clusterid": "sfm-testcluster02.trd1-sfm",
+//               "metrics": {
+//                 "priceMonth": 60000,
+//                 "priceYear": 5000,
+//                 "cpu": 4,
+//                 "memory": 173626548224,
+//                 "cpuConsumed": 6009,
+//                 "memoryConsumed": 79279476736,
+//                 "nodePoolCount": 0,
+//                 "nodeCount": 3,
+//                 "clusterCount": 1,
+//                 "workspaceCount": 0
+//               }
+//             }
+//           ]
+//         }
+//       ]
+//     }
+//   ]
+// }

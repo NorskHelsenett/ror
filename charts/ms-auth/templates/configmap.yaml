@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ms-auth-cm-env
+data:
+  dex.crt: |
+    -----BEGIN CERTIFICATE-----
+    -----END CERTIFICATE-----

@@ -1,0 +1,49 @@
+<div class="">
+  <div class="dark:bg-darker rounded-md bg-white p-4">
+    <div class="dark:bg-darker col-span-2 rounded-md bg-white">
+      <div class="dark:border-primary flex items-center justify-between border-b p-4">
+        <h4 class="dark:text-light text-lg font-semibold text-gray-500">{{ 'pages.clusters.details.acl.title' | translate }}</h4>
+      </div>
+      <div class="">
+        <p-table
+          [value]="accessGroups"
+          [rows]="rows"
+          [paginator]="true"
+          [rowsPerPageOptions]="rowsPerPage"
+          [rowHover]="true"
+          sortField="groupName"
+          [sortOrder]="1"
+          [totalRecords]="accessGroups?.length"
+          [reorderableColumns]="true"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
+            'common.of' | translate | lowercase
+          }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="groupName" class="p-1">
+                {{ 'pages.clusters.details.acl.table.columns.groupName' | translate }} <p-sortIcon field="groupName"></p-sortIcon>
+              </th>
+            </tr>
+            <tr>
+              <th class="p-1">
+                <p-columnFilter type="text" field="groupName" matchMode="contains" [showMenu]="false"></p-columnFilter>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-acl>
+            <tr>
+              <td>{{ acl?.groupName }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6">{{ 'common.emptyList' | translate }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

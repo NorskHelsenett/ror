@@ -1,0 +1,13 @@
+cluster:
+  controlPlane:
+    endpoint: https://host.docker.internal:43000
+  inlineManifests: []
+machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: true
+  certSANs:
+  - 127.0.0.1
+  - localhost
+  - host.docker.internal

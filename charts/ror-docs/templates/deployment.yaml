@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}-docs
+  namespace: {{ .Release.namespace}}
+spec:
+  revisionHistoryLimit: 1
+  replicas: {{.Values.nhndokumentasjon.replicas}}
+  selector:
+    matchLabels:
+      run: {{ .Release.Name}}-docs
+  template:
+    metadata:
+      labels:
+        run: {{ .Release.Name}}-docs
+        app.kubernetes.io/name: ror-dokumentasjon
+    spec:
+      containers:
+      - name: {{ .Release.Name}}-docs
+        image: {{.Values.nhndokumentasjon.image}}:{{.Values.nhndokumentasjon.tag}}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /var/cache/nginx
+          name: cache-volume
+        - mountPath: /var/run
+          name: run-volume
+        - mountPath: /tmp
+          name: tmp-volume
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+              drop:
+                - ALL
+      serviceAccountName: ror-dokumentasjon
+      serviceAccount: ror-dokumentasjon
+      automountServiceAccountToken: false
+      volumes:
+        - name: run-volume
+          emptyDir: {}
+        - name: cache-volume
+          emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        fsGroup: 2000
+        runAsUser: 1001
+        runAsGroup: 2001
+

@@ -1,0 +1,104 @@
+build-code-docs:
+  stage: buildandtest
+  needs:
+    - job: bump-version
+      optional: true
+  retry: 2
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'docs/**/*'
+        - mkdocs.yml
+        - 'cmd/**/*'
+    - when: never
+  script:
+    - mkdir /.go
+    - export GOPATH=/.go
+    - go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+    - ${GOPATH}/bin/gomarkdoc ./...
+    - go run cmd/mkdocs/main.go >> mkdocs.yml
+    - touch cmd/docs/isbuilt
+  artifacts:
+    paths:
+      - mkdocs.yml
+      - docs/code
+    expire_in: 1 hour
+build-docs:
+  stage: buildandtest
+  needs:
+    - build-code-docs
+    - job: bump-version
+      optional: true
+  retry: 2
+  image: ncr.sky.nhn.no/nhn/ci-mkdocs:latest
+  rules:
+    - changes:
+        - 'docs/**/*'
+        - mkdocs.yml
+        - 'cmd/**/*'
+    - when: never
+  script:
+    - chmod 700 cmd/docs/collectdocs.sh
+    - cmd/docs/collectdocs.sh
+    - mkdocs build
+    - touch cmd/docs/isbuilt
+  artifacts:
+    paths:
+      - site/
+      - cmd/docs/isbuilt
+    expire_in: 1 hour
+
+image-docs:
+  stage: buildandtest
+  extends: .build-container-kaniko
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - changes:
+        - 'docs/**/*'
+        - mkdocs.yml
+        - 'cmd/**/*'
+    - when: never
+  variables:
+    DOCKERFILE_PATH: '/cmd/docs'
+    CONTEXT_PATH: '${CI_PROJECT_DIR}'
+    CI_APPLICATION_IMAGE: '$HARBOR_HOST/ror/ror-docs'
+    CI_APPLICATION_TAG: '$CI_COMMIT_SHORT_SHA'
+  needs:
+    - build-docs
+
+gen-charts-docs:
+  stage: buildandtest
+  dependencies:
+    - build-docs
+  needs:
+    - job: image-docs
+      optional: true
+    - job: build-docs
+      artifacts: true
+      optional: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      changes:
+        - 'docs/**/*'
+        - mkdocs.yml
+        - 'cmd/**/*'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - 'docs/**/*'
+        - mkdocs.yml
+        - 'cmd/api/**/*'
+    - when: never
+  variables:
+    CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+  image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+  script:
+    - if test -f "cmd/docs/isbuilt"; then
+    - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ror-docs/Chart.yaml
+    - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ror-docs/values.yaml
+    - helm package charts/ror-docs
+    - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+    - helm push docs-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm
+    - fi

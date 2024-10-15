@@ -1,0 +1,82 @@
+{{ if .Values.vault.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ror-vault
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    repoURL: 'https://helm.releases.hashicorp.com'
+    targetRevision: 0.25.0
+    chart: vault
+    helm:
+      values: |
+        global:
+          enabled: true
+          tlsDisable: true
+          psp:
+            enable: false
+            annotations: |
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: runtime/default
+              apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
+              seccomp.security.alpha.kubernetes.io/defaultProfileName:  runtime/default
+              apparmor.security.beta.kubernetes.io/defaultProfileName:  runtime/default
+        injector:
+          enabled: false
+        server:
+          enabled: true
+          image:
+            repository: "ncr.sky.nhn.no/dockerhub/hashicorp/vault"
+          logFormat: "json"
+          dataStorage:
+            enabled: true
+            size: 10Gi
+            mountPath: "/vault/data"
+            storageClass: trd1-w02-cl01-vsan-storage-policy
+            accessMode: ReadWriteOnce
+          auditStorage:
+            enabled: true
+            size: 10Gi
+            mountPath: "/vault/audit"
+            storageClass: trd1-w02-cl01-vsan-storage-policy
+            accessMode: ReadWriteOnce
+          standalone:
+            enabled: false
+          ha:
+            enabled: true
+            replicas: 3
+            apiAddr: null
+            raft:
+              enabled: true
+              setNodeId: true
+              config: |
+                ui = true
+                listener "tcp" {
+                  tls_disable = 1
+                  address = "[::]:8200"
+                  cluster_address = "[::]:8201"
+                }
+                storage "raft" {
+                  path = "/vault/data"
+                }
+                service_registration "kubernetes" {}
+          statefulSet:
+            securityContext:
+              container:
+                allowPrivilegeEscalation: false
+                seccompProfile:
+                  type: RuntimeDefault
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
+{{ end }}

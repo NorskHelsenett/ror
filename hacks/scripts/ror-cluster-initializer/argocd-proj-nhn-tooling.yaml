@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    app-group: nhn-tooling
+  labels:
+    argocd.argoproj.io/instance: nhn-tooling
+  name: argocd
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: nhn-tooling
+  source:
+    chart: argo-cd
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 4.5.8
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true

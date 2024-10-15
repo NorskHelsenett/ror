@@ -1,0 +1,8 @@
+<div class="flex h-3 w-full bg-neutral-200 dark:bg-neutral-600">
+  <div class="h-3 rounded-l-3xl bg-red-500" [style]="'width: ' + (failed / total) * 100 + '%'"></div>
+  <div class="h-3 bg-green-600" [style]="'width: ' + (passed / total) * 100 + '%'"></div>
+  <div class="h-3 bg-red-800" [style]="'width: ' + (error / total) * 100 + '%'"></div>
+  <div class="h-3 bg-yellow-500" [style]="'width: ' + (warning / total) * 100 + '%'"></div>
+  <div class="h-3 bg-yellow-500" [style]="'width: ' + (skipped / total) * 100 + '%'"></div>
+  <div class="h-3 rounded-r-3xl bg-gray-500" [style]="'width: ' + (skipped / total) * 100 + '%'"></div>
+</div>

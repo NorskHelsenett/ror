@@ -1,0 +1,21 @@
+services:
+  tanzuagent:
+    restart: no
+    environment:
+      - LOG_LEVEL=debug
+      - DEVELOPMENT=false
+      - HTTP_PORT=18080
+      - ROLE=ror-tanzu-agent
+      - DELETE_KUBECONFIG=false
+      - TANZU_ACCESS=true
+      - LOGIN_EVERY_MINUTE=30
+      - DATACENTER=trd1cl02
+      - DATACENTER_URL=ptr1-w02-cl02-api.sdi.nhn.no
+      - KUBE_VSPHERE_PATH=/usr/bin//kubectl-vsphere
+      - KUBECTL_PATH=/usr/bin//kubectl
+      - KUBECONFIG=/app/tanzuAgentKubeconfig
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=15672
+      - VAULT_URL=http://vault:8200
+      - ROR_URL=http://api:10000
+      - API_KEY=5fa6cb85-b3bf-4d69-8fc8-b86cda376f13

@@ -1,0 +1,64 @@
+# Default values for rork8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+enabled: true
+rork8s:
+  host: rork8s.nhn.no
+  apiUrl: https://api.ror.sky.test.nhn.no
+  authUrl: https://auth.sky.nhn.no/dex
+replicaCount: 3
+image:
+  repository: ncr.sky.nhn.no/ror/ror-rork8s
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.1.495"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+podAnnotations: {}
+podSecurityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+securityContext:
+  runAsNonRoot: true
+  fsGroup: 2000
+  runAsUser: 1001
+  runAsGroup: 1001
+  supplementalGroups: [501]
+pod:
+  port: 8080
+service:
+  type: NodePort
+  port: 8080
+ingress:
+  enabled: true
+  path: /
+  pathType: ImplementationSpecific
+resources:
+  limits:
+    cpu: 1
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+nodeSelector: {}
+tolerations: []
+affinity: {}

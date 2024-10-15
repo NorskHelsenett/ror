@@ -1,0 +1,7 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend-ide
+spec:
+  type: ExternalName
+  externalName: host.docker.internal

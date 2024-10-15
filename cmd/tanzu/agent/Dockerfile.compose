@@ -1,0 +1,21 @@
+ARG DOCKER_MIRROR=docker.io/
+FROM ${DOCKER_MIRROR}golang:alpine AS builder
+WORKDIR /app
+COPY . .
+
+RUN go get ./...
+RUN CGO_ENABLED=0 go build -o tanzuAgent -ldflags '-w -extldflags "-static"' cmd/tanzu/agent/main.go
+
+FROM ${DOCKER_MIRROR}alpine:latest
+
+RUN apk update && apk add bash && apk add busybox-extras
+
+WORKDIR /
+
+RUN mkdir /configs
+
+COPY cmd/tanzu/agent/bin/kubectl /usr/bin/kubectl
+COPY cmd/tanzu/agent/bin/kubectl-vsphere /usr/bin/kubectl-vsphere
+
+COPY --from=builder /app/tanzuAgent /bin/tanzuAgent
+ENTRYPOINT ["/bin/tanzuAgent"]

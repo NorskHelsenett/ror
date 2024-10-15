@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ror-jaeger
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    repoURL: "https://jaegertracing.github.io/helm-charts"
+    targetRevision: 0.71.14
+    chart: jaeger
+    helm:
+      values: |
+        agent:
+          enabled: false
+        collector:
+          image: ncr.sky.nhn.no/dockerhub/jaegertracing/jaeger-collector
+          service:
+            otlp:
+              grpc:
+                name: otlp-grpc
+                port: 4317
+              http:
+                name: otlp-http
+                port: 4318
+          podSecurityContext:
+            seccompProfile:
+              type: RuntimeDefault
+            supplementalGroups:
+              - 100
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+            privileged: false
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 101
+            readOnlyRootFilesystem: true
+        query:
+          image: ncr.sky.nhn.no/dockerhub/jaegertracing/jaeger-query
+          agentSidecar:
+            enabled: false
+          podSecurityContext:
+            seccompProfile:
+              type: RuntimeDefault
+            supplementalGroups:
+              - 100
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+            privileged: false
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 101
+            readOnlyRootFilesystem: true
+        provisionDataStore:
+          cassandra: false
+          elasticsearch: true
+        storage:
+          type: elasticsearch
+        elasticsearch:
+          volumeClaimTemplate:
+            storageClassName: trd1-w02-cl01-vsan-storage-policy
+            resources:
+              requests:
+                storage: 75Gi
+        esIndexCleaner:
+          enabled: true
+          image: ncr.sky.nhn.no/dockerhub/jaegertracing/jaeger-es-index-cleaner
+          numberOfDays: 3
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

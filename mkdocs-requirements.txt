@@ -1,0 +1,7 @@
+mkdocs 
+mkdocs-material 
+mkdocs-mermaid2-plugin 
+pygments 
+pymdown-extensions 
+mkdocs-glightbox
+mkdocs-git-revision-date-localized-plugin

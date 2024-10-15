@@ -1,0 +1,46 @@
+agents:
+  - name: ror-tanzu-agent-trd1-cl01
+    cluster: trd1
+    controllerhost: ptr1-w02-cl01-api.sdi.nhn.no
+    replicaCount: 1
+  - name: ror-tanzu-agent-trd1-cl02
+    cluster: trd1-cl02
+    controllerhost: ptr1-w02-cl02-api.sdi.nhn.no
+    replicaCount: 1
+  - name: ror-tanzu-agent-osl1-cl01
+    cluster: osl1
+    controllerhost: pos1-w02-cl01-api.sdi.nhn.no
+    replicaCount: 1
+api: https://api.ror.sky.test.nhn.no
+image:
+  repository: ncr.sky.nhn.no/ror/ror-tanzu-agent
+  pullPolicy: Always
+  tag: "0.1.495"
+imagePullSecrets: []
+serviceAccount:
+  create: true
+podAnnotations: {}
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 2000
+  runAsUser: 1001
+  runAsGroup: 1001
+  supplementalGroups: [501]
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+resources:
+  limits:
+    cpu: 1000m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+nodeSelector: {}
+tolerations: []
+affinity: {}

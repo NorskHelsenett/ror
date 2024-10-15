@@ -1,0 +1,43 @@
+<table class="dark:text-light min-w-full text-gray-900">
+  <thead class="border-b">
+    <tr>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.prices.table.column.machineClass' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.prices.table.column.price' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.prices.table.column.cpu' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.prices.table.column.memory' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'pages.prices.table.column.provider' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'common.from' | translate }}
+      </th>
+      <th scope="col" class="text-md px-6 py-4 text-left font-medium">
+        {{ 'common.to' | translate }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="transition duration-300 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-500" *ngFor="let price of prices">
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">{{ price?.machineClass | titlecase }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.price }} NOK</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.cpu }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.memory }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.provider | titlecase }}</td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">
+        {{ price?.from | time: 'DD. MMM YYYY HH:mm:ss' }}
+      </td>
+      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ (price?.to | time: 'DD. MMM YYYY HH:mm:ss') || '' }}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="pt-3" *ngIf="!prices || prices?.length === 0">
+  <span>{{ 'pages.prices.table.empty' | translate }}</span>
+</div>

@@ -1,0 +1,7 @@
+services:
+  api:
+    build:
+      context: ../../
+      dockerfile: cmd/api/Dockerfile.compose
+      args:
+        - DOCKER_MIRROR=${DOCKER_MIRROR}

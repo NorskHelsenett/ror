@@ -1,0 +1,41 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nhn-ror-agent:config-reader-crb
+  namespace: {{.Release.Namespace}}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "ror-agent.serviceAccountName" . }}
+  namespace: {{.Release.Namespace}}
+roleRef:
+  kind: ClusterRole
+  name: nhn-ror-agent:config-read-cr
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nhn-ror-agent-restricted-psp
+  namespace: {{.Release.Namespace}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:vmware-system-restricted
+subjects:
+- kind: ServiceAccount
+  name: nhn-ror-sa
+  namespace: {{.Release.Namespace}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nhn-ror-agent-secret
+  namespace: {{.Release.Namespace}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nhn-ror-secret
+subjects:
+- kind: ServiceAccount
+  name: nhn-ror-sa
+  namespace: {{.Release.Namespace}}

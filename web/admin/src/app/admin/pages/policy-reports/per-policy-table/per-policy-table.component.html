@@ -1,0 +1,30 @@
+<div *ngIf="policyReports$ | async as policyReports; else errorOrLoading">
+  <p-table [value]="policyReports" [columns]="cols" sortField="fail" [sortOrder]="-1" [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns" [pSortableColumn]="col?.field" class="p-1">
+          {{ 'pages.admin.policyreports.' + col?.header | translate }}
+          <p-sortIcon [field]="col?.field"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-policyReport let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns">
+          {{ policyReport[col?.field] }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<ng-template #errorOrLoading>
+  <ng-container *ngIf="error">
+    <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+      <span class="p-2 text-red-800">
+        {{ 'common.errorLoading' | translate }} <br />
+        {{ ('common.error' | translate) + ': ' + error?.message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>

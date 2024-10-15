@@ -1,0 +1,7 @@
+<div class="flex flex-col items-center rounded-md text-red-700 dark:text-gray-100 text-lg">
+  <div class="flex flex-col items-center">
+    <span class=""> {{ 'pages.resources.error' | translate }} </span>
+    <span>({{ error?.status }} - {{ error?.statusText }} )</span>
+  </div>
+  <button class="btn text-black dark:text-gray-500" (click)="callback()">{{ 'common.tryAgain' | translate }}</button>
+</div>

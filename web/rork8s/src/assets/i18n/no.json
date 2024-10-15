@@ -1,0 +1,19 @@
+{
+  "title": "ROR",
+  "subTitle": "K8S",
+  "fullName": "RORK8S",
+  "common": {},
+  "pages": {
+    "landing": {
+      "title": "vil bli det beste som har skjedd siden oppskjært brød!",
+      "description": "ROR (Release Operate Release) er en ny måte å organisere dine kubernetes clustere på. Enkel og intuitiv, med støtte for mange tilbydere.",
+      "newsletter": {
+        "title": "Meld deg på vårt nyhetsbrev",
+        "placeholder": "deg@enkulorganisasjon.no",
+        "buttonTitle": "Meld deg på"
+      },
+      "screenshots": "Skjermbilder",
+      "footer": "laget med ❤️ av ROR-teamet"
+    }
+  }
+}

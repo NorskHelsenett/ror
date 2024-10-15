@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ror-api-cm-env
+data:
+  GIN_MODE: {{.Values.api.http.mode | quote}}
+  ALLOW_ORIGINS: "https://ror.sky.test.nhn.no"
+  USE_CORS: "true"
+  RABBITMQ_HOST: "rabbitmq-ror.nhn-ror.svc"
+  MONGODB_HOST: "ror-mongodb.nhn-ror.svc"
+  VAULT_HOST: "ror-vault-active.nhn-ror.svc"
+  VAULT_PORT: "8200"
+  REDIS_HOST: "ror-redis-headless.nhn-ror.svc"
+  REDIS_PORT: "6379"
+  STARTUP_SLEEP_TIME: "0"
+  LOG_LEVEL: info
+  OIDC_PROVIDER: "https://auth.sky.nhn.no/dex"
+  OIDC_CLIENTID: "ror.sky.test.nhn.no"
+  OPENTELEMETRY_COLLECTOR_ENDPOINT: "ror-opentelemetry-collector.nhn-ror.svc:4317"
+  ENABLE_TRACING: {{.Values.api.tracing.enabled | quote}}
+  HTTP_TIMEOUT: {{.Values.api.http.timeout | quote}}
+  LDAP_CERT_FOLDER: "/ldap-certs"
+  TANZU_AUTH_BASE_URL: {{ default "http://ror-ms-tanzu-auth.nhn-ror.svc:8080" .Values.api.tanzuAuthBaseUrl | quote }}
+  CONTAINER_REG_PREFIX: "ncr.sky.nhn.no/"
+  CONTAINER_REG_IMAGE_PATH: "github.com/NorskHelsenett/ror/"
+  CONTAINER_REG_HELM_PATH: "nhn-helm/"
+  ROR_URL: "https://api.ror.sky.test.nhn.no"
+  HEALTHCHECK_ENDPOINT: "0.0.0.0:9999"

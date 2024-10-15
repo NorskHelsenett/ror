@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: psp:ror-dokumentasjon
+  namespace: {{ .Release.namespace}}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:vmware-system-restricted
+subjects:
+- kind: ServiceAccount
+  name: ror-dokumentasjon
+  namespace: {{ .Release.namespace}}

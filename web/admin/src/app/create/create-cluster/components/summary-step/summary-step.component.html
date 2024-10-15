@@ -1,0 +1,30 @@
+<form [formGroup]="clusterForm">
+  <div class="w-full md:w-1/2">
+    <app-summary [value]="clusterForm?.value" [relativeTo]="'..'"></app-summary>
+  </div>
+  <div class="flex justify-start mt-3">
+    <a
+      [routerLink]="['../metadata']"
+      class="flex-none delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-gray-600 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+    >
+      <span>{{ 'common.previous' | translate }}</span>
+    </a>
+    <div class="grow"></div>
+    <button
+      [disabled]="!validForm()"
+      (click)="createCluster()"
+      class="flex-none delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:cursor-not-allowed disabled:bg-gray-900 disabled:opacity-25 disabled:hover:bg-gray-900"
+    >
+      <span>{{ 'common.create' | translate }}</span>
+    </button>
+  </div>
+  <ng-container *ngIf="createError">
+    <div class="mx-auto my-4 flex flex-col items-center rounded-md px-6 py-4 text-lg">
+      <span class="p-2 dark:bg-red-900 bg-red-200"> {{ 'pages.create.cluster.steps.summary.errorSubmit' | translate }} </span>
+      <div class="dark:text-white flex flex-col">
+        <span>{{ createError?.status }} {{ createError?.statusText }}</span>
+        <span>{{ createError?.error?.message }}</span>
+      </div>
+    </div>
+  </ng-container>
+</form>

@@ -1,0 +1,3 @@
+services:
+  tanzuagent:
+    image: tanzu-agent:latest

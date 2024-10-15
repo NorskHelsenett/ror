@@ -1,0 +1,119 @@
+build-ror-cluster-agent:
+  stage: buildandtest
+  needs: 
+    - job: bump-version
+      optional: true
+  retry: 2
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'cmd/agentv2/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  before_script:
+    - apt update
+    - apt install jq -y
+    - go get ./...
+  script:
+    - CGO_ENABLED=0 go build -o dist/agentv2 -ldflags "-w -extldflags '-static' -X ror/cmd/agentv2/config.version=$ROR_VERSION -X ror/cmd/agentv2/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agentv2/main.go
+    - touch cmd/agentv2/isbuilt
+  artifacts:
+    paths:
+      - dist/agentv2
+      - cmd/agentv2/isbuilt
+    expire_in: 2 hour
+
+test-ror-cluster-agent:
+  stage: buildandtest
+  needs: []
+  retry: 2
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'cmd/agentv2/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  before_script:
+    - go get ./...
+    - go get -t ./...
+  script:
+    - go vet ./cmd/agentv2/...
+    - go test ./cmd/agentv2/...
+
+image-ror-cluster-agent:
+  stage: buildandtest
+  needs:
+    - build-ror-cluster-agent
+    - test-ror-cluster-agent
+  extends: .build-container-kaniko
+  variables:
+    DOCKERFILE_PATH: "/cmd/agentv2"
+    CONTEXT_PATH: "${CI_PROJECT_DIR}"
+    CI_APPLICATION_IMAGE: "$HARBOR_HOST/ror/cluster-agentv2"
+    CI_APPLICATION_TAG: "$CI_COMMIT_SHORT_SHA"
+  dependencies:
+    - build-ror-cluster-agent
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      changes:
+        - 'cmd/agentv2/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - if: '$CI_COMMIT_BRANCH == "agentv2"'
+      changes:
+        - 'cmd/agentv2/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+
+gen-charts-ror-cluster-agent:
+    stage: buildandtest
+    dependencies:
+        - build-ror-cluster-agent
+    needs:
+        - job: build-ror-cluster-agent
+          optional: true
+          artifacts: true
+        - job: image-ror-cluster-agent
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - cmd/agentv2/**/*
+              - internal/**/*
+              - pkg/**/*
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - cmd/agentv2/**/*
+              - internal/**/*
+              - pkg/**/*
+        - if: '$CI_COMMIT_BRANCH == "agentv2"'
+          changes:
+              - cmd/agentv2/**/*
+              - internal/**/*
+              - pkg/**/*
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "cmd/agentv2/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ror-cluster-agent/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ror-cluster-agent/values.yaml
+        - helm package charts/ror-cluster-agent
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push ror-cluster-agent-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm/
+        - fi
+ 

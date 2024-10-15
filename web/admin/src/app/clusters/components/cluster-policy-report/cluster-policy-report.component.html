@@ -1,0 +1,120 @@
+<div *ngIf="policyreports$ | async as policyreports; else errorOrLoading">
+  <div class="dark:border-primary-darker flex flex-row-reverse items-center gap-4 border-b px-4 pb-2 lg:pb-4">
+    <div
+      class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark relative rounded-md bg-green-700 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+      (click)="showExportChoices = !showExportChoices"
+    >
+      <div class="relative flex w-fit cursor-pointer items-center justify-center rounded-md px-4 py-2">
+        <div class="mr-2">{{ 'common.export' | translate }}</div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+      <div *ngIf="showExportChoices" class="absolute z-50 mt-2 w-fit cursor-pointer rounded-md p-3">
+        <a
+          class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark mt-0 w-full rounded-md bg-blue-700 px-4 py-2 text-sm text-white opacity-75 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          (click)="exportToCsv(policyreports)"
+        >
+          CSV
+        </a>
+        <div
+          class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark mt-2 w-full rounded-md bg-blue-700 px-4 py-2 text-sm text-white opacity-75 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          (click)="exportToExcel(policyreports)"
+        >
+          Excel
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-policy-bar
+    [failed]="this.policyreports?.failed"
+    [passed]="this.policyreports?.passed"
+    [error]="this.policyreports?.error"
+    [warning]="this.policyreports?.warning"
+    [skipped]="this.policyreports?.skipped"
+    [total]="this.policyreports?.total"
+  ></app-policy-bar>
+
+  <p-table [value]="policyreports?.namespaces" dataKey="name" sortField="failed" [sortOrder]="-1">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 5rem" class="p-1"></th>
+        <th pSortableColumn="name">
+          {{ 'pages.clusters.details.policyreports.namespace' | translate }}
+          <p-sortIcon field="name"></p-sortIcon>
+        </th>
+        <th pSortableColumn="fail" class="p-1">
+          {{ 'pages.clusters.details.policyreports.fail' | translate }} ({{ this.policyreports?.failed }}) <p-sortIcon field="fail"></p-sortIcon>
+        </th>
+        <th pSortableColumn="pass" class="p-1">
+          {{ 'pages.clusters.details.policyreports.pass' | translate }} ({{ this.policyreports?.passed }}) <p-sortIcon field="pass"></p-sortIcon>
+        </th>
+        <th pSortableColumn="error" class="p-1">
+          {{ 'pages.clusters.details.policyreports.error' | translate }} ({{ this.policyreports?.error }}) <p-sortIcon field="error"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="warn" class="p-1">
+          {{ 'pages.clusters.details.policyreports.warn' | translate }} ({{ this.policyreports?.warning }}) <p-sortIcon field="warn"></p-sortIcon>
+        </th>
+
+        <th pSortableColumn="skip" class="p-1">
+          {{ 'pages.clusters.details.policyreports.skip' | translate }} ({{ this.policyreports?.skipped }}) <p-sortIcon field="skip"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-namespace let-expanded="expanded">
+      <tr>
+        <td>
+          <button
+            type="button"
+            pButton
+            sortfilter="failed"
+            pRipple
+            [pRowToggler]="namespace"
+            class="p-button-text p-button-rounded p-button-plain"
+            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+          ></button>
+        </td>
+        <td>{{ namespace?.name }}</td>
+        <td>{{ namespace?.failed }}</td>
+        <td>{{ namespace?.passed }}</td>
+        <td>{{ namespace?.error }}</td>
+        <td>{{ namespace?.warning }}</td>
+        <td>{{ namespace?.skipped }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-namespace>
+      <tr>
+        <td colspan="10">
+          <div class="grid gap-8">
+            <div class="dark:bg-darker rounded-md bg-white p-4">
+              <div class="dark:bg-darker rounded-md bg-white">
+                <div class="relative p-3">
+                  <app-policy-namespace [namespace]="namespace"></app-policy-namespace>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7">{{ 'common.emptyList' | translate }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<ng-template #errorOrLoading>
+  <ng-container *ngIf="policyreportsError">
+    <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+      <span class="p-2 text-red-800">
+        {{ 'common.errorLoading' | translate }} <br />
+        {{ ('common.error' | translate) + ': ' + policyreportsError.message }}
+      </span>
+    </div>
+  </ng-container>
+</ng-template>

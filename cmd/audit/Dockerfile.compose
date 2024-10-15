@@ -1,0 +1,28 @@
+ARG REGISTRY_PREFIX
+ARG LOG_LEVEL
+
+FROM "${REGISTRY_PREFIX_LIB}golang:alpine" AS builder
+
+ARG PROXY
+ENV HTTPS_PROXY=$PROXY
+ENV HTTP_PROXY=$PROXY
+ENV NO_PROXY="*.nhn.no"
+
+WORKDIR /app
+
+COPY . .
+
+RUN go get ./...
+RUN CGO_ENABLED=0 go build -o audit -ldflags '-w -extldflags "-static"' cmd/audit/main.go
+
+FROM "${REGISTRY_PREFIX_LIB}golang:alpine"
+ARG PROXY
+ENV HTTPS_PROXY=$PROXY
+ENV HTTP_PROXY=$PROXY
+
+RUN apk update && apk add bash && apk add busybox-extras
+
+WORKDIR /
+COPY --from=builder /app/audit /bin/audit
+
+ENTRYPOINT ["/bin/audit"]

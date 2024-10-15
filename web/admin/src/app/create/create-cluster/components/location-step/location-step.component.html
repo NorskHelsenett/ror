@@ -1,0 +1,195 @@
+<form [formGroup]="clusterForm">
+  <div class="flex flex-col" *ngIf="projects$ | async as projects">
+    <h5>{{ 'pages.create.cluster.steps.metadata.project' | translate }}</h5>
+    <p-dropdown
+      [options]="projects?.data"
+      placeholder="{{ 'pages.create.cluster.steps.metadata.projectPlaceholder' | translate }}"
+      optionLabel="name"
+      [showClear]="true"
+      formControlName="project"
+      [filter]="true"
+      filterBy="name"
+      dataKey="name"
+      (onChange)="updateEvent($event)"
+      [autofocus]="true"
+    >
+      <ng-template let-project pTemplate="item">
+        <div class="flex flex-col w-[500px]">
+          <span class="text-lg">{{ project?.name }}</span>
+          <p class="text-sm truncate block">{{ project?.description }}</p>
+        </div>
+      </ng-template>
+    </p-dropdown>
+    <span *ngIf="clusterForm.get('project').touched && clusterForm.get('project').dirty && clusterForm.get('project').errors" class="text-red-400">{{
+      'pages.create.cluster.steps.metadata.projectError' | translate
+    }}</span>
+    <div>
+      <span>{{ 'pages.create.cluster.steps.metadata.projectHelp' | translate }} </span
+      ><a
+        href="https://norskhelsenett.slack.com/archives/C01U0NUQ7PF"
+        target="_blank"
+        class="text-blue-400 font-bold hover:underline dark:hover:text-blue-400"
+        >#Drift-privatsky-devops</a
+      >
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-col">
+    <h5>{{ 'pages.create.cluster.steps.location.provider' | translate }}</h5>
+
+    <p-dropdown
+      [options]="providers$ | async"
+      placeholder="{{ 'pages.create.cluster.steps.location.providerPlaceholder' | translate }}"
+      optionLabel="name"
+      optionDisabled="disabled"
+      [showClear]="true"
+      formControlName="provider"
+      (onChange)="updateEvent($event)"
+    >
+      <ng-template let-provider pTemplate="item">
+        <app-provider [providerTypeOrName]="provider?.type"></app-provider>
+      </ng-template>
+      <ng-template let-selectedProvider pTemplate="selectedItem">
+        <app-provider [providerTypeOrName]="selectedProvider?.type" *ngIf="selectedProvider"></app-provider>
+      </ng-template>
+    </p-dropdown>
+    <span
+      *ngIf="clusterForm.get('provider').touched && clusterForm.get('provider').dirty && clusterForm.get('provider').errors"
+      class="text-red-400"
+      >{{ 'pages.create.cluster.steps.location.providerError' | translate }}</span
+    >
+  </div>
+
+  <div formGroupName="providerConfig">
+    <ng-container [ngSwitch]="true">
+      <div
+        class="mt-4"
+        *ngSwitchCase="
+          clusterForm?.get('provider')?.value?.type === 'Tanzu' ||
+          clusterForm?.get('provider')?.value?.type === 'tanzu' ||
+          clusterForm?.get('provider')?.value?.type === 'Unknown'
+        "
+      >
+        <div formGroupName="tanzu">
+          <h5>{{ 'pages.create.cluster.steps.location.workspace' | translate }}</h5>
+          <div class="flex flex-col">
+            <p-dropdown
+              [options]="workspaces"
+              placeholder="{{ 'pages.create.cluster.steps.location.workspacePlaceholder' | translate }}"
+              optionLabel="name"
+              [showClear]="true"
+              [filter]="true"
+              filterBy="name"
+              formControlName="workspace"
+              (onChange)="updateEvent($event)"
+            ></p-dropdown>
+            <span
+              *ngIf="
+                clusterForm?.get('providerConfig')?.get('workspace')?.touched &&
+                clusterForm?.get('providerConfig')?.get('workspace')?.dirty &&
+                clusterForm?.get('providerConfig')?.get('workspace')?.errors
+              "
+              class="text-red-400"
+              >{{ 'pages.create.cluster.steps.location.workorderError' | translate }}</span
+            >
+          </div>
+          <div>
+            <span>{{ 'pages.create.cluster.steps.location.workspaceHelp' | translate }} </span
+            ><a
+              href="https://norskhelsenett.slack.com/archives/C01U0NUQ7PF"
+              target="_blank"
+              class="text-blue-400 font-bold hover:underline dark:hover:text-blue-400"
+              >#Drift-privatsky-devops</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="mt-4" *ngSwitchCase="clusterForm?.get('provider')?.value?.value === 'AKS' || clusterForm?.get('provider')?.value?.value === 'aks'">
+        <div formGroupName="azure">
+          <div class="mt-4">
+            <h5>{{ 'pages.create.cluster.steps.location.subscription' | translate }}</h5>
+            <div class="flex flex-col">
+              <p-dropdown
+                [options]="azureSubscriptions"
+                placeholder="{{ 'pages.create.cluster.steps.location.subscriptionPlaceholder' | translate }}"
+                optionLabel="name"
+                [showClear]="true"
+                [filter]="true"
+                filterBy="name"
+                formControlName="subscription"
+                (onChange)="updateEvent($event)"
+              ></p-dropdown>
+              <span
+                *ngIf="
+                  clusterForm?.get('providerConfig')?.get('subscription')?.touched &&
+                  clusterForm?.get('providerConfig')?.get('subscription')?.dirty &&
+                  clusterForm?.get('providerConfig')?.get('subscription')?.errors
+                "
+                class="text-red-400"
+                >{{ 'pages.create.cluster.steps.location.subscriptionError' | translate }}</span
+              >
+            </div>
+          </div>
+          <div class="mt-4">
+            <h5>{{ 'pages.create.cluster.steps.location.resourceGroup' | translate }}</h5>
+            <div class="flex flex-col">
+              <p-dropdown
+                [options]="azureResourceGroups"
+                placeholder="{{ 'pages.create.cluster.steps.location.resourceGroupPlaceholder' | translate }}"
+                optionLabel="name"
+                [showClear]="true"
+                [filter]="true"
+                filterBy="name"
+                formControlName="resourceGroup"
+                (onChange)="updateEvent($event)"
+              ></p-dropdown>
+              <span
+                *ngIf="
+                  clusterForm?.get('providerConfig')?.get('resourceGroup')?.touched &&
+                  clusterForm?.get('providerConfig')?.get('resourceGroup')?.dirty &&
+                  clusterForm?.get('providerConfig')?.get('resourceGroup')?.errors
+                "
+                class="text-red-400"
+                >{{ 'pages.create.cluster.steps.location.resourceGroupError' | translate }}</span
+              >
+            </div>
+          </div>
+          <div class="mt-4">
+            <h5>{{ 'pages.create.cluster.steps.location.region' | translate }}</h5>
+            <div class="flex flex-col">
+              <p-dropdown
+                [options]="azureRegions"
+                placeholder="{{ 'pages.create.cluster.steps.location.regionPlaceholder' | translate }}"
+                optionLabel="name"
+                [showClear]="true"
+                [filter]="true"
+                filterBy="name"
+                formControlName="region"
+                (onChange)="updateEvent($event)"
+              ></p-dropdown>
+              <span
+                *ngIf="
+                  clusterForm?.get('providerConfig')?.get('region')?.touched &&
+                  clusterForm?.get('providerConfig')?.get('region')?.dirty &&
+                  clusterForm?.get('providerConfig')?.get('region')?.errors
+                "
+                class="text-red-400"
+                >{{ 'pages.create.cluster.steps.location.regionError' | translate }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="flex justify-start mt-5">
+    <button
+      [routerLink]="['../resources']"
+      [disabled]="!validForm()"
+      class="flex-none delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:cursor-not-allowed disabled:bg-gray-900 disabled:opacity-25 disabled:hover:bg-gray-900"
+    >
+      <span>{{ 'common.next' | translate }}</span>
+    </button>
+  </div>
+</form>

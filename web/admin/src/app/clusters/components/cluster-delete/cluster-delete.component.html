@@ -1,0 +1,64 @@
+<div class="grid space-y-8 lg:gap-8 lg:space-y-0">
+  <div class="dark:bg-darker flex items-center justify-between overflow-x-auto rounded-md bg-white">
+    <div class="dark:bg-darker col-span-2 overflow-x-auto rounded-md bg-white">
+      <div class="dark:border-primary flex border-b p-4 text-red-500 gap-5">
+        <h1 class="dark:text-red-500 text-red-500 text-md font-semibold">{{ 'pages.clusters.details.delete.subTitle' | translate }}</h1>
+        :
+        <h2 class="dark:text-red-500 text-lg text-red-500 font-semibold">{{ 'pages.clusters.details.delete.title' | translate }}</h2>
+        <div class="flex-col">
+          <button
+            (click)="refresh()"
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+          >
+            {{ 'common.refresh' | translate }}
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="">
+          <div class="overflow-x-auto">
+            <div>{{ 'pages.clusters.details.delete.maintext' | translate }}</div>
+            <div class="mt-2">{{ 'pages.clusters.details.delete.subtext' | translate }}</div>
+            <div class="mt-3 p-4 text-lg bg-red-300 dark:bg-red-800 text-gray-900 dark:text-gray-200">
+              {{ 'pages.clusters.details.delete.sub2text' | translate }}
+            </div>
+
+            <code class="mt-5 mb- text-sm sm:text-base inline-flex text-left items-center space-x-4 bg-gray-800 text-white rounded-lg p-4 pl-6">
+              <span class="flex gap-4">
+                <span class="shrink-0 text-gray-500"> $ </span>
+
+                <span class="flex-1">
+                  <span> kubectl create namespace </span>
+
+                  <span class="text-yellow-500"> delete-me </span>
+                </span>
+              </span>
+
+              <a (click)="copy()" class="flex cursor-copy">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+                  />
+                </svg>
+              </a>
+            </code>
+            <div class="m-3">
+              <button
+                [disabled]="!canDelete"
+                (click)="scheduleDeletion()"
+                pButton
+                pRipple
+                class="focus:ring-primary dark:focus:ring-offset-dark ml-2 content-end rounded-md bg-red-700 px-4 py-2 text-sm text-white hover:bg-red-500 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+              >
+                {{ 'common.delete' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="fetchNamespaces$ | async as namespaces"></div>

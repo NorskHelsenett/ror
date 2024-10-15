@@ -1,0 +1,87 @@
+{{ if .Values.rabbitmq.enabled }}
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq-ror
+  namespace: nhn-ror
+spec:
+  replicas: 3
+  tls:
+    secretName: rabbitmq-tls-secret
+  persistence:
+    storageClassName: trd1-w02-cl01-vsan-storage-policy
+    storage: 100Gi
+  override:
+    statefulSet:
+      spec:
+        template:
+          spec:
+            securityContext:
+              runAsUser: 999
+              runAsGroup: 999
+              seccompProfile:
+                type: RuntimeDefault
+              fsGroup: 0
+            containers:
+            - name: rabbitmq
+              securityContext:
+                privileged: false
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                  - ALL
+                runAsNonRoot: true
+                runAsUser: 999
+              resources:
+                requests:
+                  memory: "4Gi"
+                  cpu: "1"
+                limits:
+                  memory: "16Gi"
+                  cpu: "3"
+            initContainers:
+            - name: setup-container
+              securityContext:
+                privileged: false
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                  - ALL
+                runAsNonRoot: true
+                runAsUser: 999
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-cert
+spec:
+  dnsNames:
+    - "*.nhn-ror-nodes.nhn-ror.svc.managedcluster.local"
+  secretName: rabbitmq-tls-secret
+  issuerRef:
+    kind: Issuer
+    name: selfsigned-issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: nhn-ror
+spec:
+  selfSigned: {}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rabbitmq-rb-privileged
+  namespace: nhn-ror
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:vmware-system-privileged
+subjects:
+- kind: ServiceAccount
+  name: rabbitmq-ror-server
+  namespace: nhn-ror
+{{  end  }}
