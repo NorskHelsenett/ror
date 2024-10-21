@@ -1403,3 +1403,38 @@ func (m ResourceVulnerabilityevents) GetByLabels(search map[string]string) []Res
 	}
 	return Response
 }
+
+// Function to return VulnerabilityWhitelist resource by name.
+func (m ResourceVulnerabilitywhitelists) GetByName(search string) ResourceVulnerabilityWhitelist {
+	for _, resource := range m.Vulnerabilitywhitelists {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceVulnerabilityWhitelist
+	return emptyResponse
+}
+
+// Function to return VulnerabilityWhitelist resource by uid.
+func (m ResourceVulnerabilitywhitelists) GetByUid(search string) ResourceVulnerabilityWhitelist {
+	for _, res := range m.Vulnerabilitywhitelists {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceVulnerabilityWhitelist
+	return emptyResponse
+}
+
+// Function to return VulnerabilityWhitelist resource by label.
+func (m ResourceVulnerabilitywhitelists) GetByLabels(search map[string]string) []ResourceVulnerabilityWhitelist {
+	var Response []ResourceVulnerabilityWhitelist
+	for _, res := range m.Vulnerabilitywhitelists {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}
