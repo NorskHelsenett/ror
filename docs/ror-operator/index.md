@@ -2,4 +2,4 @@
 
 ## Installation flowchart
 
-![ror-operator-cluster-provisioning](/images/ror-operator-cluster-provisioning.png)
+![ror-operator-cluster-provisioning](/ror/images/ror-operator-cluster-provisioning.png)
