@@ -401,7 +401,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/build/generator/main.go",
+            "program": "${workspaceFolder}/cmd/generator/main.go",
             "cwd": "${workspaceFolder}"
         }
     ]

@@ -76,15 +76,7 @@ func main() {
 	//   - internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go
 	templateFile("internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go.tmpl", rordefs.Resourcedefs)
 
-	// Resource models . Moved to github.com/NorskHelsenett/ROR, should be placed in the ../ror folder
-	var folderPath string
-	if os.Getenv("ROR_PATH") == "" {
-		folderPath = "../ror"
-	} else {
-		folderPath = os.Getenv("ROR_PATH")
-	}
-
-	fmt.Println("ROR_PATH: ", folderPath)
+	folderPath := "./"
 
 	exists := folderExists(folderPath)
 	if exists {
