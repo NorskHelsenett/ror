@@ -20,6 +20,9 @@ Rudders are most commonly used on boats, ships, and airplanes.
 
 # Documentation
 
+The documentation is automaticly built and available at [norskhelsenett.github.io/ror](https://norskhelsenett.github.io/ror/)
+
+## Local build
 For this you need a version Python installed.
 Open a terminal in root of this repo, and:
 
@@ -30,4 +33,4 @@ mkdocs serve
 
 # Run ROR?
 
-See documentation in [docs/get-started.md](docs/getting-started.md) to run locally with docker compose
+See documentation in [docs/get-started.md](https://norskhelsenett.github.io/ror/getting-started/) to run locally with docker compose

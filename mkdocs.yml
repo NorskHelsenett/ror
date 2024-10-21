@@ -1,7 +1,7 @@
 site_name: ROR Docs
 repo_url: https://github.com/NorskHelsenett/ror
 repo_name: ROR
-edit_uri: -/edit/main/docs/
+edit_uri: edit/main/docs/
 theme:
   name: material
   language: "nb"
