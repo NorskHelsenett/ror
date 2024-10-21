@@ -1,5 +1,39 @@
 /* Do not change, this code is generated from Golang structs */
 
+export interface ResourceVMTag {
+  key: string;
+  value: string;
+  description: string;
+}
+export interface ResourceVMRuntime {
+  connectionState: string;
+  powerState: string;
+  maxCpuUsage: number;
+  maxMemoryUsage: number;
+}
+export interface ResourceVMConfig {
+  name: string;
+  memory_size: number;
+  cpu_count: number;
+  virtual_disk_count: number;
+  annotation: string;
+}
+export interface ResourceVMGuest {
+  id: string;
+  family: string;
+  full_name: string;
+  host_name: string;
+  ip_address: string;
+  state: string;
+}
+export interface ResourceVm {
+  uuid: string;
+  name: string;
+  guest: ResourceVMGuest;
+  config: ResourceVMConfig;
+  runtime: ResourceVMRuntime;
+  tags: ResourceVMTag[];
+}
 export interface ResourceVulnerabilityEventSpec {
   owner: RorResourceOwnerReference;
   message: string;
@@ -880,6 +914,7 @@ export interface Resource {
   route?: ResourceRoute;
   slackmessage?: ResourceSlackMessage;
   vulnerabilityevent?: ResourceVulnerabilityEvent;
+  vm?: ResourceVm;
 }
 export interface ResourceSet {
   resources?: Resource[];

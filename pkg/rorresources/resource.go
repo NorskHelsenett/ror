@@ -46,6 +46,7 @@ type Resource struct {
 	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty" bson:"route,omitempty"`
 	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
 	VulnerabilityEventResource         *rortypes.ResourceVulnerabilityEvent         `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
+	VmResource                         *rortypes.ResourceVm                         `json:"vm,omitempty" bson:"vm,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -198,6 +199,10 @@ func (r *Resource) SetSlackMessage(res *rortypes.ResourceSlackMessage) {
 
 func (r *Resource) SetVulnerabilityEvent(res *rortypes.ResourceVulnerabilityEvent) {
 	r.VulnerabilityEventResource = res
+}
+
+func (r *Resource) SetVm(res *rortypes.ResourceVm) {
+	r.VmResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -363,6 +368,11 @@ func (r *Resource) SlackMessage() rortypes.SlackMessageinterface {
 // VulnerabilityEvent is a wrapper for the underlying resource, it provides a VulnerabilityEventinterface to work with vulnerabilityevents
 func (r *Resource) VulnerabilityEvent() rortypes.VulnerabilityEventinterface {
 	return r.VulnerabilityEventResource
+}
+
+// Vm is a wrapper for the underlying resource, it provides a Vminterface to work with Vms
+func (r *Resource) Vm() rortypes.Vminterface {
+	return r.VmResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

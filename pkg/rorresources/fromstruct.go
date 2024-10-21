@@ -170,6 +170,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetVulnerabilityEvent(res.VulnerabilityEventResource)
 		r.SetCommonInterface(res.VulnerabilityEventResource)
 
+	case "general.ror.internal/v1alpha1, Kind=Vm":
+		r.SetVm(res.VmResource)
+		r.SetCommonInterface(res.VmResource)
+
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 	}
