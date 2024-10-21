@@ -1,7 +1,7 @@
 site_name: ROR Docs
-repo_url: https://helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror
+repo_url: https://github.com/NorskHelsenett/ror
 repo_name: ROR
-edit_uri: -/edit/develop/docs/
+edit_uri: -/edit/main/docs/
 theme:
   name: material
   language: "nb"
@@ -40,13 +40,8 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://helsegitlab.nhn.no/sdi
+      link: https://github.com/NorskHelsenett/ror
       name: Privat sky på github
-    - icon: fontawesome/brands/slack
-      link: https://norskhelsenett.slack.com/archives/C01U0NUQ7PF
-      name: "#drift-sdi-devops"
-    - icon: fontawesome/brands/confluence
-      link: https://confluence.nhn.no/display/PEPS
   generator: false
 copyright: Norsk Helsenett SF - Privat sky
 nav:
