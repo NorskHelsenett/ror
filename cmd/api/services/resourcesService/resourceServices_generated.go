@@ -6,9 +6,9 @@ package resourcesservice
 import (
 	"context"
 	"errors"
+	"github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/resourcesmongodbrepo"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/resourcesmongodbrepo"
 )
 
 // Functions to get Namespaces by uid,ownerref
