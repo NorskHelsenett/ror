@@ -209,5 +209,11 @@ func (rj rorResourceJson) getResource(resourceReturn *rorResource) error {
 		return err
 	}
 
+	if resourceReturn.ApiVersion == "general.ror.internal/v1alpha1" && resourceReturn.Kind == "Vm" {
+		payload, err := prepareResourcePayload[apiresourcecontracts.ResourceVm](bytes)
+		resourceReturn.Resource = payload
+		return err
+	}
+
 	return fmt.Errorf("no handler found for %s/%s", resourceReturn.ApiVersion, resourceReturn.Kind)
 }

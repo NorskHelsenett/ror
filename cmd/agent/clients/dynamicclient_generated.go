@@ -28,6 +28,7 @@ func InitSchema() []schema.GroupVersionResource {
 	schemas = append(schemas, schema.GroupVersionResource{Group: "aquasecurity.github.io", Version: "v1alpha1", Resource: "configauditreports"})
 	schemas = append(schemas, schema.GroupVersionResource{Group: "aquasecurity.github.io", Version: "v1alpha1", Resource: "rbacassessmentreports"})
 	schemas = append(schemas, schema.GroupVersionResource{Group: "aquasecurity.github.io", Version: "v1alpha1", Resource: "clustercompliancereports"})
+	schemas = append(schemas, schema.GroupVersionResource{Group: "general.ror.internal", Version: "v1alpha1", Resource: "Vms"})
 
 	return schemas
 }
