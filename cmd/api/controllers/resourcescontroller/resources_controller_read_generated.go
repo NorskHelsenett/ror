@@ -311,6 +311,14 @@ func GetResources() gin.HandlerFunc {
 			}
 			c.JSON(http.StatusOK, resources)
 		}
+		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "Vm" {
+			resources, err := resourcesservice.GetResources[apiresourcecontracts.ResourceVm](ctx, query)
+			if err != nil {
+				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				return
+			}
+			c.JSON(http.StatusOK, resources)
+		}
 	}
 }
 
@@ -617,6 +625,14 @@ func GetResource() gin.HandlerFunc {
 		}
 		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "VulnerabilityEvent" {
 			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceVulnerabilityEvent](ctx, query)
+			if err != nil {
+				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				return
+			}
+			c.JSON(http.StatusOK, resources)
+		}
+		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "Vm" {
+			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceVm](ctx, query)
 			if err != nil {
 				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 				return

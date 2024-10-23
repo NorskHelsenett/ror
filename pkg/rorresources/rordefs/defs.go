@@ -319,5 +319,13 @@ var Resourcedefs = []ApiResource{
 		Plural:     "vulnerabilityevents",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Vm",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "Vms",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeAgent},
 	},
 }

@@ -206,3 +206,9 @@ type VulnerabilityEventinterface interface {
 	CommonResourceInterface
 	Get() *ResourceVulnerabilityEvent
 }
+
+// Vminterface represents the interface for resources of the type vm
+type Vminterface interface {
+	CommonResourceInterface
+	Get() *ResourceVm
+}

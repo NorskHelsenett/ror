@@ -803,6 +803,30 @@ func GetVulnerabilityEventByUid(ctx context.Context, ownerref apiresourcecontrac
 
 }
 
+// Functions to get Vms by uid,ownerref
+// The function is intended for use by internal functions
+func GetVmByUid(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference, uid string) (apiresourcecontracts.ResourceVm, error) {
+	if uid == "" {
+		return apiresourcecontracts.ResourceVm{}, errors.New("uid is empty")
+	}
+	query := apiresourcecontracts.ResourceQuery{
+		Owner:      ownerref,
+		Kind:       "Vm",
+		ApiVersion: "general.ror.internal/v1alpha1",
+		Internal:   true,
+		Uid:        uid,
+	}
+
+	resource, err := GetResource[apiresourcecontracts.ResourceVm](ctx, query)
+	if err != nil {
+		rlog.Errorc(ctx, "could not get resource", err)
+		return apiresourcecontracts.ResourceVm{}, errors.New("could not get resource")
+	}
+
+	return resource, nil
+
+}
+
 // Functions to get Namespaces by ownerref
 // The function is intended for use by internal functions
 func GetNamespaces(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceNamespaces, error) {
@@ -1397,6 +1421,24 @@ func GetVulnerabilityevents(ctx context.Context, ownerref apiresourcecontracts.R
 	return resources, nil
 }
 
+// Functions to get Vms by ownerref
+// The function is intended for use by internal functions
+func GetVms(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVms, error) {
+	var resources apiresourcecontracts.ResourceVms
+	query := apiresourcecontracts.ResourceQuery{
+		Owner:      ownerref,
+		Kind:       "Vm",
+		ApiVersion: "general.ror.internal/v1alpha1",
+	}
+	resourceset, err := resourcesmongodbrepo.GetResourcesByQuery[apiresourcecontracts.ResourceVm](ctx, query)
+	resources.Owner = ownerref
+	resources.Vms = resourceset
+	if err != nil {
+		return resources, errors.New("could not fetch resource Vm")
+	}
+	return resources, nil
+}
+
 // Function to creates a resource by the 'apiresourcecontracts.ResourceUpdateModel'
 func ResourceCreateService(ctx context.Context, resourceUpdate apiresourcecontracts.ResourceUpdateModel) error {
 	var err error
@@ -1789,6 +1831,18 @@ func ResourceCreateService(ctx context.Context, resourceUpdate apiresourcecontra
 		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVulnerabilityEvent]](resourceUpdate)
 		resource = filterInVulnerabilityEvent(resource)
 		err = resourcesmongodbrepo.CreateResourceVulnerabilityEvent(resource, ctx)
+		if err == nil {
+			err = sendToMessageBus(ctx, resource, apiresourcecontracts.K8sActionAdd)
+			if err != nil {
+				rlog.Errorc(ctx, "could not send to message bus", err)
+			}
+		}
+	}
+
+	if resourceUpdate.ApiVersion == "general.ror.internal/v1alpha1" && resourceUpdate.Kind == "Vm" {
+		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm]](resourceUpdate)
+		resource = filterInVm(resource)
+		err = resourcesmongodbrepo.CreateResourceVm(resource, ctx)
 		if err == nil {
 			err = sendToMessageBus(ctx, resource, apiresourcecontracts.K8sActionAdd)
 			if err != nil {
@@ -2198,6 +2252,18 @@ func ResourceUpdateService(ctx context.Context, resourceUpdate apiresourcecontra
 		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVulnerabilityEvent]](resourceUpdate)
 		resource = filterInVulnerabilityEvent(resource)
 		err = resourcesmongodbrepo.UpdateResourceVulnerabilityEvent(resource, ctx)
+		if err == nil {
+			err = sendToMessageBus(ctx, resource, apiresourcecontracts.K8sActionUpdate)
+			if err != nil {
+				rlog.Errorc(ctx, "could not send to message bus", err)
+			}
+		}
+	}
+
+	if resourceUpdate.ApiVersion == "general.ror.internal/v1alpha1" && resourceUpdate.Kind == "Vm" {
+		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm]](resourceUpdate)
+		resource = filterInVm(resource)
+		err = resourcesmongodbrepo.UpdateResourceVm(resource, ctx)
 		if err == nil {
 			err = sendToMessageBus(ctx, resource, apiresourcecontracts.K8sActionUpdate)
 			if err != nil {
