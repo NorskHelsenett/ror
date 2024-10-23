@@ -27,7 +27,7 @@ export interface ResourceVMGuest {
   state: string;
 }
 export interface ResourceVm {
-  uuid: string;
+  id: string;
   name: string;
   guest: ResourceVMGuest;
   config: ResourceVMConfig;

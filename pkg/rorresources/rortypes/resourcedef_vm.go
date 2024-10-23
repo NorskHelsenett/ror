@@ -1,7 +1,7 @@
 package rortypes
 
 type ResourceVm struct {
-	Uuid    string            `json:"uuid"`
+	Id      string            `json:"id"`
 	Name    string            `json:"name"`
 	Guest   ResourceVMGuest   `json:"guest"`
 	Config  ResourceVMConfig  `json:"config"`

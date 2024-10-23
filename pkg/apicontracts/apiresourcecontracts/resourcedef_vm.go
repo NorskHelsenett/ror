@@ -1,10 +1,10 @@
 package apiresourcecontracts
 
 type ResourceVm struct {
-	ApiVersion string
-	Kind       string
-	Metadata   ResourceMetadata
-	Uuid       string            `json:"uuid"`
+	ApiVersion string            `json:"api_version"`
+	Kind       string            `json:"kind"`
+	Metadata   ResourceMetadata  `json:"metadata"`
+	Id         string            `json:"id"`
 	Name       string            `json:"name"`
 	Guest      ResourceVMGuest   `json:"guest"`
 	Config     ResourceVMConfig  `json:"config"`
