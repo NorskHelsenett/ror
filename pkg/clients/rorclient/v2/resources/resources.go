@@ -8,9 +8,7 @@ import (
 type ResourcesInterface interface {
 	Get(query rorresources.ResourceQuery) (rorresources.ResourceSet, error)
 	Update(res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error)
-	GetByUid(uid string) (rorresources.ResourceSet, error)
-	UpdateByUid(uid string, res *rorresources.ResourceSet) (string, error)
-	DeleteByUid(uid string) (string, error)
-	ExistsByUid(uid string) (bool, error)
+	Delete(uid string) (*rorresources.ResourceUpdateResults, error)
+	Exists(uid string) (bool, error)
 	GetOwnHashes() (apicontractsv2resources.HashList, error)
 }
