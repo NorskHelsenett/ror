@@ -1,12 +1,14 @@
 package resourcescontroller
 
 import (
+	"net/http"
+
 	"github.com/NorskHelsenett/ror/cmd/api/responses"
 	"github.com/NorskHelsenett/ror/cmd/api/services/resourcesv2service"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
-	"net/http"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
+	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/gin-gonic/gin"
 )
 
@@ -46,7 +48,7 @@ func DeleteResource() gin.HandlerFunc {
 		resource := resources.Resources[0]
 
 		if c.Param("uid") != resource.GetUID() {
-			c.JSON(http.StatusNotImplemented, "501: Wrong resource found")
+			c.JSON(http.StatusBadRequest, "400: Wrong resource found")
 			return
 		}
 
@@ -54,7 +56,6 @@ func DeleteResource() gin.HandlerFunc {
 		// Scope: input.Owner.Scope
 		// Subject: input.Owner.Subject
 		// Access: update
-
 		accessModel := aclservice.CheckAccessByRorOwnerref(ctx, resource.GetRorMeta().Ownerref)
 		if !accessModel.Update {
 			c.JSON(http.StatusForbidden, "403: No access")
@@ -63,11 +64,25 @@ func DeleteResource() gin.HandlerFunc {
 
 		err := resourcesv2service.DeleteResource(ctx, resource)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, responses.Cluster{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(
+				http.StatusInternalServerError,
+				responses.Cluster{
+					Status:  http.StatusInternalServerError,
+					Message: "error",
+					Data:    map[string]interface{}{"data": err.Error()},
+				})
 			return
 		}
 
-		c.JSON(http.StatusOK, nil)
+		res := rorresources.ResourceUpdateResults{
+			Results: map[string]rorresources.ResourceUpdateResult{
+				resource.GetUID(): {
+					Status:  http.StatusAccepted,
+					Message: "202: Resource deleted",
+				},
+			},
+		}
 
+		c.JSON(http.StatusOK, res)
 	}
 }

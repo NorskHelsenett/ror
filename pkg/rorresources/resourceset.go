@@ -16,30 +16,11 @@ type ResourceSet struct {
 	Resources  []*Resource `json:"resources,omitempty"`
 }
 
-type ResourceUpdateResults struct {
-	Results map[string]ResourceUpdateResult `json:"results,omitempty"`
-}
-type ResourceUpdateResult struct {
-	Status  int    `json:"status,omitempty"`
-	Message string `json:"message,omitempty"`
-}
-
 func (rs *ResourceSet) SetQuery(query *ResourceQuery) {
 	rs.query = query
 }
 func (rs *ResourceSet) GetQuery() *ResourceQuery {
 	return rs.query
-}
-
-// FailedResources is a method to return a list of failed resources.
-func (r *ResourceUpdateResults) GetFailedResources() map[string]ResourceUpdateResult {
-	failedResources := make(map[string]ResourceUpdateResult, 0)
-	for key, value := range r.Results {
-		if value.Status > 399 || value.Status < 200 {
-			failedResources[key] = value
-		}
-	}
-	return failedResources
 }
 
 func NewResourceSet() *ResourceSet {
@@ -185,4 +166,24 @@ func (r *ResourceSet) FilterByOwnerReference(ownerRef rortypes.RorResourceOwnerR
 		}
 	}
 	return &response
+}
+
+type ResourceUpdateResult struct {
+	Status  int    `json:"status,omitempty"`
+	Message string `json:"message,omitempty"`
+}
+
+type ResourceUpdateResults struct {
+	Results map[string]ResourceUpdateResult `json:"results,omitempty"`
+}
+
+// FailedResources is a method to return a list of failed resources.
+func (r *ResourceUpdateResults) GetFailedResources() map[string]ResourceUpdateResult {
+	failedResources := make(map[string]ResourceUpdateResult, 0)
+	for key, value := range r.Results {
+		if value.Status > 399 || value.Status < 200 {
+			failedResources[key] = value
+		}
+	}
+	return failedResources
 }
