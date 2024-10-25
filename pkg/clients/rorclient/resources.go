@@ -3,6 +3,7 @@ package rorclient
 import (
 	"context"
 
+	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 )
@@ -76,4 +77,13 @@ func (r *ResourceClient) Exists(ctx context.Context, uid string) (bool, error) {
 	}
 
 	return res, nil
+}
+
+func (r *ResourceClient) GetOwnHashes() (*apicontractsv2resources.HashList, error) {
+	res, err := r.Transport.GetOwnHashes()
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
