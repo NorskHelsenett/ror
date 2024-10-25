@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/NorskHelsenett/ror/internal/kubernetes/nodeservice"
-	"github.com/NorskHelsenett/ror/internal/models/operatormodels"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/NorskHelsenett/ror/internal/kubernetes/nodeservice"
+	"github.com/NorskHelsenett/ror/internal/models/operatormodels"
 
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 
@@ -121,7 +122,7 @@ func GetOwnClusterId() (string, error) {
 			rlog.Fatal("response body: ", err, rlog.ByteString("bytes", bodyByte))
 		}
 
-		return "", fmt.Errorf("could not get cluster self data from API, apikey: %s, rorUrl: %s", apikey, rorUrl)
+		return "", fmt.Errorf("could not get cluster self data from API, rorUrl: %s", rorUrl)
 	}
 
 	body := response.Body

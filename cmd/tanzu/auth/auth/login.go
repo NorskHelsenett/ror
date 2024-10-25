@@ -16,6 +16,8 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/spf13/viper"
+
+	"github.com/alessio/shellescape"
 )
 
 func Login(credentials apicontracts.TanzuKubeConfigPayload) (string, error) {
@@ -41,12 +43,14 @@ func Login(credentials apicontracts.TanzuKubeConfigPayload) (string, error) {
 	env := make([]string, 0)
 
 	var loginCmd string
+	quotedUser := shellescape.Quote(credentials.User)
+	quotedPassword := shellescape.Quote(credentials.Password)
 	if credentials.WorkspaceOnly {
 		loginCmd = fmt.Sprintf("%s login --server=%s -u %s --insecure-skip-tls-verify --tanzu-kubernetes-cluster-namespace %s --request-timeout=16s",
-			kubectlVspherePath, datacenterUrl, credentials.User, credentials.WorkspaceName)
+			kubectlVspherePath, datacenterUrl, quotedUser, credentials.WorkspaceName)
 	} else {
 		loginCmd = fmt.Sprintf("%s login --server=%s -u %s --insecure-skip-tls-verify --tanzu-kubernetes-cluster-namespace %s --tanzu-kubernetes-cluster-name %s --request-timeout=16s",
-			kubectlVspherePath, datacenterUrl, credentials.User, credentials.WorkspaceName, credentials.ClusterName)
+			kubectlVspherePath, datacenterUrl, quotedUser, credentials.WorkspaceName, credentials.ClusterName)
 	}
 
 	if loginCmd == "" {
@@ -56,7 +60,7 @@ func Login(credentials apicontracts.TanzuKubeConfigPayload) (string, error) {
 	args = append(args, loginCmd)
 	_, _ = fmt.Println(loginCmd)
 
-	env = append(env, "KUBECTL_VSPHERE_PASSWORD="+credentials.Password)
+	env = append(env, "KUBECTL_VSPHERE_PASSWORD="+quotedPassword)
 	env = append(env, "KUBECONFIG="+kubeconfigPath)
 
 	directoryOfKubectl := filepath.Dir(kubectlVspherePath)

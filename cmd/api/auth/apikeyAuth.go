@@ -26,7 +26,7 @@ func ApiKeyAuth(c *gin.Context) {
 	}
 
 	apikeyResult, err := apikeysservice.VerifyApiKey(ctx, apikey)
-	if rorerror.GinHandleErrorAndAbort(c, 401, err, rorerror.String("apikey", apikey)) {
+	if rorerror.GinHandleErrorAndAbort(c, 401, err) {
 		return
 	}
 
@@ -39,7 +39,7 @@ func ApiKeyAuth(c *gin.Context) {
 		serviceAuth(c, apikeyResult)
 	default:
 		rerr := rorerror.NewRorError(401, "error wrong api key type")
-		rerr.GinLogErrorAndAbort(c, rorerror.String("apikey", apikey))
+		rerr.GinLogErrorAndAbort(c)
 	}
 
 }
