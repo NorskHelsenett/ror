@@ -142,8 +142,8 @@ func (s *Service) newRabbitMQConnection() error {
 
 	connection, err := amqp.Dial(connectionString)
 	if err != nil {
-		rlog.Error("cannot connect", err, rlog.String("connection string", connectionString))
-		return fmt.Errorf("cannot connect to rabbitmq url: %s", connectionString)
+		rlog.Error("cannot connect", err, rlog.String("Host", s.RmqCredentials.Host))
+		return fmt.Errorf("cannot connect to rabbitmq url: %s", s.RmqCredentials.Host)
 	}
 
 	s.RmqConnection = connection

@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.0
+	github.com/alessio/shellescape v1.4.2
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.11.0
 	github.com/dexidp/dex/api/v2 v2.2.0
