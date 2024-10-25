@@ -53,7 +53,16 @@ func ExistsResources() gin.HandlerFunc {
 		ctx, cancel := gincontext.GetRorContextFromGinContext(c)
 		defer cancel()
 
+		if c.Param("uid") == "" {
+			c.JSON(http.StatusBadRequest, "empty uid")
+			return
+		}
+
 		resources := resourcesv2service.GetResourceByUID(ctx, c.Param("uid"))
+		if resources == nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
 
 		// Validate that the correct uid is provided
 		if len(resources.Resources) != 1 {
@@ -78,12 +87,7 @@ func ExistsResources() gin.HandlerFunc {
 			return
 		}
 
-		if c.Param("uid") == "" {
-			c.JSON(http.StatusBadRequest, "empty uid")
-			return
-		}
-
-		if resourcesservice.CheckResourceExist(ctx, c.Param("uid")) {
+		if resources.Len() == 1 {
 			c.Status(http.StatusNoContent)
 			return
 		} else {

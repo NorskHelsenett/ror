@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
@@ -62,18 +63,21 @@ func (c *V2Client) Delete(uid string) (*rorresources.ResourceUpdateResults, erro
 }
 
 func (c *V2Client) Exists(uid string) (bool, error) {
-	//url, err := url.JoinPath(c.basePath, "uid", uid)
-	//if err != nil {
-	//	return nil, fmt.Errorf("could not create url: %w", err)
-	//}
+	url, err := url.JoinPath(c.basePath, "uid", uid)
+	if err != nil {
+		return false, fmt.Errorf("could not create url: %w", err)
+	}
 
-	// we need ta add a head request to client
-	//err = c.Client.(url, &out)
-	//if err != nil {
-	//	return nil, err
-	//}
+	_, status, err := c.Client.Head(url)
+	if err != nil {
+		return false, err
+	}
 
-	return false, fmt.Errorf("not implemented")
+	if status == http.StatusNoContent {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (c *V2Client) GetOwnHashes() (apicontractsv2resources.HashList, error) {
