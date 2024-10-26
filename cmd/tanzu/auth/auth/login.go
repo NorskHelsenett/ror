@@ -16,6 +16,8 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/spf13/viper"
+
+	"github.com/alessio/shellescape"
 )
 
 func Login(credentials apicontracts.TanzuKubeConfigPayload) (string, error) {
@@ -33,20 +35,25 @@ func Login(credentials apicontracts.TanzuKubeConfigPayload) (string, error) {
 		rlog.Errorc(ctx, "Failed to create kubeconfig file", err)
 	} //
 
-	datacenterUrl := credentials.DatacenterUrl
+	quotedDatacenterurl := shellescape.Quote(credentials.DatacenterUrl)
+	quotedWorkspaceName := shellescape.Quote(credentials.WorkspaceName)
+	quotedUser := shellescape.Quote(credentials.User)
+	quotedPassword := shellescape.Quote(credentials.Password)
 	kubectlVspherePath := viper.GetString(configconsts.TANZU_AUTH_KUBE_VSPHERE_PATH)
 	rlog.Info("Authentication", rlog.String("time", time.Now().String()))
-	rlog.Info("Connection to url ", rlog.String("url", datacenterUrl), rlog.String("username", credentials.User), rlog.String("kubeconfig", kubeconfigPath))
+	rlog.Info("Connection to url ", rlog.String("url", quotedDatacenterurl), rlog.String("username", quotedUser), rlog.String("kubeconfig", kubeconfigPath))
 	args := []string{"-c"}
 	env := make([]string, 0)
 
 	var loginCmd string
+
 	if credentials.WorkspaceOnly {
 		loginCmd = fmt.Sprintf("%s login --server=%s -u %s --insecure-skip-tls-verify --tanzu-kubernetes-cluster-namespace %s --request-timeout=16s",
-			kubectlVspherePath, datacenterUrl, credentials.User, credentials.WorkspaceName)
+			kubectlVspherePath, quotedDatacenterurl, quotedUser, quotedWorkspaceName)
 	} else {
+		quotedClusterName := shellescape.Quote(credentials.ClusterName)
 		loginCmd = fmt.Sprintf("%s login --server=%s -u %s --insecure-skip-tls-verify --tanzu-kubernetes-cluster-namespace %s --tanzu-kubernetes-cluster-name %s --request-timeout=16s",
-			kubectlVspherePath, datacenterUrl, credentials.User, credentials.WorkspaceName, credentials.ClusterName)
+			kubectlVspherePath, quotedDatacenterurl, quotedUser, quotedWorkspaceName, quotedClusterName)
 	}
 
 	if loginCmd == "" {
@@ -56,7 +63,7 @@ func Login(credentials apicontracts.TanzuKubeConfigPayload) (string, error) {
 	args = append(args, loginCmd)
 	_, _ = fmt.Println(loginCmd)
 
-	env = append(env, "KUBECTL_VSPHERE_PASSWORD="+credentials.Password)
+	env = append(env, "KUBECTL_VSPHERE_PASSWORD="+quotedPassword)
 	env = append(env, "KUBECONFIG="+kubeconfigPath)
 
 	directoryOfKubectl := filepath.Dir(kubectlVspherePath)
