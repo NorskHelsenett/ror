@@ -13,6 +13,7 @@ type ApiResourceType string
 const (
 	ApiResourceTypeUnknown    ApiResourceType = ""
 	ApiResourceTypeAgent      ApiResourceType = "Agent"
+	ApiResourceTypeVmAgent    ApiResourceType = "VmAgent"
 	ApiResourceTypeTanzuAgent ApiResourceType = "TanzuAgent"
 	ApiResourceTypeInternal   ApiResourceType = "Internal"
 )
@@ -326,6 +327,6 @@ var Resourcedefs = []ApiResource{
 		},
 		Plural:     "Vms",
 		Namespaced: false,
-		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
 	},
 }
