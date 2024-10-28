@@ -101,11 +101,6 @@ export class ResourceTableComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.owners = this.typesService.getOwnerTypes();
-    if (this.owners?.length > 0) {
-      this.owners = this.owners?.sort((a: OwnerType, b: OwnerType) => a.scope.localeCompare(b.scope));
-    }
-
     this.resourceTypes = this.typesService.getResourceTypes();
     if (this.resourceTypes?.length > 0) {
       this.resourceTypes = this.resourceTypes?.sort((a: ResourceType, b: ResourceType) => a.kind.localeCompare(b.kind));

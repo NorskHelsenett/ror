@@ -94,15 +94,38 @@ export class ColumnFactoryService {
     if (kind === 'StorageClass' && apiVersion === 'storage.k8s.io/v1') {
       columns = this.getStorageClass();
     }
+    if ((kind === 'VirtualMachine' || kind == 'Vm') && apiVersion === 'general.ror.internal/v1alpha1') {
+      columns = this.getRORVirtualMachines();
+    }
     if (kind === 'VulnerabilityReport' && apiVersion === 'aquasecurity.github.io/v1alpha1') {
       columns = this.getVulnerabilityReport();
     }
 
     columns = this.postProcessColumnDefinitions(kind, apiVersion, columns);
-
     return columns;
   }
-
+  getRORVirtualMachines(): ColumnDefinition[] {
+    return [
+      {
+        field: 'vm.name',
+        header: 'Name',
+        type: 'text',
+        enabled: true,
+      },
+      {
+        field: 'vm.config.memorySize',
+        header: 'Memory size',
+        type: 'numeric',
+        enabled: true,
+      },
+      {
+        field: 'vm.config.cpuCount',
+        header: 'CPU count',
+        type: 'numeric',
+        enabled: true,
+      },
+    ];
+  }
   getApplication(): ColumnDefinition[] {
     return [
       {
@@ -149,7 +172,6 @@ export class ColumnFactoryService {
       },
     ];
   }
-
   getAppProject(): ColumnDefinition[] {
     return [
       {
@@ -440,7 +462,6 @@ export class ColumnFactoryService {
       },
     ];
   }
-
   getNamespace(): ColumnDefinition[] {
     return [
       {
@@ -507,7 +528,6 @@ export class ColumnFactoryService {
       },
     ];
   }
-
   getNode(): ColumnDefinition[] {
     return [
       {
@@ -751,7 +771,6 @@ export class ColumnFactoryService {
       },
     ];
   }
-
   getVulnerabilityReport(): ColumnDefinition[] {
     return [
       {

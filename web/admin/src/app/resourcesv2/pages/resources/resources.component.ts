@@ -10,14 +10,22 @@ import { TypesService } from '../../../resources/services/types.service';
 import { ResourceType } from '../../../core/models/resources/resourceType';
 import { OwnerType } from '../../../core/models/resources/ownerType';
 import { ResourcesV2ListComponent } from '../../components/resources-v2-list/resources-v2-list.component';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { SidebarModule } from 'primeng/sidebar';
 import { ResourceV2DetailsComponent } from '../../components/resource-v2-details/resource-v2-details.component';
 
 @Component({
   selector: 'app-resources',
   standalone: true,
-  imports: [TranslateModule, ResourcesV2ListComponent, Resourcesv2FilterComponent, AsyncPipe, SidebarModule, ResourceV2DetailsComponent],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    ResourcesV2ListComponent,
+    Resourcesv2FilterComponent,
+    AsyncPipe,
+    SidebarModule,
+    ResourceV2DetailsComponent,
+  ],
   templateUrl: './resources.component.html',
   styleUrl: './resources.component.scss',
 })
@@ -40,11 +48,6 @@ export class ResourcesComponent implements OnInit {
     this.resourceTypes = this.typesService.getResourceTypes();
     if (this.resourceTypes?.length > 0) {
       this.resourceTypes = this.resourceTypes?.sort((a: ResourceType, b: ResourceType) => a.kind.localeCompare(b.kind));
-    }
-
-    this.owners = this.typesService.getOwnerTypes();
-    if (this.owners?.length > 0) {
-      this.owners = this.owners?.sort((a: OwnerType, b: OwnerType) => a.scope.localeCompare(b.scope));
     }
 
     this.clusters$ = this.clustersService

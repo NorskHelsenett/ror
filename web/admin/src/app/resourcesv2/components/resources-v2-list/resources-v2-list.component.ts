@@ -125,6 +125,11 @@ export class ResourcesV2ListComponent implements OnInit {
       this.resourceQuery?.versionkind?.Kind,
     );
     this.selectedColumns = this.columnDefinitions.filter((column) => column.enabled);
+    if (this.resourceQuery === undefined) {
+      this.resourceQuery = new ResourceQuery({
+        limit: this.rows,
+      });
+    }
     this.resourceQuery.fields = this.getQueryFields(this.columnDefinitions);
     this.resourceQuery.limit = this.rows;
     this.resourceSet$ = this.resourcesv2Service.getResources(this.resourceQuery).pipe(

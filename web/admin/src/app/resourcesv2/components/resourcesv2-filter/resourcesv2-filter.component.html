@@ -3,46 +3,22 @@
     [options]="resourceTypes"
     [(ngModel)]="selectedResourceType"
     (onChange)="selectedResourceTypeChange($event)"
-    optionLabel="kind"
+    optionLabel="displayName"
     [showClear]="true"
     placeholder="{{ 'pages.resources.filter.resourceType.placeholder' | translate }}"
     emptyMessage="{{ 'common.dropdown.noResult' | translate }}"
     emptyFilterMessage="{{ 'common.dropdown.noResults' | translate }}"
     [filter]="true"
-    filterBy="kind"
+    filterBy="displayName"
   >
     <ng-template pTemplate="selectedItem" let-resourceType>
       <div class="flex align-items-center gap-2">
-        <div>{{ resourceType?.kind }}</div>
+        <div>{{ resourceType?.displayName }}</div>
       </div>
     </ng-template>
     <ng-template let-resourceType pTemplate="item">
       <div class="flex align-items-center gap-2">
-        <div>{{ resourceType?.kind }}</div>
-      </div>
-    </ng-template>
-  </p-dropdown>
-  <p-dropdown
-    *ngIf="clusterId === undefined"
-    [options]="owners"
-    [(ngModel)]="selectedOwner"
-    optionLabel="scope"
-    [showClear]="true"
-    placeholder="{{ 'pages.resources.filter.owner.placeholder' | translate }}"
-    emptyMessage="{{ 'common.dropdown.noResult' | translate }}"
-    emptyFilterMessage="{{ 'common.dropdown.noResults' | translate }}"
-    (onChange)="selectedOwnerChange($event)"
-    [filter]="true"
-    filterBy="scope"
-  >
-    <ng-template pTemplate="selectedItem" let-owner>
-      <div class="flex align-items-center gap-2">
-        <div>{{ owner?.scope }}</div>
-      </div>
-    </ng-template>
-    <ng-template let-owner pTemplate="item">
-      <div class="flex align-items-center gap-2">
-        <div>{{ owner?.scope }}</div>
+        <div>{{ resourceType?.displayName }}</div>
       </div>
     </ng-template>
   </p-dropdown>

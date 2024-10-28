@@ -23,9 +23,6 @@ export class Resourcesv2FilterComponent {
 
   @Input() resourceTypes: ResourceType[] = [];
   selectedResourceType: ResourceType;
-
-  @Input() owners: OwnerType[] = [];
-  selectedOwner: OwnerType;
   showClusterDropdown = false;
 
   @Output() filterChange = new EventEmitter<ResourceQuery>();
@@ -44,17 +41,6 @@ export class Resourcesv2FilterComponent {
   }
 
   selectedOwnerChange(event: any): void {
-    this.selectedOwner = event?.value;
-    if (this.selectedOwner?.clusterSpesific) {
-      this.showClusterDropdown = true;
-      this.selectedCluster = undefined;
-    } else {
-      this.showClusterDropdown = false;
-    }
-
-    if (this.selectedOwner.clusterSpesific && !this.selectedCluster) {
-      return;
-    }
     var filterchange = {
       ownerrefs: [
         {
@@ -79,7 +65,6 @@ export class Resourcesv2FilterComponent {
 
   resetFilter(): void {
     this.selectedResourceType = undefined;
-    this.selectedOwner = undefined;
     this.selectedCluster = undefined;
     this.showClusterDropdown = false;
     this.resourcesV2QueryService.clearQuery();
