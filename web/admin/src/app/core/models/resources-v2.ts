@@ -1,38 +1,49 @@
 /* Do not change, this code is generated from Golang structs */
 
-export interface ResourceVMTag {
+export interface ResourceVirtualMachineStatus {
+  guest: ResourceVirtualMachineOperativeSystem;
+  config: ResourceVirtualMachineConfig;
+  runtime: ResourceVirtualMachineRuntime;
+  tags: ResourceVirtualMachineTag[];
+}
+export interface ResourceVirtualMachineTag {
   key: string;
   value: string;
   description: string;
 }
-export interface ResourceVMRuntime {
+export interface ResourceVirtualMachineRuntime {
   connectionState: string;
   powerState: string;
-  maxCpuUsage: number;
-  maxMemoryUsage: number;
+  maxCpu: number;
+  maxMemory: number;
 }
-export interface ResourceVMConfig {
+export interface ResourceVirtualMachineConfig {
   name: string;
-  memory_size: number;
-  cpu_count: number;
-  virtual_disk_count: number;
+  memorySize: number;
+  cpuCount: number;
+  virtualDiskCount: number;
   annotation: string;
 }
-export interface ResourceVMGuest {
+export interface ResourceVirtualMachineOperativeSystem {
   id: string;
   family: string;
-  full_name: string;
-  host_name: string;
-  ip_address: string;
+  fullName: string;
+  hostName: string;
+  ipV4Address: string;
+  ipV6Address: string;
   state: string;
 }
-export interface ResourceVm {
+export interface ResourceVirtualMachineSpec {
+  guest: ResourceVirtualMachineOperativeSystem;
+  config: ResourceVirtualMachineConfig;
+  runtime: ResourceVirtualMachineRuntime;
+  tags: ResourceVirtualMachineTag[];
+}
+export interface ResourceVirtualMachine {
   id: string;
   name: string;
-  guest: ResourceVMGuest;
-  config: ResourceVMConfig;
-  runtime: ResourceVMRuntime;
-  tags: ResourceVMTag[];
+  spec: ResourceVirtualMachineSpec;
+  status: ResourceVirtualMachineStatus;
 }
 export interface ResourceVulnerabilityEventSpec {
   owner: RorResourceOwnerReference;
@@ -914,7 +925,7 @@ export interface Resource {
   route?: ResourceRoute;
   slackmessage?: ResourceSlackMessage;
   vulnerabilityevent?: ResourceVulnerabilityEvent;
-  vm?: ResourceVm;
+  virtualmachine?: ResourceVirtualMachine;
 }
 export interface ResourceSet {
   resources?: Resource[];
