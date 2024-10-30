@@ -53,7 +53,7 @@ type ResourceVirtualMachineRuntime struct {
 }
 
 type ResourceVirtualMachineTag struct {
-	Key         string `json:"key" bson:"key" yaml:"key"`
-	Value       string `json:"value" bson:"value" yaml:"value"`
-	Description string `json:"description" bson:"description" yaml:"description"`
+	Key         string `json:"key"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
 }

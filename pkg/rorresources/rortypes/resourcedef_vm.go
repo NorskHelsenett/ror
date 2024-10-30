@@ -39,7 +39,6 @@ type ResourceVirtualMachineConfig struct {
 	MemorySize       int    `json:"memorySize"`
 	CpuCount         int    `json:"cpuCount"`
 	VirtualDiskCount int    `json:"virtualDiskCount"`
-	Annotation       string `json:"annotation"`
 }
 
 type ResourceVirtualMachineRuntime struct {
@@ -50,7 +49,7 @@ type ResourceVirtualMachineRuntime struct {
 }
 
 type ResourceVirtualMachineTag struct {
-	Key         string `json:"key" bson:"key" yaml:"key"`
-	Value       string `json:"value" bson:"value" yaml:"value"`
-	Description string `json:"description" bson:"description" yaml:"description"`
+	Key         string `json:"key"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
 }
