@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/NorskHelsenett/ror/cmd/api/apiconnections"
-	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 	"net/http"
 	"time"
+
+	"github.com/NorskHelsenett/ror/cmd/api/apiconnections"
+	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/clients/mongodb"
@@ -59,7 +60,6 @@ func HandleResourceUpdate(ctx context.Context, resource *rorresources.Resource) 
 
 func NewOrUpdateResource(ctx context.Context, resource *rorresources.Resource) rorresources.ResourceUpdateResults {
 	ownerref := resource.GetRorMeta().Ownerref
-
 	// Access check
 	// Scope: input.Owner.Scope
 	// Subject: input.Owner.Subject

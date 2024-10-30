@@ -7,6 +7,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -119,6 +120,19 @@ func (rc MongodbCon) CountWithQuery(ctx context.Context, col string, query any) 
 	}(results, ctx)
 	returnvalue := results.RemainingBatchLength()
 	return returnvalue, nil
+}
+
+func (rc MongodbCon) GenerateHashQuery(owner rortypes.RorResourceOwnerReference) []bson.M {
+	query := make([]bson.M, 0)
+	match := bson.M{}
+	match["rormeta.ownerref"] = owner
+	query = append(query, bson.M{"$match": match})
+	project := bson.M{}
+	project["_id"] = 0
+	project["uid"] = "$uid"
+	project["hash"] = "$rormeta.hash"
+	query = append(query, bson.M{"$project": project})
+	return query
 }
 
 func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.ResourceQuery) []bson.M {

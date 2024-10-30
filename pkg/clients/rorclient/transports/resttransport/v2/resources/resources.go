@@ -66,7 +66,7 @@ func (c *V2Client) ExistsByUid(uid string) (bool, error) {
 
 func (c *V2Client) GetOwnHashes() (apicontractsv2resources.HashList, error) {
 	var hashList apicontractsv2resources.HashList
-	err := c.Client.GetJSON(c.basePath+"/self/hashes", &hashList)
+	err := c.Client.GetJSON(c.basePath+"/hashes", &hashList)
 	if err != nil {
 		return hashList, err
 	}

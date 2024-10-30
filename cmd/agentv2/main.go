@@ -1,13 +1,13 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+
 	"github.com/NorskHelsenett/ror/cmd/agentv2/agentconfig"
 	"github.com/NorskHelsenett/ror/cmd/agentv2/clients"
 	"github.com/NorskHelsenett/ror/cmd/agentv2/clients/dynamicclient"
-	"github.com/NorskHelsenett/ror/cmd/agentv2/scheduler"
 	"github.com/NorskHelsenett/ror/cmd/agentv2/services/resourceupdatev2"
-	"os"
-	"os/signal"
 
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 	"github.com/NorskHelsenett/ror/pkg/config/rorclientconfig"
@@ -45,7 +45,7 @@ func main() {
 
 	err := resourceupdatev2.ResourceCache.Init()
 	if err != nil {
-		rlog.Fatal("could not get hashlist for clusterid", err)
+		rlog.Fatal("could not init resource cache", err)
 	}
 
 	err = dynamicclient.Start(clients.Kubernetes, stop, sigs)
@@ -53,7 +53,8 @@ func main() {
 		rlog.Fatal("could not start dynamic client", err)
 	}
 
-	scheduler.SetUpScheduler()
+	// Metrics reporting is disabled for now
+	//scheduler.SetUpScheduler()
 
 	<-stop
 	rlog.Info("Shutting down...")

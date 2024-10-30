@@ -2,6 +2,7 @@ package resourceupdatev2
 
 import (
 	"fmt"
+
 	"github.com/NorskHelsenett/ror/cmd/agentv2/clients"
 	"github.com/NorskHelsenett/ror/cmd/agentv2/services/authservice"
 
@@ -43,8 +44,7 @@ func InitHashListv2() (*apicontractsv2resources.HashList, error) {
 	rorclient := clients.RorConfig.GetRorClient()
 	hashList, err := rorclient.ResourceV2().GetOwnHashes()
 	if err != nil {
-		fmt.Println("Error getting hashlist from api", err)
-		return nil, err
+		return nil, fmt.Errorf("error in InitHashListv2, error getting hashlist from api: %v", err)
 	}
 	return &hashList, nil
 

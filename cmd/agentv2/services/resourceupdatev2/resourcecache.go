@@ -2,9 +2,10 @@ package resourceupdatev2
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/NorskHelsenett/ror/cmd/agentv2/clients"
 	"github.com/NorskHelsenett/ror/cmd/agentv2/services/authservice"
-	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
@@ -25,7 +26,7 @@ type resourcecache struct {
 
 func (rc *resourcecache) Init() error {
 	var err error
-	rc.HashList, err = InitHashList()
+	rc.HashList, err = InitHashListv2()
 	if err != nil {
 		return err
 	}

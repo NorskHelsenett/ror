@@ -7,13 +7,16 @@ import (
 	"github.com/NorskHelsenett/ror/cmd/api/customvalidators"
 	"github.com/NorskHelsenett/ror/cmd/api/responses"
 	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
+	resourcesv2service "github.com/NorskHelsenett/ror/cmd/api/services/resourcesv2service"
 
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
+	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -104,23 +107,36 @@ func GetResourceHashList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := gincontext.GetRorContextFromGinContext(c)
 		defer cancel()
-		resourceOwner := apiresourcecontracts.ResourceOwnerReference{
-			Scope:   aclmodels.Acl2Scope(c.Query("ownerScope")),
-			Subject: c.Query("ownerSubject"),
-		}
+		identity := rorcontext.GetIdentityFromRorContext(ctx)
+		var resourceOwner rortypes.RorResourceOwnerReference
+		if identity.IsCluster() {
 
+			resourceOwner = rortypes.RorResourceOwnerReference{
+				Scope:   aclmodels.Acl2ScopeCluster,
+				Subject: aclmodels.Acl2Subject(identity.GetId()),
+			}
+
+		} else {
+			resourceOwner = rortypes.RorResourceOwnerReference{
+				Scope:   aclmodels.Acl2Scope(c.Query("ownerScope")),
+				Subject: aclmodels.Acl2Subject(c.Query("ownerSubject")),
+			}
+		}
+		if ok, err := resourceOwner.Validate(); !ok {
+			c.JSON(http.StatusBadRequest, responses.Cluster{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
 		// Access check
 		// Scope: c.Query("ownerScope")
 		// Subject: c.Query("ownerSubject")
 		// Access: update
-		accessQuery := aclmodels.NewAclV2QueryAccessScopeSubject(resourceOwner.Scope, resourceOwner.Subject)
-		accessObject := aclservice.CheckAccessByContextAclQuery(ctx, accessQuery)
+		accessObject := aclservice.CheckAccessByRorOwnerref(ctx, resourceOwner)
 		if !accessObject.Update {
 			c.JSON(http.StatusForbidden, "403: No access")
 			return
 		}
 
-		hashList, err := resourcesservice.ResourceGetHashlist(ctx, resourceOwner)
+		hashList, err := resourcesv2service.GetHashList(ctx, resourceOwner)
 		if err != nil {
 			rlog.Error("Error getting resource hash list:", err)
 			c.JSON(http.StatusInternalServerError, responses.Cluster{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
