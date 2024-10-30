@@ -66,14 +66,6 @@ export class ConfigService {
       },
     };
 
-    if (environment.production) {
-      config.auth.clientId = 'ror.sky.test.nhn.no';
-      config.auth.issuer = 'https://auth.sky.nhn.no/dex';
-      config.rorApi = 'https://ror.sky.nhn.no';
-      config.auth.requireHttps = true;
-      config.auth.strictDiscoveryDocumentValidation = true;
-    }
-
     return config;
   }
 }
