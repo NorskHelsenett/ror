@@ -7,6 +7,7 @@ import (
 	"github.com/NorskHelsenett/ror/cmd/api/customvalidators"
 	"github.com/NorskHelsenett/ror/cmd/api/responses"
 	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
+	"github.com/NorskHelsenett/ror/cmd/api/services/resourcesv2service"
 
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 
@@ -52,32 +53,45 @@ func ExistsResources() gin.HandlerFunc {
 		ctx, cancel := gincontext.GetRorContextFromGinContext(c)
 		defer cancel()
 
-		resourceOwner := apiresourcecontracts.ResourceOwnerReference{
-			Scope:   aclmodels.Acl2Scope(c.Query("ownerScope")),
-			Subject: c.Query("ownerSubject"),
+		if c.Param("uid") == "" {
+			c.JSON(http.StatusBadRequest, "empty uid")
+			return
 		}
 
-		if c.Param("uid") == "" {
-			c.JSON(http.StatusBadRequest, "")
+		resources := resourcesv2service.GetResourceByUID(ctx, c.Param("uid"))
+		if resources == nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
+
+		// Validate that the correct uid is provided
+		if len(resources.Resources) != 1 {
+			c.JSON(http.StatusNotImplemented, "501: Wrong number of resources found")
+			return
+		}
+
+		resource := resources.Resources[0]
+
+		if c.Param("uid") != resource.GetUID() {
+			c.JSON(http.StatusBadRequest, "400: Wrong resource found")
 			return
 		}
 
 		// Access check
-		// Scope: c.Query("ownerScope")
-		// Subject: c.Query("ownerSubject")
-		// Access: update
-		accessQuery := aclmodels.NewAclV2QueryAccessScopeSubject(resourceOwner.Scope, resourceOwner.Subject)
-		accessObject := aclservice.CheckAccessByContextAclQuery(ctx, accessQuery)
-		if !accessObject.Update {
-			c.JSON(http.StatusForbidden, "")
+		// Scope: input.Owner.Scope
+		// Subject: input.Owner.Subject
+		// Access: Read
+		accessModel := aclservice.CheckAccessByRorOwnerref(ctx, resource.GetRorMeta().Ownerref)
+		if !accessModel.Read {
+			c.JSON(http.StatusForbidden, "403: No access")
 			return
 		}
 
-		if resourcesservice.CheckResourceExist(ctx, c.Param("uid")) {
+		if resources.Len() == 1 {
 			c.Status(http.StatusNoContent)
 			return
 		} else {
-			c.JSON(http.StatusNotFound, "")
+			c.Status(http.StatusNotFound)
 			return
 		}
 	}

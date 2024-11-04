@@ -123,6 +123,49 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 	return nil
 }
 
+func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
+	req, err := http.NewRequest("DELETE", t.Config.BaseURL+path, nil)
+	if err != nil {
+		return err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	err = handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Head makes a HEAD request with the given path and params.
+// It returns only the header and status code from the result, as it expects no body in return.
+func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
+	req, err := http.NewRequest("HEAD", t.Config.BaseURL+path, nil)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return nil, -1, err
+	}
+	defer res.Body.Close()
+
+	return res.Header, res.StatusCode, nil
+}
+
 func handleResponse(res *http.Response, out any) error {
 
 	if res.StatusCode > 399 || res.StatusCode < 200 {
