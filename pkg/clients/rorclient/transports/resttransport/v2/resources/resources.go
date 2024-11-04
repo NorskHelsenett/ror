@@ -3,6 +3,9 @@ package resources
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
@@ -23,7 +26,6 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 }
 
 func (c *V2Client) Get(query rorresources.ResourceQuery) (rorresources.ResourceSet, error) {
-	// implementation goes here
 	var res rorresources.ResourceSet
 	jsonQuery, err := json.Marshal(&query)
 	if err != nil {
@@ -44,23 +46,37 @@ func (c *V2Client) Update(res *rorresources.ResourceSet) (*rorresources.Resource
 	return ret, nil
 }
 
-func (c *V2Client) GetByUid(uid string) (rorresources.ResourceSet, error) {
-	// implementation goes here
-	return rorresources.ResourceSet{}, nil
+func (c *V2Client) Delete(uid string) (*rorresources.ResourceUpdateResults, error) {
+	var out rorresources.ResourceUpdateResults
+
+	url, err := url.JoinPath(c.basePath, "uid", uid)
+	if err != nil {
+		return nil, fmt.Errorf("could not create url: %w", err)
+	}
+
+	err = c.Client.Delete(url, &out)
+	if err != nil {
+		return nil, err
+	}
+
+	return &out, nil
 }
 
-func (c *V2Client) UpdateByUid(uid string, res *rorresources.ResourceSet) (string, error) {
-	// implementation goes here
-	return "", nil
-}
+func (c *V2Client) Exists(uid string) (bool, error) {
+	url, err := url.JoinPath(c.basePath, "uid", uid)
+	if err != nil {
+		return false, fmt.Errorf("could not create url: %w", err)
+	}
 
-func (c *V2Client) DeleteByUid(uid string) (string, error) {
-	// implementation goes here
-	return "", nil
-}
+	_, status, err := c.Client.Head(url)
+	if err != nil {
+		return false, err
+	}
 
-func (c *V2Client) ExistsByUid(uid string) (bool, error) {
-	// implementation goes here
+	if status == http.StatusNoContent {
+		return true, nil
+	}
+
 	return false, nil
 }
 

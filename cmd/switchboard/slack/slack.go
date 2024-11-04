@@ -1,6 +1,8 @@
 package slack
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/cmd/switchboard/ror"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
@@ -28,7 +30,7 @@ func CreateSlackMessage(channel, message string, owner rortypes.RorResourceOwner
 	rs := rorresources.NewResourceSet()
 	rs.Add(r)
 
-	_, err := ror.Client.ResourceV2().Update(rs)
+	_, err := ror.Client.ResourceV2().Update(context.Background(), *rs)
 	if err != nil {
 		return err
 	}

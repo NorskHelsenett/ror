@@ -1,10 +1,12 @@
 package resourceupdatev2
 
 import (
+	"context"
 	"fmt"
+	"time"
+
 	"github.com/NorskHelsenett/ror/cmd/agentv2/clients"
 	"github.com/NorskHelsenett/ror/cmd/agentv2/services/authservice"
-	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
@@ -104,7 +106,7 @@ func (rc *resourcecache) RunWorkQeue() {
 	}
 	cacheworkqueue := rc.WorkQueue.ConsumeWorkQeue()
 	rorclient := clients.RorConfig.GetRorClient()
-	status, err := rorclient.ResourceV2().Update(cacheworkqueue.ResourceSet)
+	status, err := rorclient.ResourceV2().Update(context.Background(), *cacheworkqueue.ResourceSet)
 	if err != nil {
 		rlog.Error("error sending resources update to ror, added to retryQeue", err)
 		rc.WorkQueue.reQueue(cacheworkqueue)

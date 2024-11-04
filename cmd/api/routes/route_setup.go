@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/NorskHelsenett/ror/cmd/api/auth"
 	ctrlAcl "github.com/NorskHelsenett/ror/cmd/api/controllers/acl"
 	ctrlApikeys "github.com/NorskHelsenett/ror/cmd/api/controllers/apikeys"
@@ -25,7 +27,6 @@ import (
 	ctrlUsers "github.com/NorskHelsenett/ror/cmd/api/controllers/users"
 	v2resourcescontroller "github.com/NorskHelsenett/ror/cmd/api/controllers/v2/resourcescontroller"
 	ctrlWorkspaces "github.com/NorskHelsenett/ror/cmd/api/controllers/workspaces"
-	"time"
 
 	"github.com/NorskHelsenett/ror/cmd/api/controllers/v2/handlerv2self"
 	"github.com/NorskHelsenett/ror/cmd/api/webserver/middlewares"
@@ -330,9 +331,11 @@ func SetupRoutes(router *gin.Engine) {
 
 	resourceRoute.GET("", v2resourcescontroller.GetResources())
 	resourceRoute.POST("", v2resourcescontroller.NewResource())
-	resourceRoute.GET("/uid/:uid", v2resourcescontroller.GetResource())
-	resourceRoute.PUT("/uid/:uid", v2resourcescontroller.UpdateResource())
 	resourceRoute.DELETE("/uid/:uid", v2resourcescontroller.DeleteResource())
 	resourceRoute.HEAD("/uid/:uid", v2resourcescontroller.ExistsResources())
 	resourceRoute.GET("/hashes", v2resourcescontroller.GetResourceHashList())
+
+	//deprecated: let client deal with special cases
+	resourceRoute.GET("/uid/:uid", v2resourcescontroller.GetResource())
+	resourceRoute.PUT("/uid/:uid", v2resourcescontroller.UpdateResource())
 }
