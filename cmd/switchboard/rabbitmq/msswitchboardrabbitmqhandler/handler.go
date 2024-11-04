@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/NorskHelsenett/ror/cmd/switchboard/rabbitmq/msswitchboardrabbitmqdefinitions"
 	"github.com/NorskHelsenett/ror/cmd/switchboard/ror"
 	"github.com/NorskHelsenett/ror/cmd/switchboard/slack"
@@ -97,7 +98,7 @@ func getRoutes(owner rortypes.RorResourceOwnerReference) ([]rortypes.ResourceRou
 	query.VersionKind.Version = "general.ror.internal/v1alpha1"
 	query.OwnerRefs = make([]rortypes.RorResourceOwnerReference, 0)
 	query.OwnerRefs = append(query.OwnerRefs, owner)
-	resourceSet, err := ror.Client.ResourceV2().Get(*query)
+	resourceSet, err := ror.Client.ResourceV2().Get(context.Background(), *query)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +117,7 @@ func getVulnerabilityEvent(uid string, owner rortypes.RorResourceOwnerReference)
 	query.OwnerRefs = make([]rortypes.RorResourceOwnerReference, 0)
 	query.OwnerRefs = append(query.OwnerRefs, owner)
 	query.WithUID(uid)
-	resourceSet, err := ror.Client.ResourceV2().Get(*query)
+	resourceSet, err := ror.Client.ResourceV2().Get(context.Background(), *query)
 	if err != nil {
 		return nil, err
 	}

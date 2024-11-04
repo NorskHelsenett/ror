@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/NorskHelsenett/ror/cmd/slack/rabbitmq/msslackrabbitmqdefinitions"
 	"github.com/NorskHelsenett/ror/cmd/slack/ror"
 	"github.com/NorskHelsenett/ror/cmd/slack/slackconnections"
@@ -85,7 +86,7 @@ func getSlackMessage(uid string, owner rortypes.RorResourceOwnerReference) (*ror
 	query.OwnerRefs = make([]rortypes.RorResourceOwnerReference, 0)
 	query.OwnerRefs = append(query.OwnerRefs, owner)
 	query.WithUID(uid)
-	resourceSet, err := ror.Client.ResourceV2().Get(*query)
+	resourceSet, err := ror.Client.ResourceV2().Get(context.Background(), *query)
 	if err != nil {
 		return nil, err
 	}
