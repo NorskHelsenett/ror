@@ -8,7 +8,7 @@ export class ResourcesV2QueryService {
   private query: ResourceQuery | undefined;
 
   getQuery(): ResourceQuery {
-    return this.query;
+    return this.query ?? new ResourceQuery();
   }
 
   setQuery(query: ResourceQuery): void {

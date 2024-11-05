@@ -1,8 +1,8 @@
 import { ResourceQuery } from './../../../core/models/resource-query';
-import { catchError, finalize, Observable, share } from 'rxjs';
+import { catchError, delay, finalize, map, Observable, share } from 'rxjs';
 import { Component, OnInit, ChangeDetectorRef, inject, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Resourcesv2Service } from '../../../core/services/resourcesv2.service';
-import { ResourceSet } from '../../../core/models/resources-v2';
+import { Resource, ResourceSet } from '../../../core/models/resources-v2';
 import { SharedModule } from '../../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -45,7 +45,9 @@ export class ResourcesV2ListComponent implements OnInit {
   });
 
   loading = false;
+  showLoadMore = true;
 
+  resources: Resource[] = [];
   resourceSet$: Observable<ResourceSet> | undefined = undefined;
   resourceSetFetchError: any;
   matchModeOptions: any[] = [
@@ -76,13 +78,25 @@ export class ResourcesV2ListComponent implements OnInit {
 
   ngOnInit() {
     this.rows = this.configService.config.rows;
-    this, (this.rowsPerPage = this.configService.config.rowsPerPage);
-    this.fetchResourceSet();
+    this.rowsPerPage = this.configService.config.rowsPerPage;
     this.fetchAcl();
   }
 
   refreshData() {
     this.resourceQuery = this.resourcesV2QueryService.getQuery();
+    this.resourceQuery.limit = this.resources?.length;
+    this.resourceQuery.offset = 0;
+    this.resources = [];
+    this.fetchResourceSet();
+    this.changeDetector.detectChanges();
+  }
+
+  filterChanged(event: any) {
+    this.showLoadMore = true;
+    this.resourceQuery = this.resourcesV2QueryService.getQuery();
+    this.resourceQuery.limit = this.rows;
+    this.resourceQuery.offset = 0;
+    this.resources = [];
     this.fetchResourceSet();
     this.changeDetector.detectChanges();
   }
@@ -111,6 +125,30 @@ export class ResourcesV2ListComponent implements OnInit {
   selectedRowsChange(event: any) {
     console.log('rows event: ', event);
     this.rows = event?.value;
+    this.resources = [];
+    this.fetchResourceSet();
+    this.changeDetector.detectChanges();
+  }
+
+  loadLazy(event: any) {
+    this.resourceQuery.offset = event.first;
+    this.resourceQuery.limit = event.rows;
+    this.fetchResourceSet();
+    this.changeDetector.detectChanges();
+  }
+
+  loadMore(): void {
+    this.resourceQuery.offset = this.resources?.length;
+    this.fetchResourceSet();
+    this.changeDetector.detectChanges();
+  }
+
+  reset(): void {
+    this.resourceQuery = new ResourceQuery({
+      limit: this.rows,
+    });
+    this.resourceQuery.offset = 0;
+    this.resources = [];
     this.fetchResourceSet();
     this.changeDetector.detectChanges();
   }
@@ -131,9 +169,24 @@ export class ResourcesV2ListComponent implements OnInit {
       });
     }
     this.resourceQuery.fields = this.getQueryFields(this.columnDefinitions);
-    this.resourceQuery.limit = this.rows;
+    if (!this.resourceQuery.limit) {
+      this.resourceQuery.limit = this.rows;
+    }
     this.resourceSet$ = this.resourcesv2Service.getResources(this.resourceQuery).pipe(
       share(),
+      map((resourceSet: ResourceSet) => {
+        if (!resourceSet) {
+          this.showLoadMore = false;
+        } else if (resourceSet.resources.length < this.resourceQuery.limit) {
+          this.resources = [...this.resources, ...resourceSet?.resources];
+          this.showLoadMore = false;
+        } else {
+          this.resources = [...this.resources, ...resourceSet?.resources];
+        }
+
+        this.changeDetector.detectChanges();
+        return resourceSet;
+      }),
       catchError((error: any) => {
         this.resourceSetFetchError = error;
         this.changeDetector.detectChanges();

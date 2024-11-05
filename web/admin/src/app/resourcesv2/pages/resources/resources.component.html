@@ -10,7 +10,8 @@
           class="flex-grow"
           [clusters]="(clusters$ | async)?.data"
           [resourceTypes]="resourceTypes"
-          (filterChange)="resourcesTable.refreshData()"
+          (filterChange)="resourcesTable.filterChanged($event)"
+          (reset)="resourcesTable.reset()"
         ></app-resourcesv2-filter>
         <button
           (click)="resourcesTable.refreshData()"

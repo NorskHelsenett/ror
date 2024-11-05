@@ -1,7 +1,9 @@
+<div *ngIf="resourceSet$ | async"></div>
+<!-- <div>{{ resources?.length }}</div> -->
 <div>
   <p-table
     [columns]="selectedColumns"
-    [value]="(resourceSet$ | async)?.resources"
+    [value]="resources"
     responsiveLayout="scroll"
     #resourcesTable
     [rowHover]="true"
@@ -9,6 +11,11 @@
     [loading]="loading"
     loadingIcon="pi pi-spinner"
     [rows]="rows"
+    [scrollable]="true"
+    [lazy]="true"
+    scrollHeight="flex"
+    dataKey="metadata.uid"
+    (onLazyLoad)="loadLazy($event)"
     [showCurrentPageReport]="false"
     currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
       'common.of' | translate | lowercase
@@ -16,7 +23,7 @@
   >
     <ng-template pTemplate="caption">
       <ng-content select="[filter]"></ng-content>
-      <div class="xs:flex-none sm:flex sm:justify-between" *ngIf="(resourceSet$ | async)?.resources">
+      <div class="xs:flex-none sm:flex sm:justify-between">
         <p-multiSelect
           [options]="columnDefinitions"
           [(ngModel)]="selectedColumns"
@@ -73,13 +80,28 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-resource let-columns="columns">
-      <tr>
-        <td *ngFor="let col of columns">
+      <tr class="h-10">
+        <td *ngFor="let col of columns" class="h-10">
           @if (col?.header === 'Name' && (adminCreate$ | async) == true) {
             <span class="cursor-pointer hover:underline" (click)="setSelectedResource(resource)">{{ extractData(resource, col.field) }}</span>
           } @else {
             <ng-container>{{ extractData(resource, col.field) }}</ng-container>
           }
+        </td>
+        <td *ngIf="resource" class="w-40 h-10">
+          <a
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+            (click)="setSelectedResource(resource)"
+          >
+            {{ 'common.details' | translate }}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody" let-columns="columns">
+      <tr style="height: 46px">
+        <td *ngFor="let col of columns; let even = even">
+          <p-skeleton [ngStyle]="{ width: even ? (col.field === 'year' ? '30%' : '40%') : '60%' }" />
         </td>
       </tr>
     </ng-template>
@@ -94,6 +116,8 @@
     <ng-template pTemplate="summary">
       <div class="text-center">
         <button
+          *ngIf="showLoadMore"
+          (click)="loadMore()"
           class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
         >
           {{ 'common.loadMore' | translate }}
@@ -102,3 +126,7 @@
     </ng-template>
   </p-table>
 </div>
+
+<!-- <div>{{ resources?.length }}</div> -->
+
+<!-- <pre>{{ resources | json }}</pre> -->

@@ -26,6 +26,7 @@ export class Resourcesv2FilterComponent {
   showClusterDropdown = false;
 
   @Output() filterChange = new EventEmitter<ResourceQuery>();
+  @Output() reset = new EventEmitter<void>();
 
   private resourcesV2QueryService = inject(ResourcesV2QueryService);
 
@@ -54,7 +55,6 @@ export class Resourcesv2FilterComponent {
 
   selectedClusterIdChange(event: any): void {
     this.selectedCluster = event?.value;
-
     var filterchange = {
       ownerrefs: {
         subject: this.selectedCluster?.clusterId,
@@ -68,7 +68,7 @@ export class Resourcesv2FilterComponent {
     this.selectedCluster = undefined;
     this.showClusterDropdown = false;
     this.resourcesV2QueryService.clearQuery();
-    this.filterChange.emit(null);
+    this.reset.emit();
   }
 
   private updateAndNotify(query: any): void {
