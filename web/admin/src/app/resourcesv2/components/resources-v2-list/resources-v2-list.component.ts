@@ -168,7 +168,7 @@ export class ResourcesV2ListComponent implements OnInit {
     this.resourceSet$ = this.resourcesv2Service.getResources(this.resourceQuery).pipe(
       share(),
       map((resourceSet: ResourceSet) => {
-        if (!resourceSet) {
+        if (!resourceSet || !resourceSet.resources) {
           this.showLoadMore = false;
         } else if (resourceSet.resources.length < this.resourceQuery.limit) {
           this.resources = [...this.resources, ...resourceSet?.resources];

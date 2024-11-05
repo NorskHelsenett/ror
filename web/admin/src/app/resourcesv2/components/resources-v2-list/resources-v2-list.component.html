@@ -36,7 +36,7 @@
           emptyFilterMessage="{{ 'common.table.noColumnsFilter' | translate }}"
         ></p-multiSelect>
 
-        <div></div>
+        <div class="flex-grow"></div>
         <!-- <div class="flex">
           <input
             #resourceSearch
@@ -48,7 +48,7 @@
           <button class="ml-2" (click)="resourcesTable.clear()">{{ 'common.reset' | translate }}</button>
         </div> -->
 
-        <div>
+        <div class="mr-2">
           <p-dropdown [options]="rowsPerPage" [(ngModel)]="rows" (onChange)="selectedRowsChange($event)">
             <ng-template let-row pTemplate="item">
               <div class="flex align-items-center gap-2">
@@ -57,7 +57,7 @@
             </ng-template>
           </p-dropdown>
         </div>
-        <app-export-button class="md:justify-self-end" [exportObjects]="export()" [filename]="'resources'"></app-export-button>
+        <app-export-button class="md:justify-self-end mt-1" [exportObjects]="export()" [filename]="'resources'"></app-export-button>
       </div>
     </ng-template>
     <ng-template pTemplate="header" let-columns>
