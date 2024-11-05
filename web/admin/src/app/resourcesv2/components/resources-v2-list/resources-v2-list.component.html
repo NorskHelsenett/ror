@@ -36,7 +36,8 @@
           emptyFilterMessage="{{ 'common.table.noColumnsFilter' | translate }}"
         ></p-multiSelect>
 
-        <div class="flex">
+        <div></div>
+        <!-- <div class="flex">
           <input
             #resourceSearch
             class="rounded-lg"
@@ -45,7 +46,7 @@
             (input)="resourcesTable.filterGlobal(resourceSearch.value, 'contains')"
           />
           <button class="ml-2" (click)="resourcesTable.clear()">{{ 'common.reset' | translate }}</button>
-        </div>
+        </div> -->
 
         <div>
           <p-dropdown [options]="rowsPerPage" [(ngModel)]="rows" (onChange)="selectedRowsChange($event)">

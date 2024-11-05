@@ -123,10 +123,8 @@ export class ResourcesV2ListComponent implements OnInit {
   }
 
   selectedRowsChange(event: any) {
-    console.log('rows event: ', event);
     this.rows = event?.value;
-    this.resources = [];
-    this.fetchResourceSet();
+    this.reset();
     this.changeDetector.detectChanges();
   }
 
@@ -163,11 +161,6 @@ export class ResourcesV2ListComponent implements OnInit {
       this.resourceQuery?.versionkind?.Kind,
     );
     this.selectedColumns = this.columnDefinitions.filter((column) => column.enabled);
-    if (this.resourceQuery === undefined) {
-      this.resourceQuery = new ResourceQuery({
-        limit: this.rows,
-      });
-    }
     this.resourceQuery.fields = this.getQueryFields(this.columnDefinitions);
     if (!this.resourceQuery.limit) {
       this.resourceQuery.limit = this.rows;
