@@ -1310,7 +1310,10 @@
       }
     },
     "resourcesv2": {
-      "title": "Ressurser"
+      "title": "Ressurser",
+      "list": {
+        "fetchCount": "Hentet {{count}} ressurser"
+      }
     },
     "workspaces": {
       "title": "Arbeidsområder",

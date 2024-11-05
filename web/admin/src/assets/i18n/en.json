@@ -1319,7 +1319,10 @@
       }
     },
     "resourcesv2": {
-      "title": "Resources"
+      "title": "Resources",
+      "list": {
+        "fetchCount": "Fetched {{count}} resources"
+      }
     },
     "workspaces": {
       "title": "Workspaces",

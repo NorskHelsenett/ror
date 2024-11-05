@@ -115,6 +115,10 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="summary">
+      <div class="text-center flex">
+        <span class="text-pretty">{{ 'pages.resourcesv2.list.fetchCount' | translate: { count: resources?.length } }}</span>
+      </div>
+
       <div class="text-center">
         <button
           *ngIf="showLoadMore"
