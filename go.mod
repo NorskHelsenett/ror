@@ -43,7 +43,7 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.3
-	github.com/tkrajina/typescriptify-golang-structs v0.1.11
+	github.com/tkrajina/typescriptify-golang-structs v0.2.0
 	go.mongodb.org/mongo-driver v1.17.1
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.56.0
 	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.56.0
