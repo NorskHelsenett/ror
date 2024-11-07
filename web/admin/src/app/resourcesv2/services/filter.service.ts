@@ -2,18 +2,19 @@ import { Injectable } from '@angular/core';
 
 import { ResourceQueryFilter } from '../../core/models/resource-query';
 import { ColumnDefinition } from '../../resources/models/columnDefinition';
+import { LazyLoadEvent } from 'primeng/api';
+import { ResourceQueryOrder } from '../../core/models/resources-v2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FilterService {
-  getFilters(event: any, columnDefinitions: ColumnDefinition[]): any {
-    if (!event || !event.filters || event.filters.length === 0) {
+  getFilters(event: LazyLoadEvent, columnDefinitions: ColumnDefinition[]): any {
+    if (!event || !event.filters) {
       return;
     }
 
     let filters: ResourceQueryFilter[] = [];
-
     Object.entries(event?.filters).forEach((entry: any) => {
       let value = entry[1]?.value;
       if (!value) {
@@ -48,6 +49,41 @@ export class FilterService {
     });
 
     return filters;
+  }
+
+  getOrder(event: LazyLoadEvent, columnDefinitions: ColumnDefinition[]): ResourceQueryOrder[] {
+    if (!event) {
+      return [];
+    }
+    let order: ResourceQueryOrder[] = [];
+
+    if (!event?.multiSortMeta) {
+      return order;
+    }
+
+    let count = 1;
+    event?.multiSortMeta.forEach((entry: any) => {
+      console.log('entry', entry);
+      let searchField = '';
+      let field = String(entry?.field)?.toLowerCase();
+      if (field === 'apiversion') {
+        field = 'apiVersion';
+        searchField = 'typemeta.apiversion';
+      } else if (field === 'kind') {
+        searchField = 'typemeta.kind';
+      } else {
+        searchField = field;
+      }
+
+      order.push({
+        field: searchField,
+        descending: entry?.order === 1 ? true : false,
+        index: count,
+      });
+      count++;
+    });
+
+    return order;
   }
 
   private getOperator(matchMode: string) {

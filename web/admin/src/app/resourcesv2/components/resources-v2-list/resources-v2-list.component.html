@@ -17,6 +17,7 @@
     dataKey="metadata.uid"
     (onLazyLoad)="loadLazy($event)"
     [showCurrentPageReport]="false"
+    sortMode="multiple"
     currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
       'common.of' | translate | lowercase
     }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"

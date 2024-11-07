@@ -172,8 +172,11 @@ export class ResourcesV2ListComponent implements OnInit {
       this.lastLazyEvent = event;
 
       const filters = this.filterService.getFilters(event, this.columnDefinitions);
+      const order = this.filterService.getOrder(event, this.columnDefinitions);
       console.log('filters', JSON.stringify(filters, null, 2));
+      console.log('order', JSON.stringify(order, null, 2));
       this.resourceQuery.filters = filters;
+      this.resourceQuery.order = order;
       this.resources = [];
     }
 
