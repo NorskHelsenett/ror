@@ -18,6 +18,8 @@ import { RouterLink } from '@angular/router';
 import { AclService } from '../../../core/services/acl.service';
 import { AclAccess, AclScopes } from '../../../core/models/acl-scopes';
 import { DropdownModule } from 'primeng/dropdown';
+import { FilterService } from '../../services/filter.service';
+import { ColumnDefinition } from '../../../resources/models/columnDefinition';
 
 @Component({
   selector: 'app-resources-v2-list',
@@ -50,7 +52,7 @@ export class ResourcesV2ListComponent implements OnInit {
   resources: Resource[] = [];
   resourceSet$: Observable<ResourceSet> | undefined = undefined;
   resourceSetFetchError: any;
-  matchModeOptions: any[] = [
+  matchModeOptionsString: any[] = [
     {
       label: 'Contains',
       value: FilterMatchMode.CONTAINS,
@@ -59,12 +61,48 @@ export class ResourcesV2ListComponent implements OnInit {
       label: 'Equals',
       value: FilterMatchMode.EQUALS,
     },
+    {
+      label: 'Not equals',
+      value: FilterMatchMode.NOT_EQUALS,
+    },
+  ];
+
+  matchModeOptionsInt: any[] = [
+    {
+      label: 'Equal',
+      value: FilterMatchMode.EQUALS,
+    },
+    {
+      label: 'Greater than',
+      value: FilterMatchMode.GREATER_THAN,
+    },
+    {
+      label: 'Less than',
+      value: FilterMatchMode.LESS_THAN,
+    },
+    {
+      label: 'Grather than or equal to',
+      value: FilterMatchMode.GREATER_THAN_OR_EQUAL_TO,
+    },
+    {
+      label: 'Less than or equal to',
+      value: FilterMatchMode.LESS_THAN_OR_EQUAL_TO,
+    },
+  ];
+
+  matchModeOptionsBool: any[] = [
+    {
+      label: 'Equal',
+      value: FilterMatchMode.EQUALS,
+    },
   ];
 
   selectedColumns: any[] = [];
   rows = 10;
   rowsPerPage = [5, 10, 25, 50, 100];
-  columnDefinitions: any[] = [];
+  columnDefinitions: ColumnDefinition[] = [];
+
+  lastLazyEvent: any;
 
   private changeDetector = inject(ChangeDetectorRef);
   private resourcesv2Service = inject(Resourcesv2Service);
@@ -72,6 +110,7 @@ export class ResourcesV2ListComponent implements OnInit {
   private configService = inject(ConfigService);
   private resourcesV2QueryService = inject(ResourcesV2QueryService);
   private aclService = inject(AclService);
+  private filterService = inject(FilterService);
 
   adminCreate$: Observable<boolean> | undefined;
   aclFetchError: any;
@@ -129,8 +168,18 @@ export class ResourcesV2ListComponent implements OnInit {
   }
 
   loadLazy(event: any) {
-    this.resourceQuery.offset = event.first;
-    this.resourceQuery.limit = event.rows;
+    if (event) {
+      this.lastLazyEvent = event;
+
+      const filters = this.filterService.getFilters(event, this.columnDefinitions);
+      console.log('filters', JSON.stringify(filters, null, 2));
+      this.resourceQuery.filters = filters;
+      this.resources = [];
+    }
+
+    this.resourceQuery.offset = this.lastLazyEvent?.first;
+    this.resourceQuery.limit = this.lastLazyEvent?.rows;
+
     this.fetchResourceSet();
     this.changeDetector.detectChanges();
   }

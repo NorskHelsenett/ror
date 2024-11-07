@@ -399,7 +399,7 @@
           "active": "Active",
           "inactive": "Inactive",
           "servicetags": "Service tags",
-          "clusterInfo": "Clusters that is connected to this project",
+          "clusterInfo": "Clusters that are connected to this project",
           "table": {
             "clusterName": "Cluster name",
             "description": "Description",

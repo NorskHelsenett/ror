@@ -70,13 +70,41 @@
       </tr>
       <tr>
         <th *ngFor="let col of columns" class="p-1">
-          <p-columnFilter
-            [type]="col.type"
-            [field]="col.field"
-            matchMode="contains"
-            [showMenu]="true"
-            [matchModeOptions]="matchModeOptions"
-          ></p-columnFilter>
+          <ng-container [ngSwitch]="col.type">
+            <p-columnFilter
+              *ngSwitchCase="'text'"
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsString"
+            >
+            </p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'numeric'"
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsInt"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'boolean'"
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsBool"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchDefault
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsBool"
+            ></p-columnFilter>
+          </ng-container>
         </th>
       </tr>
     </ng-template>
