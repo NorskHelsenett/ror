@@ -18,6 +18,7 @@
     (onLazyLoad)="loadLazy($event)"
     [showCurrentPageReport]="false"
     sortMode="multiple"
+    [multiSortMeta]="[{ field: 'metadata.name', order: 1 }]"
     currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
       'common.of' | translate | lowercase
     }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"

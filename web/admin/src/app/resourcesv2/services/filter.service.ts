@@ -77,7 +77,7 @@ export class FilterService {
 
       order.push({
         field: searchField,
-        descending: entry?.order === 1 ? true : false,
+        descending: entry?.order === 1 ? false : true,
         index: count,
       });
       count++;

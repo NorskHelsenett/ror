@@ -1,5 +1,5 @@
 import { ResourceQuery } from './../../../core/models/resource-query';
-import { catchError, delay, finalize, map, Observable, share } from 'rxjs';
+import { catchError, finalize, map, Observable, share } from 'rxjs';
 import { Component, OnInit, ChangeDetectorRef, inject, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { Resourcesv2Service } from '../../../core/services/resourcesv2.service';
 import { Resource, ResourceSet } from '../../../core/models/resources-v2';
@@ -11,10 +11,8 @@ import { ConfigService } from '../../../core/services/config.service';
 import { FilterMatchMode } from 'primeng/api';
 import { ColumnFactoryService } from '../../services/column-factory.service';
 import { ResourcesV2QueryService } from '../../services/resources-v2-query.service';
-import { Resourcesv2FilterComponent } from '../resourcesv2-filter/resourcesv2-filter.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { AclService } from '../../../core/services/acl.service';
 import { AclAccess, AclScopes } from '../../../core/models/acl-scopes';
 import { DropdownModule } from 'primeng/dropdown';
@@ -24,17 +22,7 @@ import { ColumnDefinition } from '../../../resources/models/columnDefinition';
 @Component({
   selector: 'app-resources-v2-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslateModule,
-    SharedModule,
-    TableModule,
-    Resourcesv2FilterComponent,
-    MultiSelectModule,
-    FormsModule,
-    RouterLink,
-    DropdownModule,
-  ],
+  imports: [CommonModule, TranslateModule, SharedModule, TableModule, MultiSelectModule, FormsModule, DropdownModule],
   templateUrl: './resources-v2-list.component.html',
   styleUrl: './resources-v2-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +32,11 @@ export class ResourcesV2ListComponent implements OnInit {
 
   resourceQuery = new ResourceQuery({
     limit: 10,
+    order: {
+      field: 'metadata.name',
+      descending: true,
+      index: 0,
+    },
   });
 
   loading = false;
@@ -170,15 +163,9 @@ export class ResourcesV2ListComponent implements OnInit {
   loadLazy(event: any) {
     if (event) {
       this.lastLazyEvent = event;
-
-      const filters = this.filterService.getFilters(event, this.columnDefinitions);
-      const order = this.filterService.getOrder(event, this.columnDefinitions);
-      console.log('filters', JSON.stringify(filters, null, 2));
-      console.log('order', JSON.stringify(order, null, 2));
-      this.resourceQuery.filters = filters;
-      this.resourceQuery.order = order;
       this.resources = [];
     }
+    this.resourceQuery = this.resourcesV2QueryService.getQuery();
 
     this.resourceQuery.offset = this.lastLazyEvent?.first;
     this.resourceQuery.limit = this.lastLazyEvent?.rows;
@@ -194,9 +181,8 @@ export class ResourcesV2ListComponent implements OnInit {
   }
 
   reset(): void {
-    this.resourceQuery = new ResourceQuery({
-      limit: this.rows,
-    });
+    this.resourceQuery = this.resourcesV2QueryService.getQuery();
+    this.resourceQuery.limit = this.rows;
     this.resourceQuery.offset = 0;
     this.resources = [];
     this.fetchResourceSet();
@@ -217,6 +203,12 @@ export class ResourcesV2ListComponent implements OnInit {
     if (!this.resourceQuery.limit) {
       this.resourceQuery.limit = this.rows;
     }
+
+    const filters = this.filterService.getFilters(this.lastLazyEvent, this.columnDefinitions);
+    const order = this.filterService.getOrder(this.lastLazyEvent, this.columnDefinitions);
+    this.resourceQuery.filters = filters;
+    this.resourceQuery.order = order;
+
     this.resourceSet$ = this.resourcesv2Service.getResources(this.resourceQuery).pipe(
       share(),
       map((resourceSet: ResourceSet) => {
