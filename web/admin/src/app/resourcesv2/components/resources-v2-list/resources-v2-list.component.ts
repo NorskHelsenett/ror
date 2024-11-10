@@ -1,6 +1,6 @@
 import { ResourceQuery } from './../../../core/models/resource-query';
 import { catchError, finalize, map, Observable, share } from 'rxjs';
-import { Component, OnInit, ChangeDetectorRef, inject, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, ChangeDetectionStrategy, Output, EventEmitter, Input } from '@angular/core';
 import { Resourcesv2Service } from '../../../core/services/resourcesv2.service';
 import { Resource, ResourceSet } from '../../../core/models/resources-v2';
 import { SharedModule } from '../../../shared/shared.module';
@@ -28,6 +28,7 @@ import { ColumnDefinition } from '../../../resources/models/columnDefinition';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourcesV2ListComponent implements OnInit {
+  @Input() clusterId: string | undefined;
   @Output() resourceSelected = new EventEmitter<any>();
 
   resourceQuery = new ResourceQuery({
@@ -194,9 +195,14 @@ export class ResourcesV2ListComponent implements OnInit {
     this.resourceSet$ = undefined;
     this.resourceSetFetchError = undefined;
 
+    let showOwner = true;
+    if (this.clusterId) {
+      showOwner = false;
+    }
     this.columnDefinitions = this.columnFactoryService.getColumnDefinitions(
       this.resourceQuery?.versionkind?.Version,
       this.resourceQuery?.versionkind?.Kind,
+      showOwner,
     );
     this.selectedColumns = this.columnDefinitions.filter((column) => column.enabled);
     this.resourceQuery.fields = this.getQueryFields(this.columnDefinitions);
@@ -208,6 +214,15 @@ export class ResourcesV2ListComponent implements OnInit {
     const order = this.filterService.getOrder(this.lastLazyEvent, this.columnDefinitions);
     this.resourceQuery.filters = filters;
     this.resourceQuery.order = order;
+
+    if (this.clusterId) {
+      this.resourceQuery.filters.push({
+        field: 'rormeta.ownerref.subject',
+        value: this.clusterId,
+        operator: 'eq',
+        type: 'string',
+      });
+    }
 
     this.resourceSet$ = this.resourcesv2Service.getResources(this.resourceQuery).pipe(
       share(),

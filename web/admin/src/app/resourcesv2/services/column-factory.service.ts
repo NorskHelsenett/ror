@@ -5,7 +5,7 @@ import { ColumnDefinition } from '../../resources/models/columnDefinition';
   providedIn: 'root',
 })
 export class ColumnFactoryService {
-  getColumnDefinitions(apiVersion: string, kind: string): ColumnDefinition[] {
+  getColumnDefinitions(apiVersion: string, kind: string, showOwner: boolean = true): ColumnDefinition[] {
     let columns: ColumnDefinition[] = [];
 
     if (!kind || !apiVersion) {
@@ -101,7 +101,7 @@ export class ColumnFactoryService {
       columns = this.getVulnerabilityReport();
     }
 
-    columns = this.postProcessColumnDefinitions(kind, apiVersion, columns);
+    columns = this.postProcessColumnDefinitions(kind, apiVersion, columns, showOwner);
     return columns;
   }
   getRORVirtualMachines(): ColumnDefinition[] {
@@ -800,7 +800,7 @@ export class ColumnFactoryService {
     ];
   }
 
-  private postProcessColumnDefinitions(kind: string, apiVersion: string, columns: ColumnDefinition[]): ColumnDefinition[] {
+  private postProcessColumnDefinitions(kind: string, apiVersion: string, columns: ColumnDefinition[], showOwner: boolean = true): ColumnDefinition[] {
     columns.unshift({
       field: 'metadata.name',
       header: 'Name',
@@ -808,12 +808,14 @@ export class ColumnFactoryService {
       enabled: true,
     });
 
-    columns.push({
-      field: 'rormeta.ownerref.subject',
-      header: 'Owner',
-      type: 'text',
-      enabled: true,
-    });
+    if (showOwner) {
+      columns.push({
+        field: 'rormeta.ownerref.subject',
+        header: 'Owner',
+        type: 'text',
+        enabled: true,
+      });
+    }
 
     return columns;
   }
