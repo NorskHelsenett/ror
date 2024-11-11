@@ -1,5 +1,4 @@
 <div *ngIf="resourceSet$ | async"></div>
-<!-- <div>{{ resources?.length }}</div> -->
 <div>
   <p-table
     [columns]="selectedColumns"
@@ -39,16 +38,6 @@
         ></p-multiSelect>
 
         <div class="flex-grow"></div>
-        <!-- <div class="flex">
-          <input
-            #resourceSearch
-            class="rounded-lg"
-            type="text"
-            placeholder="{{ 'common.search' | translate }}"
-            (input)="resourcesTable.filterGlobal(resourceSearch.value, 'contains')"
-          />
-          <button class="ml-2" (click)="resourcesTable.clear()">{{ 'common.reset' | translate }}</button>
-        </div> -->
 
         <div class="mr-2">
           <p-dropdown [options]="rowsPerPage" [(ngModel)]="rows" (onChange)="selectedRowsChange($event)">
@@ -161,7 +150,3 @@
     </ng-template>
   </p-table>
 </div>
-
-<!-- <div>{{ resources?.length }}</div> -->
-
-<!-- <pre>{{ resources | json }}</pre> -->
