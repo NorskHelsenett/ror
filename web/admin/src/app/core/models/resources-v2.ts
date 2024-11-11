@@ -1,43 +1,73 @@
 /* Do not change, this code is generated from Golang structs */
 
-export interface ResourceVirtualMachineStatus {
-  guest: ResourceVirtualMachineOperativeSystem;
-  config: ResourceVirtualMachineConfig;
-  runtime: ResourceVirtualMachineRuntime;
-  tags: ResourceVirtualMachineTag[];
+export interface ResourceVirtualMachineOperatingSystemStatus {
+  id: string;
+  name: string;
+  version: string;
+  hostName: string;
+  powerState: string;
+  toolVersion: string;
+  architecture: string;
 }
-export interface ResourceVirtualMachineTag {
+export interface ResourceVirtualMachineNetworkStatus {
+  id: string;
+}
+export interface ResourceVirtualMachineMemoryStatus {
+  id: string;
+  usage: string;
+}
+export interface ResourceVirtualMachineDiskStatus {
+  id: string;
+  usage: string;
+}
+export interface ResourceVirtualMachineCpuStatus {
+  id: string;
+  usage: string;
+}
+export interface ResourceVirtualMachineStatus {
+  cpu: ResourceVirtualMachineCpuStatus;
+  disks: ResourceVirtualMachineDiskStatus[];
+  memory: ResourceVirtualMachineMemoryStatus;
+  networks: ResourceVirtualMachineNetworkStatus[];
+  operatingSystem: ResourceVirtualMachineOperatingSystemStatus;
+}
+export interface ResourceVirtualMachineOperatingSystemSpec {
+  id: string;
+}
+export interface ResourceVirtualMachineNetworkSpec {
+  id: string;
+  dns: string;
+  ipv4: string;
+  ipv6: string;
+  mask: string;
+  gateway: string;
+}
+export interface ResourceVirtualMachineMemorySpec {
+  id: string;
+  size: number;
+}
+export interface ResourceVirtualMachineDiskSpec {
+  id: string;
+  size: number;
+  name: string;
+  type: string;
+}
+export interface ResourceVirtualMachineTagSpec {
   key: string;
   value: string;
   description: string;
 }
-export interface ResourceVirtualMachineRuntime {
-  connectionState: string;
-  powerState: string;
-  maxCpu: number;
-  maxMemory: number;
-}
-export interface ResourceVirtualMachineConfig {
-  name: string;
-  memorySize: number;
-  cpuCount: number;
-  virtualDiskCount: number;
-  annotation: string;
-}
-export interface ResourceVirtualMachineOperativeSystem {
+export interface ResourceVirtualMachineCpuSpec {
   id: string;
-  family: string;
-  fullName: string;
-  hostName: string;
-  ipV4Address: string;
-  ipV6Address: string;
-  state: string;
+  count: number;
 }
 export interface ResourceVirtualMachineSpec {
-  guest: ResourceVirtualMachineOperativeSystem;
-  config: ResourceVirtualMachineConfig;
-  runtime: ResourceVirtualMachineRuntime;
-  tags: ResourceVirtualMachineTag[];
+  cpu: ResourceVirtualMachineCpuSpec;
+  tags: ResourceVirtualMachineTagSpec[];
+  disks: ResourceVirtualMachineDiskSpec[];
+  memory: ResourceVirtualMachineMemorySpec;
+  networks: ResourceVirtualMachineNetworkSpec[];
+  operatingSystem: ResourceVirtualMachineOperatingSystemSpec;
 }
 export interface ResourceVirtualMachine {
   id: string;
