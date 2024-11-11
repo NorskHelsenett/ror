@@ -1,40 +1,58 @@
 package apiresourcecontracts
 
-type ResourceVm struct {
-	ApiVersion string            `json:"api_version"`
-	Kind       string            `json:"kind"`
-	Metadata   ResourceMetadata  `json:"metadata"`
-	Id         string            `json:"id"`
-	Name       string            `json:"name"`
-	Guest      ResourceVMGuest   `json:"guest"`
-	Config     ResourceVMConfig  `json:"config"`
-	Runtime    ResourceVMRuntime `json:"runtime"`
-	Tags       []ResourceVMTag   `json:"tags"`
+type ResourceVirtualMachine struct {
+	ApiVersion string                       `json:"api_version"`
+	Kind       string                       `json:"kind"`
+	Metadata   ResourceMetadata             `json:"metadata"`
+	Id         string                       `json:"id"`
+	Name       string                       `json:"name"`
+	Spec       ResourceVirtualMachineSpec   `json:"spec"`
+	Status     ResourceVirtualMachineStatus `json:"status"`
 }
 
-type ResourceVMGuest struct {
-	Id        string `json:"id"`
-	Family    string `json:"family"`
-	FullName  string `json:"full_name"`
-	HostName  string `json:"host_name"`
-	IpAddress string `json:"ip_address"`
-	State     string `json:"state"`
+// Desired state
+type ResourceVirtualMachineSpec struct {
+	OperativeSystem ResourceVirtualMachineOperativeSystem `json:"guest"`
+	Config          ResourceVirtualMachineConfig          `json:"config"`
+	Runtime         ResourceVirtualMachineRuntime         `json:"runtime"`
+	Tags            []ResourceVirtualMachineTag           `json:"tags"`
 }
-type ResourceVMConfig struct {
+
+// Observed state
+type ResourceVirtualMachineStatus struct {
+	OperativeSystem ResourceVirtualMachineOperativeSystem `json:"guest"`
+	Config          ResourceVirtualMachineConfig          `json:"config"`
+	Runtime         ResourceVirtualMachineRuntime         `json:"runtime"`
+	Tags            []ResourceVirtualMachineTag           `json:"tags"`
+}
+
+// The guest operating system running on the vm
+type ResourceVirtualMachineOperativeSystem struct {
+	Id          string `json:"id"`
+	Family      string `json:"family"`
+	FullName    string `json:"fullName"`
+	HostName    string `json:"hostName"`
+	IpV4Address string `json:"ipV4Address"`
+	IpV6Address string `json:"ipV6Address"`
+	State       string `json:"state"`
+}
+
+type ResourceVirtualMachineConfig struct {
 	Name             string `json:"name"`
-	MemorySize       int32  `json:"memory_size"`
-	CpuCount         int32  `json:"cpu_count"`
-	VirtualDiskCount int32  `json:"virtual_disk_count"`
-	Annotation       string `json:"annotation"` //should this be a slice?
+	MemorySize       int    `json:"memorySize"`
+	CpuCount         int    `json:"cpuCount"`
+	VirtualDiskCount int    `json:"virtualDiskCount"`
+	Annotation       string `json:"annotation"`
 }
-type ResourceVMRuntime struct {
+
+type ResourceVirtualMachineRuntime struct {
 	ConnectionState string `json:"connectionState"`
 	PowerState      string `json:"powerState"`
-	MaxCpu          int32  `json:"maxCpuUsage"`
-	MaxMemory       int32  `json:"maxMemoryUsage"`
+	MaxCpu          int    `json:"maxCpu"`
+	MaxMemory       int    `json:"maxMemory"`
 }
 
-type ResourceVMTag struct {
+type ResourceVirtualMachineTag struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
 	Description string `json:"description"`

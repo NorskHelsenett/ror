@@ -575,8 +575,8 @@ func CreateResourceVulnerabilityEvent(input apiresourcecontracts.ResourceModel[a
 	return nil
 }
 
-// Creates resource entry of type apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm]
-func CreateResourceVm(input apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm], ctx context.Context) error {
+// Creates resource entry of type apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVirtualMachine]
+func CreateResourceVirtualMachine(input apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVirtualMachine], ctx context.Context) error {
 	rlog.Debug("inserting resource",
 		rlog.String("action", "insert"),
 		rlog.String("apiverson", input.ApiVersion),
@@ -1252,8 +1252,8 @@ func UpdateResourceVulnerabilityEvent(input apiresourcecontracts.ResourceModel[a
 	return nil
 }
 
-// Updates resource entry of type apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm] by uid
-func UpdateResourceVm(input apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm], ctx context.Context) error {
+// Updates resource entry of type apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVirtualMachine] by uid
+func UpdateResourceVirtualMachine(input apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVirtualMachine], ctx context.Context) error {
 	rlog.Debug("updating resource",
 		rlog.String("action", "update"),
 		rlog.String("api version", input.ApiVersion),
