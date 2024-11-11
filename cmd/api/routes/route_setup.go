@@ -331,10 +331,11 @@ func SetupRoutes(router *gin.Engine) {
 
 	resourceRoute.GET("", v2resourcescontroller.GetResources())
 	resourceRoute.POST("", v2resourcescontroller.NewResource())
-	resourceRoute.GET("/uid/:uid", v2resourcescontroller.GetResource())
-	resourceRoute.PUT("/uid/:uid", v2resourcescontroller.UpdateResource())
 	resourceRoute.DELETE("/uid/:uid", v2resourcescontroller.DeleteResource())
 	resourceRoute.HEAD("/uid/:uid", v2resourcescontroller.ExistsResources())
 	resourceRoute.GET("/hashes", v2resourcescontroller.GetResourceHashList())
 
+	//deprecated: let client deal with special cases
+	resourceRoute.GET("/uid/:uid", v2resourcescontroller.GetResource())
+	resourceRoute.PUT("/uid/:uid", v2resourcescontroller.UpdateResource())
 }
