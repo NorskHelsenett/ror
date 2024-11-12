@@ -23,30 +23,6 @@
     </ng-template>
   </p-dropdown>
   <p-dropdown
-    *ngIf="clusterId === undefined"
-    [options]="owners"
-    [(ngModel)]="selectedOwner"
-    optionLabel="scope"
-    [showClear]="true"
-    placeholder="{{ 'pages.resources.filter.owner.placeholder' | translate }}"
-    emptyMessage="{{ 'common.dropdown.noResult' | translate }}"
-    emptyFilterMessage="{{ 'common.dropdown.noResults' | translate }}"
-    (onChange)="selectedOwnerChange($event)"
-    [filter]="true"
-    filterBy="scope"
-  >
-    <ng-template pTemplate="selectedItem" let-owner>
-      <div class="flex align-items-center gap-2">
-        <div>{{ owner?.scope }}</div>
-      </div>
-    </ng-template>
-    <ng-template let-owner pTemplate="item">
-      <div class="flex align-items-center gap-2">
-        <div>{{ owner?.scope }}</div>
-      </div>
-    </ng-template>
-  </p-dropdown>
-  <p-dropdown
     *ngIf="showClusterDropdown && clusterId === undefined"
     [(ngModel)]="selectedCluster"
     [options]="clusters"

@@ -107,7 +107,8 @@
       "2": "2. Internt",
       "3": "3. Skjermet",
       "4": "4. Sterkt skjermet"
-    }
+    },
+    "loadMore": "Last mer"
   },
   "nav": {
     "home": "Oversikt",
@@ -137,7 +138,8 @@
     "releasenotes": "Endringer",
     "compliancereports": "Samsvarsrapporter",
     "orders": "Ordrer",
-    "resources": "Ressurser"
+    "resources": "Ressurser",
+    "resourcesv2": "Ressurser"
   },
   "error": {
     "forbidden": "Forbudt område",
@@ -1304,6 +1306,15 @@
         },
         "cluster": {
           "placeholder": "Velg et cluster"
+        }
+      }
+    },
+    "resourcesv2": {
+      "title": "Ressurser",
+      "list": {
+        "fetchCount": "Hentet {{count}} ressurser",
+        "header": {
+          "tooltip": "For sortering av flere kolonner, hold inne 'shift' (Windows) eller ⌘ (MacOs) og klikk på kolonnene du vil sortere etter"
         }
       }
     },

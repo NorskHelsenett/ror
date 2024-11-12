@@ -107,7 +107,8 @@
       "2": "2. Internal",
       "3": "3. Protected",
       "4": "4. Highly protected"
-    }
+    },
+    "loadMore": "Load more"
   },
   "error": {
     "forbidden": "Forbidden area",
@@ -151,7 +152,8 @@
     "releasenotes": "Release notes",
     "compliancereports": "Compliance reports",
     "orders": "Orders",
-    "resources": "Resources"
+    "resources": "Resources",
+    "resourcesv2": "Resources"
   },
   "pages": {
     "about": {
@@ -397,7 +399,7 @@
           "active": "Active",
           "inactive": "Inactive",
           "servicetags": "Service tags",
-          "clusterInfo": "Clusters that is connected to this project",
+          "clusterInfo": "Clusters that are connected to this project",
           "table": {
             "clusterName": "Cluster name",
             "description": "Description",
@@ -1313,6 +1315,15 @@
         },
         "cluster": {
           "placeholder": "Select a cluster"
+        }
+      }
+    },
+    "resourcesv2": {
+      "title": "Resources",
+      "list": {
+        "fetchCount": "Fetched {{count}} resources",
+        "header": {
+          "tooltip": "For multi sorting, hold down the shift on windows or ⌘ for macos key while clicking on the column headers"
         }
       }
     },
