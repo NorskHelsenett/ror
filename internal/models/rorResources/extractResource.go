@@ -209,8 +209,8 @@ func (rj rorResourceJson) getResource(resourceReturn *rorResource) error {
 		return err
 	}
 
-	if resourceReturn.ApiVersion == "general.ror.internal/v1alpha1" && resourceReturn.Kind == "Vm" {
-		payload, err := prepareResourcePayload[apiresourcecontracts.ResourceVm](bytes)
+	if resourceReturn.ApiVersion == "general.ror.internal/v1alpha1" && resourceReturn.Kind == "VirtualMachine" {
+		payload, err := prepareResourcePayload[apiresourcecontracts.ResourceVirtualMachine](bytes)
 		resourceReturn.Resource = payload
 		return err
 	}

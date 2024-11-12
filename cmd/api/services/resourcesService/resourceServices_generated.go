@@ -803,24 +803,24 @@ func GetVulnerabilityEventByUid(ctx context.Context, ownerref apiresourcecontrac
 
 }
 
-// Functions to get Vms by uid,ownerref
+// Functions to get Virtualmachines by uid,ownerref
 // The function is intended for use by internal functions
-func GetVmByUid(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference, uid string) (apiresourcecontracts.ResourceVm, error) {
+func GetVirtualMachineByUid(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference, uid string) (apiresourcecontracts.ResourceVirtualMachine, error) {
 	if uid == "" {
-		return apiresourcecontracts.ResourceVm{}, errors.New("uid is empty")
+		return apiresourcecontracts.ResourceVirtualMachine{}, errors.New("uid is empty")
 	}
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
-		Kind:       "Vm",
+		Kind:       "VirtualMachine",
 		ApiVersion: "general.ror.internal/v1alpha1",
 		Internal:   true,
 		Uid:        uid,
 	}
 
-	resource, err := GetResource[apiresourcecontracts.ResourceVm](ctx, query)
+	resource, err := GetResource[apiresourcecontracts.ResourceVirtualMachine](ctx, query)
 	if err != nil {
 		rlog.Errorc(ctx, "could not get resource", err)
-		return apiresourcecontracts.ResourceVm{}, errors.New("could not get resource")
+		return apiresourcecontracts.ResourceVirtualMachine{}, errors.New("could not get resource")
 	}
 
 	return resource, nil
@@ -1421,20 +1421,20 @@ func GetVulnerabilityevents(ctx context.Context, ownerref apiresourcecontracts.R
 	return resources, nil
 }
 
-// Functions to get Vms by ownerref
+// Functions to get Virtualmachines by ownerref
 // The function is intended for use by internal functions
-func GetVms(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVms, error) {
-	var resources apiresourcecontracts.ResourceVms
+func GetVirtualmachines(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVirtualmachines, error) {
+	var resources apiresourcecontracts.ResourceVirtualmachines
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
-		Kind:       "Vm",
+		Kind:       "VirtualMachine",
 		ApiVersion: "general.ror.internal/v1alpha1",
 	}
-	resourceset, err := resourcesmongodbrepo.GetResourcesByQuery[apiresourcecontracts.ResourceVm](ctx, query)
+	resourceset, err := resourcesmongodbrepo.GetResourcesByQuery[apiresourcecontracts.ResourceVirtualMachine](ctx, query)
 	resources.Owner = ownerref
-	resources.Vms = resourceset
+	resources.Virtualmachines = resourceset
 	if err != nil {
-		return resources, errors.New("could not fetch resource Vm")
+		return resources, errors.New("could not fetch resource VirtualMachine")
 	}
 	return resources, nil
 }
@@ -1839,10 +1839,10 @@ func ResourceCreateService(ctx context.Context, resourceUpdate apiresourcecontra
 		}
 	}
 
-	if resourceUpdate.ApiVersion == "general.ror.internal/v1alpha1" && resourceUpdate.Kind == "Vm" {
-		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm]](resourceUpdate)
-		resource = filterInVm(resource)
-		err = resourcesmongodbrepo.CreateResourceVm(resource, ctx)
+	if resourceUpdate.ApiVersion == "general.ror.internal/v1alpha1" && resourceUpdate.Kind == "VirtualMachine" {
+		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVirtualMachine]](resourceUpdate)
+		resource = filterInVirtualMachine(resource)
+		err = resourcesmongodbrepo.CreateResourceVirtualMachine(resource, ctx)
 		if err == nil {
 			err = sendToMessageBus(ctx, resource, apiresourcecontracts.K8sActionAdd)
 			if err != nil {
@@ -2260,10 +2260,10 @@ func ResourceUpdateService(ctx context.Context, resourceUpdate apiresourcecontra
 		}
 	}
 
-	if resourceUpdate.ApiVersion == "general.ror.internal/v1alpha1" && resourceUpdate.Kind == "Vm" {
-		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVm]](resourceUpdate)
-		resource = filterInVm(resource)
-		err = resourcesmongodbrepo.UpdateResourceVm(resource, ctx)
+	if resourceUpdate.ApiVersion == "general.ror.internal/v1alpha1" && resourceUpdate.Kind == "VirtualMachine" {
+		resource := resourcesmongodbrepo.MapToResourceModel[apiresourcecontracts.ResourceModel[apiresourcecontracts.ResourceVirtualMachine]](resourceUpdate)
+		resource = filterInVirtualMachine(resource)
+		err = resourcesmongodbrepo.UpdateResourceVirtualMachine(resource, ctx)
 		if err == nil {
 			err = sendToMessageBus(ctx, resource, apiresourcecontracts.K8sActionUpdate)
 			if err != nil {

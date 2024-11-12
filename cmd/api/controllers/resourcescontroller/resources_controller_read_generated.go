@@ -311,8 +311,8 @@ func GetResources() gin.HandlerFunc {
 			}
 			c.JSON(http.StatusOK, resources)
 		}
-		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "Vm" {
-			resources, err := resourcesservice.GetResources[apiresourcecontracts.ResourceVm](ctx, query)
+		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "VirtualMachine" {
+			resources, err := resourcesservice.GetResources[apiresourcecontracts.ResourceVirtualMachine](ctx, query)
 			if err != nil {
 				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 				return
@@ -631,8 +631,8 @@ func GetResource() gin.HandlerFunc {
 			}
 			c.JSON(http.StatusOK, resources)
 		}
-		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "Vm" {
-			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceVm](ctx, query)
+		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "VirtualMachine" {
+			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceVirtualMachine](ctx, query)
 			if err != nil {
 				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 				return

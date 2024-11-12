@@ -207,8 +207,8 @@ type VulnerabilityEventinterface interface {
 	Get() *ResourceVulnerabilityEvent
 }
 
-// Vminterface represents the interface for resources of the type vm
-type Vminterface interface {
+// VirtualMachineinterface represents the interface for resources of the type virtualmachine
+type VirtualMachineinterface interface {
 	CommonResourceInterface
-	Get() *ResourceVm
+	Get() *ResourceVirtualMachine
 }

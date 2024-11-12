@@ -603,11 +603,11 @@ func (r *ResourceVulnerabilityEvent) Get() *ResourceVulnerabilityEvent {
 	return r
 }
 
-// (r *ResourceVm) GetRorHash calculates the hash of the resource
+// (r *ResourceVirtualMachine) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource
 // fields can be ignored by adding the tag `hash:"ignore"` to the field
-func (r *ResourceVm) GetRorHash() string {
+func (r *ResourceVirtualMachine) GetRorHash() string {
 	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
 	if err != nil {
 		return ""
@@ -616,7 +616,7 @@ func (r *ResourceVm) GetRorHash() string {
 	return fmt.Sprintf("%d", hash)
 }
 
-// (r ResourceVm) Get returns a pointer to the resource of type ResourceVm
-func (r *ResourceVm) Get() *ResourceVm {
+// (r ResourceVirtualMachine) Get returns a pointer to the resource of type ResourceVirtualMachine
+func (r *ResourceVirtualMachine) Get() *ResourceVirtualMachine {
 	return r
 }
