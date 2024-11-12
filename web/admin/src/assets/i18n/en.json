@@ -1321,7 +1321,10 @@
     "resourcesv2": {
       "title": "Resources",
       "list": {
-        "fetchCount": "Fetched {{count}} resources"
+        "fetchCount": "Fetched {{count}} resources",
+        "header": {
+          "tooltip": "For multi sorting, hold down the shift on windows or ⌘ for macos key while clicking on the column headers"
+        }
       }
     },
     "workspaces": {

@@ -23,39 +23,42 @@
     }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"
   >
     <ng-template pTemplate="caption">
-      <ng-content select="[filter]"></ng-content>
-      <div class="xs:flex-none sm:flex sm:justify-between">
-        <p-multiSelect
-          [options]="columnDefinitions"
-          [(ngModel)]="selectedColumns"
-          [showToggleAll]="true"
-          optionLabel="header"
-          selectedItemsLabel="{0} {{ 'common.table.columnsSelected' | translate }}"
-          [style]="{ 'min-width': '200px' }"
-          placeholder="{{ 'common.table.chooseColumns' | translate }}"
-          emptyMessage="{{ 'common.table.noColumns' | translate }}"
-          emptyFilterMessage="{{ 'common.table.noColumnsFilter' | translate }}"
-        ></p-multiSelect>
+      <div class="mb-2">
+        <ng-content select="[filter]"></ng-content>
+        <div class="xs:flex-none sm:flex sm:justify-between">
+          <p-multiSelect
+            [options]="columnDefinitions"
+            [(ngModel)]="selectedColumns"
+            [showToggleAll]="true"
+            optionLabel="header"
+            selectedItemsLabel="{0} {{ 'common.table.columnsSelected' | translate }}"
+            [style]="{ 'min-width': '200px' }"
+            placeholder="{{ 'common.table.chooseColumns' | translate }}"
+            emptyMessage="{{ 'common.table.noColumns' | translate }}"
+            emptyFilterMessage="{{ 'common.table.noColumnsFilter' | translate }}"
+          ></p-multiSelect>
 
-        <div class="flex-grow"></div>
+          <div class="flex-grow"></div>
 
-        <div class="mr-2">
-          <p-dropdown [options]="rowsPerPage" [(ngModel)]="rows" (onChange)="selectedRowsChange($event)">
-            <ng-template let-row pTemplate="item">
-              <div class="flex align-items-center gap-2">
-                <div>{{ row }}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
+          <div class="">
+            <p-dropdown [options]="rowsPerPage" [(ngModel)]="rows" (onChange)="selectedRowsChange($event)">
+              <ng-template let-row pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                  <div>{{ row }}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+          <app-export-button class="md:justify-self-end mt-1" [exportObjects]="export()" [filename]="exportFilename"></app-export-button>
         </div>
-        <app-export-button class="md:justify-self-end mt-1" [exportObjects]="export()" [filename]="'resources'"></app-export-button>
       </div>
     </ng-template>
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th *ngFor="let col of columns" [pSortableColumn]="col?.field" class="p-1">
+        <th *ngFor="let col of columns" [pSortableColumn]="col?.field" class="">
           <div class="flex flex-cols">
-            <span>{{ col?.header }}</span> <p-sortIcon [field]="col?.field"></p-sortIcon>
+            <span class="">{{ col?.header }}</span>
+            <p-sortIcon [field]="col?.field" pTooltip="{{ 'pages.resourcesv2.list.header.tooltip' | translate }}"></p-sortIcon>
           </div>
         </th>
       </tr>

@@ -18,11 +18,12 @@ import { AclAccess, AclScopes } from '../../../core/models/acl-scopes';
 import { DropdownModule } from 'primeng/dropdown';
 import { FilterService } from '../../services/filter.service';
 import { ColumnDefinition } from '../../../resources/models/columnDefinition';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-resources-v2-list',
   standalone: true,
-  imports: [CommonModule, TranslateModule, SharedModule, TableModule, MultiSelectModule, FormsModule, DropdownModule],
+  imports: [CommonModule, TranslateModule, SharedModule, TableModule, MultiSelectModule, FormsModule, DropdownModule, TooltipModule],
   templateUrl: './resources-v2-list.component.html',
   styleUrl: './resources-v2-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,6 +92,8 @@ export class ResourcesV2ListComponent implements OnInit {
     },
   ];
 
+  exportFilename = 'resources';
+
   selectedColumns: any[] = [];
   rows = 10;
   rowsPerPage = [5, 10, 25, 50, 100];
@@ -113,6 +116,10 @@ export class ResourcesV2ListComponent implements OnInit {
     this.rows = this.configService.config.rows;
     this.rowsPerPage = this.configService.config.rowsPerPage;
     this.fetchAcl();
+
+    if (this.clusterId) {
+      this.exportFilename = 'resources-' + this.clusterId;
+    }
   }
 
   refreshData() {
@@ -145,8 +152,15 @@ export class ResourcesV2ListComponent implements OnInit {
     }
   }
 
-  export(): any {
+  export(): any[] {
     const exportObjects: any[] = [];
+    this.resources?.forEach((resource) => {
+      const exportObject: any = {};
+      this.selectedColumns.forEach((column) => {
+        exportObject[column.field] = this.extractData(resource, column.field);
+      });
+      exportObjects.push(exportObject);
+    });
     return exportObjects;
   }
 
