@@ -1,0 +1,186 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ror-opentelemetry-collector
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    repoURL: "https://open-telemetry.github.io/opentelemetry-helm-charts"
+    targetRevision: 0.67.0
+    chart: opentelemetry-collector
+    helm:
+      values: |
+        image:
+          repository: ncr.sky.nhn.no/dockerhub/otel/opentelemetry-collector-contrib
+        podSecurityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          supplementalGroups:
+            - 100
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+          privileged: false
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 101
+          runAsGroup: 101
+          readOnlyRootFilesystem: true
+        mode: "deployment"
+        config:
+          exporters:
+            logging: null
+            otlp:
+              endpoint: ror-jaeger-collector.nhn-ror.svc:4317
+              tls:
+                insecure: true
+          processors:
+            tail_sampling:
+              policies:
+                [
+                  {
+                    name: status-code,
+                    type: status_code,
+                    status_code: { status_codes: [ERROR] },
+                  },
+                  {
+                    name: lowest-routes,
+                    type: and,
+                    and: {
+                      and_sub_policy:
+                        [
+                          {
+                            name: route-match,
+                            type: string_attribute,
+                            string_attribute:
+                              {
+                                key: db.operation,
+                                values: [ping],
+                                enabled_regex_matching: true,
+                              },
+                          },
+                          {
+                            name: percentage,
+                            type: probabilistic,
+                            probabilistic: {sampling_percentage: 0.1},
+                          },
+                        ]
+                    }
+                  },
+                  {
+                    name: lower-routes,
+                    type: and,
+                    and: {
+                      and_sub_policy:
+                        [
+                          {
+                            name: route-match,
+                            type: string_attribute,
+                            string_attribute:
+                              {
+                                key: http.route,
+                                values: [/v1/resources/uid/:uid],
+                                enabled_regex_matching: true,
+                              },
+                          },
+                          {
+                            name: percentage,
+                            type: probabilistic,
+                            probabilistic: {sampling_percentage: 1},
+                          },
+                        ]
+                    }
+                  },
+                  {
+                    name: low-routes,
+                    type: and,
+                    and: {
+                      and_sub_policy:
+                        [
+                          {
+                            name: route-match,
+                            type: string_attribute,
+                            string_attribute:
+                              {
+                                key: http.route,
+                                values: [/v1/metrics, /v1/cluster/heartbeat],
+                                enabled_regex_matching: true,
+                              },
+                          },
+                          {
+                            name: percentage,
+                            type: probabilistic,
+                            probabilistic: {sampling_percentage: 5},
+                          },
+                        ]
+                    }
+                  },
+                  {
+                    name: high-routes,
+                    type: and,
+                    and: {
+                      and_sub_policy:
+                        [
+                          {
+                            name: route-match,
+                            type: string_attribute,
+                            string_attribute:
+                              {
+                                key: http.route,
+                                values: [/v1/resources/uid/:uid, /v1/metrics, /v1/cluster/heartbeat],
+                                enabled_regex_matching: true,
+                                invert_match: true,
+                              },
+                          },
+                          {
+                            name: operation-match,
+                            type: string_attribute,
+                            string_attribute:
+                              {
+                                key: db.operation,
+                                values: [ping],
+                                enabled_regex_matching: true,
+                                invert_match: true,
+                              },
+                          },
+                          {
+                            name: percentage,
+                            type: probabilistic,
+                            probabilistic: {sampling_percentage: 100},
+                          },
+                        ]
+                    }
+                  },
+                ]
+          receivers:
+            jaeger: null
+            zipkin: null
+            prometheus: null
+            otlp:
+              protocols:
+                grpc:
+                  endpoint: 0.0.0.0:4317
+                http: null
+          service:
+            pipelines:
+              logs: null
+              metrics: null
+              traces:
+                exporters:
+                  - otlp
+                processors:
+                  - memory_limiter
+                  - tail_sampling
+                  - batch
+                receivers:
+                  - otlp
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

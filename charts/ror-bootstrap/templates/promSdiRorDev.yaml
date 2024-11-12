@@ -1,0 +1,38 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: alertmanager-config
+spec:
+  route:
+    receiver: "ror-slack"
+    matchers:
+      - name: alertname
+        value: "InfoInhibitor|Watchdog"
+        matchType: "!~"
+  receivers:
+    - name: "ror-slack"
+      slackConfigs:
+        - apiURL:
+            name: slack-secret
+            key: url
+          channel: "#utv-ror-alerts"
+          sendResolved: true
+          title: |-
+            {{"[{{ .Status | toUpper }}{{ if eq .Status \"firing\" }}:{{ .Alerts.Firing | len }}{{ end }}]"}}
+          text: >-
+            {{"{{ range .Alerts -}}"}}
+
+            {{"{{ if .Labels.severity }}"}}
+            {{"*Severity:* `{{ .Labels.severity }}`"}}
+            {{"{{ end }}"}}
+
+            {{"*Alert:* `{{ .Labels.alertname }}`"}}
+
+            {{"*Summary:* `{{ .Annotations.summary }}`"}}
+
+            {{"*Description:* `{{ .Annotations.description }}`"}}
+
+            {{"*Details:*"}}
+              {{"{{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`"}}
+              {{"{{ end }}"}}
+            {{"{{ end }}"}}

@@ -739,20 +739,20 @@ func TestNewResourceSetFromDynamicClientVulnerabilityEvent(t *testing.T) {
 	}
 }
 
-func TestNewResourceSetFromDynamicClientVulnerabilityWhitelist(t *testing.T) {
+func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
-			"kind":       "VulnerabilityWhitelist",
+			"kind":       "VirtualMachine",
 			"apiVersion": "general.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
-				"name": "test-vulnerabilitywhitelist",
+				"name": "test-virtualmachine",
 			},
 		},
 	}
 
-	expected := rorresources.NewRorResource("VulnerabilityWhitelist", "general.ror.internal/v1alpha1")
-	expected.SetVulnerabilityWhitelist(newVulnerabilityWhitelistFromDynamicClient(input))
-	expected.SetCommonInterface(newVulnerabilityWhitelistFromDynamicClient(input))
+	expected := rorresources.NewRorResource("VirtualMachine", "general.ror.internal/v1alpha1")
+	expected.SetVirtualMachine(newVirtualMachineFromDynamicClient(input))
+	expected.SetCommonInterface(newVirtualMachineFromDynamicClient(input))
 
 	result := NewResourceSetFromDynamicClient(input)
 

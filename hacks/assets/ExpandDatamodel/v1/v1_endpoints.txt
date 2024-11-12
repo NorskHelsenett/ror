@@ -1,0 +1,20 @@
+datacenters:
+GET/POST(filter)    v1/datacenters
+GET                 v1/datacenters/<datacenterid/name>
+GET                 v1/datacenters/<<datacenterid/name>>/workspaces
+
+workspaces
+GET/POST(filter)    v1/workspaces
+GET                 v1/workspaces/<workspaceid/name>
+GET                 v1/workspaces/<workspaceid/name>/clusters
+
+projects
+GET/POST(filter     v1/projects
+GET/POST(filter     v1/projects/<project name>
+
+events
+GET/POST(filter)    v1/events
+GET                 v1/events/<eventid>
+GET                 v1/events/<eventid>/logs
+GET/POST(filter)    v1/events/type/<typeid>
+

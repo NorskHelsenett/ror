@@ -1,0 +1,78 @@
+
+use('nhn-ror');
+
+const aggregation = [
+//   {
+//     "$match": {
+//       //"clusterid": "k3d-mario.local-k3s",
+//       "metadata.projectid": ObjectId('641071c5959f046fd39b1611')
+//     }
+//   },
+  {
+    "$project": {
+        _id: 0,
+        id: "$_id",
+        clusterid: 1,
+        clustername: 1,
+        workspacename: "$workspace.name",
+        datacentername: "$workspace.datacenter.name",
+        metadata: 1
+    }
+  },
+//   {
+//     "$project": {
+//       "state": 0
+//     }
+//   },
+//   {
+//     "$lookup": {
+//       "as": "workspaces",
+//       "foreignField": "_id",
+//       "from": "workspaces",
+//       "localField": "workspaceid"
+//     }
+//   },
+//   {
+//     "$set": {
+//       "workspace": {
+//         "$first": "$workspaces"
+//       }
+//     }
+//   },
+//   {
+//     "$lookup": {
+//       "as": "datacenters",
+//       "foreignField": "_id",
+//       "from": "datacenters",
+//       "localField": "workspaces.datacenterid"
+//     }
+//   },
+//   {
+//     "$set": {
+//       "workspace": {
+//         "datacenter": {
+//           "$first": "$datacenters"
+//         }
+//       }
+//     }
+//   },
+  {
+    "$lookup": {
+      "as": "projects",
+      "foreignField": "_id",
+      "from": "projects",
+      "localField": "metadata.projectid"
+    }
+  },
+  {
+    "$set": {
+      "metadata": {
+        "project": {
+          "$first": "$projects"
+        }
+      }
+    }
+  }
+];
+
+db.clusters.aggregate(aggregation);

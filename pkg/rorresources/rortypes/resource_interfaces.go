@@ -207,8 +207,8 @@ type VulnerabilityEventinterface interface {
 	Get() *ResourceVulnerabilityEvent
 }
 
-// VulnerabilityWhitelistinterface represents the interface for resources of the type vulnerabilitywhitelist
-type VulnerabilityWhitelistinterface interface {
+// VirtualMachineinterface represents the interface for resources of the type virtualmachine
+type VirtualMachineinterface interface {
 	CommonResourceInterface
-	Get() *ResourceVulnerabilityWhitelist
+	Get() *ResourceVirtualMachine
 }

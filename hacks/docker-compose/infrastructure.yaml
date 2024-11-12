@@ -1,0 +1,182 @@
+services:
+  rabbitmq:
+    image: ${DOCKER_MIRROR}rabbitmq:3.13.6-management-alpine
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=S3cret!
+    volumes:
+      - ../data/rabbitmq:/var/log/rabbitmq
+      # set own rabbitmq settings and definitions
+      #- ./rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+      #- ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 20s
+      timeout: 15s
+      retries: 10
+
+  mongodb:
+    image: ${DOCKER_MIRROR}mongo:7-jammy
+    volumes:
+      - ../data/mongodb:/data/db:rw
+      - ./mongodb:/docker-entrypoint-initdb.d
+    environment:
+      - MONGO_INITDB_DATABASE=nhn-ror
+      - MONGO_INITDB_ROOT_USERNAME=someone
+      - MONGO_INITDB_ROOT_PASSWORD=S3cret!
+      - MONGODB_DISABLE_SYSTEM_LOG=false
+      - MONGODB_SYSTEM_LOG_VERBOSITY=5
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  mongo-express:
+    image: ${DOCKER_MIRROR}mongo-express:latest
+    restart: always
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=someone
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=S3cret!
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_URL="mongodb://someone:S3cret!@mongodb:27017/"
+      - ME_CONFIG_BASICAUTH_USERNAME=test
+      - ME_CONFIG_BASICAUTH_PASSWORD=S3cr3t
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    links:
+      - mongodb
+    ports:
+      - '8081:8081'
+
+  dex:
+    image: ${DOCKER_MIRROR}bitnami/dex:2.40.0
+    restart: always
+    volumes:
+      - ../data/dex/configs:/configs
+      - ../data/dex/dbs:/dbs
+    command: serve /configs/dex-config-default.yaml
+    depends_on:
+      openldap:
+        condition: service_started
+      init-dex-db:
+        condition: service_completed_successfully
+    links:
+      - openldap
+    ports:
+      - '5554:5554'
+      - '5556:5556'
+      - '5557:5557'
+      - '5558:5558'
+
+  init-dex-db:
+    image: ${DOCKER_MIRROR}busybox
+    volumes:
+      - ../data/dex/dbs:/dbs
+    entrypoint:
+      [
+        'sh',
+        '-c',
+        "touch /dbs/dex.db && chmod 766 /dbs/dex.db && chmod 777 /dbs && echo 'dex.db file created.'",
+      ]
+    restart: 'no'
+
+  vault:
+    image: ${DOCKER_MIRROR}hashicorp/vault:1.17.2
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_DEV_ROOT_TOKEN_ID=S3cret!
+      - VAULT_FORMAT=json
+      - APPROLE_ROLE_ID=test
+    volumes:
+      - ../data/secrets:/tmp/secrets
+      - ../data/vault/file:/vault/file:rw
+      - ./vault/entrypoint.sh:/vault/entrypoint.sh:rw
+      - ./vault/policies:/policies
+      - ./vault/ldapconfig-openldap.json:/vault/config/ldapconfig-openldap.json
+      - ./vault/ldapconfig-localhost.json:/vault/config/ldapconfig-localhost.json
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint:
+      - '/vault/entrypoint.sh'
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    links:
+      - mongodb
+      - rabbitmq
+    ports:
+      - '8200:8200'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://vault:8200/v1/sys/health']
+      interval: 5s
+      retries: 5
+      start_period: 8s
+      timeout: 2s
+
+  openldap:
+    image: ${DOCKER_MIRROR}osixia/openldap:1.5.0
+    # Copying is required because the entrypoint modifies the *.ldif files.
+    # For verbose output, use:  command: ["--copy-service", "--loglevel", "debug"]
+    command: ['--copy-service']
+    environment:
+      # Required if using LDAPS:
+      # Since Dex doesn't use a client TLS certificate, downgrade from "demand" to "try".
+      LDAP_TLS_VERIFY_CLIENT: try
+      LDAP_ORGANISATION: 'ROR by NHN'
+      LDAP_DOMAIN: ror.dev
+      #- LDAP_READONLY_USER_USERNAME=readuser
+      #- LDAP_READONLY_USER_PASSWORD=read
+    # The hostname is required if using LDAPS with certificate validation.
+    # In Dex, use the same hostname (with port) for `connectors[].config.host`.
+    #hostname: YOUR-HOSTNAME
+    #
+    # https://github.com/osixia/docker-openldap#seed-ldap-database-with-ldif
+    # Option 1: Add custom seed file -> mount to         /container/service/slapd/assets/config/bootstrap/ldif/custom/
+    # Option 2: Overwrite default seed file -> mount to  /container/service/slapd/assets/config/bootstrap/ldif/
+    volumes:
+      - ../data/openldap/config-ldap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/custom-config.ldif
+    ports:
+      - '389:389'
+
+  jaeger:
+    image: ${DOCKER_MIRROR}jaegertracing/all-in-one:latest
+    ports:
+      - '16686:16686'
+      - '14250:14250'
+
+  opentelemetry-collector:
+    image: ${DOCKER_MIRROR}otel/opentelemetry-collector:latest
+    volumes:
+      - ../data/opentelemetry-collector/configs:/configs
+    command: ['--config=/configs/opentelemetry-collector-config.yaml']
+    depends_on:
+      - jaeger
+    ports:
+      - '4317:4317'
+  redis:
+    image: ${DOCKER_MIRROR}redis/redis-stack
+    environment:
+      REDIS_ARGS: '--requirepass S3cret!'
+    volumes:
+      - ../data/redis/data:/data
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+volumes:
+  data: {}

@@ -1,0 +1,179 @@
+<div class="">
+  <div class="grid grid-cols-1">
+    <div class="grid gap-2 sm:col-span-1 md:col-span-1 lg:col-span-2">
+      <div class="dark:bg-darker flex justify-between overflow-x-auto rounded-md bg-white p-4">
+        <div class="dark:bg-darker w-full flex flex-col rounded-md bg-white">
+          <div class="dark:border-primary flex justify-between border-b p-3">
+            <span class="flex-grow"></span>
+            <button
+              (click)="toggleEdit()"
+              class="delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:cursor-not-allowed disabled:bg-gray-500 disabled:opacity-75 disabled:hover:bg-gray-800"
+            >
+              {{ 'common.edit' | translate }}
+            </button>
+            <button
+              (click)="refreshRequested.emit()"
+              class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+            >
+              {{ 'common.refresh' | translate }}
+            </button>
+          </div>
+          @if (!edit) {
+            <div class="p-3 w-full">
+              <table class="border-collapse text-left w-full">
+                <tbody class="">
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1">{{ 'pages.clusters.details.metadata.project' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <a
+                        class="hover:text-blue-800 hover:underline dark:hover:text-blue-400"
+                        [routerLink]="['../../admin/projects/', cluster?.metadata?.project?.id]"
+                        >{{ cluster?.metadata?.project?.name }}</a
+                      >
+                      <span *ngIf="!cluster?.metadata?.project?.name">{{ 'common.unknown' | translate }}</span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1">{{ 'pages.clusters.details.metadata.criticality' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <span *ngIf="cluster?.metadata?.criticality">
+                        {{ 'pages.clusters.details.edit.form.availableCriticalities.' + cluster?.metadata?.criticality | translate }}
+                      </span>
+                      <span *ngIf="!cluster?.metadata?.criticality">{{ 'common.unknown' | translate }}</span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1">{{ 'pages.clusters.details.metadata.sensitivity' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <span *ngIf="cluster?.metadata?.sensitivity">{{
+                        'pages.clusters.details.edit.form.availableSensitivities.' + cluster?.metadata?.sensitivity | translate
+                      }}</span>
+                      <span *ngIf="!cluster?.metadata?.sensitivity">{{ 'common.unknown' | translate }}</span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1">{{ 'pages.clusters.details.metadata.workorder' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <code>
+                        {{ cluster?.metadata?.billing?.workorder || cluster?.metadata?.project?.projectMetadata?.billing?.workorder }}
+                      </code>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1">{{ 'pages.clusters.details.metadata.tags' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <p-tag styleClass="mr-1 mt-1" *ngFor="let tag of tags" class="">{{ tag }}</p-tag>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1 align-top">{{ 'pages.clusters.details.metadata.description' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <div class="dark:bg-gray-800 bg-slate-200 p-4">
+                        {{ cluster?.metadata?.description }}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-grey-light">
+                    <td class="px-2 py-1 align-top">{{ 'pages.clusters.details.metadata.roles' | translate }}</td>
+                    <td class="px-2 py-1 font-bold">
+                      <div class="grid md:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-3">
+                        <div *ngFor="let role of cluster?.metadata?.roles || cluster?.metadata?.project?.projectMetadata?.roles" class="">
+                          <div class="rounded-lg border border-gray-300 p-2 bg-gray-100 dark:bg-gray-700 dark:text-white">
+                            <ng-container *ngIf="role?.roleDefinition === 'Owner'">
+                              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 70 70">
+                                <path
+                                  d="M22,60v1c0,0.552,0.448,1,1,1h18c0.552,0,1-0.448,1-1v-1c0-4.208-2.616-7.81-6.304-9.283C37.096,49.617,38,47.914,38,46  c0-3.309-2.691-6-6-6s-6,2.691-6,6c0,1.914,0.904,3.617,2.304,4.717C24.616,52.19,22,55.792,22,60z M28,46c0-2.206,1.794-4,4-4  s4,1.794,4,4s-1.794,4-4,4S28,48.206,28,46z M32,52c4.411,0,8,3.589,8,8H24C24,55.589,27.589,52,32,52z"
+                                />
+                                <path
+                                  d="M32,28c7.168,0,13-5.832,13-13S39.168,2,32,2S19,7.832,19,15S24.832,28,32,28z M21.051,16H26v8.208  C23.257,22.414,21.362,19.435,21.051,16z M36,25.236c-0.326,0.128-0.659,0.241-1,0.338V24c0-0.552-0.448-1-1-1h-4  c-0.552,0-1,0.448-1,1v1.574c-0.341-0.097-0.674-0.21-1-0.338V9h8V25.236z M31,25.949V25h2v0.949C32.67,25.979,32.338,26,32,26  S31.33,25.979,31,25.949z M38,24.208V16h4.949C42.638,19.435,40.743,22.414,38,24.208z M32,4c5.728,0,10.442,4.402,10.949,10H38V8  c0-0.552-0.448-1-1-1H27c-0.552,0-1,0.448-1,1v6h-4.949C21.558,8.402,26.272,4,32,4z"
+                                />
+                                <path
+                                  d="M13,47c6.065,0,11-4.935,11-11s-4.935-11-11-11S2,29.935,2,36S6.935,47,13,47z M13,27c4.962,0,9,4.038,9,9s-4.038,9-9,9  s-9-4.038-9-9S8.038,27,13,27z"
+                                />
+                                <path
+                                  d="M62,36c0-6.065-4.935-11-11-11s-11,4.935-11,11s4.935,11,11,11S62,42.065,62,36z M42,36c0-4.962,4.038-9,9-9s9,4.038,9,9  s-4.038,9-9,9S42,40.962,42,36z"
+                                />
+                                <path
+                                  d="M49.278,22.38c-0.787-0.996-1.665-1.931-2.611-2.778l-1.334,1.49c0.86,0.77,1.659,1.621,2.375,2.527L49.278,22.38z"
+                                />
+                                <path
+                                  d="M14.19,23.081l1.618,1.176c0.936-1.288,2.024-2.463,3.237-3.495l-1.296-1.523C16.417,20.372,15.219,21.665,14.19,23.081z"
+                                />
+                                <path
+                                  d="M15.809,47.743l-1.618,1.176c1.749,2.407,3.926,4.404,6.471,5.938l1.032-1.713C19.379,51.749,17.399,49.932,15.809,47.743z"
+                                />
+                                <path
+                                  d="M49.809,48.918l-1.618-1.176c-1.59,2.189-3.57,4.006-5.885,5.401l1.032,1.713C45.883,53.323,48.061,51.325,49.809,48.918z"
+                                />
+                                <rect x="29" y="11" width="2" height="2" />
+                                <rect x="33" y="11" width="2" height="2" />
+                                <rect x="29" y="15" width="2" height="2" />
+                                <rect x="33" y="15" width="2" height="2" />
+                                <rect x="29" y="19" width="2" height="2" />
+                                <rect x="33" y="19" width="2" height="2" />
+                                <rect x="23" y="18" width="2" height="2" />
+                                <rect x="39" y="18" width="2" height="2" />
+                                <path
+                                  d="M52,42v-1.184c1.161-0.414,2-1.514,2-2.816c0-1.654-1.346-3-3-3c-0.551,0-1-0.449-1-1s0.449-1,1-1s1,0.449,1,1h2  c0-1.302-0.839-2.402-2-2.816V30h-2v1.184c-1.161,0.414-2,1.514-2,2.816c0,1.654,1.346,3,3,3c0.551,0,1,0.449,1,1s-0.449,1-1,1  s-1-0.449-1-1h-2c0,1.302,0.839,2.402,2,2.816V42H52z"
+                                />
+                                <path
+                                  d="M19,33v2h-1v-2h-2v2h-3.142c-0.447-1.72-2-3-3.858-3c-2.206,0-4,1.794-4,4s1.794,4,4,4c1.858,0,3.411-1.28,3.858-3H21v-4H19  z M9,38c-1.103,0-2-0.897-2-2s0.897-2,2-2s2,0.897,2,2S10.103,38,9,38z"
+                                /></svg
+                            ></ng-container>
+                            <ng-container *ngIf="role?.roleDefinition === 'Responsible'">
+                              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
+                                <path
+                                  d="M 13 4 C 8.0414839 4 4 8.0414839 4 13 L 4 37 C 4 41.958516 8.0414839 46 13 46 L 37 46 C 41.958516 46 46 41.958516 46 37 L 46 13 C 46 8.0414839 41.958516 4 37 4 L 13 4 z M 13 6 L 37 6 C 37.355032 6 37.659445 6.150633 38 6.2011719 L 38 43.798828 C 37.659445 43.849367 37.355032 44 37 44 L 13 44 C 9.1225161 44 6 40.877484 6 37 L 6 13 C 6 9.1225161 9.1225161 6 13 6 z M 40 6.7304688 C 42.352068 7.856447 44 10.209434 44 13 L 44 14 L 40 14 L 40 6.7304688 z M 22 12 C 14.832139 12 9 17.832144 9 25 C 9 32.167856 14.832139 38 22 38 C 29.167861 38 35 32.167856 35 25 C 35 17.832144 29.167861 12 22 12 z M 22 14 C 28.086982 14 33 18.913022 33 25 C 33 27.822097 31.934808 30.383342 30.195312 32.328125 C 28.169802 30.27163 25.239791 29 22 29 C 18.758932 29 15.833876 30.276672 13.808594 32.333984 C 12.066333 30.388584 11 27.824608 11 25 C 11 18.913022 15.913018 14 22 14 z M 40 16 L 44 16 L 44 24 L 40 24 L 40 16 z M 22 18 C 20.416667 18 19.101892 18.629756 18.251953 19.585938 C 17.402014 20.542119 17 21.777778 17 23 C 17 24.222222 17.402014 25.457882 18.251953 26.414062 C 19.101892 27.370244 20.416667 28 22 28 C 23.583333 28 24.898108 27.370244 25.748047 26.414062 C 26.597986 25.457881 27 24.222222 27 23 C 27 21.777778 26.597986 20.542118 25.748047 19.585938 C 24.898108 18.629756 23.583333 18 22 18 z M 22 20 C 23.083333 20 23.768559 20.370244 24.251953 20.914062 C 24.735347 21.457881 25 22.222222 25 23 C 25 23.777778 24.735347 24.542118 24.251953 25.085938 C 23.768559 25.629756 23.083333 26 22 26 C 20.916667 26 20.231441 25.629756 19.748047 25.085938 C 19.264653 24.542119 19 23.777778 19 23 C 19 22.222222 19.264653 21.457882 19.748047 20.914062 C 20.231441 20.370244 20.916667 20 22 20 z M 40 26 L 44 26 L 44 34 L 40 34 L 40 26 z M 22 31 C 24.694386 31 27.092805 32.055926 28.730469 33.695312 C 26.87065 35.135558 24.540932 36 22 36 C 19.4616 36 17.134304 35.136865 15.275391 33.699219 C 16.913049 32.060657 19.305741 31 22 31 z M 40 36 L 44 36 L 44 37 C 44 39.790566 42.352068 42.143553 40 43.269531 L 40 36 z"
+                                ></path></svg
+                            ></ng-container>
+                            <div class="px-1 py-4">
+                              <div class="mb-2">
+                                <span class="text-2xl">{{ role?.roleDefinition }}</span>
+                              </div>
+                              <table class="table-auto">
+                                <tbody>
+                                  <tr>
+                                    <td class="text-sm">{{ 'pages.clusters.details.metadata.upn' | translate }}:</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="pl-3 text-lg break-all">
+                                      <a href="mailto:{{ role?.contactInfo?.upn }}">{{ role?.contactInfo?.upn }}</a>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td class="text-sm">{{ 'pages.clusters.details.metadata.email' | translate }}:</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="pl-3 text-lg break-all">
+                                      <a href="mailto:{{ role?.contactInfo?.email }}">{{ role?.contactInfo?.email }}</a>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td class="text-sm">{{ 'pages.clusters.details.metadata.phone' | translate }}:</td>
+                                  </tr>
+                                  <tr>
+                                    <td class="pl-3 text-lg break-words">
+                                      <a href="tel:{{ role?.contactInfo?.phone }}" *ngIf="role?.contactInfo?.phone?.length > 0">
+                                        {{ role?.contactInfo?.phone }}</a
+                                      >
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <app-cluster-details-edit [cluster]="cluster" (updateOk)="onUpdateOk($event)"></app-cluster-details-edit>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

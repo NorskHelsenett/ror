@@ -1,0 +1,137 @@
+ror-web:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 85
+ror-api:
+  enabled: true
+  resources:
+    limits:
+      cpu: 2
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 85
+  admingroups: 'A-T1-SDI-DevOps-Operators@drift.nhn.no, A-T1-SDI-NS-Nettverk@drift.nhn.no, A-T1-SDI-Devops-ReadOnly@drift.nhn.no, A-T1-SDI-Devops-ReadOnly@cloud.nhn.no'
+ms-auth:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-nhn:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-slack:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-switchboard:
+  enabled: false
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    replicas:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ror-docs:
+  enabled: true
+
+ms-audit:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+    
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-tanzu:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+    
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-tanzu-auth:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+    
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85

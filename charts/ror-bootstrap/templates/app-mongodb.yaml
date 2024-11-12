@@ -1,0 +1,85 @@
+{{ if .Values.mongodb.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ror-mongodb
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    repoURL: 'https://charts.bitnami.com/bitnami'
+    targetRevision: 13.15.4
+    chart: mongodb
+    helm:
+      values: |-
+        global:
+          imageRegistry: ncr.sky.nhn.no/dockerhub
+          storageClass: trd1-w02-cl01-vsan-storage-policy
+          namespaceOverride: nhn-ror
+        clusterDomain:  managedcluster.local
+        rbac:
+          create: true
+        podSecurityPolicy:
+          create: true
+        persistence:
+          size: 32Gi
+        podSecurityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          fsGroup: 1001
+        containerSecurityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "2"
+          limits:
+            memory: "24Gi"
+            cpu: "3"
+        metrics:
+          enabled: true
+          username: metrics
+          password: metricscollector
+          collector: 
+            diagnosticdata: true
+            replicasetstatus: true
+            dbstats: true
+            topmetrics: false
+            indexstats: true
+            collstats: true
+            collstatsColls: ["nhn-ror.resources","nhn-ror.clusters","nhn-ror.apikeys" ]
+            indexstatsColls: ["nhn-ror.resources", ]
+          prometheusRule:
+            enabled: true
+            rules:
+              - alert: HighRequestLatency
+                expr: job:request_latency_seconds:mean5m{job="myjob"} > 0.5
+                for: 10m
+                labels:
+                  severity: page
+                annotations:
+                  summary: High request latency
+          serviceMonitor:
+            enabled: true
+            labels:
+              release: prometheus
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+  - group: v1
+    kind: Secret
+    name: ror-mongodb
+    namespace: nhn-ror
+    jsonPointers:
+    - /data/mongodb-root-password
+
+{{ end }}

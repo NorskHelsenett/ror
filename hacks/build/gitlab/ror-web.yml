@@ -1,0 +1,86 @@
+build-web:
+  stage: buildandtest
+  retry: 2
+  needs: 
+    - job: bump-version
+      optional: true
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/node:lts-alpine
+  rules:
+    - changes:
+        - 'web/admin/**/*'
+    - when: never
+  cache:
+    paths:
+      - node_modules/
+  before_script:
+    - cd web/admin
+    - apk update && apk add jq
+  script:
+    - mv package.json package-backup.json
+    - jq --arg rorversion $ROR_VERSION '.version = $rorversion' package-backup.json > package.json
+    - npm install
+    - npm run checkformat
+    - npm run build:prod
+    - touch isbuilt
+  artifacts:
+    paths:
+      - web/admin/dist
+      - web/admin/dist/ror-web
+      - web/admin/nginx
+      - web/admin/isbuilt
+    expire_in: 1 hour
+
+image-web:
+  stage: buildandtest
+  needs:
+    - build-web
+  extends: .build-container-kaniko
+  variables:
+    DOCKERFILE_PATH: '/web/admin'
+    CI_APPLICATION_IMAGE: '$HARBOR_HOST/ror/ror-web'
+    CI_APPLICATION_TAG: '$CI_COMMIT_SHORT_SHA'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      changes:
+        - 'web/admin/**/*'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - 'web/admin/**/*'
+    - when: never
+  dependencies:
+    - build-web
+
+gen-charts-web:
+    stage: buildandtest
+    dependencies:
+        - build-web
+    needs:
+        - job: image-web
+          optional: true
+        - job: build-web
+          artifacts: true
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+            - 'web/admin/**/*'
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+            - 'web/admin/**/*'
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "web/admin/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ror-web/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ror-web/values.yaml
+        - helm package charts/ror-web
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push web-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm
+        - fi

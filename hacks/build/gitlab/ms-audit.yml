@@ -1,0 +1,117 @@
+build-ms-audit:
+  stage: buildandtest
+  retry: 2
+  needs: 
+    - job: bump-version
+      optional: true
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'cmd/audit/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  script:
+    - go get ./...
+    - go get -t ./...
+    - go vet ./cmd/audit/...
+    - CGO_ENABLED=0 go build -o dist/audit -ldflags '-w -extldflags "-static"' cmd/audit/main.go
+    - touch cmd/audit/isbuilt
+  artifacts:
+    paths:
+      - dist/audit
+      - cmd/audit/isbuilt
+    expire_in: 1 hour
+
+test-ms-audit:
+  stage: buildandtest
+  retry: 2
+  needs: []
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  dependencies:
+    - build-ms-audit
+  rules:
+    - changes:
+        - 'cmd/audit/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  before_script:
+    - go get ./...
+    - go get -t ./...
+    - cd cmd/audit
+  script:
+    - go test -cover -v ./...
+
+image-ms-audit:
+  stage: buildandtest
+  extends: .build-container-kaniko
+  needs: 
+    - build-ms-audit
+    - test-ms-audit
+  variables:
+    DOCKERFILE_PATH: '/cmd/audit'
+    CONTEXT_PATH: '${CI_PROJECT_DIR}'
+    CI_APPLICATION_IMAGE: '$HARBOR_HOST/ror/ms-audit'
+    CI_APPLICATION_TAG: '$CI_COMMIT_SHORT_SHA'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      changes:
+        - 'cmd/audit/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - 'cmd/audit/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  dependencies:
+    - build-ms-audit
+
+
+gen-charts-ms-audit:
+    stage: buildandtest
+    dependencies:
+        - build-ms-audit
+    needs:
+        - job: build-ms-audit
+          optional: true
+          artifacts: true
+        - job: image-ms-audit
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - cmd/audit/**/*
+              - internal/**/*
+              - pkg/**/*
+              - 'go.mod'
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - cmd/audit/**/*
+              - internal/**/*
+              - pkg/**/*
+              - 'go.mod'
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "cmd/audit/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ms-audit/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ms-audit/values.yaml
+        - helm package charts/ms-audit
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push ms-audit-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm/
+        - fi

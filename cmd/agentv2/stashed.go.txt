@@ -1,0 +1,35 @@
+	
+	go func() {
+		services.GetEgressIp()
+		sig := <-sigs
+		_, _ = fmt.Println()
+		_, _ = fmt.Print(sig)
+		stop <- struct{}{}
+	}()
+	
+	
+	dynamicClient, err := clients.Kubernetes.GetDynamicClient()
+	if err != nil {
+		rlog.Error("failed to get dynamic client", err)
+	}
+
+	resourcekind := schema.GroupVersionResource{
+		Group:    "",
+		Version:  "v1",
+		Resource: "namespaces",
+	}
+
+	resource, _ := dynamicClient.Resource(resourcekind).Namespace("").Get(context.Background(), "nhn-ror", metav1.GetOptions{})
+
+	rorClient := clients.RorConfig.GetRorClient()
+	rorresourceset := rorkubernetes.NewResourceSetFromDynamicClient(resource)
+	_, _ = rorClient.Resource().Create(rorresourceset)
+
+
+	//interrregationreport, err := clusterinterregator.InterregateCluster(clients.Kubernetes)
+	// if err != nil {
+	// 	rlog.Fatal("could not interregate cluster", err)
+	// }
+	//rlog.Info("interregation report", rlog.String("provider", interrregationreport.Provider), rlog.String("clustername", interrregationreport.ClusterName), rlog.String("workspace", interrregationreport.Workspace), rlog.String("datacenter", interrregationreport.Datacenter))
+
+

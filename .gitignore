@@ -19,3 +19,29 @@
 
 # Go workspace file
 go.work
+
+.vscode
+.idea/
+*.swp
+
+**.DS_Store**
+**node_modules**
+**__debug_bin**
+
+hacks/data/dex/dbs/dex.db
+hacks/data/dex/configs/dex-config.yaml
+hacks/data/mongodb
+hacks/data/rabbitmq
+hacks/data/vault
+hacks/data/secrets
+hacks/data/redis
+hacks/data/talos/*/**
+hacks/data/influxdb2
+hacks/docker-compose/vault/.env
+
+dist
+update-charts
+*.code-workspace
+charts/*.tgz
+~
+**/isbuilt

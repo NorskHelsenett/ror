@@ -1,0 +1,29 @@
+ARG DOCKER_MIRROR
+
+FROM ${DOCKER_MIRROR}golang:alpine AS builder
+WORKDIR /app
+COPY . .
+
+RUN go get ./...
+RUN CGO_ENABLED=0 go build -o mstalos -ldflags '-w -extldflags "-static"' cmd/talos/main.go
+
+FROM ${DOCKER_MIRROR}golang:alpine
+
+RUN apk update && apk add ca-certificates busybox-extras curl openssl bash docker-cli
+
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+RUN chmod 755 kubectl
+RUN mv kubectl /usr/local/bin/kubectl
+
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+RUN chmod +x get_helm.sh
+RUN sh ./get_helm.sh
+
+RUN mkdir /configs
+RUN chmod -R 777 /configs
+
+RUN curl -sL https://talos.dev/install | sh
+
+COPY --from=builder /app/mstalos /bin/mstalos
+
+ENTRYPOINT ["/bin/mstalos"]

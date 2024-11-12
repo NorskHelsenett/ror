@@ -1,0 +1,154 @@
+<div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+  <h1 class="flex-grow text-2xl font-semibold">{{ 'pages.admin.auditlogs.title' | translate }}</h1>
+  <button
+    (click)="fetchAuditlogs(lastLazyLoad)"
+    class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+  >
+    {{ 'common.refresh' | translate }}
+  </button>
+</div>
+
+<div class="dark:bg-darker rounded-md bg-white xl:m-2 xl:p-2">
+  <p-table
+    *ngIf="!auditlogsError; else error"
+    [value]="(auditlogs$ | async)?.data"
+    dataKey="id"
+    [paginator]="true"
+    [rows]="25"
+    [rowsPerPageOptions]="rowsPerPage"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    sortField="metadata.timestamp"
+    [sortOrder]="-1"
+    [lazy]="true"
+    (onLazyLoad)="fetchAuditlogs($event)"
+    [loading]="loading"
+    [totalRecords]="(auditlogs$ | async)?.totalCount"
+    [globalFilterFields]="['metadata.user.name', 'metadata.category']"
+    responsiveLayout="stack"
+    styleClass="p-datatable-sm"
+    stateStorage="local"
+    stateKey="auditlogs-table"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 5rem" class="p-1"></th>
+        <th pSortableColumn="metadata.category" class="p-1">
+          {{ 'pages.admin.auditlogs.table.column.category' | translate }}
+          <p-sortIcon field="metadata.category"></p-sortIcon>
+        </th>
+        <th pSortableColumn="metadata.action" class="p-1">
+          {{ 'pages.admin.auditlogs.table.column.action' | translate }}
+          <p-sortIcon field="metadata.action"></p-sortIcon>
+        </th>
+        <th pSortableColumn="metadata.user.email" class="p-1">
+          {{ 'pages.admin.auditlogs.table.column.user' | translate }}
+          <p-sortIcon field="metadata.user.email"></p-sortIcon>
+        </th>
+        <th pSortableColumn="metadata.timestamp" class="p-1">
+          {{ 'pages.admin.auditlogs.table.column.date' | translate }}
+          <p-sortIcon field="metadata.timestamp"></p-sortIcon>
+        </th>
+      </tr>
+      <tr *ngIf="{ metadata: metadata$ | async } as context">
+        <th style="width: 5rem" class="p-1"></th>
+        <th class="p-1">
+          <p-columnFilter field="metadata.category" matchMode="in" [showMenu]="false">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-multiSelect
+                *ngIf="context.metadata"
+                [ngModel]="value"
+                appendTo="body"
+                [options]="context.metadata['categories'].sort()"
+                placeholder="{{ 'common.any' | translate }}"
+                (onChange)="filter($event.value)"
+                optionLabel=""
+                [maxSelectedLabels]="1"
+                [selectedItemsLabel]="'{0} items'"
+                [filter]="false"
+              >
+                <ng-template let-option pTemplate="item">
+                  <div class="">
+                    <span class="">{{ option }}</span>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+        <th class="p-1">
+          <p-columnFilter field="metadata.action" matchMode="in" [showMenu]="false">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-multiSelect
+                *ngIf="context.metadata"
+                [ngModel]="value"
+                appendTo="body"
+                [options]="context.metadata['actions'].sort()"
+                placeholder="{{ 'common.any' | translate }}"
+                (onChange)="filter($event.value)"
+                optionLabel=""
+                [maxSelectedLabels]="1"
+                [selectedItemsLabel]="'{0} items'"
+                [filter]="false"
+              >
+                <ng-template let-option pTemplate="item">
+                  <div class="">
+                    <span class="">{{ option }}</span>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+        <th class="p-1">
+          <p-columnFilter type="text" field="metadata.user.email" matchMode="contains" [showMenu]="false"></p-columnFilter>
+        </th>
+        <th class="p-1"></th>
+        <th class="p-1"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-auditlog let-rowIndex="rowIndex" let-expanded="expanded" let-columns="columns">
+      <tr>
+        <td>
+          <button
+            type="button"
+            pButton
+            pRipple
+            [pRowToggler]="auditlog"
+            class="p-button-text p-button-rounded p-button-plain"
+            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+          ></button>
+        </td>
+        <td>{{ auditlog?.metadata?.category }}</td>
+        <td>{{ auditlog?.metadata?.action }}</td>
+        <td>{{ auditlog?.metadata?.user?.email }}</td>
+        <td>{{ auditlog?.metadata?.timestamp | time: 'DD. MMM YYYY HH:mm:ss' }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-auditlog let-rowIndex="rowIndex">
+      <tr>
+        <td colspan="6">
+          <div class="p-3">
+            <div class="flex flex-col lg:flex-row">
+              <p-fieldset class="flex-grow" legend="{{ 'pages.admin.auditlogs.view.new.title' | translate }}" [toggleable]="true" [collapsed]="false">
+                <div [innerHTML]="auditlog?.data?.new_object | highlightDifference: auditlog?.data?.old_object : 0"></div>
+              </p-fieldset>
+              <p-fieldset class="flex-grow" legend="{{ 'pages.admin.auditlogs.view.old.title' | translate }}" [toggleable]="true" [collapsed]="false">
+                <div [innerHTML]="auditlog?.data?.old_object | highlightDifference: auditlog?.data?.new_object : 1"></div>
+              </p-fieldset>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <ng-template #error>
+    <ng-container>
+      <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+        <span class="p-2 text-red-800">
+          {{ 'common.errorLoading' | translate }} <br />
+          {{ ('common.error' | translate) + ': ' + auditlogsError }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

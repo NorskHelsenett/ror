@@ -1,0 +1,92 @@
+<div class="grid gap-8 p-4">
+  <div class="dark:bg-darker flex justify-between overflow-x-auto rounded-md bg-white p-4">
+    <div class="dark:bg-darker w-full rounded-md bg-white">
+      <form class="flex flex-col gap-4" [formGroup]="routeForm">
+        <div class="flex flex-col">
+          <label class="text-xl font-bold" for="apiVersion">{{ 'pages.clusters.details.notifications.notificationkind' | translate }}</label>
+          <p-dropdown
+            formControlName="messageType"
+            [options]="dropdownOptions"
+            optionLabel="label"
+            [showClear]="false"
+            [placeholder]="dropdownOptions[0].label"
+          ></p-dropdown>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold">{{ 'pages.clusters.details.notifications.receivers' | translate }}</h2>
+          <h3 class="text-lg font-semibold">{{ 'pages.clusters.details.notifications.slack' | translate }}</h3>
+          <ng-container formGroupName="receivers">
+            <div class="flex flex-col" formArrayName="slack">
+              @for (slackReceiver of slackReceivers.controls; track $index) {
+                <label>{{ 'pages.clusters.details.notifications.channelid' | translate }}</label>
+                <ng-container [formGroupName]="$index">
+                  <div class="flex flex-col">
+                    <input class="p-inputtext-lg border text-lg" type="text" pInputText formControlName="channelId" />
+                    <div class="flex gap-2 m-2">
+                      @if ($last) {
+                        <button
+                          pButton
+                          pRipple
+                          class="text-white p-1 rounded-md bg-green-700 hover:bg-green-600 focus:bg-green-600"
+                          (click)="addSlackReceiver('')"
+                          [disabled]="!routeForm.valid"
+                        >
+                          {{ 'pages.clusters.details.notifications.addSlackChannel' | translate }}
+                        </button>
+                        @if (!$first) {
+                          <button
+                            pButton
+                            pRipple
+                            class="text-white p-1 rounded-md bg-red-700 hover:bg-red-600 focus:bg-red-600"
+                            (click)="removeSlackReceiver($index)"
+                          >
+                            {{ 'pages.clusters.details.notifications.removeSlackChannel' | translate }}
+                          </button>
+                        }
+                      }
+                    </div>
+                  </div>
+                </ng-container>
+              }
+            </div>
+          </ng-container>
+        </div>
+        <div class="flex gap-2">
+          @if (create) {
+            <button
+              pButton
+              pRipple
+              class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white hover:bg-green-900 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:bg-gray-500 disabled:hover:bg-gray-800"
+              type="submit"
+              (click)="onSubmit()"
+              [disabled]="!routeForm.valid"
+            >
+              @if (result$ | async) {}
+              {{ 'common.create' | translate }}
+            </button>
+          } @else {
+            <button
+              pButton
+              pRipple
+              class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white hover:bg-green-900 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white disabled:bg-gray-500 disabled:hover:bg-gray-800"
+              type="submit"
+              (click)="onSubmit()"
+              [disabled]="!routeForm.valid"
+            >
+              @if (result$ | async) {}
+              {{ 'common.update' | translate }}
+            </button>
+          }
+          <button
+            pButton
+            pRipple
+            class="focus:ring-primary dark:focus:ring-offset-dark rounded-md px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white bg-gray-500 hover:bg-gray-700"
+            (click)="cancel()"
+          >
+            {{ 'common.cancel' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

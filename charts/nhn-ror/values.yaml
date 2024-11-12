@@ -1,0 +1,130 @@
+web:
+  enabled: true
+  host: ror.sky.test.nhn.no
+  apiUrl: https://api.ror.sky.test.nhn.no
+  authUrl: https://auth.sky.nhn.no/dex
+api:
+  enabled: true
+  tanzuAuthBaseUrl: "http://nhn-ror-ms-tanzu-auth.nhn-ror.svc:8080"
+  fqdn: api.ror.sky.test.nhn.no
+  tracing:
+    enabled: false
+  http:
+    timeout: 30s
+    mode: "debug"
+ms-auth:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-nhn:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-slack:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-switchboard:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    replicas:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ror-docs:
+  enabled: true
+ms-audit:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-tanzu:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+ms-tanzu-auth:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 1
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: false
+
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 85
+
+ms-vulnerability:
+  enabled: true
+  resources:
+    limits:
+      cpu: 1
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi

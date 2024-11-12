@@ -1,0 +1,54 @@
+{
+  "name": "Release Operate Report",
+  "short_name": "ROR",
+  "description": "ROR (Release-Operate-Report) by NHN is a metadata aggregator and configuration management interface to manage multiple clusters over multiple datacenters and/or clouds.",
+  "theme_color": "#015945",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "id": "/",
+  "icons": [
+    {
+      "src": "assets/icons/ror/72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/ror/96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/ror/128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/ror/144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/ror/152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/ror/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/ror/384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/ror/512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

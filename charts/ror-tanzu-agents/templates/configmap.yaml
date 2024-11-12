@@ -1,0 +1,19 @@
+{{- range .Values.agents }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ror-tanzu-agent-env
+  namespace: {{ .name }}
+data:
+  HTTP_PORT: "9999"
+  ROLE: "ror-tanzu-agent"
+  LOGIN_EVERY_MINUTE: "30"
+  DATACENTER: {{ .cluster }}
+  RABBITMQ_HOST: "rabbitmq-ror.nhn-ror.svc"
+  RABBITMQ_PORT: "5672"
+  VAULT_URL: "http://ror-vault-active.nhn-ror.svc:8200"
+  ROR_URL: "https://api.ror.sky.test.nhn.no"
+  DATACENTER_URL: {{.controllerhost}}
+  DELETE_KUBECONFIG: "true"
+{{ end}}

@@ -1,0 +1,273 @@
+services:
+  ms-nhn:
+    build:
+      context: ../../
+      dockerfile: cmd/nhn/Dockerfile.compose
+    restart: always
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+      opentelemetry-collector:
+        condition: service_started
+    links:
+      - dex
+      - rabbitmq
+      - vault
+    environment:
+      - LOG_LEVEL=TRACE
+      - ENVIRONMENT=development
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
+      - ROLE=ror-ms-nhn
+    volumes:
+      - ../data/secrets:/tmp/secrets:rw
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://api:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ms-auth:
+    build:
+      context: ../../
+      dockerfile: cmd/auth/Dockerfile.compose
+    restart: always
+    depends_on:
+      dex:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    links:
+      - dex
+      - rabbitmq
+      - vault
+    environment:
+      - LOG_LEVEL=TRACE
+      - ENVIRONMENT=development
+      - DEX_PORT=5556
+      - DEX_GRPC_PORT=5557
+      - DEX_HOST=dex
+      - DEX_TLS=false
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - ROLE=ror-ms-auth
+    volumes:
+      - ../data/secrets:/tmp/secrets:rw
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://api:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ms-slack:
+    build:
+      context: ../../
+      dockerfile: cmd/slack/Dockerfile.compose
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - vault
+    environment:
+      - LOG_LEVEL=debug
+      - ENVIRONMENT=development
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
+      - ROLE=ror-ms-slack
+    volumes:
+      - ../data/secrets:/tmp/secrets:rw
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://api:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ms-switchboard:
+    build:
+      context: ../../
+      dockerfile: cmd/switchboard/Dockerfile.compose
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - vault
+    environment:
+      - LOG_LEVEL=TRACE
+      - ENVIRONMENT=development
+      - MONGODB_HOST=mongodb
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
+      - ROLE=ror-ms-switchboard
+    volumes:
+      - ../data/secrets:/tmp/secrets:rw
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://blahblah123:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ms-audit:
+    build:
+      context: ../../
+      dockerfile: cmd/audit/Dockerfile.compose
+    restart: always
+    depends_on:
+      dex:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+      opentelemetry-collector:
+        condition: service_started
+    links:
+      - dex
+      - rabbitmq
+      - vault
+      - mongodb
+    environment:
+      - LOG_LEVEL=DEBUG
+      - ENVIRONMENT=development
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
+      - ROLE=ror-ms-audit
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=nhn-ror
+      - MONGODB_HOST=mongodb
+    volumes:
+      - ../data/secrets:/tmp/secrets:rw
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://api:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  ms-kind:
+    build:
+      context: ../../
+      dockerfile: cmd/kind/Dockerfile.compose
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - vault
+    environment:
+      - LOG_LEVEL=DEBUG
+      - ENVIRONMENT=development
+      - DEVELOPMENT=true
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
+      - ROLE=ror-ms-kind
+      - API_KEY=aa7c4672-ae64-4635-b747-d2cb6dfa846e
+      - ROR_URL=http://host.docker.internal:10000
+      - KIND_ROR_URL=http://host.docker.internal:10000
+      - ROR_OPERATOR_NAMESPACE=ror
+      - ROR_OPERATOR_OCI_IMAGE=oci://docker.io/nhnhelm/ror-operator
+      - ROR_OPERATOR_OCI_IMAGE_VERSION=0.1.*
+      - ROR_OPERATOR_IMAGE=nhnsdi/ror-operator
+      - CONTAINER_REG_PREFIX=docker.io/
+      - DEFAULT_K8S_IMAGE=kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245
+      - CONFIG_FOLDER_PATH=/configs
+      - KUBECTL_BASE_URL=https://host.docker.internal
+    volumes:
+      - ../data/secrets:/tmp/secrets:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://api:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ms-talos:
+    build:
+      context: ../../
+      dockerfile: cmd/talos/Dockerfile.compose
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - vault
+    environment:
+      - LOG_LEVEL=DEBUG
+      - ENVIRONMENT=development
+      - DEVELOPMENT=false
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=rabbitmq
+      - VAULT_URL=http://vault:8200
+      - VAULT_TOKEN_TTL=1h
+      - NO_PROXY=*.nhn.no, vault
+      - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
+      - ROLE=ror-ms-talos
+      - API_KEY=ddc66609-b406-4119-9307-66432f3c73f0
+      - ROR_URL=http://host.docker.internal:10000
+      - KIND_ROR_URL=http://host.docker.internal:10000
+      - ROR_OPERATOR_NAMESPACE=ror
+      - ROR_OPERATOR_OCI_IMAGE=oci://docker.io/nhnhelm/ror-operator
+      - ROR_OPERATOR_OCI_IMAGE_VERSION=0.1.*
+      - ROR_OPERATOR_IMAGE=nhnsdi/ror-operator
+      - CONTAINER_REG_PREFIX=docker.io/
+      - KUBECTL_BASE_URL=https://host.docker.internal
+      - ROR_URL=http://host.docker.internal:10000
+      - TALOS_ROR_URL=http://host.docker.internal:10000
+      - CONFIG_FOLDER_PATH=/configs
+      - TALOS_PATCH_FOLDER=/patches
+    volumes:
+      - ../data/talos:/configs:rw
+      - ../../cmd/talos/talospatches:/patches:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://api:8080']
+      interval: 30s
+      timeout: 10s
+      retries: 5

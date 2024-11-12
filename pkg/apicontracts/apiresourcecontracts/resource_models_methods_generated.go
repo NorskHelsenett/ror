@@ -1404,32 +1404,32 @@ func (m ResourceVulnerabilityevents) GetByLabels(search map[string]string) []Res
 	return Response
 }
 
-// Function to return VulnerabilityWhitelist resource by name.
-func (m ResourceVulnerabilitywhitelists) GetByName(search string) ResourceVulnerabilityWhitelist {
-	for _, resource := range m.Vulnerabilitywhitelists {
+// Function to return VirtualMachine resource by name.
+func (m ResourceVirtualmachines) GetByName(search string) ResourceVirtualMachine {
+	for _, resource := range m.Virtualmachines {
 		if resource.Metadata.Name == search {
 			return resource
 		}
 	}
-	var emptyResponse ResourceVulnerabilityWhitelist
+	var emptyResponse ResourceVirtualMachine
 	return emptyResponse
 }
 
-// Function to return VulnerabilityWhitelist resource by uid.
-func (m ResourceVulnerabilitywhitelists) GetByUid(search string) ResourceVulnerabilityWhitelist {
-	for _, res := range m.Vulnerabilitywhitelists {
+// Function to return VirtualMachine resource by uid.
+func (m ResourceVirtualmachines) GetByUid(search string) ResourceVirtualMachine {
+	for _, res := range m.Virtualmachines {
 		if res.Metadata.Uid == search {
 			return res
 		}
 	}
-	var emptyResponse ResourceVulnerabilityWhitelist
+	var emptyResponse ResourceVirtualMachine
 	return emptyResponse
 }
 
-// Function to return VulnerabilityWhitelist resource by label.
-func (m ResourceVulnerabilitywhitelists) GetByLabels(search map[string]string) []ResourceVulnerabilityWhitelist {
-	var Response []ResourceVulnerabilityWhitelist
-	for _, res := range m.Vulnerabilitywhitelists {
+// Function to return VirtualMachine resource by label.
+func (m ResourceVirtualmachines) GetByLabels(search map[string]string) []ResourceVirtualMachine {
+	var Response []ResourceVirtualMachine
+	for _, res := range m.Virtualmachines {
 		if len(res.Metadata.Labels) != 0 {
 			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
 				Response = append(Response, res)

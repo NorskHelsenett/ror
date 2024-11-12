@@ -208,9 +208,9 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetVulnerabilityEvent(res)
 		r.SetCommonInterface(res)
 
-	case "general.ror.internal/v1alpha1, Kind=VulnerabilityWhitelist":
-		res := newVulnerabilityWhitelistFromDynamicClient(input)
-		r.SetVulnerabilityWhitelist(res)
+	case "general.ror.internal/v1alpha1, Kind=VirtualMachine":
+		res := newVirtualMachineFromDynamicClient(input)
+		r.SetVirtualMachine(res)
 		r.SetCommonInterface(res)
 
 	default:
@@ -748,10 +748,10 @@ func newVulnerabilityEventFromDynamicClient(obj *unstructured.Unstructured) *ror
 	return &nr
 }
 
-// newVulnerabilityWhitelistFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// newVirtualMachineFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newVulnerabilityWhitelistFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceVulnerabilityWhitelist {
-	nr := rortypes.ResourceVulnerabilityWhitelist{}
+func newVirtualMachineFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceVirtualMachine {
+	nr := rortypes.ResourceVirtualMachine{}
 	nrjson, err := obj.MarshalJSON()
 	if err != nil {
 		rlog.Error("Could not mashal unstructired to json", err)
@@ -759,7 +759,7 @@ func newVulnerabilityWhitelistFromDynamicClient(obj *unstructured.Unstructured) 
 
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
-		rlog.Error("Could not unmarshal json to VulnerabilityWhitelist", err)
+		rlog.Error("Could not unmarshal json to VirtualMachine", err)
 	}
 	return &nr
 }

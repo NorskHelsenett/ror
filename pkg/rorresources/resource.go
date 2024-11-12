@@ -46,7 +46,7 @@ type Resource struct {
 	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty" bson:"route,omitempty"`
 	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
 	VulnerabilityEventResource         *rortypes.ResourceVulnerabilityEvent         `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
-	VulnerabilityWhitelistResource     *rortypes.ResourceVulnerabilityWhitelist     `json:"vulnerabilitywhitelist,omitempty" bson:"vulnerabilitywhitelist,omitempty"`
+	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -201,8 +201,8 @@ func (r *Resource) SetVulnerabilityEvent(res *rortypes.ResourceVulnerabilityEven
 	r.VulnerabilityEventResource = res
 }
 
-func (r *Resource) SetVulnerabilityWhitelist(res *rortypes.ResourceVulnerabilityWhitelist) {
-	r.VulnerabilityWhitelistResource = res
+func (r *Resource) SetVirtualMachine(res *rortypes.ResourceVirtualMachine) {
+	r.VirtualMachineResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -370,9 +370,9 @@ func (r *Resource) VulnerabilityEvent() rortypes.VulnerabilityEventinterface {
 	return r.VulnerabilityEventResource
 }
 
-// VulnerabilityWhitelist is a wrapper for the underlying resource, it provides a VulnerabilityWhitelistinterface to work with vulnerabilitywhitelists
-func (r *Resource) VulnerabilityWhitelist() rortypes.VulnerabilityWhitelistinterface {
-	return r.VulnerabilityWhitelistResource
+// VirtualMachine is a wrapper for the underlying resource, it provides a VirtualMachineinterface to work with VirtualMachines
+func (r *Resource) VirtualMachine() rortypes.VirtualMachineinterface {
+	return r.VirtualMachineResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

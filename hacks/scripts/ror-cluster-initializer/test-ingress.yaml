@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ako.vmware.com/controller-cluster-uuid: ""
+    ako.vmware.com/host-fqdn-vs-uuid-map: '{"test.some.cool.url.sky.nhn.no":"virtualservice-a8e01b64-7392-4e6a-905e-b8087ea41a3c"}'
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  generation: 1
+  labels:
+    app.kubernetes.io/instance: nhn-dns-updater
+  name: test-ingress
+  namespace: test
+spec:
+  ingressClassName: avi-ingress-class-helsenett
+  rules:
+    - host: test.some.cool.url.sky.nhn.no
+      http:
+        paths:
+          - backend:
+              service:
+                name: some-cool-service
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - test.some.bad.url.sky.nhn.no
+      secretName: cool-tls
+status:
+  loadBalancer:
+    ingress:
+      - hostname: test.some.cool.url.sky.nhn.no
+        ip: 10.204.15.201

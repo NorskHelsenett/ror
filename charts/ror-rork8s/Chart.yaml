@@ -1,0 +1,8 @@
+apiVersion: v2
+name: rork8s
+description: RORK8S is a web application for showing of ROR
+
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+icon: https://raw.githubusercontent.com/NorskHelsenett/ror/main/media/ror.svg

@@ -1,0 +1,22 @@
+{{ if .Values.ror.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nhn-ror
+  namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.slack: utv-ror-events
+spec:
+  project: nhn-ror
+  source:
+    path: charts/nhn-ror
+    repoURL: https://helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git
+    targetRevision: develop
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nhn-ror
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+{{ end }}

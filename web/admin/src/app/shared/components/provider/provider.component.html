@@ -1,0 +1,145 @@
+<ng-container [ngSwitch]="true">
+  <div
+    *ngSwitchCase="
+      providerTypeOrName === 'tanzu' || providerTypeOrName === 'Tanzu' || providerTypeOrName === 'Privat sky' || providerTypeOrName === 'Privat Sky'
+    "
+    class="flex gap-2"
+  >
+    <img [ngClass]="iconSize === '' ? 'w-6' : iconSize" ngSrc="/assets/icons/tanzu/tanzu.png" alt="Tanzu" width="6" height="6" /><span
+      *ngIf="showText"
+      >{{ providerTypeOrName | titlecase }}</span
+    >
+  </div>
+  <div *ngSwitchCase="providerTypeOrName === 'k3d' || providerTypeOrName === 'K3d' || providerTypeOrName === 'K3D'" class="flex gap-2">
+    <img
+      *ngIf="showIcon"
+      [ngClass]="iconSize === '' ? 'w-6' : iconSize"
+      ngSrc="/assets/icons/k3d/k3d_logo_black_blue.svg"
+      width="6"
+      height="6"
+      alt="K3D"
+    /><span *ngIf="showText">{{ providerTypeOrName | titlecase }}</span>
+  </div>
+  <div *ngSwitchCase="providerTypeOrName === 'kind' || providerTypeOrName === 'KIND' || providerTypeOrName === 'Kind'" class="flex gap-2">
+    <img
+      *ngIf="showIcon"
+      [ngClass]="iconSize === '' ? 'w-6' : iconSize"
+      ngSrc="/assets/icons/kind/kind-logo.png"
+      width="6"
+      height="6"
+      alt="K3D"
+    /><span *ngIf="showText">{{ providerTypeOrName | titlecase }}</span>
+  </div>
+  <div *ngSwitchCase="providerTypeOrName === 'talos' || providerTypeOrName === 'TALOS' || providerTypeOrName === 'Talos'" class="flex gap-2">
+    <img
+      *ngIf="showIcon"
+      [ngClass]="iconSize === '' ? 'w-6' : iconSize"
+      ngSrc="/assets/icons/talos/talos-logo.svg"
+      width="6"
+      height="6"
+      alt="K3D"
+    /><span *ngIf="showText">{{ providerTypeOrName | titlecase }}</span>
+  </div>
+  <div
+    *ngSwitchCase="providerTypeOrName === 'azure' || providerTypeOrName === 'Azure' || providerTypeOrName === 'AKS' || providerTypeOrName === 'aks'"
+    class="flex gap-2"
+  >
+    <svg [ngClass]="iconSize === '' ? 'w-6' : iconSize" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" *ngIf="showIcon">
+      <defs>
+        <linearGradient
+          id="e399c19f-b68f-429d-b176-18c2117ff73c"
+          x1="-1032.172"
+          x2="-1059.213"
+          y1="145.312"
+          y2="65.426"
+          gradientTransform="matrix(1 0 0 -1 1075 158)"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#114a8b" />
+          <stop offset="1" stop-color="#0669bc" />
+        </linearGradient>
+        <linearGradient
+          id="ac2a6fc2-ca48-4327-9a3c-d4dcc3256e15"
+          x1="-1023.725"
+          x2="-1029.98"
+          y1="108.083"
+          y2="105.968"
+          gradientTransform="matrix(1 0 0 -1 1075 158)"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-opacity=".3" />
+          <stop offset=".071" stop-opacity=".2" />
+          <stop offset=".321" stop-opacity=".1" />
+          <stop offset=".623" stop-opacity=".05" />
+          <stop offset="1" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient
+          id="a7fee970-a784-4bb1-af8d-63d18e5f7db9"
+          x1="-1027.165"
+          x2="-997.482"
+          y1="147.642"
+          y2="68.561"
+          gradientTransform="matrix(1 0 0 -1 1075 158)"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#3ccbf4" />
+          <stop offset="1" stop-color="#2892df" />
+        </linearGradient>
+      </defs>
+      <path
+        fill="url(#e399c19f-b68f-429d-b176-18c2117ff73c)"
+        d="M33.338 6.544h26.038l-27.03 80.087a4.152 4.152 0 0 1-3.933 2.824H8.149a4.145 4.145 0 0 1-3.928-5.47L29.404 9.368a4.152 4.152 0 0 1 3.934-2.825z"
+      />
+      <path fill="#0078d4" d="M71.175 60.261h-41.29a1.911 1.911 0 0 0-1.305 3.309l26.532 24.764a4.171 4.171 0 0 0 2.846 1.121h23.38z" />
+      <path
+        fill="url(#ac2a6fc2-ca48-4327-9a3c-d4dcc3256e15)"
+        d="M33.338 6.544a4.118 4.118 0 0 0-3.943 2.879L4.252 83.917a4.14 4.14 0 0 0 3.908 5.538h20.787a4.443 4.443 0 0 0 3.41-2.9l5.014-14.777 17.91 16.705a4.237 4.237 0 0 0 2.666.972H81.24L71.024 60.261l-29.781.007L59.47 6.544z"
+      />
+      <path
+        fill="url(#a7fee970-a784-4bb1-af8d-63d18e5f7db9)"
+        d="M66.595 9.364a4.145 4.145 0 0 0-3.928-2.82H33.648a4.146 4.146 0 0 1 3.928 2.82l25.184 74.62a4.146 4.146 0 0 1-3.928 5.472h29.02a4.146 4.146 0 0 0 3.927-5.472z"
+      />
+    </svg>
+    <span *ngIf="showText">{{ providerTypeOrName | titlecase }}</span>
+  </div>
+  <div *ngSwitchDefault class="flex dark:fill-white gap-2">
+    <svg
+      *ngIf="showIcon"
+      [ngClass]="iconSize === '' ? 'w-6' : iconSize"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      viewBox="0 0 302.967 302.967"
+    >
+      <g>
+        <g>
+          <g>
+            <path
+              d="M151.483,302.967C67.956,302.967,0,235.017,0,151.483S67.956,0,151.483,0
+				s151.483,67.956,151.483,151.483S235.017,302.967,151.483,302.967z M151.483,24.416c-70.066,0-127.067,57.001-127.067,127.067
+				s57.001,127.067,127.067,127.067s127.067-57.001,127.067-127.067S221.555,24.416,151.483,24.416z"
+            />
+          </g>
+          <g>
+            <g>
+              <path
+                d="M116.586,118.12c1.795-4.607,4.297-8.588,7.511-11.961c3.225-3.389,7.114-6.016,11.667-7.898
+					c4.547-1.904,9.633-2.845,15.262-2.845c7.261,0,13.32,0.995,18.183,2.997c4.857,1.996,8.768,4.482,11.738,7.441
+					c2.964,2.97,5.091,6.168,6.369,9.584c1.273,3.432,1.915,6.636,1.915,9.595c0,4.901-0.642,8.947-1.915,12.118
+					c-1.278,3.171-2.866,5.88-4.759,8.131c-1.898,2.252-3.987,4.172-6.293,5.755c-2.295,1.588-4.471,3.171-6.516,4.759
+					c-2.045,1.583-3.862,3.394-5.445,5.439c-1.588,2.04-2.589,4.601-2.991,7.664v5.831H140.6v-6.908
+					c0.305-4.395,1.153-8.072,2.529-11.036c1.382-2.964,2.991-5.499,4.83-7.598c1.844-2.089,3.786-3.911,5.836-5.445
+					c2.04-1.539,3.927-3.073,5.673-4.591c1.73-1.545,3.144-3.225,4.221-5.069c1.071-1.833,1.556-4.15,1.452-6.908
+					c0-4.705-1.148-8.18-3.454-10.427c-2.295-2.257-5.493-3.378-9.589-3.378c-2.758,0-5.134,0.533-7.131,1.605
+					s-3.628,2.513-4.911,4.302c-1.278,1.795-2.225,3.894-2.834,6.288c-0.615,2.415-0.919,4.982-0.919,7.756h-22.55
+					C113.85,127.785,114.791,122.732,116.586,118.12z M162.536,183.938v23.616h-24.09v-23.616H162.536z"
+              />
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    <span *ngIf="showText">{{ 'common.unknown' | translate }}</span>
+    <!-- <span>{{ providerTypeOrName }}</span> -->
+  </div>
+</ng-container>

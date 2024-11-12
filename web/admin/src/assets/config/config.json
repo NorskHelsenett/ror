@@ -1,0 +1,22 @@
+{
+  "auth": {
+    "issuer": "http://localhost:5556/dex",
+    "clientId": "ror.sky.test.nhn.no",
+    "redirectUri": "/auth/callback",
+    "scope": "profile email groups",
+    "response_type": "id_token token",
+    "requireHttps": false,
+    "strictDiscoveryDocumentValidation": false
+  },
+  "regex": {
+    "forms": "^[@()\\/:?\\r\\n.,a-zA-Z æøåÆØÅ0-9_-]+$"
+  },
+  "rowsPerPage": [10, 25, 50, 75, 100],
+  "rows": 25,
+  "rorApi": "http://localhost:10000",
+  "sse": {
+    "postfixUrl": "/v1/events/listen",
+    "method": "GET",
+    "timeout": 30000
+  }
+}

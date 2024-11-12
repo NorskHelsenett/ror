@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ms-auth.fullname" . }}
+  labels:
+    {{- include "ms-auth.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ms-auth.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ms-auth.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ms-auth.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LOG_LEVEL
+              value: {{ default "INFO" .Values.auth.logLevel | quote }}
+            - name: ENVIRONMENT
+              value: {{ default "Production" .Values.auth.environment | quote }}
+            - name: DEX_HOST
+              value: {{ default "auth.sky.nhn.no"  .Values.auth.dexHost | quote }}
+            - name: DEX_PORT
+              value: {{ default "5556" .Values.auth.dexPort | quote }}
+            - name: DEX_GRPC_PORT
+              value: {{ default "5557" .Values.auth.dexGrpcPort | quote }}
+            - name: DEX_TLS
+              value: {{ default "false" .Values.auth.dexTLS | quote }}
+            - name: DEX_CERT_FILEPATH
+              value: {{ default "/certs/dex.crt" .Values.auth.dexCertFilepath | quote }}
+            - name: RABBITMQ_HOST
+              value: {{ default "rabbitmq-ror.nhn-ror.svc" .Values.auth.rabbitmqHost | quote }}
+            - name: RABBITMQ_PORT
+              value: {{ default "5672" .Values.auth.rabbitmqPort | quote }}
+            - name: VAULT_URL
+              value: {{ default "http://ror-vault-active.nhn-ror.svc:8200" .Values.auth.vaultUrl | quote }}
+            - name: VAULT_TOKEN_TTL
+              value: {{ default "24h" .Values.auth.vaultTokenTtl | quote }}
+            - name: VAULT_TOKEN_K8S_PATH
+              value: {{ default "/var/run/secrets/kubernetes.io/serviceaccount/token" .Values.auth.vaultTokenK8sPath | quote }}
+            - name: ROLE
+              value: {{ default "ror-ms-auth" .Values.auth.role }}
+            - name: OPENTELEMETRY_COLLECTOR_ENDPOINT
+              value: "ror-opentelemetry-collector.nhn-ror.svc:4317"
+          volumeMounts:
+            - name: certificate-volume
+              mountPath: /certs/dex.crt
+              subPath: dex.crt
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: certificate-volume
+          configMap:
+            name: ms-auth-cm-env
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

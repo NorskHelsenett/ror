@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ms-audit.fullname" . }}
+  labels:
+    {{- include "ms-audit.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ms-audit.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ms-audit.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ms-audit.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LOG_LEVEL
+              value: {{ default "INFO" .Values.nhn.logLevel | quote }}
+            - name: ENVIRONMENT
+              value: {{ default "Production" .Values.nhn.environment | quote }}
+            - name: RABBITMQ_HOST
+              value: {{ default "rabbitmq-ror.nhn-ror.svc" .Values.nhn.rabbitmqHost | quote }}
+            - name: RABBITMQ_PORT
+              value: {{ default "5672" .Values.nhn.rabbitmqPort | quote }}
+            - name: VAULT_URL
+              value: {{ default "http://ror-vault-active.nhn-ror.svc:8200" .Values.nhn.vaultUrl | quote }}
+            - name: VAULT_TOKEN_TTL
+              value: {{ default "24h" .Values.nhn.vaultTokenTtl | quote }}
+            - name: VAULT_TOKEN_K8S_PATH
+              value: {{ default "/var/run/secrets/kubernetes.io/serviceaccount/token" .Values.nhn.vaultTokenK8sPath | quote }}
+            - name: ROLE
+              value: {{ default "ror-ms-audit" .Values.nhn.role | quote }}
+            - name: OPENTELEMETRY_COLLECTOR_ENDPOINT
+              value: "ror-opentelemetry-collector.nhn-ror.svc:4317"
+            - name: MONGODB_PORT
+              value: {{ default "27017" .Values.nhn.mongodbPort | quote }}
+            - name: MONGODB_DATABASE
+              value: {{ default "nhn-ror" .Values.nhn.mongodbDatabase | quote }}
+            - name: MONGODB_HOST
+              value: {{ default "ror-mongodb.nhn-ror.svc" .Values.nhn.mongodbHost | quote}}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

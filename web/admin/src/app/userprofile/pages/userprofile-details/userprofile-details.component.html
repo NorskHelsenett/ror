@@ -1,0 +1,87 @@
+<div class="grid grid-cols-1 space-y-8 lg:grid-cols-3 lg:gap-8 lg:space-y-0">
+  <div class="dark:bg-darker col-span-2 rounded-md bg-white">
+    <div class="dark:border-primary flex items-center justify-between border-b p-4">
+      <h4 class="dark:text-light text-lg font-semibold text-gray-500">{{ 'pages.profile.description' | translate }}</h4>
+    </div>
+    <div class="relative p-3">
+      <div class="my-6 rounded">
+        <table class="w-full border-collapse text-left">
+          <tbody>
+            <tr class="hover:bg-grey-light w-14">
+              <td class="px-2 py-1">{{ 'pages.profile.name' | translate }}</td>
+              <td class="px-2 py-1">
+                <span>{{ claims?.name }}</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-grey-light">
+              <td class="px-2 py-1">{{ 'pages.profile.email' | translate }}</td>
+              <td class="px-2 py-1">
+                <span>{{ claims?.email }}</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-grey-light">
+              <td class="px-2 py-1 align-top">{{ 'pages.profile.groups' | translate }}</td>
+              <td class="px-2 py-1">
+                <ul class="unstyled">
+                  <li *ngFor="let group of claims?.groups">{{ group }}&#64;{{ domain }}</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="dark:bg-darker rounded-md bg-white">
+    <div class="dark:border-primary flex items-center justify-between border-b p-4">
+      <h4 class="dark:text-light text-lg font-semibold text-gray-500">{{ 'pages.profile.accessToken' | translate }}</h4>
+    </div>
+    <div class="relative p-3">
+      <div class="my-6 rounded">
+        <table class="w-full border-collapse text-left">
+          <tbody>
+            <tr class="hover:bg-grey-light">
+              <td class="px-2 py-1">{{ 'pages.profile.aud' | translate }}</td>
+              <td class="px-2 py-1">
+                <span>{{ claims?.aud }}</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-grey-light">
+              <td class="px-2 py-1">{{ 'pages.profile.iss' | translate }}</td>
+              <td class="px-2 py-1">
+                <span>{{ claims?.iss }}</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-grey-light w-14">
+              <td class="px-2 py-1">{{ 'pages.profile.exp' | translate }}</td>
+              <td class="px-2 py-1">
+                <span>{{ exp | time: 'DD. MMM YYYY HH:mm:ss' }}</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-grey-light">
+              <td class="px-2 py-1">{{ 'pages.profile.iat' | translate }}</td>
+              <td class="px-2 py-1">
+                <span>{{ iat | time: 'DD. MMM YYYY HH:mm:ss' }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-col gap-3">
+        <button
+          (click)="copyAccessToken(false)"
+          class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+        >
+          {{ 'common.copy' | translate }}
+        </button>
+        <button
+          (click)="copyAccessToken(true)"
+          class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+        >
+          {{ 'pages.profile.copyWith' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

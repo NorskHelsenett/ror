@@ -1,0 +1,1418 @@
+<ng-container *ngIf="aclFetchError">
+  <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+    <span class="p-2 text-red-800"> {{ 'layout.userFetchError' | translate }} </span>
+    <button class="btn text-black" (click)="fetchAcl()">{{ 'common.tryAgain' | translate }}</button>
+  </div>
+</ng-container>
+
+<div class="dark:bg-dark dark:text-light flex h-screen bg-gray-100 text-gray-900 antialiased">
+  <!-- Loading screen -->
+  <!--
+    <div x-ref="loading" class="fixed inset-0 z-50 flex items-center justify-center text-2xl font-semibold text-white bg-primary-darker">
+    Loading ...
+  </div> -->
+  <!-- Sidebar -->
+  <aside class="dark:border-primary-darker dark:bg-darker hidden flex-shrink-0 border-r bg-white sm:w-24 md:block md:w-48 lg:w-64">
+    <div class="flex h-full flex-col">
+      <!-- Sidebar links -->
+      <nav aria-label="Main" class="flex-1 space-y-2 overflow-y-hidden px-2 py-4 hover:overflow-y-auto">
+        <!-- Dashboards links  -->
+        <div>
+          <!-- active & hover classes 'bg-primary-100 dark:bg-primary-->
+          <a
+            href="#"
+            class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+            role="button"
+            aria-haspopup="true"
+          >
+            <span aria-hidden="true">
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+            </span>
+            <span class="ml-2 text-sm"> {{ 'common.dashboard' | translate }} </span>
+            <span class="ml-auto" aria-hidden="true">
+              <svg
+                class="h-4 w-4 transform transition-transform"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </a>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+            <a
+              routerLink=""
+              routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+              [routerLinkActiveOptions]="{ exact: true }"
+              role="menuitem"
+              class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+            >
+              {{ 'nav.home' | translate }}
+            </a>
+            <!-- <a
+              routerLink="/clusters"
+              routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+              role="menuitem"
+              class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+            >
+              {{ 'nav.clusters' | translate }}
+            </a> -->
+          </div>
+        </div>
+        <div>
+          <a
+            href="#"
+            class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+            role="button"
+            aria-haspopup="true"
+          >
+            <span aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"
+                />
+              </svg>
+            </span>
+            <span class="ml-2 text-sm"> {{ 'nav.metricsMenu' | translate }} </span>
+            <span class="ml-auto" aria-hidden="true">
+              <svg
+                class="h-4 w-4 transform transition-transform"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </a>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+            <a
+              routerLink="metrics"
+              routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+              role="menuitem"
+              class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+            >
+              {{ 'nav.metrics' | translate }}
+            </a>
+          </div>
+        </div>
+        <div>
+          <a
+            href="#"
+            class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+            role="button"
+            aria-haspopup="true"
+          >
+            <span aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </span>
+            <span class="ml-2 text-sm"> {{ 'nav.pricesMenu' | translate }} </span>
+            <span class="ml-auto" aria-hidden="true">
+              <svg
+                class="h-4 w-4 transform transition-transform"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </a>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400'-->
+            <a
+              routerLink="prices"
+              routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+              role="menuitem"
+              class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+            >
+              {{ 'nav.prices' | translate }}
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <a
+            href="#"
+            class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+            role="button"
+            aria-haspopup="true"
+          >
+            <span aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                />
+              </svg>
+            </span>
+            <span class="ml-2 text-sm"> {{ 'nav.adminMenu' | translate }} </span>
+            <span class="ml-auto" aria-hidden="true">
+              <svg
+                class="h-4 w-4 transform transition-transform"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </a>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="administration">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+            <ng-container *ngIf="lang && lang === 'no'">
+              <a
+                routerLink="/workspaces"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.workspaces' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/apikeys"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.apikeys' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="admin/auditlogs"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.auditlogs' | translate }}
+              </a>
+              <a
+                routerLink="admin/datacenter"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.datacenters' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/configuration"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.configuration' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="admin/policyreports"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.policyreports' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="admin/prices"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.prices' | translate }}
+              </a>
+              <a
+                routerLink="admin/projects"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.projects' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="resources"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.resources' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/compliancereports"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.compliancereports' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="/admin/vulnerabilityreports"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.vulnerabilityreports' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/acl"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.acl' | translate }}
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="lang && lang === 'en'">
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/acl"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.acl' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/apikeys"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.apikeys' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/auditlogs"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.auditlogs' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/configuration"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.configuration' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="admin/compliancereports"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.compliancereports' | translate }}
+              </a>
+              <a
+                routerLink="admin/datacenter"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.datacenters' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="admin/policyreports"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.policyreports' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="admin/prices"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.prices' | translate }}
+              </a>
+              <a
+                routerLink="admin/projects"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.projects' | translate }}
+              </a>
+              <a
+                *ngIf="(adminOwner$ | async) === true"
+                routerLink="resources"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.resources' | translate }}
+              </a>
+              <a
+                *ngIf="(adminRead$ | async) === true"
+                routerLink="/admin/vulnerabilityreports"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.vulnerabilityreports' | translate }}
+              </a>
+              <a
+                routerLink="/workspaces"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.workspaces' | translate }}
+              </a>
+            </ng-container>
+          </div>
+        </div>
+
+        <div>
+          <a
+            href="#"
+            class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+            role="button"
+            aria-haspopup="true"
+          >
+            <span aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </span>
+            <span class="ml-2 text-sm"> {{ 'nav.help' | translate }} </span>
+            <span class="ml-auto" aria-hidden="true">
+              <svg
+                class="h-4 w-4 transform transition-transform"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </a>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+            <a
+              href="https://docs.sky.nhn.no"
+              target="_blank"
+              role="menuitem"
+              class="dark:hover:text-light block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700"
+            >
+              {{ 'nav.doc' | translate }}
+            </a>
+          </div>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+            <a
+              routerLink="/about"
+              routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+              role="menuitem"
+              class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+            >
+              {{ 'nav.about' | translate }}
+            </a>
+          </div>
+          <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+            <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+            <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+            <a
+              routerLink="/releasenotes"
+              routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+              role="menuitem"
+              class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+            >
+              {{ 'nav.releasenotes' | translate }}
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Sidebar footer -->
+      <div class="flex-shrink-0 space-y-2 px-2 py-4">
+        <div *ngIf="desember">
+          <app-desember-gift></app-desember-gift>
+        </div>
+        <div class="">
+          <span>v{{ appVersion }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="flex w-full flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Navbar -->
+    <header class="dark:bg-darker sticky top-0 z-10 bg-white">
+      <div class="dark:border-primary-darker flex items-center justify-between border-b p-2">
+        <!-- Mobile menu button  -->
+        <button
+          (click)="toggleMobileMenu(); showUserMenu = false; showSubMenu = false"
+          class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark rounded-md p-1 transition-colors duration-200 focus:outline-none focus:ring md:hidden"
+        >
+          <span class="sr-only">Open main menu </span>
+          <span aria-hidden="true">
+            <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </span>
+        </button>
+
+        <!-- Brand -->
+        <a href="index.html" class="text-primary-dark dark:text-light inline-block text-2xl font-bold uppercase tracking-wider">
+          <div class="flex">
+            <img class="h-12 w-12" ngSrc="/assets/icons/ror.svg" alt="ROR logo" height="708" width="708" priority />
+            <span class="w-auto p-3">{{ 'app.title' | translate }} </span>
+
+            <img *ngIf="birthday" class="w-12" ngSrc="/assets/images/crown.png" width="50" height="50" alt="birthday" />
+            <img *ngIf="birthday" class="w-12" ngSrc="/assets/images/tada.png" width="50" height="50" alt="birthday" />
+          </div>
+        </a>
+
+        <!-- Mobile sub menu button -->
+        <button
+          (click)="toggleSubMenu()"
+          class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark rounded-md p-1 transition-colors duration-200 focus:outline-none focus:ring md:hidden"
+        >
+          <span class="sr-only">Open sub manu</span>
+          <span aria-hidden="true">
+            <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+              />
+            </svg>
+          </span>
+        </button>
+
+        <!-- Desktop Right buttons -->
+        <nav aria-label="Secondary" class="hidden space-x-2 md:flex md:items-center">
+          <!-- Toggle dark theme button -->
+          <button aria-hidden="true" class="relative focus:outline-none" (click)="toggleDark()">
+            <div class="bg-primary-100 dark:bg-primary-lighter h-6 w-12 rounded-full outline-none transition"></div>
+            <div
+              class="absolute left-0 top-0 inline-flex h-6 w-6 scale-110 transform items-center justify-center rounded-full shadow-sm transition-all duration-150"
+            >
+              <svg *ngIf="!isDark" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+              <svg *ngIf="isDark" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Notification button -->
+          <button
+            (click)="toggleNotifications()"
+            class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+          >
+            <span class="sr-only">Open Notification panel</span>
+            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          </button>
+
+          <!-- Search button -->
+          <button
+            (click)="toggleSearch()"
+            class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+          >
+            <span class="sr-only">Open search panel</span>
+            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+
+          <!-- Settings button -->
+          <button
+            (click)="toggleSettings()"
+            class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+          >
+            <span class="sr-only">Open settings panel</span>
+            <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
+          <!-- docs link -->
+          <a
+            href="https://docs.sky.nhn.no"
+            target="_blank"
+            class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+          >
+            <span class="sr-only">Go to docs</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          </a>
+
+          <!-- User avatar button -->
+          <div class="relative">
+            <button
+              type="button"
+              aria-haspopup="true"
+              (click)="toggleUserMenu()"
+              class="rounded-full transition-opacity duration-200 focus:outline-none focus:ring dark:opacity-75 dark:hover:opacity-100 dark:focus:opacity-100"
+            >
+              <span class="sr-only">User menu</span>
+              @if (!desember) {
+                <img class="h-10 w-10 rounded-full" ngSrc="/assets/images/blank_profile.png" height="50" width="50" alt="User" />
+              } @else {
+                <app-santa></app-santa>
+              }
+            </button>
+
+            <!-- User dropdown menu -->
+            <div
+              [hidden]="!showUserMenu"
+              class="dark:bg-dark absolute right-0 top-12 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              tabindex="-1"
+              role="menu"
+              aria-orientation="vertical"
+              aria-label="User menu"
+            >
+              <a
+                routerLink="/userprofile"
+                role="menuitem"
+                class="dark:text-light dark:hover:bg-primary block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                (click)="toggleUserMenu()"
+              >
+                {{ 'nav.profile' | translate }}
+              </a>
+              <a
+                (click)="toggleSettings(); toggleUserMenu()"
+                role="menuitem"
+                class="dark:text-light dark:hover:bg-primary block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                {{ 'common.settings' | translate }}
+              </a>
+              <a
+                (click)="logout()"
+                role="menuitem"
+                class="dark:text-light dark:hover:bg-primary block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                {{ 'nav.logout' | translate }}
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Mobile sub menu -->
+        <nav
+          *ngIf="showSubMenu"
+          class="dark:bg-darker absolute inset-x-4 top-16 flex items-center rounded-md bg-white p-4 shadow-lg md:hidden"
+          aria-label="Secondary"
+        >
+          <div class="space-x-2">
+            <!-- Toggle dark theme button -->
+            <button aria-hidden="true" class="relative focus:outline-none" (click)="toggleDark()">
+              <div class="bg-primary-100 dark:bg-primary-lighter h-6 w-12 rounded-full outline-none transition"></div>
+              <div
+                class="absolute left-0 top-0 inline-flex h-6 w-6 scale-110 transform items-center justify-center rounded-full shadow-sm transition-all duration-200"
+              >
+                <svg *ngIf="!isDark" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+                <svg *ngIf="isDark" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                  />
+                </svg>
+              </div>
+            </button>
+
+            <!-- Notification button -->
+            <button
+              (click)="toggleNotifications(); toggleSubMenu()"
+              class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+            >
+              <span class="sr-only">Open notifications panel</span>
+              <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+            </button>
+
+            <!-- Search button -->
+            <button
+              (click)="toggleSearch(); toggleSubMenu()"
+              class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+            >
+              <span class="sr-only">Open search panel</span>
+              <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
+            <!-- Settings button -->
+            <button
+              (click)="toggleSettings(); toggleSubMenu()"
+              class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+            >
+              <span class="sr-only">Open settings panel</span>
+              <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- docs link -->
+          <a
+            href="https://docs.sky.nhn.no"
+            target="_blank"
+            class="text-primary-lighter bg-primary-50 hover:text-primary hover:bg-primary-100 dark:hover:text-light dark:hover:bg-primary-dark dark:bg-dark focus:bg-primary-100 dark:focus:bg-primary-dark focus:ring-primary-darker rounded-full p-2 transition-colors duration-200 focus:outline-none"
+          >
+            <span class="sr-only">Go to docs</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          </a>
+
+          <!-- User avatar button -->
+          <div class="relative ml-auto">
+            <button
+              (click)="toggleUserMenu(); toggleMobileMenu()"
+              type="button"
+              aria-haspopup="true"
+              class="block rounded-full transition-opacity duration-200 focus:outline-none focus:ring dark:opacity-75 dark:hover:opacity-100 dark:focus:opacity-100"
+            >
+              <span class="sr-only">User menu</span>
+              <img class="h-10 w-10 rounded-full" ngSrc="/assets/images/blank_profile.png" height="50" width="50" alt="User menu" />
+            </button>
+
+            <!-- User dropdown menu -->
+            <div
+              [hidden]="!showUserMenu"
+              class="dark:bg-dark absolute right-0 top-12 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5"
+              role="menu"
+              aria-orientation="vertical"
+              aria-label="User menu"
+            >
+              <a
+                (click)="showUserMenu = false; showMobileMenu = false; showSubMenu = false"
+                routerLink="/userprofile"
+                role="menuitem"
+                class="dark:text-light dark:hover:bg-primary block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                {{ 'nav.profile' | translate }}
+              </a>
+              <a
+                (click)="showUserMenu = false; showMobileMenu = false; showSubMenu = false; toggleSettings()"
+                role="menuitem"
+                class="dark:text-light dark:hover:bg-primary block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                {{ 'common.settings' | translate }}
+              </a>
+              <a
+                (click)="logout()"
+                role="menuitem"
+                class="dark:text-light dark:hover:bg-primary block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                {{ 'nav.logout' | translate }}
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <!-- Mobile main manu -->
+      <div class="dark:border-primary-darker border-b md:hidden" *ngIf="showMobileMenu">
+        <nav aria-label="Main" class="space-y-2 px-2 py-4" *ngIf="showMobileMenu">
+          <!-- Dashboards links -->
+          <div>
+            <!-- active & hover classes 'bg-primary-100 dark:bg-primary' -->
+            <a
+              href="#"
+              class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+              role="button"
+              aria-haspopup="true"
+            >
+              <span aria-hidden="true">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+              </span>
+              <span class="ml-2 text-sm"> Dashboards </span>
+              <span class="ml-auto" aria-hidden="true">
+                <!-- active class 'rotate-180' -->
+                <svg
+                  class="h-4 w-4 transform transition-transform"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </a>
+            <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+              <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+              <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+              <a
+                (click)="toggleMobileMenu()"
+                routerLink=""
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.home' | translate }}
+              </a>
+              <a
+                (click)="toggleMobileMenu()"
+                routerLink="/datacenters"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.datacenters' | translate }}
+              </a>
+              <a
+                (click)="toggleMobileMenu()"
+                routerLink="/workspaces"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.workspaces' | translate }}
+              </a>
+              <a
+                (click)="toggleMobileMenu()"
+                routerLink="/clusters"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.clusters' | translate }}
+              </a>
+            </div>
+          </div>
+          <div>
+            <a
+              href="#"
+              class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+              role="button"
+              aria-haspopup="true"
+            >
+              <span aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+              </span>
+              <span class="ml-2 text-sm"> {{ 'nav.pricesMenu' | translate }} </span>
+              <span class="ml-auto" aria-hidden="true">
+                <svg
+                  class="h-4 w-4 transform transition-transform"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </a>
+            <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+              <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+              <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+              <a
+                (click)="toggleMobileMenu()"
+                routerLink="prices"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.prices' | translate }}
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <a
+              href="#"
+              class="dark:text-light hover:bg-primary-100 dark:hover:bg-primary flex items-center rounded-md p-2 text-gray-500 transition-colors"
+              role="button"
+              aria-haspopup="true"
+            >
+              <span aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </span>
+              <span class="ml-2 text-sm"> {{ 'nav.help' | translate }} </span>
+              <span class="ml-auto" aria-hidden="true">
+                <svg
+                  class="h-4 w-4 transform transition-transform"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </a>
+            <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+              <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+              <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+              <a
+                (click)="toggleMobileMenu()"
+                href="https://docs.sky.nhn.no"
+                target="_blank"
+                role="menuitem"
+                class="dark:text-light dark:hover:text-light block rounded-md p-2 text-sm text-gray-700 transition-colors duration-200 hover:text-gray-700"
+              >
+                {{ 'nav.doc' | translate }}
+              </a>
+            </div>
+            <div role="menu" class="mt-2 space-y-2 px-7" aria-label="Dashboards">
+              <!-- active & hover classes 'text-gray-700 dark:text-light' -->
+              <!-- inActive classes 'text-gray-400 dark:text-gray-400' -->
+              <a
+                (click)="toggleMobileMenu()"
+                routerLink="about"
+                routerLinkActive="text-gray-800 bg-green-200 dark:bg-green-800 dark:text-white dark:hover:text-light"
+                role="menuitem"
+                class="block rounded-md p-2 text-sm text-gray-400 transition-colors duration-200 hover:text-gray-700 dark:hover:text-white"
+              >
+                {{ 'nav.about' | translate }}
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="relative flex-1">
+      @if (desember) {
+        <div class="desember"></div>
+      }
+      <main>
+        <router-outlet> </router-outlet>
+      </main>
+    </div>
+
+    <p-scrollTop target="parent" [threshold]="200" icon="pi pi-arrow-up"></p-scrollTop>
+
+    <!-- Main footer -->
+    <footer class="dark:bg-darker dark:border-primary-darker mt-0 flex items-center justify-between border-t bg-white p-4">
+      <div>NHN &copy; {{ currentYear }}</div>
+      <div class="">
+        <a
+          href="https://helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror"
+          target="_blank"
+          class="delay-50 focus:ring-primary dark:focus:ring-offset-dark flex flex-row rounded-md px-4 py-2 text-sm text-gray-700 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white dark:text-white"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 fill-current" viewBox="0 0 16 16">
+            <path
+              d="M15.6979 7.28711L8.71226 0.3018C8.31016 -0.100594 7.65768 -0.100594 7.25502 0.3018L5.80457 1.75251L7.64462 3.59255C8.07224 3.44815 8.56264 3.54507 8.90339 3.8859C9.2462 4.22884 9.3423 4.72345 9.19416 5.15263L10.9677 6.92595C11.3969 6.77801 11.8917 6.87364 12.2345 7.21692C12.7133 7.69562 12.7133 8.47162 12.2345 8.95072C11.7553 9.42983 10.9795 9.42983 10.5001 8.95072C10.1399 8.59023 10.0508 8.06101 10.2335 7.61726L8.5793 5.96325V10.3157C8.69594 10.3735 8.80613 10.4505 8.90339 10.5475C9.38223 11.0263 9.38223 11.8022 8.90339 12.2817C8.42456 12.7604 7.64815 12.7604 7.16967 12.2817C6.69083 11.8022 6.69083 11.0263 7.16967 10.5475C7.28802 10.4293 7.42507 10.3399 7.5713 10.28V5.88728C7.42507 5.82742 7.28835 5.73874 7.16967 5.61971C6.80701 5.25717 6.71974 4.72481 6.90575 4.27937L5.09177 2.46512L0.301736 7.25474C-0.100579 7.65747 -0.100579 8.30995 0.301736 8.71233L7.28767 15.6977C7.68985 16.1 8.34213 16.1 8.74491 15.6977L15.6979 8.7447C16.1004 8.34225 16.1004 7.68944 15.6979 7.28711"
+              clip-rule="evenodd"
+              fill-rule="evenodd"
+              fill="#E85800"
+            />
+          </svg>
+          <span class="ml-2"> {{ 'common.viewOnGit' | translate }}</span>
+        </a>
+      </div>
+      <div class="flex">
+        <span>{{ 'common.madeWith' | translate }}</span>
+        <div class="ml-2 text-red-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Panels -->
+
+  <!-- Settings Panel -->
+  <!-- Backdrop -->
+  <div (click)="toggleSettings()" [hidden]="!showSettings" aria-hidden="true" class="bg-primary-darker fixed inset-0 z-10" style="opacity: 0.5"></div>
+  <!-- Panel -->
+  <section
+    *ngIf="showSettings"
+    tabindex="-1"
+    class="dark:bg-darker dark:text-light fixed inset-y-0 right-0 z-20 w-full max-w-xs bg-white shadow-xl focus:outline-none sm:max-w-md"
+    aria-labelledby="settinsPanelLabel"
+  >
+    <div class="absolute left-0 -translate-x-full transform p-2">
+      <!-- Close button -->
+      <button class="rounded-md p-2 text-white focus:outline-none focus:ring" (click)="toggleSettings()">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <!-- Panel content -->
+    <div class="flex h-screen flex-col">
+      <!-- Panel header -->
+      <div class="dark:border-primary-dark flex flex-shrink-0 flex-col items-center justify-center space-y-4 border-b px-4 py-8">
+        <span aria-hidden="true" class="dark:text-primary text-gray-500">
+          <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+            />
+          </svg>
+        </span>
+        <h2 id="settinsPanelLabel" class="dark:text-light text-xl font-medium text-gray-500">{{ 'common.settings' | translate }}</h2>
+      </div>
+      <!-- Content -->
+      <div class="flex-1 overflow-hidden hover:overflow-y-auto">
+        <!-- Theme -->
+        <div class="space-y-4 p-4 md:p-8">
+          <h6 class="dark:text-light text-lg font-medium text-gray-400">{{ 'common.theme' | translate }}</h6>
+          <div class="flex items-center space-x-8">
+            <!-- Light button -->
+            <button
+              *ngIf="isDark"
+              (click)="toggleDark()"
+              class="dark:border-primary dark:hover:text-primary-100 dark:hover:border-primary-light focus:ring-primary-lighter dark:focus:ring-offset-dark dark:focus:ring-primary-dark flex items-center justify-center space-x-4 rounded-md border px-4 py-2 transition-colors hover:border-gray-900 hover:text-gray-900 focus:outline-none focus:ring focus:ring-offset-2"
+            >
+              <span>
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                  />
+                </svg>
+              </span>
+              <span>{{ 'common.light' | translate }}</span>
+            </button>
+
+            <!-- Dark button -->
+            <button
+              (click)="toggleDark()"
+              *ngIf="!isDark"
+              class="dark:border-primary dark:hover:text-primary-100 dark:hover:border-primary-light focus:ring-primary-lighter dark:focus:ring-offset-dark dark:focus:ring-primary-dark flex items-center justify-center space-x-4 rounded-md border px-4 py-2 transition-colors hover:border-gray-900 hover:text-gray-900 focus:outline-none focus:ring focus:ring-offset-2"
+            >
+              <span>
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              </span>
+              <span>{{ 'common.dark' | translate }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="space-y-4 p-4 md:p-8">
+          <h6 class="dark:text-light text-lg font-medium text-gray-400">{{ 'nav.language' | translate }}</h6>
+          <div class="flex flex-col gap-3">
+            <!-- <button class="w-10 h-10 rounded-full" style="background-color: var(--color-cyan)"></button>
+            <button class="w-10 h-10 rounded-full" style="background-color: var(--color-teal)"></button>
+            <button class="w-10 h-10 rounded-full" style="background-color: var(--color-green)"></button>
+            <button class="w-10 h-10 rounded-full" style="background-color: var(--color-fuchsia)"></button>
+            <button class="w-10 h-10 rounded-full" style="background-color: var(--color-blue)"></button>
+            <button class="w-10 h-10 rounded-full" style="background-color: var(--color-violet)"></button> -->
+            <button
+              (click)="useLanguage('no')"
+              [ngClass]="{ 'border-green-700 dark:bg-green-500': lang === 'no' }"
+              class="dark:border-primary dark:hover:text-primary-100 dark:hover:border-primary-light focus:ring-primary-lighter dark:focus:ring-offset-dark dark:focus:ring-primary-dark flex items-center justify-center space-x-4 rounded-md border px-4 py-2 transition-colors hover:border-gray-900 hover:text-gray-900 focus:outline-none focus:ring focus:ring-offset-2"
+            >
+              <span>Norsk</span>
+            </button>
+            <button
+              (click)="useLanguage('en')"
+              class="dark:border-primary dark:hover:text-primary-100 dark:hover:border-primary-light focus:ring-primary-lighter dark:focus:ring-offset-dark dark:focus:ring-primary-dark flex items-center justify-center space-x-4 rounded-md border px-4 py-2 transition-colors hover:border-gray-900 hover:text-gray-900 focus:outline-none focus:ring focus:ring-offset-2"
+              [ngClass]="{ 'border-green-700 dark:bg-green-500': lang === 'en' }"
+            >
+              <span>English</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notification panel -->
+  <!-- Backdrop -->
+  <div
+    [hidden]="!showNotifications"
+    class="bg-primary-darker fixed inset-0 z-10"
+    style="opacity: 0.5"
+    aria-hidden="true"
+    (click)="toggleNotifications()"
+  ></div>
+  <!-- Panel -->
+  <section
+    *ngIf="showNotifications"
+    tabindex="-1"
+    aria-labelledby="notificationPanelLabel"
+    class="dark:bg-darker dark:text-light fixed inset-y-0 z-20 w-full max-w-xs bg-white focus:outline-none sm:max-w-md"
+  >
+    <div class="absolute right-0 translate-x-full transform p-2">
+      <!-- Close button -->
+      <button class="rounded-md p-2 text-white focus:outline-none focus:ring" (click)="toggleNotifications()">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex h-screen flex-col">
+      <!-- Panel header -->
+      <div class="flex-shrink-0">
+        <div class="dark:border-primary-darker flex items-center justify-between border-b px-4 pt-4">
+          <h2 id="notificationPanelLabel" class="pb-4 font-semibold">Notifications</h2>
+          <div class="space-x-2">
+            <button class="translate-y-px transform border-b px-px pb-4 transition-all duration-200 focus:outline-none">Action</button>
+            <button class="translate-y-px transform border-b px-px pb-4 transition-all duration-200 focus:outline-none">User</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel content (tabs) -->
+      <div class="flex-1 overflow-y-hidden pt-4 hover:overflow-y-auto">
+        <!-- Action tab -->
+        <div class="space-y-4">
+          <a href="#" class="block">
+            <div class="flex space-x-4 px-4">
+              <div class="relative flex-shrink-0">
+                <span class="bg-primary-50 text-primary-light dark:bg-primary-darker z-10 inline-block overflow-visible rounded-full p-2">
+                  <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                </span>
+                <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <h5 class="dark:text-light text-sm font-semibold text-gray-600">New project "KWD Dashboard" created</h5>
+                <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Looks like there might be a new theme soon</p>
+                <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 9h ago </span>
+              </div>
+            </div>
+          </a>
+          <a href="#" class="block">
+            <div class="flex space-x-4 px-4">
+              <div class="relative flex-shrink-0">
+                <span class="bg-primary-50 text-primary-light dark:bg-primary-darker inline-block overflow-visible rounded-full p-2">
+                  <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                </span>
+                <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <h5 class="dark:text-light text-sm font-semibold text-gray-600">KWD Dashboard v0.0.2 was released</h5>
+                <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Successful new version was released</p>
+                <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 2d ago </span>
+              </div>
+            </div>
+          </a>
+          <template>
+            <a href="#" class="block">
+              <div class="flex space-x-4 px-4">
+                <div class="relative flex-shrink-0">
+                  <span class="bg-primary-50 text-primary-light dark:bg-primary-darker inline-block overflow-visible rounded-full p-2">
+                    <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                      />
+                    </svg>
+                  </span>
+                  <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                  <h5 class="dark:text-light text-sm font-semibold text-gray-600">New project "KWD Dashboard" created</h5>
+                  <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Looks like there might be a new theme soon</p>
+                  <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 9h ago </span>
+                </div>
+              </div>
+            </a>
+          </template>
+        </div>
+
+        <!-- User tab -->
+        <div class="space-y-4">
+          <a href="#" class="block">
+            <div class="flex space-x-4 px-4">
+              <div class="relative flex-shrink-0">
+                <span class="rounded-ful relative z-10 inline-block overflow-visible">
+                  <img class="h-9 w-9 rounded-full object-cover" alt="" />
+                </span>
+                <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <h5 class="dark:text-light text-sm font-semibold text-gray-600">User</h5>
+                <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Shared new project "K-WD Dashboard"</p>
+                <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 1d ago </span>
+              </div>
+            </div>
+          </a>
+          <a href="#" class="block">
+            <div class="flex space-x-4 px-4">
+              <div class="relative flex-shrink-0">
+                <span class="rounded-ful relative z-10 inline-block overflow-visible">
+                  <img class="h-9 w-9 rounded-full object-cover" alt="empty" />
+                </span>
+                <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <h5 class="dark:text-light text-sm font-semibold text-gray-600">John</h5>
+                <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Commit new changes to K-WD Dashboard project.</p>
+                <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 10h ago </span>
+              </div>
+            </div>
+          </a>
+          <a href="#" class="block">
+            <div class="flex space-x-4 px-4">
+              <div class="relative flex-shrink-0">
+                <span class="rounded-ful relative z-10 inline-block overflow-visible">
+                  <img class="h-9 w-9 rounded-full object-cover" alt="" />
+                </span>
+                <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <h5 class="dark:text-light text-sm font-semibold text-gray-600"></h5>
+                <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Release new version "K-WD Dashboard"</p>
+                <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 20d ago </span>
+              </div>
+            </div>
+          </a>
+          <template>
+            <a href="#" class="block">
+              <div class="flex space-x-4 px-4">
+                <div class="relative flex-shrink-0">
+                  <span class="rounded-ful relative z-10 inline-block overflow-visible">
+                    <img class="h-9 w-9 rounded-full object-cover" alt="" />
+                  </span>
+                  <div class="bg-primary-50 dark:bg-primary-darker absolute left-1/2 -ml-px -mt-3 h-24 p-px"></div>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                  <h5 class="dark:text-light text-sm font-semibold text-gray-600"></h5>
+                  <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Release new version "K-WD Dashboard"</p>
+                  <span class="dark:text-primary-light text-sm font-normal text-gray-400"> 20d ago </span>
+                </div>
+              </div>
+            </a>
+          </template>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search panel -->
+  <!-- Backdrop -->
+  <div (click)="toggleSearch()" [hidden]="!showSearch" aria-hidden="true" class="bg-primary-darker fixed inset-0 z-10" style="opacity: 0.5"></div>
+  <!-- Panel -->
+  <section
+    *ngIf="showSearch"
+    class="dark:bg-darker dark:text-light fixed inset-y-0 z-20 w-full max-w-xs bg-white shadow-xl focus:outline-none sm:max-w-md"
+  >
+    <div class="absolute right-0 translate-x-full transform p-2">
+      <!-- Close button -->
+      <button class="rounded-md p-2 text-white focus:outline-none focus:ring" (click)="toggleSearch()">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- <h2 class="sr-only">Search panel</h2> -->
+    <!-- Panel content -->
+    <div class="flex h-screen flex-col">
+      <!-- Panel header (Search input) -->
+      <div
+        class="dark:border-primary-darker dark:focus-within:text-light relative flex-shrink-0 border-b px-4 py-8 text-gray-400 focus-within:text-gray-700"
+      >
+        <span class="absolute inset-y-0 inline-flex items-center px-4">
+          <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          class="dark:bg-dark dark:text-light w-full rounded-full border py-2 pl-10 pr-4 focus:outline-none focus:ring dark:border-transparent"
+          [placeholder]="'layout.search.placeholder' | translate"
+        />
+      </div>
+
+      <!-- Panel content (Search result) -->
+      <div class="h flex-1 space-y-4 overflow-y-hidden px-4 pb-4 hover:overflow-y-auto">
+        <h3 class="dark:text-light py-2 text-sm font-semibold text-gray-600">History</h3>
+        <a href="#" class="flex space-x-4">
+          <div class="flex-shrink-0">
+            <img class="h-10 w-10 rounded-lg" alt="Post cover" />
+          </div>
+          <div class="max-w-xs flex-1 overflow-hidden">
+            <h4 class="dark:text-light text-sm font-semibold text-gray-600">Header</h4>
+            <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Lorem ipsum dolor, sit amet consectetur.</p>
+            <span class="dark:text-primary-light text-sm font-normal text-gray-400"> Post </span>
+          </div>
+        </a>
+        <a href="#" class="flex space-x-4">
+          <div class="flex-shrink-0">
+            <img class="h-10 w-10 rounded-lg" alt="" />
+          </div>
+          <div class="max-w-xs flex-1 overflow-hidden">
+            <h4 class="dark:text-light text-sm font-semibold text-gray-600"></h4>
+            <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">Last activity 3h ago.</p>
+            <span class="dark:text-primary-light text-sm font-normal text-gray-400"> Offline </span>
+          </div>
+        </a>
+        <a href="#" class="flex space-x-4">
+          <div class="flex-shrink-0">
+            <img class="h-10 w-10 rounded-lg" alt="K-WD Dashboard" />
+          </div>
+          <div class="max-w-xs flex-1 overflow-hidden">
+            <h4 class="dark:text-light text-sm font-semibold text-gray-600">K-WD Dashboard</h4>
+            <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+            </p>
+            <span class="dark:text-primary-light text-sm font-normal text-gray-400"> Updated 3h ago. </span>
+          </div>
+        </a>
+        <template>
+          <a href="#" class="flex space-x-4">
+            <div class="flex-shrink-0">
+              <img class="h-10 w-10 rounded-lg" alt="K-WD Dashboard" />
+            </div>
+            <div class="max-w-xs flex-1 overflow-hidden">
+              <h4 class="dark:text-light text-sm font-semibold text-gray-600">K-WD Dashboard</h4>
+              <p class="dark:text-primary-lighter truncate text-sm font-normal text-gray-400">
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+              </p>
+              <span class="dark:text-primary-light text-sm font-normal text-gray-400"> Updated 3h ago. </span>
+            </div>
+          </a>
+        </template>
+      </div>
+    </div>
+  </section>
+</div>
+<div *ngIf="sse$ | async"></div>

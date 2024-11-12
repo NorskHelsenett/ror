@@ -1,0 +1,408 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug ROR-Api",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/api/main.go",
+            "env": {
+                "USE_CORS": "true",
+                "LOG_LEVEL": "debug",
+                "GIN_MODE": "debug",
+                "ALLOW_ORIGINS": "https://ror.sky.test.nhn.no;http://localhost:11000;http://127.0.0.1:11000",
+                "HTTP_PORT": "10000",
+                "VAULT_URL": "http://localhost:8200",
+                "MONGODB_PORT": "27017",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "localhost:4317",
+                "DEVELOPMENT": "true",
+                "ENABLE_TRACING": "false",
+                "PROFILER_ENABLED": "false",
+                "TANZU_AUTH_BASE_URL": "http://localhost:18082",
+                "CONTAINER_REG_PREFIX": "docker.io/",
+                "CONTAINER_REG_IMAGE_PATH": "nhnsdi/",
+                "CONTAINER_REG_HELM_PATH": "nhnhelm/",
+                "LOCAL_KUBERNETES_ROR_BASE_URL": "http://host.docker.internal:10000",
+                "HEALTHCHECK_ENDPOINT": "localhost:9999"
+            }
+        },
+        {
+            "name": "Debug ROR-Api tests",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/api/",
+            "args": ["-v", "./test/...", "-cover"],
+            "showLog": true
+        },
+        {
+            "name": "Debug ROR-CLI",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/cli/main.go",
+            "args": []
+        },
+        {
+            "name": "Debug ROR-Agent",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/agent/main.go",
+            "env": {
+                "LOG_LEVEL": "info",
+                "ROR_URL": "http://localhost:10000", //needs changes, see <repo>/.env-paw
+                "DEVELOPMENT": "true",
+                "POD_NAMESPACE": "ror",
+                "SECRET_NAME": "ror-secret",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "localhost:4317",
+                "HEALTHCHECK_ENDPOINT": "localhost:8100"
+            }
+        },
+        {
+            "name": "Debug ROR-Agentv2",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/agentv2/main.go",
+            "env": {
+                "LOG_LEVEL": "info",
+                "ROR_URL": "http://localhost:10000", //needs changes, see <repo>/.env-paw
+                "DEVELOPMENT": "true",
+                "POD_NAMESPACE": "ror",
+                "SECRET_NAME": "ror-secret",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "localhost:4317",
+                "HEALTHCHECK_ENDPOINT": "localhost:8100"
+            }
+        },
+        {
+            "name": "Debug ROR-Operator",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/operator/main.go",
+            "args": ["-metrics-bind-address", ":18090", "-health-probe-bind-address", ":18091"],
+            "env": {
+                "LOG_LEVEL": "debug",
+                "ROR_URL": "http://localhost:10000", //needs changes, see <repo>/.env-paw
+                "DEVELOPMENT": "true",
+                "CONTAINER_REG_PREFIX": "docker.io/",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "localhost:4317"
+            }
+        },
+        {
+            "name": "Debug ROR Tanzu Agent",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/tanzu/agent/main.go",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "DEVELOPMENT": "true",
+                "HTTP_PORT": "18081",
+                "ROLE": "ror-tanzu-agent",
+                "DELETE_KUBECONFIG": "true",
+                "TANZU_ACCESS": "false",
+                "LOGIN_EVERY_MINUTE": "30",
+                "DATACENTER": "local",
+                "DATACENTER_URL": "",
+                "KUBE_VSPHERE_PATH": "./bin/kubectl-vsphere",
+                "KUBECTL_PATH": "./bin/kubectl",
+                "KUBECONFIG": "${userHome}/tanzuAgentKubeconfig",
+                "RABBITMQ_HOST": "localhost",
+                "RABBITMQ_PORT": "5672",
+                "VAULT_URL": "http://localhost:8200",
+                "ROR_URL": "http://localhost:10000",
+                "API_KEY": "test"
+            }
+        },
+        {
+            "name": "Debug ROR Tanzu Agent 2",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/tanzu/agent/main.go",
+            "env": {
+                "LOG_LEVEL": "debug",
+                "DEVELOPMENT": "true",
+                "HTTP_PORT": "18082",
+                "ROLE": "ror-tanzu",
+                "DELETE_KUBECONFIG": "true",
+                "TANZU_ACCESS": "false",
+                "LOGIN_EVERY_MINUTE": "30",
+                "DATACENTER": "datacenter-2",
+                "DATACENTER_URL": "",
+                "KUBE_VSPHERE_PATH": "./bin/kubectl-vsphere",
+                "KUBECTL_PATH": "./bin/kubectl",
+                "KUBECONFIG": "${userHome}/tanzuAgentKubeconfig",
+                "RABBITMQ_HOST": "localhost",
+                "RABBITMQ_PORT": "5672",
+                "VAULT_URL": "http://localhost:8200",
+                "ROR_URL": "http://localhost:10000",
+                "API_KEY": "test"
+            }
+        },
+        {
+            "name": "Debug Micro service NHN",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/nhn/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "ROLE": "ror-ms-nhn",
+                "MONGODB_PORT": "27017",
+                "MONGODB_HOST": "localhost",
+                "MONGODB_DATABASE": "nhn-ror"
+            }
+        },
+        {
+            "name": "Debug Micro service Auth",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/auth/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "DEX_PORT": "5556",
+                "DEX_GRPC_PORT": "5557",
+                "DEX_HOST": "localhost",
+                "DEX_TLS": "false",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "ROLE": "ror-ms-auth"
+            }
+        },
+        {
+            "name": "Debug Micro service Audit",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/audit/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "DEX_PORT": "5556",
+                "DEX_GRPC_PORT": "5557",
+                "DEX_HOST": "localhost",
+                "DEX_TLS": "false",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "ROLE": "ror-ms-audit",
+                "MONGODB_PORT": "27017",
+                "MONGODB_HOST": "localhost",
+                "MONGODB_DATABASE": "nhn-ror"
+            }
+        },
+        {
+            "name": "Debug Micro service Tanzu",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/tanzu/ms/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "ROLE": "ror-ms-tanzu",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "opentelemetry-collector:4317",
+                "VAULT_URL": "http://localhost:8200",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "MONGODB_PORT": "27017",
+                "MONGODB_HOST": "localhost",
+                "MONGODB_DATABASE": "nhn-ror",
+                "REDIS_PORT": "6379",
+                "REDIS_HOST": "localhost",
+                "HTTP_PORT": "18082",
+                "ENABLE_TRACING": "false",
+                "ROR_URL": "http://localhost:10000",
+                "API_KEY": "d46e569f-fdcc-4dd4-95b6-53a530020069" //seeded in to mongodb on ror-api startup
+            }
+        },
+        {
+            "name": "Debug Micro service Tanzu Auth",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/tanzu/auth/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "ROLE": "ror-ms-tanzu-auth",
+                "DEVELOPMENT": "true",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "opentelemetry-collector:4317",
+                "VAULT_URL": "http://localhost:8200",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "REDIS_PORT": "6379",
+                "REDIS_HOST": "localhost",
+                "HTTP_PORT": "18082",
+                "KUBE_VSPHERE_PATH": "${workspaceFolder}/cmd/tanzu/auth/app/kubectl-vsphere",
+                "KUBECTL_PATH": "${workspaceFolder}/cmd/tanzu/auth/app/kubectl",
+                "ENABLE_TRACING": "false",
+                "API_KEY": "test",
+                "TANZU_AUTH_CONFIG_FOLDER_PATH": "/tmp"
+            }
+        },
+        {
+            "name": "Debug Micro service Switchboard",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/switchboard/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "ROLE": "ror-ms-switchboard",
+                "API_KEY": "c6fdfa41-fc8c-46c2-b5cf-b80d5ad81b0d", //seeded in to mongodb on ror-api startup
+                "ROR_URL": "http://localhost:10000"
+            }
+        },
+        {
+            "name": "Debug Micro service Slack",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/slack/main.go",
+            "env": {
+                "LOG_LEVEL": "DEBUG",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "ROLE": "ror-ms-slack",
+                "API_KEY": "a4a210d8-79f3-43dd-affc-3b5a3e1074f5", //seeded in to mongodb on ror-api startup
+                "ROR_URL": "http://localhost:10000"
+            }
+        },
+        {
+            "name": "Debug Micro service slack tester",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/devonly/ms-slack-test/main.go",
+            "env": {
+                "LOG_LEVEL": "TRACE",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "NO_PROXY": "*.nhn.no, vault, localhost",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "opentelemetry-collector:4317",
+                "ROLE": "ror-ms-slack-test",
+                "ENABLED": "true",
+                "SEND_EVERY_SECONDS": "30"
+            }
+        },
+        {
+            "name": "Debug Micro service Kind",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/kind/main.go",
+            "env": {
+                "LOG_LEVEL": "TRACE",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "NO_PROXY": "*.nhn.no, vault, localhost",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "opentelemetry-collector:4317",
+                "ENABLE_TRACING": "false",
+                "ROLE": "ror-ms-kind",
+                "API_KEY": "aa7c4672-ae64-4635-b747-d2cb6dfa846e", //seeded in to mongodb on ror-api startup
+                "ROR_URL": "http://localhost:10000",
+                "KIND_ROR_URL": "http://localhost:10000",
+                "ROR_OPERATOR_NAMESPACE": "ror",
+                "ROR_OPERATOR_OCI_IMAGE": "oci://docker.io/nhnhelm/ror-operator",
+                "ROR_OPERATOR_OCI_IMAGE_VERSION": "0.1.*",
+                "ROR_OPERATOR_IMAGE": "nhnsdi/ror-operator",
+                "CONTAINER_REG_PREFIX": "docker.io/",
+                "DEFAULT_K8S_IMAGE": "kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245",
+                "CONFIG_FOLDER_PATH": "/tmp"
+            }
+        },
+        {
+            "name": "Debug Micro service Vulnerability",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/vulnerability/main.go",
+            "env": {
+                "LOG_LEVEL": "TRACE",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "NO_PROXY": "*.nhn.no, vault, localhost",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "opentelemetry-collector:4317",
+                "ENABLE_TRACING": "false",
+                "ROLE": "ror-ms-vulnerability",
+                "ROR_URL": "http://localhost:10000",
+                "API_KEY": "c4078b26-8576-444d-be8a-a59856a73f8f", //seeded in to mongodb on ror-api startup
+                "ROR_WEB_URL": "http://localhost:11000"
+            }
+        },
+        {
+            "name": "Debug Micro service Talos",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/talos/main.go",
+            "env": {
+                "DEVELOPMENT": "true",
+                "LOG_LEVEL": "TRACE",
+                "ENVIRONMENT": "development",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_HOST": "localhost",
+                "VAULT_URL": "http://localhost:8200",
+                "VAULT_TOKEN_TTL": "1h",
+                "NO_PROXY": "*.nhn.no, vault, localhost",
+                "OPENTELEMETRY_COLLECTOR_ENDPOINT": "opentelemetry-collector:4317",
+                "ENABLE_TRACING": "false",
+                "ROLE": "ror-ms-talos",
+                "API_KEY": "ddc66609-b406-4119-9307-66432f3c73f0", //seeded in to mongodb on ror-api startup
+                "ROR_URL": "http://localhost:10000",
+                "TALOS_ROR_URL": "http://host.docker.internal:10000",
+                "ROR_OPERATOR_NAMESPACE": "ror",
+                "ROR_OPERATOR_OCI_IMAGE": "oci://docker.io/nhnhelm/ror-operator",
+                "ROR_OPERATOR_OCI_IMAGE_VERSION": "0.1.*",
+                "ROR_OPERATOR_IMAGE": "nhnsdi/ror-operator",
+                "CONTAINER_REG_PREFIX": "docker.io/",
+                "DEFAULT_K8S_IMAGE": "kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245",
+                "CONFIG_FOLDER_PATH": "${workspaceFolder}/hacks/data/talos",
+                "TALOS_PATCH_FOLDER": "${workspaceFolder}/cmd/talos/talospatches"
+            }
+        },
+        {
+            "name": "Debug Generator",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/generator/main.go",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+<div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+  <h1 class="text-2xl font-semibold">{{ 'pages.releaseNotes.title' | translate }}</h1>
+</div>
+
+<div class="mt-2">
+  <div class="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
+    <div class="grid gap-8 p-4 sm:col-span-1 md:col-span-1 lg:col-span-2">
+      <div
+        class="whitespace-normal break-words rounded-lg border border-blue-gray-50 dark:border-primary-darker bg-white dark:bg-darker p-4 font-sans text-sm font-normal shadow-lg shadow-blue-gray-500/10 focus:outline-none"
+      >
+        <div class="mb-2 flex items-center gap-3">
+          <span class="text-lg">
+            {{ 'pages.releaseNotes.changes.2023_12_13.title' | translate }}
+          </span>
+          <div
+            class="center relative inline-block select-none whitespace-nowrap rounded-full bg-green-500 py-1 px-2 align-baseline font-sans text-xs font-medium capitalize leading-none tracking-wide text-white"
+          >
+            <div class="mt-px">User interface</div>
+          </div>
+        </div>
+        <div class="block font-sans font-normal leading-normal antialiased ml-4">
+          <ul class="list-disc">
+            <li>{{ 'pages.releaseNotes.changes.2023_12_13.description1' | translate }}</li>
+            <li>
+              {{ 'pages.releaseNotes.changes.2023_12_13.description' | translate }}
+              <img
+                *ngIf="!isDark"
+                ngSrc="/assets/images/changes/rightclick_white.png"
+                class="object-cover rounded-lg shadow-lg dark:shadow-gray-600 shadow-gray-700"
+                width="341"
+                height="155"
+                alt="rightclicklinks"
+              />
+              <img
+                *ngIf="isDark"
+                ngSrc="/assets/images/changes/rightclick.png"
+                class="object-cover rounded-lg shadow-lg dark:shadow-gray-600 shadow-gray-700"
+                width="346"
+                height="148"
+                alt="rightclicklinks"
+              />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

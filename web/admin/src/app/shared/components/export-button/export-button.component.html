@@ -1,0 +1,8 @@
+<p-menu #menu [model]="menuItems" [popup]="true" appendTo="body"></p-menu>
+<button
+  pButton
+  class="px-3 py-2 rounded-md bg-green-700 hover:bg-green-600 focus:bg-green-600"
+  (click)="menu.toggle($event)"
+  icon="pi pi-bars"
+  [label]="'common.export' | translate"
+></button>

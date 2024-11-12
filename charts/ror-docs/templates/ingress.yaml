@@ -1,0 +1,86 @@
+{{ if .Values.nhndokumentasjon.publishHelsenett }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name}}-docs-helsenett
+  namespace: {{ .Release.namespace}}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: avi-ingress-class-helsenett
+  rules:
+  - host: {{.Values.nhndokumentasjon.url}}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Release.Name}}-docs-publisering
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - {{.Values.nhndokumentasjon.url}}
+    secretName: dokumentasjon-tls
+---
+apiVersion: ako.vmware.com/v1alpha1
+kind: HostRule
+metadata:
+  name: {{ .Release.Name}}-docs-allow-kontor-utv
+  namespace: {{ .Release.namespace}}
+spec:
+  virtualhost:
+    datascripts:
+    - expose-nhn-office-isp
+    - expose-nhn-office-client
+    - expose-nhn-office-devops
+    - expose-nhn-dc-any
+    - expose-ehelse-office-client
+    - expose-fhi-office-client
+    - expose-hdir-office-client
+    - expose-btr-office-client
+    - expose-dsa-office-client
+    - expose-eomb-office-client
+    - expose-helfo-office-client
+    - expose-hk-office-client
+    - expose-htil-office-client
+    - expose-npe-office-client
+    - expose-pobo-office-client
+    - expose-ptr-office-client
+    - expose-slv-office-client
+    - expose-ukom-office-client
+    - expose-fhi-office-isp
+    - expose-hdir-office-isp
+    - expose-nsg-cloud-paws
+    - bottom-deny-rule
+    fqdn: {{.Values.nhndokumentasjon.url}}
+{{ end }}
+{{ if .Values.nhndokumentasjon.publishInternett }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name}}-docs-internett
+  namespace: {{ .Release.namespace}}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: avi-ingress-class-internett
+  rules:
+  - host: {{.Values.nhndokumentasjon.url}}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Release.Name}}-docs-publisering
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - {{.Values.nhndokumentasjon.url}}
+    secretName: dokumentasjon-tls
+{{ end }}

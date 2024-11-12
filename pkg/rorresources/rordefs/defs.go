@@ -13,6 +13,7 @@ type ApiResourceType string
 const (
 	ApiResourceTypeUnknown    ApiResourceType = ""
 	ApiResourceTypeAgent      ApiResourceType = "Agent"
+	ApiResourceTypeVmAgent    ApiResourceType = "VmAgent"
 	ApiResourceTypeTanzuAgent ApiResourceType = "TanzuAgent"
 	ApiResourceTypeInternal   ApiResourceType = "Internal"
 )
@@ -321,11 +322,11 @@ var Resourcedefs = []ApiResource{
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	}, {
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "VulnerabilityWhitelist",
+			Kind:       "VirtualMachine",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
-		Plural:     "vulnerabilitywhitelists",
+		Plural:     "VirtualMachines",
 		Namespaced: false,
-		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
 	},
 }

@@ -1,0 +1,115 @@
+build-ms-slack:
+  stage: buildandtest
+  needs: 
+    - job: bump-version
+      optional: true
+  retry: 2
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  rules:
+    - changes:
+        - 'cmd/slack/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  script:
+    - go get ./...
+    - go get -t ./...
+    - go vet ./cmd/slack/...
+    - CGO_ENABLED=0 go build -o dist/slack -ldflags '-w -extldflags "-static"' cmd/slack/main.go
+    - touch cmd/slack/isbuilt
+  artifacts:
+    paths:
+      - dist/slack
+      - cmd/slack/isbuilt
+    expire_in: 1 hour
+
+test-ms-slack:
+  stage: buildandtest
+  needs: []
+  retry: 2
+  extends: .go-cache
+  image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+  dependencies:
+    - build-ms-slack
+  rules:
+    - changes:
+        - 'cmd/slack/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  before_script:
+    - go get ./...
+    - go get -t ./...
+    - cd cmd/slack
+  script:
+    - go test -cover -v ./...
+
+image-ms-slack:
+  stage: buildandtest
+  needs:    
+    - build-ms-slack
+    - test-ms-slack
+  extends: .build-container-kaniko
+  variables:
+    DOCKERFILE_PATH: "/cmd/slack"
+    CONTEXT_PATH: "${CI_PROJECT_DIR}"
+    CI_APPLICATION_IMAGE: "$HARBOR_HOST/ror/ms-slack"
+    CI_APPLICATION_TAG: "$CI_COMMIT_SHORT_SHA"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      changes:
+        - 'cmd/slack/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - 'cmd/slack/**/*'
+        - 'internal/**/*'
+        - 'pkg/**/*'
+        - 'go.mod'
+    - when: never
+  dependencies:
+    - build-ms-slack
+
+
+gen-charts-ms-slack:
+    stage: buildandtest
+    dependencies:
+        - build-ms-slack
+    needs:
+        - job: build-ms-slack
+          optional: true
+          artifacts: true
+        - job: image-ms-slack
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - cmd/slack/**/*
+              - internal/**/*
+              - pkg/**/*
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - cmd/slack/**/*
+              - internal/**/*
+              - pkg/**/*
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "cmd/slack/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ms-slack/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ms-slack/values.yaml
+        - helm package charts/ms-slack
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push ms-slack-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm/
+        - fi

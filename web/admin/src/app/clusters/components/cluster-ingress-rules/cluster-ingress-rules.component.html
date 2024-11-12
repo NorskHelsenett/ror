@@ -1,0 +1,99 @@
+<div class="grid space-y-8 lg:gap-8 lg:space-y-0">
+  <div class="dark:bg-darker flex items-center justify-between overflow-x-auto rounded-md bg-white">
+    <div class="dark:bg-darker col-span-2 overflow-x-auto rounded-md bg-white">
+      <div class="p-4">
+        <div class="">
+          <div>
+            <div class="flex flex-col justify-center">
+              <div class="text-center">
+                <span>DNS / IP</span>
+              </div>
+              <div class="mb-5 flex justify-center">
+                <div class="m-3 flex flex-col border p-3 text-center" *ngFor="let ingressRule of ingress?.ingressrules">
+                  <div class="flex justify-center">
+                    <img alt="avi" class="h-8 w-8" ngSrc="/assets/icons/tanzu/avi.png" height="80" width="80" />
+                  </div>
+                  <span>{{ ingressRule?.hostname }}</span>
+                  <ul class="flex flex-col">
+                    <li *ngFor="let ip of ingressRule?.ipaddresses">{{ ip }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="mb-4 border border-dashed border-b-gray-700" />
+
+          <div #containerRef class="overflow-x-auto">
+            <div class="justify-content-center flex overflow-x-auto">
+              <p-organizationChart [value]="data" selectionMode="single" [preserveSpace]="true">
+                <ng-template let-node pTemplate="ingress">
+                  <div class="flex flex-col items-center justify-center text-center">
+                    <ng-container class="">
+                      <img ngSrc="/assets/icons/k8s/resources/labeled/ing.svg" alt="ingress" height="66" width="68" />
+                    </ng-container>
+
+                    <span class="">{{ node?.label }}</span>
+
+                    <span *ngIf="node?.data?.classError" class="mt-2 font-bold text-red-800 dark:text-red-300">{{
+                      'pages.clusters.details.ingresses.noIngressClass' | translate
+                    }}</span>
+                    <span *ngIf="!node?.data?.ingressrules || node?.data?.ingressrules?.length === 0" class="mt-2 text-red-800 dark:text-red-300">{{
+                      'pages.clusters.details.ingresses.noingressrules' | translate
+                    }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template let-node pTemplate="rule">
+                  <div class="flex flex-col items-center justify-center text-center">
+                    <span>{{ 'pages.clusters.details.ingresses.path' | translate }}: </span>
+
+                    <a href="https://{{ node?.data?.hostname }}{{ node?.label }}" target="_blank" class="flex underline">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="h-6 w-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                        />
+                      </svg>
+                      <span *ngIf="node?.data?.multiple === true">{{ node?.data?.hostname }}{{ node?.label }}</span>
+                      <span *ngIf="node?.data?.multiple === false">{{ node?.label }}</span>
+                    </a>
+                  </div>
+                </ng-template>
+
+                <ng-template let-node pTemplate="service">
+                  <div class="flex flex-col items-center justify-center text-center">
+                    <img ngSrc="/assets/icons/k8s/resources/labeled/svc.svg" alt="service" height="66" width="68" />
+                    <span>{{ node?.label }}</span>
+                    <span *ngIf="!node?.label" class="mt-2 font-bold text-red-500">{{
+                      'pages.clusters.details.ingresses.services.noService' | translate
+                    }}</span>
+                    <span *ngIf="node?.data?.type !== 'NodePort'" class="mt-2 font-bold text-red-500">{{
+                      'pages.clusters.details.ingresses.services.notNodePort' | translate
+                    }}</span>
+                    <span *ngIf="!node?.data?.endpoints || node?.data?.endpoints?.length === 0" class="mt-2 font-bold text-red-500">{{
+                      'pages.clusters.details.ingresses.services.noEndpoints' | translate
+                    }}</span>
+                  </div>
+                </ng-template>
+                <ng-template let-node pTemplate="pod">
+                  <div class="flex flex-col items-center justify-center text-center">
+                    <img ngSrc="/assets/icons/k8s/resources/labeled/pod.svg" alt="pod" height="66" width="68" />
+                    <span>{{ node?.label }}</span>
+                  </div>
+                </ng-template>
+              </p-organizationChart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

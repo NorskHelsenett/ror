@@ -1,0 +1,21 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+package rorResources
+
+import (
+	"fmt"
+	apiresourcecontracts "github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
+)
+
+// the function determines which model to match the resource to and call prepareResourcePayload to cast the input to the matching model.
+func (rj rorResourceJson) getResource(resourceReturn *rorResource) error {
+	bytes := []byte(rj)
+{{ range .}}
+    if resourceReturn.ApiVersion == "{{.GetApiVersion}}" && resourceReturn.Kind == "{{.Kind}}" {
+        payload, err := prepareResourcePayload[apiresourcecontracts.Resource{{.Kind}}](bytes)
+        resourceReturn.Resource = payload
+        return err
+    }
+{{end}}
+    return fmt.Errorf("no handler found for %s/%s", resourceReturn.ApiVersion, resourceReturn.Kind)
+}

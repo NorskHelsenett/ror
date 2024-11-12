@@ -1,0 +1,80 @@
+{
+    "clusters": [
+        {
+            "clusterId": "cluster1.workspace1.datacenter1",
+            "clustername": "test1",
+            "workspace": "workspace1",
+            "datacenter": "datacenter1"
+        }
+    ],
+    "projects": [
+        {
+            "id": "f87715b4-3460-4bf7-b7b1-b9c396f60e2c",
+            "name": "Testprosjekt",
+            "description": "En eller annen beskrivelse",
+            "active": true,
+            "created": "2022-09-16T12:25:43.511Z",
+            "updated": "2022-09-16T12:25:43.511Z",
+            "owner": {
+                "upn": "t1-username@cloud.nhn.no",
+                "email": "username@nhn.no/teamfeskbaill@nhn.no"
+            },
+            "responsible": {
+                "name": "Team Feskbaill",
+                "email": "team@feskbaill.no"
+            },
+            "billing": {
+                "workorder": "A0000-1114"
+            }
+        }
+    ],
+    "datacenters": [
+        {
+            "id": "f90a5459-5de4-4da6-bec6-aa4dd088912c",
+            "name": "datacenter1",
+            "provider": "tanzu",
+            "location": {
+                "region": "trøndelag",
+                "country": "norway"
+            },
+            "apiEndpoint": ""
+        }
+    ],
+    "workspaces": [
+        {
+            "id": "9a785b6f-f74f-4d7a-b72f-19529970e85c",
+            "name": "workspace1",
+            "datacenterId": "f90a5459-5de4-4da6-bec6-aa4dd088912c",
+            "projectId": "f87715b4-3460-4bf7-b7b1-b9c396f60e2c"
+        }
+    ],
+    "events": [
+        {
+            "type": "Alarm",
+            "description": "Hva har skjedd?",
+            "created": "2022-09-16T12:25:43.511Z",
+            "updated": "2022-09-16T12:25:43.511Z",
+            "logs": [
+                {
+                    "timestamp": "2022-09-16T12:25:43.511Z",
+                    "title": "Created",
+                    "what": "Alarm for abnormal cluster, for cluster1.namespace1.datacenter1"
+                }
+            ]
+        }
+    ],
+    "usersettings": [
+        {
+            "key": "isDark",
+            "value": true
+        },
+        {
+            "key": "preferedLanguage",
+            "value": "no"
+        },
+        {
+            "key": "favorites",
+            "value": "[cluster01.workspace1.datacenter1]"
+        }
+    ]
+}

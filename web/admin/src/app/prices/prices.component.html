@@ -1,0 +1,128 @@
+<div class="dark:border-primary-darker flex items-center gap-4 border-b px-4 py-4 lg:py-6">
+  <h1 class="flex-grow text-2xl font-semibold">{{ 'pages.prices.title' | translate }}</h1>
+
+  <a
+    [routerLink]="['../admin/prices/create']"
+    class="delay-50 hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark float-left rounded-md bg-green-700 px-4 py-2 text-sm text-white transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+  </a>
+
+  <button
+    (click)="fetch()"
+    class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+  >
+    {{ 'common.refresh' | translate }}
+  </button>
+</div>
+
+<div class="mt-2">
+  <div class="grid gap-8 p-4">
+    <div class="dark:bg-darker flex justify-between overflow-x-auto rounded-md bg-white p-4">
+      <div class="dark:bg-darker rounded-md bg-white">
+        <div class="p-3">
+          <div class="flex flex-col">
+            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+                <ng-container *ngIf="pricesError">
+                  <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+                    <span class="p-2 text-red-800"> {{ 'pages.dashboard.error' | translate }} </span>
+                    <button class="btn text-black" (click)="fetch()">{{ 'common.tryAgain' | translate }}</button>
+                  </div>
+                </ng-container>
+
+                <p-table
+                  [value]="prices$ | async"
+                  [rows]="rows"
+                  [paginator]="true"
+                  [loading]="loading"
+                  [rowsPerPageOptions]="rowsPerPage"
+                  [tableStyle]="{ 'min-width': '75rem' }"
+                  [rowHover]="true"
+                  sortField="group"
+                  [sortOrder]="1"
+                  [totalRecords]="(prices$ | async)?.length"
+                  [reorderableColumns]="true"
+                  [showCurrentPageReport]="true"
+                  currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
+                    'common.of' | translate | lowercase
+                  }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th pSortableColumn="machineClass" class="p-1">
+                        {{ 'pages.prices.table.column.machineClass' | translate }} <p-sortIcon field="machineClass"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="price" class="p-1">
+                        {{ 'pages.prices.table.column.price' | translate }} <p-sortIcon field="scope"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="cpu" class="p-1">
+                        {{ 'pages.prices.table.column.cpu' | translate }} <p-sortIcon field="cpu"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="memory" class="p-1">
+                        {{ 'pages.prices.table.column.memory' | translate }} <p-sortIcon field="memory"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="provider" class="p-1">
+                        {{ 'pages.prices.table.column.provider' | translate }} <p-sortIcon field="provider"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="from" class="p-1">{{ 'common.from' | translate }} <p-sortIcon field="from"></p-sortIcon></th>
+                      <th pSortableColumn="to" class="p-1">{{ 'common.to' | translate }} <p-sortIcon field="to"></p-sortIcon></th>
+                    </tr>
+                    <tr>
+                      <th class="p-1">
+                        <p-columnFilter type="text" field="machineClass" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                      <th class="p-1">
+                        <p-columnFilter type="numeric" field="price" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                      <th class="p-1">
+                        <p-columnFilter type="numeric" field="cpu" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                      <th class="p-1">
+                        <p-columnFilter type="numeric" field="memory" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                      <th class="p-1">
+                        <p-columnFilter type="text" field="provider" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                      <th class="p-1">
+                        <p-columnFilter type="date" field="from" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                      <th class="p-1">
+                        <p-columnFilter type="date" field="to" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-price let-expanded="expanded">
+                    <tr>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">{{ price?.machineClass | titlecase }}</td>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.price }} NOK</td>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.cpu }}</td>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.memory }}</td>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ price?.provider | titlecase }}</td>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {{ price?.from | time: 'DD. MMM YYYY HH:mm:ss' }}
+                      </td>
+                      <td class="whitespace-nowrap px-6 py-4 text-sm font-light">{{ (price?.to | time: 'DD. MMM YYYY HH:mm:ss') || '' }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="6">{{ 'common.emptyList' | translate }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+          </div>
+          <ng-template #loadingOrError>
+            <ng-template #datacenterLoading>
+              <app-spinner></app-spinner>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

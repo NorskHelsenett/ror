@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: nhn-tooling
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  ignoreDifferences:
+  - group: ror
+    jsonPointers:
+    - /spec/replicas
+    kind: Deployment
+  - group: kyverno.io
+    jsonPointers:
+    - /spec/rules
+    kind: ClusterPolicy
+  - group: kyverno.io
+    jsonPointers:
+    - /spec/rules
+    kind: Policy
+  info:
+  - name: url
+    value: https://helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-tooling
+  project: nhn-tooling
+  source:
+    helm:
+      parameters:
+      - name: nhn.environment
+        value: dev
+      values: |
+        spec:
+          destination:
+            server: https://kubernetes.default.svc
+        cluster:
+          accessGroups:
+          - Developers@ror
+        nhn:
+          argocd:
+            customacl: |
+              p, role:nhndnsdevs, applications, get, nhn-ror/*, allow
+              p, role:nhndnsdevs, applications, sync, nhn-ror/*, allow
+              g, R-T1-SDI-ROR-Developer, role:nhndnsdevs
+          supervisorCluster: trd1-nhn-mgmt
+          clusterName: sdi-ror-dev
+          toolingVersion: v1.1.3
+    path: tooling
+    repoURL: https://helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-tooling.git
+    targetRevision: develop
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

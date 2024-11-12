@@ -1,0 +1,25 @@
+helm-lint-bootstrap:
+  stage: buildandtest
+  retry: 2
+  rules:
+    - changes:
+        - 'charts/ror-bootstrap/**/*'
+    - when: never
+  image:
+    name: ncr.sky.nhn.no/dockerhub/alpine/helm:latest
+    entrypoint: [""]
+  script:
+    - cd $CI_PROJECT_DIR/charts/ror-bootstrap
+    - helm lint
+helm-lint-ror:
+  stage: buildandtest
+  rules:
+    - changes:
+        - 'charts/nhn-ror/**/*'
+    - when: never
+  image:
+    name: ncr.sky.nhn.no/dockerhub/alpine/helm:latest
+    entrypoint: [""]
+  script:
+    - cd $CI_PROJECT_DIR/charts/nhn-ror
+    - helm lint

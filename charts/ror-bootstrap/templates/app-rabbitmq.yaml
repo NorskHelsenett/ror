@@ -1,0 +1,51 @@
+{{ if .Values.rabbitmq.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ror-rabbitmq
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    repoURL: 'https://charts.bitnami.com/bitnami'
+    targetRevision: 3.2.7
+    chart: rabbitmq-cluster-operator
+    helm:
+      values: |
+        global:
+          imageRegistry: ncr.sky.nhn.no/dockerhub
+          storageClass: trd1-w02-cl01-vsan-storage-policy
+        rbac:
+          create: true
+        podSecurityContext:
+          enabled: true
+          fsGroup: 1001
+          runAsUser: 1001
+          runAsGroup: 1001
+          seccompProfile:
+            type: RuntimeDefault
+        containerSecurityContext:
+          enabled: true
+          runAsUser: 1001
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+          allowPrivilegeEscalation: false
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "24Gi"
+            cpu: "3"
+
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+{{ end }}

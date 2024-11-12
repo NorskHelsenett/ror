@@ -1,0 +1,39 @@
+<div [formGroup]="formGroup">
+  @if (override) {
+    <input
+      class="form-control block rounded border border-solid border-gray-300 bg-gray-100 bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-600 transition ease-in-out focus:bg-gray-200 focus:text-gray-700 focus:outline-none dark:bg-neutral-950 dark:text-white"
+      type="text"
+      pInputText
+      [formControlName]="controlName"
+      placeholder="{{ placeholder }}"
+    />
+  }
+  @if (!override) {
+    <p-dropdown
+      [showClear]="showClear"
+      [group]="groupSupport"
+      [optionLabel]="optionLabel"
+      [optionValue]="optionValue"
+      [options]="options"
+      [emptyMessage]="emptyListMessage"
+      placeholder="{{ placeholder }}"
+      [filterBy]="filterBy"
+      [formControlName]="controlName"
+    >
+      <ng-content></ng-content>
+    </p-dropdown>
+  }
+
+  @if (couldOverride) {
+    <div class="flex align-items-center gap-1">
+      <p-checkbox
+        [(ngModel)]="override"
+        [binary]="true"
+        [ngModelOptions]="{ standalone: true }"
+        inputId="override-checkbox"
+        (onChange)="onOverride()"
+      ></p-checkbox>
+      <label for="override-checkbox">{{ 'common.typeInstead' | translate }}</label>
+    </div>
+  }
+</div>

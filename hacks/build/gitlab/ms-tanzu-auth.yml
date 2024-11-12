@@ -1,0 +1,127 @@
+build-ms-tanzu-auth:
+    stage: buildandtest
+    needs:
+    - job: bump-version
+      optional: true
+    retry: 2
+    extends: .go-cache
+    image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+    rules:
+        - changes:
+              - 'cmd/tanzu/auth/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - changes:
+              - 'cmd/tanzu/auth/version.json'
+          when: never
+
+        - when: never
+    variables:
+        AUTHPATCHVERSION: 0
+    before_script:
+        - apt update
+        - apt install jq -y
+        - go get ./...
+        - go get -t ./...
+        - go vet ./cmd/tanzu/auth/...
+        - cd cmd/tanzu/auth
+    script:
+        - AUTHPATCHVERSION=$(jq -r '.patch' version.json)
+        - AUTHPATCHVERSION=$(($AUTHPATCHVERSION + 1))
+        - jq --arg SHORTSHA "$CI_COMMIT_SHORT_SHA" --arg PATCH "$AUTHPATCHVERSION" '.commitSha = $SHORTSHA | .patch = ($PATCH | tonumber) ' version.json > newVersion.json && mv newVersion.json version.json
+        - cd ../../..
+        - CGO_ENABLED=0 go build -o dist/tanzuAuth -ldflags '-w -extldflags "-static"' cmd/tanzu/auth/main.go
+        - touch cmd/tanzu/auth/isbuilt
+    artifacts:
+        paths:
+            - dist/tanzuAuth
+            - cmd/tanzu/auth/version.json
+            - cmd/tanzu/auth/isbuilt
+        expire_in: 1 hour
+
+test-ms-tanzu-auth:
+    stage: buildandtest
+    needs: []
+    retry: 2
+    extends: .go-cache
+    image: ncr.sky.nhn.no/dockerhub/library/golang:latest
+    rules:
+        - changes:
+              - 'cmd/tanzu/auth/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - when: never
+    before_script:
+        - go get ./...
+        - go get -t ./...
+        - cd cmd/tanzu/auth
+    script:
+        - go test -cover -v ./...
+
+image-ms-tanzu-auth:
+    stage: buildandtest
+    needs: 
+      - build-ms-tanzu-auth
+      - test-ms-tanzu-auth
+    extends: .build-container-kaniko
+    variables:
+        DOCKERFILE_PATH: '/cmd/tanzu/auth'
+        CONTEXT_PATH: '${CI_PROJECT_DIR}'
+        CI_APPLICATION_IMAGE: '$HARBOR_HOST/ror/ms-tanzu-auth'
+        CI_APPLICATION_TAG: '$CI_COMMIT_SHORT_SHA'
+    dependencies:
+        - build-ms-tanzu-auth
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - 'cmd/tanzu/auth/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - 'cmd/tanzu/auth/**/*'
+              - 'internal/**/*'
+              - 'pkg/**/*'
+              - 'go.mod'
+        - when: never
+
+gen-charts-ms-tanzu-auth:
+    stage: buildandtest
+    dependencies:
+        - build-ms-tanzu-auth
+    needs:
+        - job: build-ms-tanzu-auth
+          optional: true
+          artifacts: true
+        - job: image-ms-tanzu-auth
+          optional: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+          when: never
+        - if: '$CI_COMMIT_BRANCH == "develop"'
+          changes:
+              - cmd/tanzu/auth/**/*
+              - internal/**/*
+              - pkg/**/*
+        - if: '$CI_COMMIT_BRANCH == "main"'
+          changes:
+              - cmd/tanzu/auth/**/*
+              - internal/**/*
+              - pkg/**/*
+        - when: never
+    variables:
+        CI_REPO: 'helsegitlab.nhn.no/sdi/SDI-Infrastruktur/nhn-ror.git'
+    image: ncr.sky.nhn.no/nhn/ci-deploy:0.0.2
+    script:
+        - if test -f "cmd/tanzu/auth/isbuilt"; then
+        - yq e -i '.version = strenv(ROR_VERSION),.appVersion = strenv(ROR_VERSION)' charts/ms-tanzu-auth/Chart.yaml  
+        - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ms-tanzu-auth/values.yaml
+        - helm package charts/ms-tanzu-auth
+        - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
+        - helm push ms-tanzu-auth-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm/
+        - fi

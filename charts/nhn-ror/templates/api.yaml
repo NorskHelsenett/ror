@@ -1,0 +1,35 @@
+{{ if .Values.api.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    app-group: nhn-tooling
+  name: ror-api
+  namespace: argocd
+spec:
+  destination:
+    namespace: nhn-ror
+    server: https://kubernetes.default.svc
+  project: nhn-ror
+  source:
+    chart: helm/api
+    helm:
+      parameters:
+      - name: api.tanzuAuthBaseUrl
+        value: "{{ .Values.api.tanzuAuthBaseUrl }}"
+      - name: api.fqdn
+        value: "{{ .Values.api.fqdn }}"
+      - name: api.tracing.enabled
+        value: "{{ .Values.api.tracing.enabled }}"
+      - name: api.http.timeout
+        value: "{{ .Values.api.http.timeout }}"
+      - name: api.http.mode
+        value: "{{ .Values.api.http.mode }}"
+    repoURL: ncr.sky.nhn.no/ror
+    targetRevision: 0.*
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+ {{ end}}
