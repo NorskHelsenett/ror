@@ -30,11 +30,11 @@ export class ClusterRawComponent {
 
   onHighlight(e: HighlightResult) {
     this.response = {
-      language: e.language,
-      relevance: e.relevance,
-      illegal: e.illegal,
-      secondBest: e.secondBest,
-      _emitter: e._emitter,
+      language: e?.language,
+      relevance: e?.relevance,
+      illegal: e?.illegal,
+      secondBest: e?.secondBest,
+      _emitter: e?._emitter,
       value: '{...}',
     };
   }

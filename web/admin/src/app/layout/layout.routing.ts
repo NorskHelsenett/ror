@@ -44,6 +44,10 @@ export const routes: Routes = [
         loadChildren: () => import('../resources/resources.module').then((m) => m.ResourcesModule),
       },
       {
+        path: 'resourcesv2',
+        loadChildren: () => import('../resourcesv2/resourcesv2.module').then((m) => m.ResourcesV2Module),
+      },
+      {
         path: 'userprofile',
         loadChildren: () => import('../userprofile/userprofile.module').then((m) => m.UserprofileModule),
       },
