@@ -108,7 +108,13 @@
       "3": "3. Skjermet",
       "4": "4. Sterkt skjermet"
     },
-    "loadMore": "Last mer"
+    "loadMore": "Last mer",
+    "critical": "Kritisk",
+    "high": "Høy",
+    "medium": "Medium",
+    "low": "Lav",
+    "summary": "Sammendrag",
+    "report": "Rapport"
   },
   "nav": {
     "home": "Oversikt",
@@ -1035,7 +1041,14 @@
       "link": "Lenke",
       "status": "Status",
       "dismissalReason": "Grunn for avviselse",
-      "emptyTable": "Ingen sårbarheter funnet"
+      "emptyTable": "Ingen sårbarheter funnet",
+      "vulnerabilities": "Sårbarheter",
+      "namespace": "Namespace",
+      "repository": "Repository",
+      "tag": "Versjon",
+      "resource": "Ressurs",
+      "installedVersion": "Installert versjon",
+      "fixedVersion": "Fikset i versjon"
     },
     "create": {
       "cluster": {

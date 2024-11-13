@@ -108,7 +108,13 @@
       "3": "3. Protected",
       "4": "4. Highly protected"
     },
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "summary": "Summary",
+    "report": "Report"
   },
   "error": {
     "forbidden": "Forbidden area",
@@ -1034,7 +1040,14 @@
       "link": "Link",
       "status": "Status",
       "dismissalReason": "Dismissal reason",
-      "emptyTable": "No vulnerabilities found"
+      "emptyTable": "No vulnerabilities found",
+      "vulnerabilities": "Vulnerabilities",
+      "namespace": "Namespace",
+      "repository": "Repository",
+      "tag": "Tag",
+      "resource": "Resource",
+      "installedVersion": "Installed version",
+      "fixedVersion": "Fixed version"
     },
     "create": {
       "cluster": {
