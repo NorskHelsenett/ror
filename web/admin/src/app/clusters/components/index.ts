@@ -11,6 +11,7 @@ import { ClusterToolsComponent } from './cluster-tools/cluster-tools.component';
 import { ClusterIngressRulesComponent } from './cluster-ingress-rules/cluster-ingress-rules.component';
 import { ClusterIngressMetadataComponent } from './cluster-ingress-metadata/cluster-ingress-metadata.component';
 import { ClusterPolicyReportComponent } from './cluster-policy-report/cluster-policy-report.component';
+import { ClusterVulnerabilityReportComponent } from './cluster-vulnerability-report/cluster-vulnerability-report.component';
 import { PolicyBarComponent } from './policy-bar/policy-bar.component';
 import { PolicyNamespaceComponent } from './policy-namespace/policy-namespace.component';
 import { PolicyPolicyComponent } from './policy-policy/policy-policy.component';
@@ -34,6 +35,7 @@ export * from './cluster-tools/cluster-tools.component';
 export * from './cluster-policy-report/cluster-policy-report.component';
 export * from './cluster-ingress-rules/cluster-ingress-rules.component';
 export * from './cluster-ingress-metadata/cluster-ingress-metadata.component';
+export * from './cluster-vulnerability-report/cluster-vulnerability-report.component';
 export * from './policy-bar/policy-bar.component';
 export * from './policy-namespace/policy-namespace.component';
 export * from './policy-policy/policy-policy.component';
@@ -58,6 +60,7 @@ export const clusterComponents = [
   ClusterIngressRulesComponent,
   ClusterIngressMetadataComponent,
   ClusterPolicyReportComponent,
+  ClusterVulnerabilityReportComponent,
   PolicyBarComponent,
   PolicyNamespaceComponent,
   PolicyPolicyComponent,
