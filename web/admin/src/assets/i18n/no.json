@@ -1048,7 +1048,15 @@
       "tag": "Versjon",
       "resource": "Ressurs",
       "installedVersion": "Installert versjon",
-      "fixedVersion": "Fikset i versjon"
+      "fixedVersion": "Fikset i versjon",
+      "statusHelp": "Velg status for sårbarheten",
+      "dismissalReasonHelp": "Grunn for avviselse",
+      "riskAssesment": "Risikoanalyse",
+      "riskAssesmentHelp": "Lenke til risikoanalyse",
+      "comment": "Kommentar",
+      "commentHelp": "Tilleggskommentar",
+      "columns": "Kolonner",
+      "columnsHelp": "Velg kolonner i tabellen"
     },
     "create": {
       "cluster": {

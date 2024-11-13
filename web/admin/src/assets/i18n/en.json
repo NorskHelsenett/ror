@@ -1047,7 +1047,15 @@
       "tag": "Tag",
       "resource": "Resource",
       "installedVersion": "Installed version",
-      "fixedVersion": "Fixed version"
+      "fixedVersion": "Fixed version",
+      "statusHelp": "Choose vulnerability status",
+      "dismissalReasonHelp": "Choose reason for dismissal",
+      "riskAssesment": "Risk assesment",
+      "riskAssesmentHelp": "Link to risk assesment",
+      "comment": "Comment",
+      "commentHelp": "Additional comment",
+      "columns": "Columns",
+      "columnsHelp": "Choose columns in table"
     },
     "create": {
       "cluster": {
