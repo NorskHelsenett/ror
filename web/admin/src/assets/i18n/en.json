@@ -1022,6 +1022,18 @@
       },
       "created": "Cluster created"
     },
+    "clustervulnerabilityreport": {
+      "id": "Id",
+      "severity": "Severity",
+      "score": "Score",
+      "title": "Title",
+      "firstObserved": "First observed",
+      "lastObserved": "Last observed",
+      "link": "Link",
+      "status": "Status",
+      "dismissalReason": "Dismissal reason",
+      "emptyTable": "No vulnerabilities found"
+    },
     "create": {
       "cluster": {
         "steps": {

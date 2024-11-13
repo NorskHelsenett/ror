@@ -1023,6 +1023,18 @@
       },
       "created": "Cluster opprettet"
     },
+    "clustervulnerabilityreport": {
+      "id": "Id",
+      "severity": "Alvorlighetsgrad",
+      "score": "Poengsum",
+      "title": "Tittel",
+      "firstObserved": "Først observert",
+      "lastObserved": "Sist observert",
+      "link": "Lenke",
+      "status": "Status",
+      "dismissalReason": "Grunn for avviselse",
+      "emptyTable": "Ingen sårbarheter funnet"
+    },
     "create": {
       "cluster": {
         "steps": {
