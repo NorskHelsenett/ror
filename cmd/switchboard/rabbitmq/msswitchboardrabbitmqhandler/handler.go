@@ -64,12 +64,12 @@ func (h switchboardhandler) HandleMessage(ctx context.Context, message amqp.Deli
 			Scope:   resource.Owner.Scope,
 		}
 		rlog.Debugc(ctx, "getting routes from ror api")
-		routes, err := getRoutes(owner)
+		routes, err := getRoutes(ctx, owner)
 		if err != nil || routes == nil {
 			rlog.Errorc(ctx, "unable to get routes from ror api, aborting messaging", err)
 			return err
 		}
-		vulnerabilityEvent, err := getVulnerabilityEvent(resource.Uid, owner)
+		vulnerabilityEvent, err := getVulnerabilityEvent(ctx, resource.Uid, owner)
 		if err != nil || vulnerabilityEvent == nil {
 			rlog.Errorc(ctx, "unable to get vulnerability event from ror api, aborting messaging", err)
 			return err
@@ -79,7 +79,7 @@ func (h switchboardhandler) HandleMessage(ctx context.Context, message amqp.Deli
 			if route.Spec.MessageType.ApiVersion == "general.ror.internal/v1alpha1" && route.Spec.MessageType.Kind == "VulnerabilityEvent" {
 				for _, slackReceiver := range route.Spec.Receivers.Slack {
 					rlog.Infoc(ctx, fmt.Sprintf("creating slack message for owner %v", owner))
-					err = slack.CreateSlackMessage(slackReceiver.ChannelId, vulnerabilityEvent.Spec.Message, owner)
+					err = slack.CreateSlackMessage(ctx, slackReceiver.ChannelId, vulnerabilityEvent.Spec.Message, owner)
 					if err != nil {
 						rlog.Errorc(ctx, "unable to send slack message to ror api", err)
 					}
@@ -92,13 +92,13 @@ func (h switchboardhandler) HandleMessage(ctx context.Context, message amqp.Deli
 	return nil
 }
 
-func getRoutes(owner rortypes.RorResourceOwnerReference) ([]rortypes.ResourceRoute, error) {
+func getRoutes(ctx context.Context, owner rortypes.RorResourceOwnerReference) ([]rortypes.ResourceRoute, error) {
 	query := rorresources.NewResourceQuery()
 	query.VersionKind.Kind = "Route"
 	query.VersionKind.Version = "general.ror.internal/v1alpha1"
 	query.OwnerRefs = make([]rortypes.RorResourceOwnerReference, 0)
 	query.OwnerRefs = append(query.OwnerRefs, owner)
-	resourceSet, err := ror.Client.ResourceV2().Get(context.Background(), *query)
+	resourceSet, err := ror.Client.ResourceV2().Get(ctx, *query)
 	if err != nil {
 		return nil, err
 	}
@@ -110,14 +110,14 @@ func getRoutes(owner rortypes.RorResourceOwnerReference) ([]rortypes.ResourceRou
 	return routes, nil
 }
 
-func getVulnerabilityEvent(uid string, owner rortypes.RorResourceOwnerReference) (*rortypes.ResourceVulnerabilityEvent, error) {
+func getVulnerabilityEvent(ctx context.Context, uid string, owner rortypes.RorResourceOwnerReference) (*rortypes.ResourceVulnerabilityEvent, error) {
 	query := rorresources.NewResourceQuery()
 	query.VersionKind.Kind = "VulnerabilityEvent"
 	query.VersionKind.Version = "general.ror.internal/v1alpha1"
 	query.OwnerRefs = make([]rortypes.RorResourceOwnerReference, 0)
 	query.OwnerRefs = append(query.OwnerRefs, owner)
 	query.WithUID(uid)
-	resourceSet, err := ror.Client.ResourceV2().Get(context.Background(), *query)
+	resourceSet, err := ror.Client.ResourceV2().Get(ctx, *query)
 	if err != nil {
 		return nil, err
 	}
