@@ -12,9 +12,7 @@ on:
       - main
   pull_request:
     branches:
-      - feature/build-images
-      - 
-
+      - main
 
 env:
   # Use docker.io for Docker Hub if empty
