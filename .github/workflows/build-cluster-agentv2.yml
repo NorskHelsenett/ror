@@ -15,6 +15,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
+  # test
   IMAGE_NAME: ${{ github.repository }}
   ROR_VERSION: v1.0.0
 
