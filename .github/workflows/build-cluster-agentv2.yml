@@ -76,9 +76,7 @@ jobs:
         run: |
           ls -l
           ls -l binary-build/
-          ls -l binary-build/dist
-          mkdir dist
-          mv binary-build/dist/* dist/.
+          mv binary-build dist
 
 
       - name: Install cosign
