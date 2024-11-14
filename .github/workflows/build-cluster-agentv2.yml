@@ -38,15 +38,24 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-  
     - name: Build
       run: |
        go get ./...
        CGO_ENABLED=0 go build -o dist/agent -ldflags "-w -extldflags '-static' -X ror/cmd/agent/config.version=$ROR_VERSION -X ror/cmd/agent/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agent/main.go
        touch cmd/agent/isbuilt
+    - name: Archive binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: binary-build
+        path: |
+          dist/agent
+          cmd/agent/isbuilt
+        retention-days: 1
 
-  build:
+
+  build-container-image:
     runs-on: ubuntu-latest
+    needs: build-app
     permissions:
       contents: read
       packages: write
@@ -58,8 +67,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install the cosign tool except on PR
-      # https://github.com/sigstore/cosign-installer
+      - name: Download binary build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: binary-build
       - name: Install cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
