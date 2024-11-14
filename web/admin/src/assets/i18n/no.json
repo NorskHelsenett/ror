@@ -114,7 +114,8 @@
     "medium": "Medium",
     "low": "Lav",
     "summary": "Sammendrag",
-    "report": "Rapport"
+    "report": "Rapport",
+    "change": "Change"
   },
   "nav": {
     "home": "Oversikt",
@@ -1056,7 +1057,15 @@
       "comment": "Kommentar",
       "commentHelp": "Tilleggskommentar",
       "columns": "Kolonner",
-      "columnsHelp": "Velg kolonner i tabellen"
+      "columnsHelp": "Velg kolonner i tabellen",
+      "notAssessed": "Ikke vurdert",
+      "needsTriage": "Behøver prioritering",
+      "confirmed": "Bekreftet",
+      "dismissed": "Avvist",
+      "idHelp": "Filtrer etter id",
+      "acceptableRisk": "Akseptabel risk",
+      "falsePositive": "Falsk positiv",
+      "notApplicable": "Ikke aktuell"
     },
     "create": {
       "cluster": {

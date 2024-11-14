@@ -114,7 +114,8 @@
     "medium": "Medium",
     "low": "Low",
     "summary": "Summary",
-    "report": "Report"
+    "report": "Report",
+    "change": "Change"
   },
   "error": {
     "forbidden": "Forbidden area",
@@ -1055,7 +1056,15 @@
       "comment": "Comment",
       "commentHelp": "Additional comment",
       "columns": "Columns",
-      "columnsHelp": "Choose columns in table"
+      "columnsHelp": "Choose columns in table",
+      "notAssessed": "Not assessed",
+      "needsTriage": "Needs triage",
+      "confirmed": "Confirmed",
+      "dismissed": "Dismissed",
+      "idHelp": "Filter by id",
+      "acceptableRisk": "Acceptable risk",
+      "falsePositive": "False positive",
+      "notApplicable": "Not applicable"
     },
     "create": {
       "cluster": {
