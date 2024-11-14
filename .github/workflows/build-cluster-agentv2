@@ -1,4 +1,4 @@
-name: build-cluster-agentv2
+name: build-agentv2
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -6,13 +6,15 @@ name: build-cluster-agentv2
 # documentation.
 
 on:
+  schedule:
+    - cron: '15 7 * * *'
   push:
-    branches:
-      - feature/build-images
-      - main
+    branches: 
+      - "feater/build-images"
+    # Publish semver tags as releases.
+    #tags: [ 'v*.*.*' ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 env:
   # Use docker.io for Docker Hub if empty
