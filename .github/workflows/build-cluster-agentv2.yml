@@ -76,7 +76,7 @@ jobs:
         run: |
           ls -l
           ls -l binary-build/
-          mv binary-build dist
+          mv binary-build cmd/agentv2/dist
 
 
       - name: Install cosign
