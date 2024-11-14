@@ -322,10 +322,10 @@ var Resourcedefs = []ApiResource{
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 	}, {
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "Vm",
+			Kind:       "VirtualMachine",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
-		Plural:     "Vms",
+		Plural:     "VirtualMachines",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
 	},

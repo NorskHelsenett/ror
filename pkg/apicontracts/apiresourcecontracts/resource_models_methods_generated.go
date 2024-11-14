@@ -1404,32 +1404,32 @@ func (m ResourceVulnerabilityevents) GetByLabels(search map[string]string) []Res
 	return Response
 }
 
-// Function to return Vm resource by name.
-func (m ResourceVms) GetByName(search string) ResourceVm {
-	for _, resource := range m.Vms {
+// Function to return VirtualMachine resource by name.
+func (m ResourceVirtualmachines) GetByName(search string) ResourceVirtualMachine {
+	for _, resource := range m.Virtualmachines {
 		if resource.Metadata.Name == search {
 			return resource
 		}
 	}
-	var emptyResponse ResourceVm
+	var emptyResponse ResourceVirtualMachine
 	return emptyResponse
 }
 
-// Function to return Vm resource by uid.
-func (m ResourceVms) GetByUid(search string) ResourceVm {
-	for _, res := range m.Vms {
+// Function to return VirtualMachine resource by uid.
+func (m ResourceVirtualmachines) GetByUid(search string) ResourceVirtualMachine {
+	for _, res := range m.Virtualmachines {
 		if res.Metadata.Uid == search {
 			return res
 		}
 	}
-	var emptyResponse ResourceVm
+	var emptyResponse ResourceVirtualMachine
 	return emptyResponse
 }
 
-// Function to return Vm resource by label.
-func (m ResourceVms) GetByLabels(search map[string]string) []ResourceVm {
-	var Response []ResourceVm
-	for _, res := range m.Vms {
+// Function to return VirtualMachine resource by label.
+func (m ResourceVirtualmachines) GetByLabels(search map[string]string) []ResourceVirtualMachine {
+	var Response []ResourceVirtualMachine
+	for _, res := range m.Virtualmachines {
 		if len(res.Metadata.Labels) != 0 {
 			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
 				Response = append(Response, res)

@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/NorskHelsenett/ror/cmd/api/services/rulesetsService"
 	"github.com/NorskHelsenett/ror/internal/mongodbrepo/mongoTypes"
-	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 
@@ -255,16 +256,6 @@ func seedDatacenters(ctx context.Context) {
 		},
 		{
 			ID:       primitive.NewObjectID(),
-			Provider: providers.ProviderTypeKind,
-			Location: mongoTypes.MongoDatacenterLocation{
-				Country: "Norway",
-				Region:  "Trøndelag",
-			},
-			Name:        "local-kind",
-			APIEndpoint: "localhost",
-		},
-		{
-			ID:       primitive.NewObjectID(),
 			Provider: providers.ProviderTypeTalos,
 			Location: mongoTypes.MongoDatacenterLocation{
 				Country: "Norway",
@@ -298,6 +289,16 @@ func seedDatacenters(ctx context.Context) {
 			Provider: providers.ProviderTypeTanzu,
 			Location: mongoTypes.MongoDatacenterLocation{
 				Country: "Norway",
+				Region:  "Trøndelag",
+			},
+			Name:        "trd1cl02",
+			APIEndpoint: "ptr1-w02-cl02-api.sdi.nhn.no",
+		},
+		{
+			ID:       primitive.NewObjectID(),
+			Provider: providers.ProviderTypeTanzu,
+			Location: mongoTypes.MongoDatacenterLocation{
+				Country: "Norway",
 				Region:  "Oslo",
 			},
 			Name:        "osl1",
@@ -308,7 +309,7 @@ func seedDatacenters(ctx context.Context) {
 	for i := 0; i < len(datacenters); i++ {
 		datacenterInput := datacenters[i]
 		var datacenter *mongoTypes.MongoDatacenter
-		findError := collection.FindOne(ctx, bson.M{"provider": datacenterInput.Provider}).Decode(&datacenter)
+		findError := collection.FindOne(ctx, bson.M{"name": datacenterInput.Name}).Decode(&datacenter)
 		if findError != nil {
 			rlog.Errorc(ctx, "could not find datacenter", findError)
 		}

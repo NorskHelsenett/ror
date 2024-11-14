@@ -1,38 +1,79 @@
 /* Do not change, this code is generated from Golang structs */
 
-export interface ResourceVMTag {
+export interface ResourceVirtualMachineOperatingSystemStatus {
+  id: string;
+  name: string;
+  version: string;
+  hostName: string;
+  powerState: string;
+  toolVersion: string;
+  architecture: string;
+}
+export interface ResourceVirtualMachineNetworkStatus {
+  id: string;
+}
+export interface ResourceVirtualMachineMemoryStatus {
+  id: string;
+  usage: string;
+}
+export interface ResourceVirtualMachineDiskStatus {
+  id: string;
+  usage: string;
+}
+export interface ResourceVirtualMachineCpuStatus {
+  id: string;
+  usage: string;
+}
+export interface ResourceVirtualMachineStatus {
+  cpu: ResourceVirtualMachineCpuStatus;
+  disks: ResourceVirtualMachineDiskStatus[];
+  memory: ResourceVirtualMachineMemoryStatus;
+  networks: ResourceVirtualMachineNetworkStatus[];
+  operatingSystem: ResourceVirtualMachineOperatingSystemStatus;
+}
+export interface ResourceVirtualMachineOperatingSystemSpec {
+  id: string;
+}
+export interface ResourceVirtualMachineNetworkSpec {
+  id: string;
+  dns: string;
+  ipv4: string;
+  ipv6: string;
+  mask: string;
+  gateway: string;
+}
+export interface ResourceVirtualMachineMemorySpec {
+  id: string;
+  size: number;
+}
+export interface ResourceVirtualMachineDiskSpec {
+  id: string;
+  size: number;
+  name: string;
+  type: string;
+}
+export interface ResourceVirtualMachineTagSpec {
   key: string;
   value: string;
   description: string;
 }
-export interface ResourceVMRuntime {
-  connectionState: string;
-  powerState: string;
-  maxCpuUsage: number;
-  maxMemoryUsage: number;
-}
-export interface ResourceVMConfig {
-  name: string;
-  memory_size: number;
-  cpu_count: number;
-  virtual_disk_count: number;
-  annotation: string;
-}
-export interface ResourceVMGuest {
+export interface ResourceVirtualMachineCpuSpec {
   id: string;
-  family: string;
-  full_name: string;
-  host_name: string;
-  ip_address: string;
-  state: string;
+  count: number;
 }
-export interface ResourceVm {
+export interface ResourceVirtualMachineSpec {
+  cpu: ResourceVirtualMachineCpuSpec;
+  tags: ResourceVirtualMachineTagSpec[];
+  disks: ResourceVirtualMachineDiskSpec[];
+  memory: ResourceVirtualMachineMemorySpec;
+  networks: ResourceVirtualMachineNetworkSpec[];
+  operatingSystem: ResourceVirtualMachineOperatingSystemSpec;
+}
+export interface ResourceVirtualMachine {
   id: string;
   name: string;
-  guest: ResourceVMGuest;
-  config: ResourceVMConfig;
-  runtime: ResourceVMRuntime;
-  tags: ResourceVMTag[];
+  spec: ResourceVirtualMachineSpec;
+  status: ResourceVirtualMachineStatus;
 }
 export interface ResourceVulnerabilityEventSpec {
   owner: RorResourceOwnerReference;
@@ -914,7 +955,7 @@ export interface Resource {
   route?: ResourceRoute;
   slackmessage?: ResourceSlackMessage;
   vulnerabilityevent?: ResourceVulnerabilityEvent;
-  vm?: ResourceVm;
+  virtualmachine?: ResourceVirtualMachine;
 }
 export interface ResourceSet {
   resources?: Resource[];
