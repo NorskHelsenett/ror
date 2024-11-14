@@ -17,7 +17,7 @@ env:
   # github.repository as <account>/<repo>
   # test
   IMAGE_NAME: ${{ github.repository }}-cluster-agentv2
-  ROR_VERSION: v1.0.0
+  ROR_VERSION: v1.0.1
 
 jobs:
   build-app:
