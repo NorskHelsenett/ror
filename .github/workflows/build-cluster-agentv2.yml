@@ -41,15 +41,16 @@ jobs:
     - name: Build
       run: |
        go get ./...
-       CGO_ENABLED=0 go build -o dist/agent -ldflags "-w -extldflags '-static' -X ror/cmd/agent/config.version=$ROR_VERSION -X ror/cmd/agent/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agent/main.go
-       touch cmd/agent/isbuilt
+       mkdir cmd/agentv2/dist
+       CGO_ENABLED=0 go build -o cmd/agentv2/dist/agent -ldflags "-w -extldflags '-static' -X ror/cmd/agent/config.version=$ROR_VERSION -X ror/cmd/agent/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agentv2/main.go
+       touch cmd/agentv2/dist/isbuilt
     - name: Archive binary
       uses: actions/upload-artifact@v4
       with:
         name: binary-build
         path: |
-          dist/agent
-          cmd/agent/isbuilt
+          cmd/agentv2/dist/agent
+          cmd/agentv2/dist/isbuilt
         retention-days: 1
 
 
@@ -71,10 +72,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: binary-build
-      - name: Load binary build artifacts
-        run: |
-          mkdir -p cmd/agentv2/dist
-          mv binary-build/dist/agent cmd/agentv2/dist/agent
       - name: Install cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
