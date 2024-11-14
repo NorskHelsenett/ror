@@ -4,6 +4,7 @@ package gincontext
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -21,7 +22,8 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 	var timeout time.Duration
 	timeoutstring, exists := c.Get("timeout")
 	if !exists {
-		rlog.Warn("timeout not set in gin context")
+		msg := fmt.Sprintf("timeout not set in gin context for path %s", c.Request.URL.Path)
+		rlog.Warn(msg)
 		timeout = 10 * time.Second
 	} else {
 		rlog.Debug("timeout set in gin context", rlog.String("timeout", timeoutstring.(time.Duration).String()))
