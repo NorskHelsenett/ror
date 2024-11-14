@@ -41,7 +41,7 @@ jobs:
     - name: Build
       run: |
        go get ./...
-       mkdir cmd/agentv2/dist
+       mkdir -p dist/isbuilt
        CGO_ENABLED=0 go build -o dist/agentv2 -ldflags "-w -extldflags '-static' -X ror/cmd/agent/config.version=$ROR_VERSION -X ror/cmd/agent/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agentv2/main.go
        touch dist/isbuilt/agentv2
     - name: Archive binary
