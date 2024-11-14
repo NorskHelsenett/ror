@@ -42,14 +42,14 @@ jobs:
       run: |
        go get ./...
        mkdir cmd/agentv2/dist
-       CGO_ENABLED=0 go build -o cmd/agentv2/dist/agent -ldflags "-w -extldflags '-static' -X ror/cmd/agent/config.version=$ROR_VERSION -X ror/cmd/agent/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agentv2/main.go
+       CGO_ENABLED=0 go build -o cmd/agentv2/dist/agentv2 -ldflags "-w -extldflags '-static' -X ror/cmd/agent/config.version=$ROR_VERSION -X ror/cmd/agent/config.commit=$CI_COMMIT_SHORT_SHA" cmd/agentv2/main.go
        touch cmd/agentv2/dist/isbuilt
     - name: Archive binary
       uses: actions/upload-artifact@v4
       with:
         name: binary-build
         path: |
-          cmd/agentv2/dist/agent
+          cmd/agentv2/dist/agentv2
           cmd/agentv2/dist/isbuilt
         retention-days: 1
 
