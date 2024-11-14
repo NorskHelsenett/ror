@@ -16,7 +16,7 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   # test
-  IMAGE_NAME: ${{ github.repository }}/cluster-agentv2
+  IMAGE_NAME: ${{ github.repository }}-cluster-agentv2
   ROR_VERSION: v1.0.0
 
 jobs:
@@ -60,8 +60,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
       id-token: write
 
     steps:
