@@ -3,7 +3,7 @@ name: Build Cluster Agent v2
 on:
   push:
     branches: 
-      - "feater/build-images"
+      - "feature/build-images"
     # Publish semver tags as releases.
     #tags: [ 'v*.*.*' ]
   pull_request:
