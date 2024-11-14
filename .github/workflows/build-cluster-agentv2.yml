@@ -16,7 +16,7 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   # test
-  IMAGE_NAME: norskhelsenett/ror/agentv2-test
+  IMAGE_NAME: ${{ github.repository }}/cluster-agentv2
   ROR_VERSION: v1.0.0
 
 jobs:
