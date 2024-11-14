@@ -9,9 +9,10 @@ on:
   schedule:
     - cron: '15 7 * * *'
   push:
-    branches: [ "main" ]
+    branches: 
+      - "feater/build-images"
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    #tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "main" ]
 
