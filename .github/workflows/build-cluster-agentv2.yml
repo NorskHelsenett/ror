@@ -75,10 +75,11 @@ jobs:
       - name: list files
         run: |
           ls -l
-          ls -l dist
-          ls -l dist/agentv2
-          ls -l dist/isbuilt
-          tree
+          ls -l binary-build/
+          ls -l binary-build/dist
+          mkdir dist
+          mv binary-build/dist/* dist/.
+
 
       - name: Install cosign
         if: github.event_name != 'pull_request'
