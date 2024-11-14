@@ -7,6 +7,8 @@ import { Location } from '@angular/common';
 import { AclScopes, AclAccess } from '../../../core/models/acl-scopes';
 import { AclService } from '../../../core/services/acl.service';
 import { ClustersService } from '../../../core/services/clusters.service';
+import { ResourceType } from '../../../core/models/resources/resourceType';
+import { TypesService } from '../../../resources/services/types.service';
 
 @Component({
   selector: 'app-cluster-details',
@@ -31,6 +33,10 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
   selectedTabIndex: number = 0;
   adminOwner$: Observable<boolean> | undefined;
   aclFetchError: any;
+
+  resourceTypes: ResourceType[];
+  selectedResource: any | undefined;
+  sidebarVisible = false;
 
   private subscriptions = new Subscription();
   private tabs: any[] = [
@@ -81,6 +87,7 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
     private metricsService: MetricsService,
     private oauthService: OAuthService,
     private aclService: AclService,
+    private typesService: TypesService,
   ) {}
 
   ngOnInit(): void {
@@ -111,6 +118,11 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
         throw error;
       }),
     );
+
+    this.resourceTypes = this.typesService.getResourceTypes();
+    if (this.resourceTypes?.length > 0) {
+      this.resourceTypes = this.resourceTypes?.sort((a: ResourceType, b: ResourceType) => a.kind.localeCompare(b.kind));
+    }
   }
 
   ngOnDestroy(): void {
@@ -195,5 +207,10 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
     } catch {
       //ignoring
     }
+  }
+
+  showSelectedResource(resource: any) {
+    this.selectedResource = resource;
+    this.sidebarVisible = true;
   }
 }

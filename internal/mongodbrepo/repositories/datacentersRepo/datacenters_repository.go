@@ -3,6 +3,7 @@ package datacenterRepo
 import (
 	"context"
 	"errors"
+
 	"github.com/NorskHelsenett/ror/internal/helpers/mapping"
 	mongoHelper "github.com/NorskHelsenett/ror/internal/helpers/mongoHelper"
 	"github.com/NorskHelsenett/ror/internal/mongodbrepo/mongoTypes"
@@ -102,6 +103,9 @@ func GetAllByUser(ctx context.Context) (*[]apicontracts.Datacenter, error) {
 	datacenterIds := make([]string, 0)
 	for i := 0; i < len(clusterPrimitivMap); i++ {
 		c := clusterPrimitivMap[i]
+		if c["datacenter"] == nil {
+			continue
+		}
 		datacenter := c["datacenter"].(primitive.M)
 
 		id := datacenter["_id"].(primitive.ObjectID)

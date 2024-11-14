@@ -1,0 +1,155 @@
+<div *ngIf="resourceSet$ | async"></div>
+<div>
+  <p-table
+    [columns]="selectedColumns"
+    [value]="resources"
+    responsiveLayout="scroll"
+    #resourcesTable
+    [rowHover]="true"
+    [paginator]="false"
+    [loading]="loading"
+    loadingIcon="pi pi-spinner"
+    [rows]="rows"
+    [scrollable]="true"
+    [lazy]="true"
+    scrollHeight="flex"
+    dataKey="metadata.uid"
+    (onLazyLoad)="loadLazy($event)"
+    [showCurrentPageReport]="false"
+    sortMode="multiple"
+    [multiSortMeta]="[{ field: 'metadata.name', order: 1 }]"
+    currentPageReportTemplate="{{ 'common.showing' | translate }} {first} {{ 'common.to' | translate | lowercase }} {last} {{
+      'common.of' | translate | lowercase
+    }} {totalRecords} {{ 'common.entries' | translate | lowercase }}"
+  >
+    <ng-template pTemplate="caption">
+      <div class="mb-2">
+        <ng-content select="[filter]"></ng-content>
+        <div class="xs:flex-none sm:flex sm:justify-between">
+          <p-multiSelect
+            [options]="columnDefinitions"
+            [(ngModel)]="selectedColumns"
+            [showToggleAll]="true"
+            optionLabel="header"
+            selectedItemsLabel="{0} {{ 'common.table.columnsSelected' | translate }}"
+            [style]="{ 'min-width': '200px' }"
+            placeholder="{{ 'common.table.chooseColumns' | translate }}"
+            emptyMessage="{{ 'common.table.noColumns' | translate }}"
+            emptyFilterMessage="{{ 'common.table.noColumnsFilter' | translate }}"
+          ></p-multiSelect>
+
+          <div class="flex-grow"></div>
+
+          <div class="">
+            <p-dropdown [options]="rowsPerPage" [(ngModel)]="rows" (onChange)="selectedRowsChange($event)">
+              <ng-template let-row pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                  <div>{{ row }}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+          <app-export-button class="md:justify-self-end mt-1" [exportObjects]="export()" [filename]="exportFilename"></app-export-button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns" [pSortableColumn]="col?.field" class="">
+          <div class="flex flex-cols">
+            <span class="">{{ col?.header }}</span>
+            <p-sortIcon [field]="col?.field" pTooltip="{{ 'pages.resourcesv2.list.header.tooltip' | translate }}"></p-sortIcon>
+          </div>
+        </th>
+      </tr>
+      <tr>
+        <th *ngFor="let col of columns" class="p-1">
+          <ng-container [ngSwitch]="col.type">
+            <p-columnFilter
+              *ngSwitchCase="'text'"
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsString"
+            >
+            </p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'numeric'"
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsInt"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'boolean'"
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsBool"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchDefault
+              [type]="col.type"
+              [field]="col.field"
+              matchMode="contains"
+              [showMenu]="true"
+              [matchModeOptions]="matchModeOptionsBool"
+            ></p-columnFilter>
+          </ng-container>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-resource let-columns="columns">
+      <tr class="h-10">
+        <td *ngFor="let col of columns" class="h-10">
+          @if (col?.header === 'Name' && (adminCreate$ | async) == true) {
+            <span class="cursor-pointer hover:underline" (click)="setSelectedResource(resource)">{{ extractData(resource, col.field) }}</span>
+          } @else {
+            <ng-container>{{ extractData(resource, col.field) }}</ng-container>
+          }
+        </td>
+        <td *ngIf="resource" class="w-40 h-10">
+          <a
+            class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+            (click)="setSelectedResource(resource)"
+          >
+            {{ 'common.details' | translate }}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody" let-columns="columns">
+      <tr style="height: 46px">
+        <td *ngFor="let col of columns; let even = even">
+          <p-skeleton [ngStyle]="{ width: even ? (col.field === 'year' ? '30%' : '40%') : '60%' }" />
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr *ngIf="!loading">
+        <td colspan="7">
+          <ng-container *ngIf="!loading">{{ 'common.emptyList' | translate }}</ng-container>
+          <ng-container *ngIf="loading"><app-spinner></app-spinner></ng-container>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="text-center flex">
+        <span class="text-pretty">{{ 'pages.resourcesv2.list.fetchCount' | translate: { count: resources?.length } }}</span>
+      </div>
+
+      <div class="text-center">
+        <button
+          *ngIf="showLoadMore"
+          (click)="loadMore()"
+          class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+        >
+          {{ 'common.loadMore' | translate }}
+        </button>
+      </div>
+    </ng-template>
+  </p-table>
+</div>

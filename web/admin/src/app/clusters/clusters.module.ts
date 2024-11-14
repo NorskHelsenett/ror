@@ -32,7 +32,11 @@ import { ButtonModule } from 'primeng/button';
 import { HighlightModule } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
 import { clusterServices } from './services';
-import { ResourceTableComponent } from '../resources/components/resource-table/resource-table.component';
+import { TypesService } from '../resources/services/types.service';
+import { Resourcesv2FilterComponent } from '../resourcesv2/components/resourcesv2-filter/resourcesv2-filter.component';
+import { ResourcesV2ListComponent } from '../resourcesv2/components/resources-v2-list/resources-v2-list.component';
+import { SidebarModule } from 'primeng/sidebar';
+import { ResourceV2DetailsComponent } from '../resourcesv2/components/resource-v2-details/resource-v2-details.component';
 
 @NgModule({
   declarations: [ClustersComponent, ...clustersPages, ...clusterComponents],
@@ -64,11 +68,14 @@ import { ResourceTableComponent } from '../resources/components/resource-table/r
     NgOptimizedImage,
     ProviderComponent,
     HighlightModule,
-    ResourceTableComponent,
     HighlightLineNumbers,
     DialogModule,
+    Resourcesv2FilterComponent,
+    ResourcesV2ListComponent,
+    SidebarModule,
+    ResourceV2DetailsComponent,
   ],
   exports: [ClustersComponent, ...clustersPages, ...clusterComponents],
-  providers: [ConfirmationService, ...clusterServices],
+  providers: [ConfirmationService, ...clusterServices, TypesService],
 })
 export class ClustersModule {}
