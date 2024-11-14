@@ -17,7 +17,7 @@ env:
   # github.repository as <account>/<repo>
   # test
   IMAGE_NAME: ${{ github.repository }}-cluster-agentv2
-  ROR_VERSION: v1.0.1
+  ROR_VERSION: v1.0.0
 
 jobs:
   build-app:
@@ -68,6 +68,9 @@ jobs:
 
       - name: Download binary build artifacts
         uses: actions/download-artifact@v4
+
+      - name: Move artifacts
+        run: mv binary-build cmd/agentv2/dist
 
       - name: Install cosign
         if: github.event_name != 'pull_request'
