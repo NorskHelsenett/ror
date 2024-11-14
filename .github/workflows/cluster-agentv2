@@ -1,12 +1,10 @@
-name: build-agentv2
+name: Build Cluster Agent v2
 
 on:
   push:
-    branches:
-      - feature/build-images
   pull_request:
     branches:
-      - feature/build-images
+      - main
 
 
 env:
