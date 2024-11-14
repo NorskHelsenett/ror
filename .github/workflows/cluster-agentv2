@@ -6,14 +6,13 @@ name: build-agentv2
 # documentation.
 
 on:
-  schedule:
-    - cron: '15 7 * * *'
   push:
-    branches: [ "main" ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    branches:
+      - feature/build-images
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - feature/build-images
+
 
 env:
   # Use docker.io for Docker Hub if empty
