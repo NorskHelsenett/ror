@@ -1,9 +1,10 @@
-name: ci 
+name: Publish documentation
 on:
   push:
     branches:
-      - master 
       - main
+    paths:
+      - docs/**
 permissions:
   contents: write
 jobs:

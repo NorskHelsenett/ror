@@ -135,5 +135,5 @@ gen-charts-ror-cluster-operator:
         - yq e -i '.image.tag = strenv(ROR_VERSION)' charts/ror-operator/values.yaml    
         - helm package charts/ror-operator
         - echo  $HARBOR_TOKEN | helm registry login -u $HARBOR_USER $HARBOR_HOST --password-stdin
-        - helm push ror-operator-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/nhn-helm
+        - helm push ror-operator-${ROR_VERSION}.tgz oci://${HARBOR_HOST}/ror/helm
         - fi
