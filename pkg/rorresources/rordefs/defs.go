@@ -6,6 +6,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type ApiResourceType string
@@ -33,10 +34,51 @@ func (m ApiResource) GetApiVersion() string {
 	return m.APIVersion
 }
 
+func (m ApiResource) GetVersion() string {
+	return m.GroupVersionKind().Version
+}
+
+func (m ApiResource) GetGroup() string {
+	return m.GroupVersionKind().Group
+}
+
+func (m ApiResource) GetKind() string {
+	return m.Kind
+}
+
+func (m ApiResource) GetResource() string {
+	return m.Plural
+}
+
+func (m ApiResource) GetGroupVersionKind() schema.GroupVersionKind {
+	return schema.GroupVersionKind{
+		Group:   m.GroupVersionKind().Group,
+		Version: m.GroupVersionKind().Version,
+		Kind:    m.GetKind(),
+	}
+}
+
+func (m ApiResource) GetGroupVersionResource() schema.GroupVersionResource {
+	return schema.GroupVersionResource{
+		Group:    m.GroupVersionKind().Group,
+		Version:  m.GroupVersionKind().Version,
+		Resource: m.GetResource(),
+	}
+}
+
 func (m ApiResource) PluralCapitalized() string {
 	caser := cases.Title(language.Und)
 
 	return caser.String(m.Plural)
+}
+
+func GetSchemasByType(resourceType ApiResourceType) []schema.GroupVersionResource {
+	var resources []schema.GroupVersionResource
+	for _, resource := range GetResourcesByType(resourceType) {
+		resources = append(resources, resource.GetGroupVersionResource())
+	}
+
+	return resources
 }
 
 func GetResourcesByType(resourceType ApiResourceType) []ApiResource {
