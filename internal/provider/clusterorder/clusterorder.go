@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 
-	clustersservice "github.com/NorskHelsenett/ror/cmd/api/services/clustersService"
+	clustersservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/clustersService"
 	"github.com/NorskHelsenett/ror/internal/provider/clusterorder/kindclusterorder"
 	"github.com/NorskHelsenett/ror/internal/provider/clusterorder/talosclusterorder"
 	"github.com/NorskHelsenett/ror/internal/provider/clusterorder/tanzuclusterorder"

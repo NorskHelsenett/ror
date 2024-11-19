@@ -3,7 +3,8 @@ package configuration
 import (
 	"context"
 	"encoding/base64"
-	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
+
+	resourcesservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/resourcesService"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 

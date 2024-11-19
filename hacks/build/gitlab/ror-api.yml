@@ -16,11 +16,11 @@ build-api:
   script:
     - go get ./...
     - go get -t ./...
-    - go vet ./cmd/api/...
+    - go vet ./cmd/api-stub/...
     - go install github.com/swaggo/swag/cmd/swag@v1.8.12
     - export PATH=$(go env GOPATH)/bin:$PATH
-    - swag init -g ./cmd/api/main.go --parseDependency --output ./cmd/api/docs
-    - CGO_ENABLED=0 go build -o dist/api  -ldflags "-w -extldflags '-static' -X ror/cmd/api/apiconfig.Version=$ROR_VERSION -X ror/cmd/api/apiconfig.Commit=$CI_COMMIT_SHORT_SHA" cmd/api/main.go
+    - swag init -g ./cmd/api-stub/main.go --parseDependency --output ./cmd/api-stub/docs
+    - CGO_ENABLED=0 go build -o dist/api  -ldflags "-w -extldflags '-static' -X ror/cmd/api-stub/apiconfig.Version=$ROR_VERSION -X ror/cmd/api-stub/apiconfig.Commit=$CI_COMMIT_SHORT_SHA" cmd/api/main.go
     - touch cmd/api/isbuilt
   artifacts:
     paths:

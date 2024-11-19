@@ -3,9 +3,10 @@ package applicationservice
 import (
 	"context"
 	"errors"
-	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
-	clustersrepo "github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/clustersRepo"
 	"time"
+
+	resourcesservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/resourcesService"
+	clustersrepo "github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/clustersRepo"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
+	resourcesservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/resourcesService"
 
 	"github.com/NorskHelsenett/ror/internal/helpers/mapping"
 	clustersRepo "github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/clustersRepo"
