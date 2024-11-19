@@ -26,6 +26,7 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { RippleModule } from 'primeng/ripple';
 import { DialogModule } from 'primeng/dialog';
+import { ClusterVulnerabilityComponent } from './components/cluster-vulnerability/cluster-vulnerability.component';
 
 import { ProviderComponent } from '../shared/components/provider/provider.component';
 import { ButtonModule } from 'primeng/button';
@@ -70,6 +71,7 @@ import { ResourceV2DetailsComponent } from '../resourcesv2/components/resource-v
     HighlightModule,
     HighlightLineNumbers,
     DialogModule,
+    ClusterVulnerabilityComponent,
     Resourcesv2FilterComponent,
     ResourcesV2ListComponent,
     SidebarModule,

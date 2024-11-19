@@ -108,7 +108,14 @@
       "3": "3. Protected",
       "4": "4. Highly protected"
     },
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "summary": "Summary",
+    "report": "Report",
+    "change": "Change"
   },
   "error": {
     "forbidden": "Forbidden area",
@@ -1023,6 +1030,41 @@
         }
       },
       "created": "Cluster created"
+    },
+    "clustervulnerabilityreport": {
+      "id": "Id",
+      "severity": "Severity",
+      "score": "Score",
+      "title": "Title",
+      "firstObserved": "First observed",
+      "lastObserved": "Last observed",
+      "link": "Link",
+      "status": "Status",
+      "dismissalReason": "Dismissal reason",
+      "emptyTable": "No vulnerabilities found",
+      "vulnerabilities": "Vulnerabilities",
+      "namespace": "Namespace",
+      "repository": "Repository",
+      "tag": "Tag",
+      "resource": "Resource",
+      "installedVersion": "Installed version",
+      "fixedVersion": "Fixed version",
+      "statusHelp": "Choose vulnerability status",
+      "dismissalReasonHelp": "Choose reason for dismissal",
+      "riskAssesment": "Risk assesment",
+      "riskAssesmentHelp": "Link to risk assesment",
+      "comment": "Comment",
+      "commentHelp": "Additional comment",
+      "columns": "Columns",
+      "columnsHelp": "Choose columns in table",
+      "notAssessed": "Not assessed",
+      "needsTriage": "Needs triage",
+      "confirmed": "Confirmed",
+      "dismissed": "Dismissed",
+      "idHelp": "Filter by id",
+      "acceptableRisk": "Acceptable risk",
+      "falsePositive": "False positive",
+      "notApplicable": "Not applicable"
     },
     "create": {
       "cluster": {
