@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: ${DOCKER_MIRROR}rabbitmq:3.13.6-management-alpine
+    image: ${DOCKER_MIRROR}rabbitmq:4-management-alpine
     restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=admin
@@ -20,7 +20,7 @@ services:
       retries: 10
 
   mongodb:
-    image: ${DOCKER_MIRROR}mongo:7-jammy
+    image: ${DOCKER_MIRROR}mongo:8-noble
     volumes:
       - ../data/mongodb:/data/db:rw
       - ./mongodb:/docker-entrypoint-initdb.d
@@ -58,7 +58,7 @@ services:
       - '8081:8081'
 
   dex:
-    image: ${DOCKER_MIRROR}bitnami/dex:2.40.0
+    image: ${DOCKER_MIRROR}bitnami/dex:2.41.1
     restart: always
     volumes:
       - ../data/dex/configs:/configs
@@ -90,7 +90,7 @@ services:
     restart: 'no'
 
   vault:
-    image: ${DOCKER_MIRROR}hashicorp/vault:1.17.2
+    image: ${DOCKER_MIRROR}hashicorp/vault:1.18
     cap_add:
       - IPC_LOCK
     environment:

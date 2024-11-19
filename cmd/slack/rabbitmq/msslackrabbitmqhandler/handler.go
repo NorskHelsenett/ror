@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/NorskHelsenett/ror/cmd/slack/rabbitmq/msslackrabbitmqdefinitions"
 	"github.com/NorskHelsenett/ror/cmd/slack/ror"
@@ -65,11 +66,12 @@ func (h slackhandler) HandleMessage(ctx context.Context, message amqp.Delivery) 
 			Subject: aclmodels.Acl2Subject(resource.Owner.Subject),
 			Scope:   resource.Owner.Scope,
 		}
-		sm, err := getSlackMessage(resource.Uid, owner)
+		sm, err := getSlackMessage(ctx, resource.Uid, owner)
 		if err != nil {
 			rlog.Errorc(ctx, "unable to get message from ror api, aborting", err)
 			return err
 		}
+		rlog.Debugc(ctx, fmt.Sprintf("posting slackmessage to channel: %s", sm.Spec.ChannelId))
 		_, _, err = h.slackClient.PostMessageContext(ctx, sm.Spec.ChannelId, slack.MsgOptionText(sm.Spec.Message, false), slack.MsgOptionAsUser(true))
 		if err != nil {
 			rlog.Errorc(ctx, "unable to post message to slack", err)
@@ -79,14 +81,14 @@ func (h slackhandler) HandleMessage(ctx context.Context, message amqp.Delivery) 
 	return nil
 }
 
-func getSlackMessage(uid string, owner rortypes.RorResourceOwnerReference) (*rortypes.ResourceSlackMessage, error) {
+func getSlackMessage(ctx context.Context, uid string, owner rortypes.RorResourceOwnerReference) (*rortypes.ResourceSlackMessage, error) {
 	query := rorresources.NewResourceQuery()
 	query.VersionKind.Kind = "SlackMessage"
 	query.VersionKind.Version = "general.ror.internal/v1alpha1"
 	query.OwnerRefs = make([]rortypes.RorResourceOwnerReference, 0)
 	query.OwnerRefs = append(query.OwnerRefs, owner)
 	query.WithUID(uid)
-	resourceSet, err := ror.Client.ResourceV2().Get(context.Background(), *query)
+	resourceSet, err := ror.Client.ResourceV2().Get(ctx, *query)
 	if err != nil {
 		return nil, err
 	}

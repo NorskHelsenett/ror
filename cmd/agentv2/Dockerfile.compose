@@ -1,6 +1,6 @@
 ARG DOCKER_MIRROR=docker.io/
 ARG GCR_MIRROR=gcr.io/
-FROM ${DOCKER_MIRROR}golang:1.23-alpine as builder
+FROM ${DOCKER_MIRROR}golang:alpine as builder
 WORKDIR /app
 COPY . .
 RUN go get ./...
