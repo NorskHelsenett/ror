@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, isDevMode, inject, provideAppInitializer } from '@angular/core';
 import { InMemoryScrollingFeature, InMemoryScrollingOptions, provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -25,12 +25,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, inMemoryScrollingFeature),
     provideClientHydration(),
     provideHttpClient(withFetch()),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: configFactory,
-      multi: true,
-      deps: [ConfigService],
-    },
+    provideAppInitializer(() => configFactory(inject(ConfigService))()),
     importProvidersFrom(
       TranslateModule.forRoot({
         defaultLanguage: 'en',
