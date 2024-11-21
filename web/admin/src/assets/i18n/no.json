@@ -866,6 +866,12 @@
             "status": "Ingress status"
           }
         },
+        "ingress": {
+          "title": "Ingress",
+          "cluster": "Cluster",
+          "ingresses": "Ingresser",
+          "annotations": "Annotasjoner"
+        },
         "policyreports": {
           "title": "Policyrapporter",
           "namespace": "Namespace",

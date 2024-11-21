@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { ResourceQueryFilter } from '../../core/models/resource-query';
 import { ColumnDefinition } from '../../resources/models/columnDefinition';
 import { LazyLoadEvent } from 'primeng/api';
-import { ResourceQueryOrder } from '../../core/models/resources-v2';
+import { ResourceQueryFilter, ResourceQueryOrder } from '../../core/models/resources-v2';
 
 @Injectable({
   providedIn: 'root',

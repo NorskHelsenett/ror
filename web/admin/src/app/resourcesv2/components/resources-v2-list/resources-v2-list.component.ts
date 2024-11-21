@@ -1,4 +1,4 @@
-import { ResourceQuery } from './../../../core/models/resource-query';
+import { ResourceQuery } from './../../../core/models/resources-v2';
 import { catchError, finalize, map, Observable, share } from 'rxjs';
 import { Component, OnInit, ChangeDetectorRef, inject, ChangeDetectionStrategy, Output, EventEmitter, Input } from '@angular/core';
 import { Resourcesv2Service } from '../../../core/services/resourcesv2.service';
@@ -32,14 +32,17 @@ export class ResourcesV2ListComponent implements OnInit {
   @Input() clusterId: string | undefined;
   @Output() resourceSelected = new EventEmitter<any>();
 
-  resourceQuery = new ResourceQuery({
-    limit: 10,
-    order: {
-      field: 'metadata.name',
-      descending: true,
-      index: 0,
-    },
-  });
+  resourceQuery: any;
+  // resourceQuery: ResourceQuery = {
+  //   limit: 10,
+  //   order: [
+  //     {
+  //       field: 'metadata.name',
+  //       descending: true,
+  //       index: 0,
+  //     },
+  //   ],
+  // };
 
   loading = false;
   showLoadMore = true;

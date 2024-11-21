@@ -2,6 +2,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 
 import * as clustersPages from '../clusters/pages';
+import { IngressComponent } from '../clusters/pages/ingress/ingress.component';
 
 export const routes: Routes = [
   {
@@ -20,6 +21,10 @@ export const routes: Routes = [
   {
     path: 'cluster/:id/ingresses/:ingressid',
     component: clustersPages.IngressDetailsComponent,
+  },
+  {
+    path: 'cluster/:id/ingress/:ingressid',
+    component: IngressComponent,
   },
   { path: '**', redirectTo: 'error/404' },
 ];

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ResourceQuery } from '../../core/models/resource-query';
+import { ResourceQuery } from '../../core/models/resources-v2';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +8,7 @@ export class ResourcesV2QueryService {
   private query: ResourceQuery | undefined;
 
   getQuery(): ResourceQuery {
-    return this.query ?? new ResourceQuery();
+    return this.query ?? {};
   }
 
   setQuery(query: ResourceQuery): void {
@@ -17,7 +17,7 @@ export class ResourcesV2QueryService {
 
   updateQuery(query: any): void {
     var obj = { ...this.query, ...query };
-    this.query = new ResourceQuery(obj);
+    this.query = obj;
   }
 
   clearQuery(): void {

@@ -38,6 +38,9 @@ import { Resourcesv2FilterComponent } from '../resourcesv2/components/resourcesv
 import { ResourcesV2ListComponent } from '../resourcesv2/components/resources-v2-list/resources-v2-list.component';
 import { SidebarModule } from 'primeng/sidebar';
 import { ResourceV2DetailsComponent } from '../resourcesv2/components/resource-v2-details/resource-v2-details.component';
+import { IngressComponent } from './pages/ingress/ingress.component';
+import { ClusterIngressTableComponent } from './components/cluster-ingress-table/cluster-ingress-table.component';
+import { ClusterResourceTableComponent } from './components/cluster-resource-table/cluster-resource-table.component';
 
 @NgModule({
   declarations: [ClustersComponent, ...clustersPages, ...clusterComponents],
@@ -72,12 +75,14 @@ import { ResourceV2DetailsComponent } from '../resourcesv2/components/resource-v
     HighlightLineNumbers,
     DialogModule,
     ClusterVulnerabilityComponent,
-    Resourcesv2FilterComponent,
-    ResourcesV2ListComponent,
+
     SidebarModule,
     ResourceV2DetailsComponent,
+    IngressComponent,
+    ClusterIngressTableComponent,
+    ClusterResourceTableComponent,
   ],
   exports: [ClustersComponent, ...clustersPages, ...clusterComponents],
-  providers: [ConfirmationService, ...clusterServices, TypesService],
+  providers: [ConfirmationService, ...clusterServices],
 })
 export class ClustersModule {}

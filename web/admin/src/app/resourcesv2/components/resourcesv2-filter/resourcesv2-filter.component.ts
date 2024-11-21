@@ -6,8 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Cluster } from '../../../core/models/cluster';
 import { ResourceType } from '../../../core/models/resources/resourceType';
-import { OwnerType } from '../../../core/models/resources/ownerType';
-import { ResourceQuery } from '../../../core/models/resource-query';
+import { ResourceQuery } from '../../../core/models/resources-v2';
 
 @Component({
   selector: 'app-resourcesv2-filter',

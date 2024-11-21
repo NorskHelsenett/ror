@@ -1,0 +1,20 @@
+@defer (when resource) {
+  @for (annotation of resource?.metadata?.annotations | keyvalue; track $index) {
+    <div class="flex items gap-3 mb-2">
+      <div class="w-2/4">
+        <p>{{ annotation.key }}</p>
+      </div>
+      <div class="w-2/4">
+        <p>{{ annotation.value }}</p>
+      </div>
+    </div>
+  }
+} @placeholder {
+  <div class="m-4">
+    <p>Loading...</p>
+  </div>
+} @error {
+  <div class="m-4">
+    <p>Error fetching data</p>
+  </div>
+}

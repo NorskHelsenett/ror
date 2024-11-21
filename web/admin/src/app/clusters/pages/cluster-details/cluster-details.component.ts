@@ -8,7 +8,7 @@ import { AclScopes, AclAccess } from '../../../core/models/acl-scopes';
 import { AclService } from '../../../core/services/acl.service';
 import { ClustersService } from '../../../core/services/clusters.service';
 import { ResourceType } from '../../../core/models/resources/resourceType';
-import { TypesService } from '../../../resources/services/types.service';
+import { ResourceQuery } from '../../../core/models/resources-v2';
 
 @Component({
   selector: 'app-cluster-details',
@@ -49,6 +49,10 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
       query: 'tab=ingresses',
     },
     {
+      metadata: 'ingress',
+      query: 'tab=ingress',
+    },
+    {
       metadata: 'policyReports',
       query: 'tab=policyReports',
     },
@@ -78,6 +82,18 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
     },
   ];
 
+  ingressResourceQuery: ResourceQuery = {
+    // limit: 10,
+    // offset: 0,
+    versionkind: {
+      Version: 'networking.k8s.io/v1',
+      Kind: 'Ingress',
+      Group: '',
+    },
+  };
+
+  resourceQuery: ResourceQuery = {};
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -87,7 +103,6 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
     private metricsService: MetricsService,
     private oauthService: OAuthService,
     private aclService: AclService,
-    private typesService: TypesService,
   ) {}
 
   ngOnInit(): void {
@@ -118,11 +133,6 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
         throw error;
       }),
     );
-
-    this.resourceTypes = this.typesService.getResourceTypes();
-    if (this.resourceTypes?.length > 0) {
-      this.resourceTypes = this.resourceTypes?.sort((a: ResourceType, b: ResourceType) => a.kind.localeCompare(b.kind));
-    }
   }
 
   ngOnDestroy(): void {
@@ -211,6 +221,11 @@ export class ClusterDetailsComponent implements OnInit, OnDestroy {
 
   showSelectedResource(resource: any) {
     this.selectedResource = resource;
-    this.sidebarVisible = true;
+    if (this.selectedResource?.kind === 'Ingress' && this.selectedResource?.apiVersion === 'networking.k8s.io/v1') {
+      this.router.navigate(['ingress', this.selectedResource?.metadata?.name], { relativeTo: this.route });
+      this.sidebarVisible = false;
+    } else {
+      this.sidebarVisible = true;
+    }
   }
 }

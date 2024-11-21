@@ -1,0 +1,87 @@
+@let cluster = cluster$ | async;
+@let ingress = ingress$ | async;
+
+@defer (when cluster && ingress) {
+  <div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+    <div class="flex flex-col">
+      <h1 class="mt-3 text-3xl font-semibold">{{ ingress?.metadata?.name }}</h1>
+
+      <div class="flex">
+        <span class="text-sm mr-3">{{ 'pages.clusters.details.ingress.cluster' | translate }}:</span>
+        <a routerLink="../../" class="text-sm font-bold hover:underline">{{ cluster?.clusterName }}</a>
+      </div>
+    </div>
+
+    <div class="flex-grow"></div>
+    <a
+      [routerLink]="['../../']"
+      [queryParams]="{ tab: 'ingresses' }"
+      class="mr-3 hover:bg-green-600 focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-orange-400 px-4 py-2 text-sm text-black focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+    >
+      {{ 'pages.clusters.details.ingress.ingresses' | translate }}
+    </a>
+
+    <button
+      (click)="refresh()"
+      class="hover:bg-green-600 focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+    >
+      {{ 'common.refresh' | translate }}
+    </button>
+  </div>
+  <div class="xs:m-1 md:mt-2 md:ml-4">
+    <div class="grid md:grid-cols-3 xs:gap-1 md:gap-3">
+      <div class="col-span-2">
+        <div class="dark:bg-darker flex flex-col rounded-md bg-white p-4">
+          <div class="">
+            <p-tabView [scrollable]="true">
+              <p-tabPanel header="Details">
+                <ng-template pTemplate="header">
+                  <div class="flex text-nowrap">
+                    <i class="pi pi-objects-column mt-1"></i>
+                    <span class="ml-2">Details</span>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                  <div>
+                    <app-cluster-ingress-details></app-cluster-ingress-details>
+                    <app-cluster-ingress-chart></app-cluster-ingress-chart>
+                  </div>
+                </ng-template>
+              </p-tabPanel>
+              <p-tabPanel header="Annotations">
+                <ng-template pTemplate="header">
+                  <div class="flex text-nowrap">
+                    <i class="pi pi-list mt-1"></i>
+                    <span class="ml-2">{{ 'pages.clusters.details.ingress.annotations' | translate }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="content">
+                  <app-cluster-ingress-annotations></app-cluster-ingress-annotations>
+                </ng-template>
+              </p-tabPanel>
+            </p-tabView>
+          </div>
+        </div>
+      </div>
+      <div class="dark:bg-darker flex flex-col rounded-md bg-white p-4">
+        <app-cluster-ingress-meta></app-cluster-ingress-meta>
+      </div>
+    </div>
+  </div>
+} @placeholder {
+  <div class="m-4">
+    <app-spinner></app-spinner>
+    {{ 'common.fetching' | translate }}
+  </div>
+} @loading (after 300ms; minimum 2s) {
+  <div class="m-4">
+    <app-spinner></app-spinner>
+    {{ 'common.fetching' | translate }} and more ...
+  </div>
+} @error {
+  <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+    <span class="p-2 text-red-800"> {{ 'pages.apikeys.error' | translate }} </span>
+    <button class="btn text-black" (click)="refresh()">{{ 'common.tryAgain' | translate }}</button>
+  </div>
+}

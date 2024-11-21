@@ -30,6 +30,7 @@
     "@angular/service-worker": "^18.2.12",
     "@ngx-translate/core": "^16.0.3",
     "@ngx-translate/http-loader": "^16.0.0",
+    "@rork8s/ror-resources": "^0.0.4",
     "angular-gridster2": "^18.0.1",
     "angular-oauth2-oidc": "^17.0.2",
     "chart.js": "^4.4.6",

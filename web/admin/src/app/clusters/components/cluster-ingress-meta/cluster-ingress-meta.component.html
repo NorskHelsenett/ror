@@ -1,0 +1,28 @@
+<div>
+  <span class="text-lg font-semibold">Metadata</span>
+  <div class="flex items-center">
+    <span class="mr-2">Name:</span>
+    <span class="font-bold">{{ ingress?.metadata?.name }}</span>
+  </div>
+  <div class="flex items-center">
+    <span class="mr-2">Namespace:</span>
+    <span class="font-bold">{{ ingress?.metadata?.namespace }}</span>
+  </div>
+  <div class="flex items-center">
+    <span class="mr-2">Class name:</span>
+    <span class="font-bold">{{ ingress?.ingress?.spec?.ingressClassName }}</span>
+  </div>
+  <div class="flex items-center">
+    <span class="mr-2">Cluster name:</span>
+    <span class="font-bold"
+      ><a routerLink="../../" class="hover:underline">{{ cluster?.clusterName }}</a></span
+    >
+  </div>
+  <div class="flex items-center">
+    <span class="mr-2">Cluster provider:</span>
+    <span class="font-bold">
+      {{ cluster?.workspace?.datacenter?.provider }}
+    </span>
+  </div>
+</div>
+<pre class=""><code class="" [highlight]="ingress | json" language="json" lineNumbers></code></pre>
