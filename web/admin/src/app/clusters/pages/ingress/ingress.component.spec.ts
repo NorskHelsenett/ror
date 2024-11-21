@@ -8,9 +8,8 @@ describe('IngressComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IngressComponent]
-    })
-    .compileComponents();
+      imports: [IngressComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(IngressComponent);
     component = fixture.componentInstance;

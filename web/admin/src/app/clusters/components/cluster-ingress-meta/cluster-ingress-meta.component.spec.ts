@@ -8,9 +8,8 @@ describe('ClusterIngressMetaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ClusterIngressMetaComponent]
-    })
-    .compileComponents();
+      imports: [ClusterIngressMetaComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ClusterIngressMetaComponent);
     component = fixture.componentInstance;

@@ -8,9 +8,8 @@ describe('ClusterResourceTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ClusterResourceTableComponent]
-    })
-    .compileComponents();
+      imports: [ClusterResourceTableComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ClusterResourceTableComponent);
     component = fixture.componentInstance;

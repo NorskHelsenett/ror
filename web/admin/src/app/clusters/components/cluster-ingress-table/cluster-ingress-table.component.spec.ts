@@ -8,9 +8,8 @@ describe('ClusterIngressTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ClusterIngressTableComponent]
-    })
-    .compileComponents();
+      imports: [ClusterIngressTableComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ClusterIngressTableComponent);
     component = fixture.componentInstance;

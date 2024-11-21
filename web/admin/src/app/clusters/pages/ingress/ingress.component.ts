@@ -16,6 +16,7 @@ import { Resource, ResourceSet, ResourceQuery } from '@rork8s/ror-resources/mode
 import { ClusterIngressMetaComponent } from '../../components/cluster-ingress-meta/cluster-ingress-meta.component';
 import { ClusterIngressDetailsComponent } from '../../components/cluster-ingress-details/cluster-ingress-details.component';
 import { ClusterIngressChartComponent } from '../../components/cluster-ingress-chart/cluster-ingress-chart.component';
+import { ClusterIngressCertmanagerComponent } from '../../components/cluster-ingress-certmanager/cluster-ingress-certmanager.component';
 
 @Component({
   selector: 'app-ingress',
@@ -31,6 +32,7 @@ import { ClusterIngressChartComponent } from '../../components/cluster-ingress-c
     ClusterIngressMetaComponent,
     ClusterIngressDetailsComponent,
     ClusterIngressChartComponent,
+    ClusterIngressCertmanagerComponent,
   ],
   templateUrl: './ingress.component.html',
   styleUrl: './ingress.component.scss',
@@ -54,6 +56,8 @@ export class IngressComponent implements OnInit, OnDestroy {
   pods: Resource[] | undefined;
   podsFetchError: any;
 
+  certNames: string[] | undefined;
+
   private subscriptions = new Subscription();
 
   private changeDetector = inject(ChangeDetectorRef);
@@ -61,8 +65,6 @@ export class IngressComponent implements OnInit, OnDestroy {
   private resourcesv2Service = inject(Resourcesv2Service);
   private route = inject(ActivatedRoute);
   private clusterIngressService = inject(ClusterIngressService);
-
-  constructor() {}
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -145,7 +147,11 @@ export class IngressComponent implements OnInit, OnDestroy {
           let serviceNames = data.resources[0].ingress?.spec?.rules?.map((rule) => rule.http?.paths[0].backend.service.name);
 
           this.fetchServices(serviceNames);
-          this.fetchCerficates(data.resources[0].ingress?.spec?.tls?.map((tls) => tls.secretName));
+          if (this.isCertManagerIngress(data.resources[0])) {
+            this.certNames = [];
+            this.certNames.push(data.resources[0].metadata.annotations['cert-manager.io/cluster-issuer']);
+            this.fetchCertManagerCerficates(this.certNames);
+          }
           return data.resources[0];
         } else {
           return null;
@@ -298,7 +304,7 @@ export class IngressComponent implements OnInit, OnDestroy {
     );
   }
 
-  fetchCerficates(certNames: string[]) {
+  fetchCertManagerCerficates(certNames: string[]) {
     this.certificates$ = undefined;
     this.certificatesFetchError = undefined;
     if (!certNames || certNames.length === 0) {
@@ -348,5 +354,9 @@ export class IngressComponent implements OnInit, OnDestroy {
         )
         .subscribe(),
     );
+  }
+
+  isCertManagerIngress(ingress: Resource): boolean {
+    return ingress?.metadata?.annotations?.['cert-manager.io/cluster-issuer'] !== undefined;
   }
 }

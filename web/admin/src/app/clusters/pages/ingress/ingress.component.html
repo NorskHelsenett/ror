@@ -60,6 +60,18 @@
                   <app-cluster-ingress-annotations></app-cluster-ingress-annotations>
                 </ng-template>
               </p-tabPanel>
+              @if (isCertManagerIngress(ingress) && certNames.length > 0) {
+                <p-tabPanel header="Cert manager">
+                  <ng-template pTemplate="header">
+                    <div class="flex text-nowrap">
+                      <i class="pi pi-book mt-1"></i>
+                      <span class="ml-2">Cert manager</span>
+                    </div>
+                  </ng-template>
+
+                  <ng-template pTemplate="content"> <app-cluster-ingress-certmanager></app-cluster-ingress-certmanager> </ng-template>
+                </p-tabPanel>
+              }
             </p-tabView>
           </div>
         </div>
