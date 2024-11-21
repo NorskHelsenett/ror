@@ -27,15 +27,15 @@ type ResourceVirtualMachineStatus struct {
 }
 
 type ResourceVirtualMachineDiskSpec struct {
-	Id   string `json:"id"`
-	Size int    `json:"size"`
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Id        string `json:"id"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	SizeBytes int    `json:"size"`
 }
 
 type ResourceVirtualMachineDiskStatus struct {
-	Id    string `json:"id"`
-	Usage string `json:"usage"`
+	Id         string `json:"id"`
+	UsageBytes string `json:"usage"`
 }
 
 type ResourceVirtualMachineNetworkSpec struct {
@@ -61,26 +61,29 @@ type ResourceVirtualMachineOperatingSystemStatus struct {
 	Version      string `json:"version"`
 	HostName     string `json:"hostName"`
 	PowerState   string `json:"powerState"`
-	ToolVersion  string `json:"toolVersion"` //many hypervisors install tools into the guest operating system
+	ToolVersion  string `json:"toolVersion"`
 	Architecture string `json:"architecture"`
 }
 
 type ResourceVirtualMachineCpuSpec struct {
-	Id    string `json:"id"`
-	Count int    `json:"count"`
+	Id             string `json:"id"`
+	Sockets        int    `json:"sockets"`
+	CoresPerSocket int    `json:"cores"` //cores per socket
 }
 type ResourceVirtualMachineCpuStatus struct {
 	Id    string `json:"id"`
+	Unit  string `json:"unit"` //describes what unit the usage is given in
 	Usage string `json:"usage"`
 }
 
 type ResourceVirtualMachineMemorySpec struct {
-	Id   string `json:"id"`
-	Size int    `json:"size"`
+	Id        string `json:"id"`
+	SizeBytes int    `json:"size"`
 }
 
 type ResourceVirtualMachineMemoryStatus struct {
 	Id    string `json:"id"`
+	Unit  string `json:"unit"` //describes what unit the usage is given in
 	Usage string `json:"usage"`
 }
 
