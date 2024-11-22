@@ -1,5 +1,4 @@
 import { ResourceQueryFilter } from './../../../core/models/resources-v2';
-import { ResourceFilter } from './../../../resources/models/resourceFilter';
 import { Resourcesv2Service } from './../../../core/services/resourcesv2.service';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -12,11 +11,11 @@ import { HighlightModule } from 'ngx-highlightjs';
 import { TabViewModule } from 'primeng/tabview';
 import { ClusterIngressAnnotationsComponent } from '../../components/cluster-ingress-annotations/cluster-ingress-annotations.component';
 import { ClusterIngressService } from '../../services/cluster-ingress.service';
-import { Resource, ResourceSet, ResourceQuery } from '@rork8s/ror-resources/models';
-import { ClusterIngressMetaComponent } from '../../components/cluster-ingress-meta/cluster-ingress-meta.component';
+import { Resource, ResourceSet, ResourceQuery, ResourceIngressSpecTls } from '@rork8s/ror-resources/models';
 import { ClusterIngressDetailsComponent } from '../../components/cluster-ingress-details/cluster-ingress-details.component';
 import { ClusterIngressChartComponent } from '../../components/cluster-ingress-chart/cluster-ingress-chart.component';
 import { ClusterIngressCertmanagerComponent } from '../../components/cluster-ingress-certmanager/cluster-ingress-certmanager.component';
+import { ClusterIngressRawComponent } from '../../components/cluster-ingress-raw/cluster-ingress-raw.component';
 
 @Component({
   selector: 'app-ingress',
@@ -29,10 +28,11 @@ import { ClusterIngressCertmanagerComponent } from '../../components/cluster-ing
     HighlightModule,
     TabViewModule,
     ClusterIngressAnnotationsComponent,
-    ClusterIngressMetaComponent,
+
     ClusterIngressDetailsComponent,
     ClusterIngressChartComponent,
     ClusterIngressCertmanagerComponent,
+    ClusterIngressRawComponent,
   ],
   templateUrl: './ingress.component.html',
   styleUrl: './ingress.component.scss',
@@ -56,7 +56,7 @@ export class IngressComponent implements OnInit, OnDestroy {
   pods: Resource[] | undefined;
   podsFetchError: any;
 
-  certNames: string[] | undefined;
+  certNames: ResourceIngressSpecTls[] | undefined;
 
   private subscriptions = new Subscription();
 
@@ -142,17 +142,21 @@ export class IngressComponent implements OnInit, OnDestroy {
 
     this.ingress$ = this.resourcesv2Service.getResources(query).pipe(
       map((data: ResourceSet) => {
-        if (data.resources.length === 1) {
-          this.clusterIngressService.setIngress(data.resources[0]);
-          let serviceNames = data.resources[0].ingress?.spec?.rules?.map((rule) => rule.http?.paths[0].backend.service.name);
+        if (data?.resources.length === 1) {
+          this.clusterIngressService.setIngress(data?.resources[0]);
+          let serviceNames = data?.resources[0].ingress?.spec?.rules?.map((rule) => rule.http?.paths[0].backend.service.name);
 
           this.fetchServices(serviceNames);
-          if (this.isCertManagerIngress(data.resources[0])) {
+          if (this.isCertManagerIngress(data?.resources[0])) {
             this.certNames = [];
-            this.certNames.push(data.resources[0].metadata.annotations['cert-manager.io/cluster-issuer']);
+            for (let ingress of data?.resources) {
+              ingress?.ingress?.spec?.tls?.forEach((tls) => {
+                this.certNames.push(tls);
+              });
+            }
             this.fetchCertManagerCerficates(this.certNames);
           }
-          return data.resources[0];
+          return data?.resources[0];
         } else {
           return null;
         }
@@ -208,14 +212,14 @@ export class IngressComponent implements OnInit, OnDestroy {
         .getResources(query)
         .pipe(
           map((data: ResourceSet) => {
-            if (data.resources.length === 1) {
-              this.clusterIngressService.setServices(data.resources);
+            if (data?.resources.length === 1) {
+              this.clusterIngressService.setServices(data?.resources);
 
-              let namespaces = data.resources.map((service) => service.metadata.namespace);
-              let serviceNames = data.resources.map((service) => service.metadata.name);
+              let namespaces = data?.resources.map((service) => service.metadata.namespace);
+              let serviceNames = data?.resources.map((service) => service.metadata.name);
 
               this.fetchPodsByNamespaceAndService(namespaces, serviceNames);
-              return data.resources;
+              return data?.resources;
             } else {
               return null;
             }
@@ -279,8 +283,8 @@ export class IngressComponent implements OnInit, OnDestroy {
         .getResources(query)
         .pipe(
           map((data: ResourceSet) => {
-            if (data.resources) {
-              let result = data.resources.filter((pod) => {
+            if (data?.resources) {
+              let result = data?.resources.filter((pod) => {
                 let podServiceName = pod.metadata.labels['app.kubernetes.io/instance'];
                 return serviceNames.includes(podServiceName);
               });
@@ -304,10 +308,10 @@ export class IngressComponent implements OnInit, OnDestroy {
     );
   }
 
-  fetchCertManagerCerficates(certNames: string[]) {
+  fetchCertManagerCerficates(tls: ResourceIngressSpecTls[]) {
     this.certificates$ = undefined;
     this.certificatesFetchError = undefined;
-    if (!certNames || certNames.length === 0) {
+    if (!tls || tls.length === 0) {
       return;
     }
 
@@ -320,12 +324,12 @@ export class IngressComponent implements OnInit, OnDestroy {
     };
 
     let certFilters: ResourceQueryFilter[] = [];
-    certNames.forEach((certName) => {
+    tls.forEach((cert) => {
       certFilters.push({
         field: 'metadata.name',
         type: 'string',
         operator: 'eq',
-        value: certName,
+        value: cert.secretName,
       });
     });
 
@@ -336,9 +340,9 @@ export class IngressComponent implements OnInit, OnDestroy {
         .getResources(query)
         .pipe(
           map((data: ResourceSet) => {
-            if (data.resources) {
-              this.clusterIngressService.setCertificates(data.resources);
-              return data.resources;
+            if (data?.resources) {
+              this.clusterIngressService.setCertificates(data?.resources);
+              return data?.resources;
             } else {
               return null;
             }

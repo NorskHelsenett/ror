@@ -2,12 +2,12 @@ import { Resource } from '@rork8s/ror-resources/models';
 import { ClusterIngressService } from './../../services/cluster-ingress.service';
 import { Component, effect, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { HighlightModule } from 'ngx-highlightjs';
-import { JsonPipe } from '@angular/common';
+import { ClusterIngressMetaComponent } from '../cluster-ingress-meta/cluster-ingress-meta.component';
 
 @Component({
   selector: 'app-cluster-ingress-details',
   standalone: true,
-  imports: [HighlightModule, JsonPipe],
+  imports: [HighlightModule, ClusterIngressMetaComponent],
   templateUrl: './cluster-ingress-details.component.html',
   styleUrl: './cluster-ingress-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

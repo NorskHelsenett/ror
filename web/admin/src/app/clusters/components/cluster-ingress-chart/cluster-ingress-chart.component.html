@@ -1,1 +1,63 @@
-<p>cluster-ingress-chart works!</p>
+<div class="justify-content-center flex overflow-x-auto">
+  <p-organizationChart [value]="data" selectionMode="single" [preserveSpace]="true">
+    <ng-template let-node pTemplate="loadbalancer">
+      <div class="flex flex-col items-center justify-center text-center">
+        <span>{{ node?.label }}</span>
+        <span>{{ node?.data?.ip }}</span>
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="ingress">
+      <div class="flex flex-col items-center justify-center text-center">
+        <ng-container class="">
+          <img ngSrc="/assets/icons/k8s/resources/labeled/ing.svg" alt="ingress" height="66" width="68" />
+        </ng-container>
+
+        <span class="">{{ node?.label }}</span>
+        <!-- <span>{{ node?.data | json }}</span> -->
+
+        <span *ngIf="node?.data?.classError" class="mt-2 font-bold text-red-800 dark:text-red-300">{{
+          'pages.clusters.details.ingresses.noIngressClass' | translate
+        }}</span>
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="rule">
+      <div class="flex flex-col items-center justify-center text-center">
+        <span>Rules</span>
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="path">
+      <div class="flex flex-col items-center justify-center text-center">
+        <span>{{ 'pages.clusters.details.ingresses.path' | translate }}: </span>
+        <a>{{ node?.data?.path }}</a>
+        <span>{{ node?.data?.pathType }}</span>
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="service">
+      <div class="flex flex-col items-center justify-center text-center">
+        <img ngSrc="/assets/icons/k8s/resources/labeled/svc.svg" alt="pod" height="66" width="68" />
+        <span>{{ node?.label }}</span>
+        <span>{{ node?.data?.service?.spec?.type }}</span>
+        <div>
+          <ul>
+            @for (ipFam of node?.data?.service?.spec?.ipFamilies; track $index) {
+              <li>{{ ipFam }}</li>
+            }
+          </ul>
+        </div>
+        <span>{{ node?.data?.service?.spec?.clusterIP }}</span>
+        <!-- <span>{{ node?.data | json }}</span> -->
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="pod">
+      <div class="flex flex-col items-center justify-center text-center">
+        <img ngSrc="/assets/icons/k8s/resources/labeled/pod.svg" alt="pod" height="66" width="68" />
+        <span>{{ node?.label }}</span>
+      </div>
+    </ng-template>
+  </p-organizationChart>
+</div>

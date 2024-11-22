@@ -1,0 +1,15 @@
+:host ::ng-deep .p-organizationchart-line-down {
+  margin: 0 auto;
+  height: 40px;
+  width: 3px;
+  background-color: blue;
+  color: blue;
+}
+
+:host ::ng-deep .p-organizationchart-line-right {
+  border-radius: 0px;
+}
+
+:host ::ng-deep .p-organizationchart-line-left {
+  border-radius: 0;
+}
