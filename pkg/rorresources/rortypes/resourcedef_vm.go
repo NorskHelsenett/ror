@@ -30,12 +30,12 @@ type ResourceVirtualMachineDiskSpec struct {
 	Id        string `json:"id"`
 	Name      string `json:"name"`
 	Type      string `json:"type"`
-	SizeBytes int    `json:"size"`
+	SizeBytes int    `json:"sizeBytes"`
 }
 
 type ResourceVirtualMachineDiskStatus struct {
 	Id         string `json:"id"`
-	UsageBytes string `json:"usage"`
+	UsageBytes string `json:"usageBytes"`
 }
 
 type ResourceVirtualMachineNetworkSpec struct {
@@ -68,7 +68,7 @@ type ResourceVirtualMachineOperatingSystemStatus struct {
 type ResourceVirtualMachineCpuSpec struct {
 	Id             string `json:"id"`
 	Sockets        int    `json:"sockets"`
-	CoresPerSocket int    `json:"cores"` //cores per socket
+	CoresPerSocket int    `json:"coresPerSocket"` //cores per socket
 }
 type ResourceVirtualMachineCpuStatus struct {
 	Id    string `json:"id"`
@@ -78,7 +78,7 @@ type ResourceVirtualMachineCpuStatus struct {
 
 type ResourceVirtualMachineMemorySpec struct {
 	Id        string `json:"id"`
-	SizeBytes int    `json:"size"`
+	SizeBytes int    `json:"sizeBytes"`
 }
 
 type ResourceVirtualMachineMemoryStatus struct {
