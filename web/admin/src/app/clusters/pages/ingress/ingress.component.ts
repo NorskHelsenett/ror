@@ -11,7 +11,7 @@ import { HighlightModule } from 'ngx-highlightjs';
 import { TabViewModule } from 'primeng/tabview';
 import { ClusterIngressAnnotationsComponent } from '../../components/cluster-ingress-annotations/cluster-ingress-annotations.component';
 import { ClusterIngressService } from '../../services/cluster-ingress.service';
-import { Resource, ResourceSet, ResourceQuery, ResourceIngressSpecTls } from '@rork8s/ror-resources/models';
+import { Resource, ResourceSet, ResourceQuery, ResourceIngressSpecTls, ResourcePod } from '@rork8s/ror-resources/models';
 import { ClusterIngressDetailsComponent } from '../../components/cluster-ingress-details/cluster-ingress-details.component';
 import { ClusterIngressChartComponent } from '../../components/cluster-ingress-chart/cluster-ingress-chart.component';
 import { ClusterIngressCertmanagerComponent } from '../../components/cluster-ingress-certmanager/cluster-ingress-certmanager.component';
@@ -284,9 +284,13 @@ export class IngressComponent implements OnInit, OnDestroy {
         .pipe(
           map((data: ResourceSet) => {
             if (data?.resources) {
-              let result = data?.resources.filter((pod) => {
-                let podServiceName = pod.metadata.labels['app.kubernetes.io/instance'];
-                return serviceNames.includes(podServiceName);
+              let result = data?.resources.filter((pod: Resource) => {
+                let instanceName = pod.metadata.labels['app.kubernetes.io/instance'];
+                let name = pod.metadata.labels['app.kubernetes.io/name'];
+                if (serviceNames.includes(instanceName) || serviceNames.includes(name)) {
+                  return true;
+                }
+                return false;
               });
 
               this.clusterIngressService.setPods(result);

@@ -82,7 +82,10 @@ export class ClusterIngressChartComponent {
 
         let podNodes: TreeNode[] = [];
         this.pods?.forEach((pod: Resource) => {
-          if (path.backend.service?.name !== pod.metadata.labels['app.kubernetes.io/instance']) {
+          if (
+            path?.backend?.service?.name !== pod.metadata.labels['app.kubernetes.io/instance'] &&
+            path?.backend?.service?.name !== pod.metadata.labels['app.kubernetes.io/name']
+          ) {
             return null;
           }
           podNodes.push({
@@ -96,7 +99,9 @@ export class ClusterIngressChartComponent {
         let serviceNode: TreeNode = {
           label: path.backend.service?.name,
           type: 'service',
-          data: this.services?.find((service: Resource) => service.metadata.name === path.backend.service?.name),
+          data: this.services?.find((service: Resource) => {
+            return service.metadata.name === path.backend.service?.name;
+          }),
           expanded: true,
           children: podNodes,
         };
@@ -120,53 +125,4 @@ export class ClusterIngressChartComponent {
 
     this.data = graph;
   }
-
-  // private createRootNodeChildren(): TreeNode[] {
-  //   let children: TreeNode[] = [];
-  //   this.ingress?.ingress?.spec?.rules?.forEach((ingressRule: any) => {
-  //     if (!ingressRule) {
-  //       return null;
-  //     }
-
-  //     ingressRule?.rules?.forEach((rule: any) => {
-  //       let ingressRuleCopy: any = { ...ingressRule, multiple: false };
-  //       if (this.ingress?.ingress?.spec?.rules?.length > 1) {
-  //         ingressRuleCopy.multiple = true;
-  //       }
-  //       const ruleNode: TreeNode = {
-  //         label: rule?.path,
-  //         type: 'rule',
-  //         data: ingressRuleCopy,
-  //         expanded: true,
-
-  //         children: [],
-  //       };
-
-  //       const serviceNode: TreeNode = this.createServiceNode(rule);
-  //       ruleNode?.children.push(serviceNode);
-  //       children.push(ruleNode);
-  //     });
-  //   });
-  //   return children;
-  // }
-
-  // private createServiceNode(rule: any): TreeNode {
-  //   const serviceNode: TreeNode = {
-  //     label: rule?.service?.name,
-  //     type: 'service',
-  //     data: rule?.service,
-  //     expanded: true,
-  //     children: [],
-  //   };
-
-  //   rule?.service.endpoints?.forEach((endpoint: any) => {
-  //     serviceNode?.children.push({
-  //       label: endpoint?.podnamespace,
-  //       data: endpoint,
-  //       type: 'pod',
-  //       style: 'bg-red-500',
-  //     });
-  //   });
-  //   return serviceNode;
-  // }
 }
