@@ -50,31 +50,9 @@
       </ng-template>
       <ng-template pTemplate="content">
         <div class="">
-          <!-- <app-cluster-ingress-list [cluster]="cluster"></app-cluster-ingress-list> -->
           <div class="dark:bg-darker flex flex-col rounded-md bg-white">
-            <!-- <div class="dark:border-primary flex items-center justify-between border-b p-3">
-              <app-resourcesv2-filter
-                class="flex-grow"
-                [clusters]="[cluster]"
-                [resourceTypes]="resourceTypes"
-                (filterChange)="resourcesTable.filterChanged($event)"
-                (reset)="resourcesTable.reset()"
-              ></app-resourcesv2-filter>
-              <button
-                (click)="resourcesTable.refreshData()"
-                class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
-              >
-                {{ 'common.refresh' | translate }}
-              </button>
-            </div> -->
             <div class="p-3 flex flex-col">
               <app-cluster-ingress-table [cluster]="cluster"></app-cluster-ingress-table>
-              <!-- test
-              <app-resources-v2-list
-                [clusterId]="clusterId"
-                #resourcesTable
-                (resourceSelected)="showSelectedResource($event)"
-              ></app-resources-v2-list> -->
             </div>
           </div>
         </div>
