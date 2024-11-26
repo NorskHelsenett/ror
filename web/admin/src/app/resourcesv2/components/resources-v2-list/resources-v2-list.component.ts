@@ -33,17 +33,6 @@ export class ResourcesV2ListComponent implements OnInit {
   @Output() resourceSelected = new EventEmitter<any>();
 
   resourceQuery: any;
-  // resourceQuery: ResourceQuery = {
-  //   limit: 10,
-  //   order: [
-  //     {
-  //       field: 'metadata.name',
-  //       descending: true,
-  //       index: 0,
-  //     },
-  //   ],
-  // };
-
   loading = false;
   showLoadMore = true;
 
