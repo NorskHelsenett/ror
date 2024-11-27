@@ -52,6 +52,9 @@ export class ColumnFactoryService {
     if (kind === 'Deployment' && apiVersion === 'apps/v1') {
       columns = this.getDeployment();
     }
+    if (kind === 'Endpoints' && apiVersion === 'v1') {
+      columns = this.getEndpoints();
+    }
     if (kind === 'Ingress' && apiVersion === 'networking.k8s.io/v1') {
       columns = this.getIngress();
     }
@@ -60,6 +63,9 @@ export class ColumnFactoryService {
     }
     if (kind === 'Namespace' && apiVersion === 'v1') {
       columns = this.getNamespace();
+    }
+    if (kind === 'NetworkPolicy' && apiVersion === 'networking.k8s.io/v1') {
+      columns = this.getNetworkPolicy();
     }
     if (kind === 'Node' && apiVersion === 'v1') {
       columns = this.getNode();
@@ -396,6 +402,22 @@ export class ColumnFactoryService {
       },
     ];
   }
+  getEndpoints(): ColumnDefinition[] {
+    return [
+      {
+        field: 'metadata.namespace',
+        header: 'Namespace',
+        type: 'text',
+        enabled: true,
+      },
+      {
+        field: 'metadata.creationTimestamp',
+        header: 'Creation Time',
+        type: 'date',
+        enabled: true,
+      },
+    ];
+  }
   getIngress(): ColumnDefinition[] {
     return [
       {
@@ -468,6 +490,22 @@ export class ColumnFactoryService {
         field: 'metadata.creationTimestamp',
         header: 'Creation Time',
         type: 'date',
+        enabled: true,
+      },
+    ];
+  }
+  getNetworkPolicy(): ColumnDefinition[] {
+    return [
+      {
+        field: 'metadata.creationTimestamp',
+        header: 'Creation Time',
+        type: 'date',
+        enabled: true,
+      },
+      {
+        field: 'networkpolicy.spec.egress',
+        header: 'Egress',
+        type: 'array',
         enabled: true,
       },
     ];

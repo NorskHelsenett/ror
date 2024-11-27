@@ -47,6 +47,8 @@ type Resource struct {
 	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
 	VulnerabilityEventResource         *rortypes.ResourceVulnerabilityEvent         `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
 	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
+	EndpointsResource                  *rortypes.ResourceEndpoints                  `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
+	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -203,6 +205,14 @@ func (r *Resource) SetVulnerabilityEvent(res *rortypes.ResourceVulnerabilityEven
 
 func (r *Resource) SetVirtualMachine(res *rortypes.ResourceVirtualMachine) {
 	r.VirtualMachineResource = res
+}
+
+func (r *Resource) SetEndpoints(res *rortypes.ResourceEndpoints) {
+	r.EndpointsResource = res
+}
+
+func (r *Resource) SetNetworkPolicy(res *rortypes.ResourceNetworkPolicy) {
+	r.NetworkPolicyResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -373,6 +383,16 @@ func (r *Resource) VulnerabilityEvent() rortypes.VulnerabilityEventinterface {
 // VirtualMachine is a wrapper for the underlying resource, it provides a VirtualMachineinterface to work with VirtualMachines
 func (r *Resource) VirtualMachine() rortypes.VirtualMachineinterface {
 	return r.VirtualMachineResource
+}
+
+// Endpoints is a wrapper for the underlying resource, it provides a Endpointsinterface to work with endpoints
+func (r *Resource) Endpoints() rortypes.Endpointsinterface {
+	return r.EndpointsResource
+}
+
+// NetworkPolicy is a wrapper for the underlying resource, it provides a NetworkPolicyinterface to work with networkpolicies
+func (r *Resource) NetworkPolicy() rortypes.NetworkPolicyinterface {
+	return r.NetworkPolicyResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface
