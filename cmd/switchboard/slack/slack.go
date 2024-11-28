@@ -16,7 +16,7 @@ const (
 	kind       = "SlackMessage"
 )
 
-func CreateSlackMessage(channel, message string, owner rortypes.RorResourceOwnerReference) error {
+func CreateSlackMessage(ctx context.Context, channel, message string, owner rortypes.RorResourceOwnerReference) error {
 	sm := &rortypes.ResourceSlackMessage{}
 	sm.Spec.ChannelId = channel
 	sm.Spec.Message = message
@@ -30,7 +30,7 @@ func CreateSlackMessage(channel, message string, owner rortypes.RorResourceOwner
 	rs := rorresources.NewResourceSet()
 	rs.Add(r)
 
-	_, err := ror.Client.ResourceV2().Update(context.Background(), *rs)
+	_, err := ror.Client.ResourceV2().Update(ctx, *rs)
 	if err != nil {
 		return err
 	}

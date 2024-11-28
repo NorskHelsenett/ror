@@ -108,7 +108,14 @@
       "3": "3. Skjermet",
       "4": "4. Sterkt skjermet"
     },
-    "loadMore": "Last mer"
+    "loadMore": "Last mer",
+    "critical": "Kritisk",
+    "high": "Høy",
+    "medium": "Medium",
+    "low": "Lav",
+    "summary": "Sammendrag",
+    "report": "Rapport",
+    "change": "Change"
   },
   "nav": {
     "home": "Oversikt",
@@ -1024,6 +1031,41 @@
         }
       },
       "created": "Cluster opprettet"
+    },
+    "clustervulnerabilityreport": {
+      "id": "Id",
+      "severity": "Alvorlighetsgrad",
+      "score": "Poengsum",
+      "title": "Tittel",
+      "firstObserved": "Først observert",
+      "lastObserved": "Sist observert",
+      "link": "Lenke",
+      "status": "Status",
+      "dismissalReason": "Grunn for avviselse",
+      "emptyTable": "Ingen sårbarheter funnet",
+      "vulnerabilities": "Sårbarheter",
+      "namespace": "Namespace",
+      "repository": "Repository",
+      "tag": "Versjon",
+      "resource": "Ressurs",
+      "installedVersion": "Installert versjon",
+      "fixedVersion": "Fikset i versjon",
+      "statusHelp": "Velg status for sårbarheten",
+      "dismissalReasonHelp": "Grunn for avviselse",
+      "riskAssesment": "Risikoanalyse",
+      "riskAssesmentHelp": "Lenke til risikoanalyse",
+      "comment": "Kommentar",
+      "commentHelp": "Tilleggskommentar",
+      "columns": "Kolonner",
+      "columnsHelp": "Velg kolonner i tabellen",
+      "notAssessed": "Ikke vurdert",
+      "needsTriage": "Behøver prioritering",
+      "confirmed": "Bekreftet",
+      "dismissed": "Avvist",
+      "idHelp": "Filtrer etter id",
+      "acceptableRisk": "Akseptabel risk",
+      "falsePositive": "Falsk positiv",
+      "notApplicable": "Ikke aktuell"
     },
     "create": {
       "cluster": {

@@ -1,5 +1,16 @@
 /* Do not change, this code is generated from Golang structs */
 
+export enum VulnerabilityStatus {
+  NOT_ASSESSED = 0,
+  NEEDS_TRIAGE = 1,
+  CONFIRMED = 2,
+  DISMISSED = 3,
+}
+export enum VulnerabilityDismissalReason {
+  ACCEPTABLE_RISK = 0,
+  FALSE_POSITIVE = 1,
+  NOT_APPLICABLE = 2,
+}
 export interface ResourceVirtualMachineOperatingSystemStatus {
   id: string;
   name: string;
@@ -14,6 +25,7 @@ export interface ResourceVirtualMachineNetworkStatus {
 }
 export interface ResourceVirtualMachineMemoryStatus {
   id: string;
+  unit: string;
   usage: string;
 }
 export interface ResourceVirtualMachineDiskStatus {
@@ -22,6 +34,7 @@ export interface ResourceVirtualMachineDiskStatus {
 }
 export interface ResourceVirtualMachineCpuStatus {
   id: string;
+  unit: string;
   usage: string;
 }
 export interface ResourceVirtualMachineStatus {
@@ -48,9 +61,9 @@ export interface ResourceVirtualMachineMemorySpec {
 }
 export interface ResourceVirtualMachineDiskSpec {
   id: string;
-  size: number;
   name: string;
   type: string;
+  size: number;
 }
 export interface ResourceVirtualMachineTagSpec {
   key: string;
@@ -59,7 +72,8 @@ export interface ResourceVirtualMachineTagSpec {
 }
 export interface ResourceVirtualMachineCpuSpec {
   id: string;
-  count: number;
+  sockets: number;
+  cores: number;
 }
 export interface ResourceVirtualMachineSpec {
   cpu: ResourceVirtualMachineCpuSpec;
@@ -112,18 +126,33 @@ export interface ResourceRouteSpec {
 export interface ResourceRoute {
   spec: ResourceRouteSpec;
 }
+export interface ResourceClusterVulnerabilityReportReportStatus {
+  status: VulnerabilityStatus;
+  until?: Time;
+  reason?: VulnerabilityDismissalReason;
+  comment?: string;
+  riskAssessment?: string;
+}
+export interface ResourceClusterVulnerabilityReportReportOwner {
+  digest: string;
+  repository: string;
+  tag: string;
+  resource: string;
+  installedVersion: string;
+  fixedVersion: string;
+  namespace: string;
+  ownerReferences: OwnerReference[];
+}
 export interface Time {}
-export interface ResourceClusterVulnerabilityReportStatus {
-  vulnerabilityID: string;
+export interface ResourceClusterVulnerabilityReportReport {
   severity: string;
   score: number;
   title: string;
-  resource: string;
   primaryLink: string;
-  installedVersion: string;
-  fixedVersion: string;
+  firstObserved: Time;
   lastObserved: Time;
-  ownerReferences: OwnerReference[];
+  owners: ResourceClusterVulnerabilityReportReportOwner[];
+  status: ResourceClusterVulnerabilityReportReportStatus;
 }
 export interface ResourceClusterVulnerabilityReportSummary {
   critical: number;
@@ -132,12 +161,9 @@ export interface ResourceClusterVulnerabilityReportSummary {
   low: number;
   unknown: number;
 }
-export interface ResourceClusterVulnerabilityReportReport {
-  summary: ResourceClusterVulnerabilityReportSummary;
-  vulnerabilities: { [key: string]: ResourceClusterVulnerabilityReportStatus };
-}
 export interface ResourceClusterVulnerabilityReport {
-  report: ResourceClusterVulnerabilityReportReport;
+  summary: ResourceClusterVulnerabilityReportSummary;
+  report: { [key: string]: ResourceClusterVulnerabilityReportReport };
 }
 export interface ResourceClusterComplianceReport {}
 export interface ResourceConfigurationSpec {
@@ -468,6 +494,7 @@ export interface ResourceVulnerabilityReportReportVulnerability {
   fixedVersion: string;
 }
 export interface ResourceVulnerabilityReportReportArtifact {
+  digest: string;
   repository: string;
   tag: string;
 }

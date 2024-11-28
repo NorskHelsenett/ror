@@ -45,6 +45,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 
@@ -105,6 +106,8 @@ func main() {
 	converter := typescriptify.New()
 	converter.CreateInterface = true
 	converter.CreateConstructor = true
+	converter.AddEnum(rortypes.AllVulnerabilityStatuses)
+	converter.AddEnum(rortypes.AllVulnerabilityDismissalReasons)
 	converter.BackupDir = os.TempDir()
 	converter.Add(rorresources.ResourceSet{})
 	converter.Add(rorresources.ResourceQuery{})
