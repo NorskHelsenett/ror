@@ -30,7 +30,7 @@ export interface ResourceVirtualMachineMemoryStatus {
 }
 export interface ResourceVirtualMachineDiskStatus {
   id: string;
-  usage: string;
+  usageBytes: string;
 }
 export interface ResourceVirtualMachineCpuStatus {
   id: string;
@@ -57,13 +57,13 @@ export interface ResourceVirtualMachineNetworkSpec {
 }
 export interface ResourceVirtualMachineMemorySpec {
   id: string;
-  size: number;
+  sizeBytes: number;
 }
 export interface ResourceVirtualMachineDiskSpec {
   id: string;
   name: string;
   type: string;
-  size: number;
+  sizeBytes: number;
 }
 export interface ResourceVirtualMachineTagSpec {
   key: string;
@@ -73,7 +73,7 @@ export interface ResourceVirtualMachineTagSpec {
 export interface ResourceVirtualMachineCpuSpec {
   id: string;
   sockets: number;
-  cores: number;
+  coresPerSocket: number;
 }
 export interface ResourceVirtualMachineSpec {
   cpu: ResourceVirtualMachineCpuSpec;
