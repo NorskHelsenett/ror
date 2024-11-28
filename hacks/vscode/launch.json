@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/api/main.go",
+            "program": "${workspaceFolder}/cmd/api-stub/main.go",
             "env": {
                 "USE_CORS": "true",
                 "LOG_LEVEL": "debug",
@@ -35,7 +35,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/api/",
+            "program": "${workspaceFolder}/cmd/api-stub/",
             "args": ["-v", "./test/...", "-cover"],
             "showLog": true
         },

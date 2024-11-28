@@ -8,11 +8,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	clustersservice "github.com/NorskHelsenett/ror/cmd/api/services/clustersService"
-	projectservice "github.com/NorskHelsenett/ror/cmd/api/services/projectsService"
-	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
 	"strings"
 	"time"
+
+	clustersservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/clustersService"
+	projectservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/projectsService"
+	resourcesservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/resourcesService"
 
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
 

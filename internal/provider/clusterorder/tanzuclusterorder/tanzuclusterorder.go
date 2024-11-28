@@ -4,7 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	workspacesservice "github.com/NorskHelsenett/ror/cmd/api/services/workspacesService"
+
+	workspacesservice "github.com/NorskHelsenett/ror/cmd/api-stub/services/workspacesService"
 	"github.com/NorskHelsenett/ror/internal/provider/clusterorder/utils"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
