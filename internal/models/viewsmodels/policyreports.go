@@ -87,7 +87,7 @@ func (pr *PolicyreportView) UpdateSummary() {
 	}
 }
 
-func (pr *PolicyreportView) ImportData(reports apiresourcecontracts.ResourcePolicyreports) error {
+func (pr *PolicyreportView) ImportData(reports apiresourcecontracts.ResourceListPolicyreports) error {
 	pr.Clusterid = reports.Owner.Subject
 	for _, policyreport := range reports.Policyreports {
 		if !strings.HasPrefix(policyreport.Metadata.Name, "polr") {

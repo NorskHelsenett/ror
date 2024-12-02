@@ -28,7 +28,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
-	"github.com/NorskHelsenett/ror/cmd/agentv2/agentconfig"
+	"github.com/NorskHelsenett/ror/cmd/operator/agentconfig"
 	"github.com/NorskHelsenett/ror/cmd/operator/clients"
 	"github.com/NorskHelsenett/ror/cmd/operator/initialservices"
 	"github.com/NorskHelsenett/ror/cmd/operator/scheduler"
