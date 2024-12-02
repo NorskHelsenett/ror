@@ -9,7 +9,7 @@ import (
 
 {{ range .}}
 // Function to return {{.Kind}} resource by name.
-func (m Resource{{.PluralCapitalized}}) GetByName(search string) Resource{{.Kind}} {
+func (m ResourceList{{.PluralCapitalized}}) GetByName(search string) Resource{{.Kind}} {
 	for _, resource := range m.{{.PluralCapitalized}} {
 		if resource.Metadata.Name == search {
 			return resource
@@ -21,7 +21,7 @@ func (m Resource{{.PluralCapitalized}}) GetByName(search string) Resource{{.Kind
 
 {{if .Namespaced}}
 // Function to return {{.Kind}} resource by namespace.
-func (m Resource{{.PluralCapitalized}}) GetByNamespace(search string) Resource{{.Kind}} {
+func (m ResourceList{{.PluralCapitalized}}) GetByNamespace(search string) Resource{{.Kind}} {
 	for _, res := range m.{{.PluralCapitalized}} {
 		if res.Metadata.Namespace == search {
 			return res
@@ -33,7 +33,7 @@ func (m Resource{{.PluralCapitalized}}) GetByNamespace(search string) Resource{{
 {{end}}
 
 // Function to return {{.Kind}} resource by uid.
-func (m Resource{{.PluralCapitalized}}) GetByUid(search string) Resource{{.Kind}}  {
+func (m ResourceList{{.PluralCapitalized}}) GetByUid(search string) Resource{{.Kind}}  {
 	for _, res := range m.{{.PluralCapitalized}} {
 		if res.Metadata.Uid == search {
 			return res
@@ -44,7 +44,7 @@ func (m Resource{{.PluralCapitalized}}) GetByUid(search string) Resource{{.Kind}
 }
 
 // Function to return {{.Kind}} resource by label.
-func (m Resource{{.PluralCapitalized}}) GetByLabels(search map[string]string) []Resource{{.Kind}} {
+func (m ResourceList{{.PluralCapitalized}}) GetByLabels(search map[string]string) []Resource{{.Kind}} {
 	var Response []Resource{{.Kind}}
 	for _, res := range m.{{.PluralCapitalized}} {
 		if len(res.Metadata.Labels) != 0 {

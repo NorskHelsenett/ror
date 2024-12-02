@@ -371,4 +371,21 @@ var Resourcedefs = []ApiResource{
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
 	},
+	{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Endpoints",
+			APIVersion: "v1",
+		},
+		Plural:     "endpoints",
+		Namespaced: true,
+		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "NetworkPolicy",
+			APIVersion: "networking.k8s.io/v1",
+		},
+		Plural:     "networkpolicies",
+		Namespaced: true,
+		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	},
 }

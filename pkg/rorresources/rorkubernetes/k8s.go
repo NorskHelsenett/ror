@@ -213,6 +213,16 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetVirtualMachine(res)
 		r.SetCommonInterface(res)
 
+	case "/v1, Kind=Endpoints":
+		res := newEndpointsFromDynamicClient(input)
+		r.SetEndpoints(res)
+		r.SetCommonInterface(res)
+
+	case "networking.k8s.io/v1, Kind=NetworkPolicy":
+		res := newNetworkPolicyFromDynamicClient(input)
+		r.SetNetworkPolicy(res)
+		r.SetCommonInterface(res)
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return r
@@ -760,6 +770,38 @@ func newVirtualMachineFromDynamicClient(obj *unstructured.Unstructured) *rortype
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to VirtualMachine", err)
+	}
+	return &nr
+}
+
+// newEndpointsFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newEndpointsFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceEndpoints {
+	nr := rortypes.ResourceEndpoints{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Endpoints", err)
+	}
+	return &nr
+}
+
+// newNetworkPolicyFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newNetworkPolicyFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceNetworkPolicy {
+	nr := rortypes.ResourceNetworkPolicy{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to NetworkPolicy", err)
 	}
 	return &nr
 }

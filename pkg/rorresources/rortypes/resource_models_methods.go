@@ -620,3 +620,39 @@ func (r *ResourceVirtualMachine) GetRorHash() string {
 func (r *ResourceVirtualMachine) Get() *ResourceVirtualMachine {
 	return r
 }
+
+// (r *ResourceEndpoints) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceEndpoints) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceEndpoints) Get returns a pointer to the resource of type ResourceEndpoints
+func (r *ResourceEndpoints) Get() *ResourceEndpoints {
+	return r
+}
+
+// (r *ResourceNetworkPolicy) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceNetworkPolicy) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceNetworkPolicy) Get returns a pointer to the resource of type ResourceNetworkPolicy
+func (r *ResourceNetworkPolicy) Get() *ResourceNetworkPolicy {
+	return r
+}

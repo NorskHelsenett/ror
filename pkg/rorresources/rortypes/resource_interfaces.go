@@ -212,3 +212,15 @@ type VirtualMachineinterface interface {
 	CommonResourceInterface
 	Get() *ResourceVirtualMachine
 }
+
+// Endpointsinterface represents the interface for resources of the type endpoints
+type Endpointsinterface interface {
+	CommonResourceInterface
+	Get() *ResourceEndpoints
+}
+
+// NetworkPolicyinterface represents the interface for resources of the type networkpolicy
+type NetworkPolicyinterface interface {
+	CommonResourceInterface
+	Get() *ResourceNetworkPolicy
+}

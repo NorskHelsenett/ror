@@ -174,6 +174,14 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetVirtualMachine(res.VirtualMachineResource)
 		r.SetCommonInterface(res.VirtualMachineResource)
 
+	case "/v1, Kind=Endpoints":
+		r.SetEndpoints(res.EndpointsResource)
+		r.SetCommonInterface(res.EndpointsResource)
+
+	case "networking.k8s.io/v1, Kind=NetworkPolicy":
+		r.SetNetworkPolicy(res.NetworkPolicyResource)
+		r.SetCommonInterface(res.NetworkPolicyResource)
+
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 	}

@@ -215,5 +215,17 @@ func (rj rorResourceJson) getResource(resourceReturn *rorResource) error {
 		return err
 	}
 
+	if resourceReturn.ApiVersion == "v1" && resourceReturn.Kind == "Endpoints" {
+		payload, err := prepareResourcePayload[apiresourcecontracts.ResourceEndpoints](bytes)
+		resourceReturn.Resource = payload
+		return err
+	}
+
+	if resourceReturn.ApiVersion == "networking.k8s.io/v1" && resourceReturn.Kind == "NetworkPolicy" {
+		payload, err := prepareResourcePayload[apiresourcecontracts.ResourceNetworkPolicy](bytes)
+		resourceReturn.Resource = payload
+		return err
+	}
+
 	return fmt.Errorf("no handler found for %s/%s", resourceReturn.ApiVersion, resourceReturn.Kind)
 }

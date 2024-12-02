@@ -761,6 +761,50 @@ func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientEndpoints(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Endpoints",
+			"apiVersion": "v1",
+			"metadata": map[string]interface{}{
+				"name": "test-endpoints",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("Endpoints", "v1")
+	expected.SetEndpoints(newEndpointsFromDynamicClient(input))
+	expected.SetCommonInterface(newEndpointsFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientNetworkPolicy(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "NetworkPolicy",
+			"apiVersion": "networking.k8s.io/v1",
+			"metadata": map[string]interface{}{
+				"name": "test-networkpolicy",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("NetworkPolicy", "networking.k8s.io/v1")
+	expected.SetNetworkPolicy(newNetworkPolicyFromDynamicClient(input))
+	expected.SetCommonInterface(newNetworkPolicyFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

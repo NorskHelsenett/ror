@@ -12,7 +12,7 @@ type Resourcetypes interface {
 
 {{ range .}}
 // type for returning {{.Kind}} resources to internal functions
-type Resource{{.PluralCapitalized}} struct {
+type ResourceList{{.PluralCapitalized}} struct {
 	Owner      ResourceOwnerReference `json:"owner"`
 	{{.PluralCapitalized}} []Resource{{.Kind}}    `json:"{{.Plural}}"`
 }
