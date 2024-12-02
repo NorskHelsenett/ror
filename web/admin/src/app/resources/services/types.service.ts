@@ -33,6 +33,12 @@ export class TypesService {
         clusterSpecific: false,
       },
       {
+        displayName: 'Endpoints',
+        kind: 'Endpoints',
+        apiVersion: 'v1',
+        clusterSpecific: true,
+      },
+      {
         displayName: 'Exposed secret reports',
         kind: 'ExposedSecretReport',
         apiVersion: 'aquasecurity.github.io/v1alpha1',
@@ -54,6 +60,12 @@ export class TypesService {
         displayName: 'Namespaces',
         kind: 'Namespace',
         apiVersion: 'v1',
+        clusterSpecific: true,
+      },
+      {
+        displayName: 'NetworkPolicies',
+        kind: 'NetworkPolicy',
+        apiVersion: 'networking.k8s.io/v1',
         clusterSpecific: true,
       },
       {
