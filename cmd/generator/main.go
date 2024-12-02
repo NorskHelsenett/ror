@@ -51,12 +51,6 @@ import (
 
 func main() {
 
-	// Dynamic clients - agents
-	//   - cmd/agent/clients/dynamicclient_generated.go
-	templateFile("cmd/agent/clients/dynamicclient_generated.go.tmpl", rordefs.GetResourcesByType(rordefs.ApiResourceTypeAgent))
-	//  - cmd/agentv2/clients/dynamicclient/dynamicclient_generated.go
-	templateFile("cmd/agentv2/clients/dynamicclient/dynamicclient_generated.go.tmpl", rordefs.GetResourcesByType(rordefs.ApiResourceTypeAgent))
-
 	// Resource controller - api
 	//   - cmd/api/controllers/resourcescontroller/resources_controller_read_generated.go
 	templateFile("cmd/api/controllers/resourcescontroller/resources_controller_read_generated.go.tmpl", rordefs.Resourcedefs)
@@ -77,30 +71,22 @@ func main() {
 	//   - internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go
 	templateFile("internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go.tmpl", rordefs.Resourcedefs)
 
-	folderPath := "./"
+	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs)
+	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs)
 
-	exists := folderExists(folderPath)
-	if exists {
-		templateFile(fmt.Sprintf("%s/pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", folderPath), rordefs.Resourcedefs)
-		templateFile(fmt.Sprintf("%s/pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", folderPath), rordefs.Resourcedefs)
+	// Resource models
+	templateFile("pkg/rorresources/fromstruct.go.tmpl", rordefs.Resourcedefs)
+	templateFile("pkg/rorresources/resource.go.tmpl", rordefs.Resourcedefs)
+	templateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs)
+	templateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs)
+	templateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs)
+	templateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs)
 
-		// Resource models
-		templateFile(fmt.Sprintf("%s/pkg/rorresources/fromstruct.go.tmpl", folderPath), rordefs.Resourcedefs)
-		templateFile(fmt.Sprintf("%s/pkg/rorresources/resource.go.tmpl", folderPath), rordefs.Resourcedefs)
-		templateFile(fmt.Sprintf("%s/pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", folderPath), rordefs.Resourcedefs)
-		templateFile(fmt.Sprintf("%s/pkg/rorresources/rorkubernetes/k8s.go.tmpl", folderPath), rordefs.Resourcedefs)
-		templateFile(fmt.Sprintf("%s/pkg/rorresources/rortypes/resource_interfaces.go.tmpl", folderPath), rordefs.Resourcedefs)
-		templateFile(fmt.Sprintf("%s/pkg/rorresources/rortypes/resource_models_methods.go.tmpl", folderPath), rordefs.Resourcedefs)
-
-		// Resource models - input filters
-		for _, res := range rordefs.Resourcedefs {
-			filepath := fmt.Sprintf("%s/pkg/rorresources/rortypes/resource_input_filter_%s.go", folderPath, res.Kind)
-			filepath = strings.ToLower(filepath)
-			templateFileOnce(filepath, fmt.Sprintf("%s/pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", folderPath), res)
-		}
-
-	} else {
-		fmt.Println("Folder does not exist: ", folderPath)
+	// Resource models - input filters
+	for _, res := range rordefs.Resourcedefs {
+		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.Kind)
+		filepath = strings.ToLower(filepath)
+		templateFileOnce(filepath, "/pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
 	}
 
 	// golang struct to typescript interfaces
