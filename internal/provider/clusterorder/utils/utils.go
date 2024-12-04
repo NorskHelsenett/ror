@@ -8,13 +8,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	clustersservice "github.com/NorskHelsenett/ror/cmd/api/services/clustersService"
-	projectservice "github.com/NorskHelsenett/ror/cmd/api/services/projectsService"
-	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
 	"strings"
 	"time"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	clustersservice "github.com/NorskHelsenett/ror/cmd/api/services/clustersService"
+	projectservice "github.com/NorskHelsenett/ror/cmd/api/services/projectsService"
+	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
+
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"

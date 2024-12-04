@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/NorskHelsenett/ror/internal/helpers/mapping"
 	mongoHelper "github.com/NorskHelsenett/ror/internal/helpers/mongoHelper"
 
@@ -14,7 +15,7 @@ import (
 
 	aclrepo "github.com/NorskHelsenett/ror/internal/acl/repositories"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"go.mongodb.org/mongo-driver/bson"
 )

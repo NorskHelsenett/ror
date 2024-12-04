@@ -11,7 +11,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/gin-gonic/gin"
 )
@@ -313,6 +313,22 @@ func GetResources() gin.HandlerFunc {
 		}
 		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "VirtualMachine" {
 			resources, err := resourcesservice.GetResources[apiresourcecontracts.ResourceVirtualMachine](ctx, query)
+			if err != nil {
+				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				return
+			}
+			c.JSON(http.StatusOK, resources)
+		}
+		if query.ApiVersion == "v1" && query.Kind == "Endpoints" {
+			resources, err := resourcesservice.GetResources[apiresourcecontracts.ResourceEndpoints](ctx, query)
+			if err != nil {
+				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				return
+			}
+			c.JSON(http.StatusOK, resources)
+		}
+		if query.ApiVersion == "networking.k8s.io/v1" && query.Kind == "NetworkPolicy" {
+			resources, err := resourcesservice.GetResources[apiresourcecontracts.ResourceNetworkPolicy](ctx, query)
 			if err != nil {
 				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 				return
@@ -633,6 +649,22 @@ func GetResource() gin.HandlerFunc {
 		}
 		if query.ApiVersion == "general.ror.internal/v1alpha1" && query.Kind == "VirtualMachine" {
 			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceVirtualMachine](ctx, query)
+			if err != nil {
+				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				return
+			}
+			c.JSON(http.StatusOK, resources)
+		}
+		if query.ApiVersion == "v1" && query.Kind == "Endpoints" {
+			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceEndpoints](ctx, query)
+			if err != nil {
+				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+				return
+			}
+			c.JSON(http.StatusOK, resources)
+		}
+		if query.ApiVersion == "networking.k8s.io/v1" && query.Kind == "NetworkPolicy" {
+			resources, err := resourcesservice.GetResource[apiresourcecontracts.ResourceNetworkPolicy](ctx, query)
 			if err != nil {
 				c.JSON(http.StatusNotFound, responses.Cluster{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 				return

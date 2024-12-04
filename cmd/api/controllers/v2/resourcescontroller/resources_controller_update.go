@@ -1,9 +1,10 @@
 package resourcescontroller
 
 import (
+	"net/http"
+
 	"github.com/NorskHelsenett/ror/cmd/api/responses"
 	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
-	"net/http"
 
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 
@@ -11,7 +12,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"

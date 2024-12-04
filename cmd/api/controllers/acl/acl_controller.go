@@ -2,10 +2,11 @@
 package acl
 
 import (
+	"net/http"
+
 	"github.com/NorskHelsenett/ror/cmd/api/apiconnections"
 	"github.com/NorskHelsenett/ror/cmd/api/customvalidators"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
-	"net/http"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
@@ -13,7 +14,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/messagebuscontracts"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"

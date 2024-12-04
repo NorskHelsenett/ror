@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/NorskHelsenett/ror/cmd/kind/mskindconnections"
 	"github.com/NorskHelsenett/ror/cmd/kind/rabbitmq/mskindrabbitmqdefinitions"
 	"github.com/NorskHelsenett/ror/cmd/kind/rorclient"
@@ -11,7 +12,7 @@ import (
 
 	"strings"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/handlers/rabbitmqhandler"

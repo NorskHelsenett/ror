@@ -2,18 +2,19 @@
 package configurationcontroller
 
 import (
+	"net/http"
+
 	clustersservice "github.com/NorskHelsenett/ror/cmd/api/services/clustersService"
 	configurationservice "github.com/NorskHelsenett/ror/cmd/api/services/configurationService"
 	operatorconfigservice "github.com/NorskHelsenett/ror/cmd/api/services/operatorConfigService"
 	tasksservice "github.com/NorskHelsenett/ror/cmd/api/services/tasksService"
-	"net/http"
 
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/providers"
 
 	"strings"

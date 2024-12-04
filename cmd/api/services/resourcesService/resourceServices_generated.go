@@ -829,8 +829,8 @@ func GetVirtualMachineByUid(ctx context.Context, ownerref apiresourcecontracts.R
 
 // Functions to get Namespaces by ownerref
 // The function is intended for use by internal functions
-func GetNamespaces(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceNamespaces, error) {
-	var resources apiresourcecontracts.ResourceNamespaces
+func GetNamespaces(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListNamespaces, error) {
+	var resources apiresourcecontracts.ResourceListNamespaces
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Namespace",
@@ -847,8 +847,8 @@ func GetNamespaces(ctx context.Context, ownerref apiresourcecontracts.ResourceOw
 
 // Functions to get Nodes by ownerref
 // The function is intended for use by internal functions
-func GetNodes(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceNodes, error) {
-	var resources apiresourcecontracts.ResourceNodes
+func GetNodes(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListNodes, error) {
+	var resources apiresourcecontracts.ResourceListNodes
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Node",
@@ -865,8 +865,8 @@ func GetNodes(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerRe
 
 // Functions to get Persistentvolumeclaims by ownerref
 // The function is intended for use by internal functions
-func GetPersistentvolumeclaims(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourcePersistentvolumeclaims, error) {
-	var resources apiresourcecontracts.ResourcePersistentvolumeclaims
+func GetPersistentvolumeclaims(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListPersistentvolumeclaims, error) {
+	var resources apiresourcecontracts.ResourceListPersistentvolumeclaims
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "PersistentVolumeClaim",
@@ -883,8 +883,8 @@ func GetPersistentvolumeclaims(ctx context.Context, ownerref apiresourcecontract
 
 // Functions to get Deployments by ownerref
 // The function is intended for use by internal functions
-func GetDeployments(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceDeployments, error) {
-	var resources apiresourcecontracts.ResourceDeployments
+func GetDeployments(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListDeployments, error) {
+	var resources apiresourcecontracts.ResourceListDeployments
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Deployment",
@@ -901,8 +901,8 @@ func GetDeployments(ctx context.Context, ownerref apiresourcecontracts.ResourceO
 
 // Functions to get Storageclasses by ownerref
 // The function is intended for use by internal functions
-func GetStorageclasses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceStorageclasses, error) {
-	var resources apiresourcecontracts.ResourceStorageclasses
+func GetStorageclasses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListStorageclasses, error) {
+	var resources apiresourcecontracts.ResourceListStorageclasses
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "StorageClass",
@@ -919,8 +919,8 @@ func GetStorageclasses(ctx context.Context, ownerref apiresourcecontracts.Resour
 
 // Functions to get Policyreports by ownerref
 // The function is intended for use by internal functions
-func GetPolicyreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourcePolicyreports, error) {
-	var resources apiresourcecontracts.ResourcePolicyreports
+func GetPolicyreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListPolicyreports, error) {
+	var resources apiresourcecontracts.ResourceListPolicyreports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "PolicyReport",
@@ -937,8 +937,8 @@ func GetPolicyreports(ctx context.Context, ownerref apiresourcecontracts.Resourc
 
 // Functions to get Applications by ownerref
 // The function is intended for use by internal functions
-func GetApplications(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceApplications, error) {
-	var resources apiresourcecontracts.ResourceApplications
+func GetApplications(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListApplications, error) {
+	var resources apiresourcecontracts.ResourceListApplications
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Application",
@@ -955,8 +955,8 @@ func GetApplications(ctx context.Context, ownerref apiresourcecontracts.Resource
 
 // Functions to get Appprojects by ownerref
 // The function is intended for use by internal functions
-func GetAppprojects(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceAppprojects, error) {
-	var resources apiresourcecontracts.ResourceAppprojects
+func GetAppprojects(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListAppprojects, error) {
+	var resources apiresourcecontracts.ResourceListAppprojects
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "AppProject",
@@ -973,8 +973,8 @@ func GetAppprojects(ctx context.Context, ownerref apiresourcecontracts.ResourceO
 
 // Functions to get Certificates by ownerref
 // The function is intended for use by internal functions
-func GetCertificates(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceCertificates, error) {
-	var resources apiresourcecontracts.ResourceCertificates
+func GetCertificates(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListCertificates, error) {
+	var resources apiresourcecontracts.ResourceListCertificates
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Certificate",
@@ -991,8 +991,8 @@ func GetCertificates(ctx context.Context, ownerref apiresourcecontracts.Resource
 
 // Functions to get Services by ownerref
 // The function is intended for use by internal functions
-func GetServices(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceServices, error) {
-	var resources apiresourcecontracts.ResourceServices
+func GetServices(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListServices, error) {
+	var resources apiresourcecontracts.ResourceListServices
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Service",
@@ -1009,8 +1009,8 @@ func GetServices(ctx context.Context, ownerref apiresourcecontracts.ResourceOwne
 
 // Functions to get Pods by ownerref
 // The function is intended for use by internal functions
-func GetPods(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourcePods, error) {
-	var resources apiresourcecontracts.ResourcePods
+func GetPods(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListPods, error) {
+	var resources apiresourcecontracts.ResourceListPods
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Pod",
@@ -1027,8 +1027,8 @@ func GetPods(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerRef
 
 // Functions to get Replicasets by ownerref
 // The function is intended for use by internal functions
-func GetReplicasets(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceReplicasets, error) {
-	var resources apiresourcecontracts.ResourceReplicasets
+func GetReplicasets(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListReplicasets, error) {
+	var resources apiresourcecontracts.ResourceListReplicasets
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "ReplicaSet",
@@ -1045,8 +1045,8 @@ func GetReplicasets(ctx context.Context, ownerref apiresourcecontracts.ResourceO
 
 // Functions to get Statefulsets by ownerref
 // The function is intended for use by internal functions
-func GetStatefulsets(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceStatefulsets, error) {
-	var resources apiresourcecontracts.ResourceStatefulsets
+func GetStatefulsets(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListStatefulsets, error) {
+	var resources apiresourcecontracts.ResourceListStatefulsets
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "StatefulSet",
@@ -1063,8 +1063,8 @@ func GetStatefulsets(ctx context.Context, ownerref apiresourcecontracts.Resource
 
 // Functions to get Daemonsets by ownerref
 // The function is intended for use by internal functions
-func GetDaemonsets(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceDaemonsets, error) {
-	var resources apiresourcecontracts.ResourceDaemonsets
+func GetDaemonsets(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListDaemonsets, error) {
+	var resources apiresourcecontracts.ResourceListDaemonsets
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "DaemonSet",
@@ -1081,8 +1081,8 @@ func GetDaemonsets(ctx context.Context, ownerref apiresourcecontracts.ResourceOw
 
 // Functions to get Ingresses by ownerref
 // The function is intended for use by internal functions
-func GetIngresses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceIngresses, error) {
-	var resources apiresourcecontracts.ResourceIngresses
+func GetIngresses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListIngresses, error) {
+	var resources apiresourcecontracts.ResourceListIngresses
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Ingress",
@@ -1099,8 +1099,8 @@ func GetIngresses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwn
 
 // Functions to get Ingressclasses by ownerref
 // The function is intended for use by internal functions
-func GetIngressclasses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceIngressclasses, error) {
-	var resources apiresourcecontracts.ResourceIngressclasses
+func GetIngressclasses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListIngressclasses, error) {
+	var resources apiresourcecontracts.ResourceListIngressclasses
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "IngressClass",
@@ -1117,8 +1117,8 @@ func GetIngressclasses(ctx context.Context, ownerref apiresourcecontracts.Resour
 
 // Functions to get Vulnerabilityreports by ownerref
 // The function is intended for use by internal functions
-func GetVulnerabilityreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVulnerabilityreports, error) {
-	var resources apiresourcecontracts.ResourceVulnerabilityreports
+func GetVulnerabilityreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListVulnerabilityreports, error) {
+	var resources apiresourcecontracts.ResourceListVulnerabilityreports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "VulnerabilityReport",
@@ -1135,8 +1135,8 @@ func GetVulnerabilityreports(ctx context.Context, ownerref apiresourcecontracts.
 
 // Functions to get Exposedsecretreports by ownerref
 // The function is intended for use by internal functions
-func GetExposedsecretreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceExposedsecretreports, error) {
-	var resources apiresourcecontracts.ResourceExposedsecretreports
+func GetExposedsecretreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListExposedsecretreports, error) {
+	var resources apiresourcecontracts.ResourceListExposedsecretreports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "ExposedSecretReport",
@@ -1153,8 +1153,8 @@ func GetExposedsecretreports(ctx context.Context, ownerref apiresourcecontracts.
 
 // Functions to get Configauditreports by ownerref
 // The function is intended for use by internal functions
-func GetConfigauditreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceConfigauditreports, error) {
-	var resources apiresourcecontracts.ResourceConfigauditreports
+func GetConfigauditreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListConfigauditreports, error) {
+	var resources apiresourcecontracts.ResourceListConfigauditreports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "ConfigAuditReport",
@@ -1171,8 +1171,8 @@ func GetConfigauditreports(ctx context.Context, ownerref apiresourcecontracts.Re
 
 // Functions to get Rbacassessmentreports by ownerref
 // The function is intended for use by internal functions
-func GetRbacassessmentreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceRbacassessmentreports, error) {
-	var resources apiresourcecontracts.ResourceRbacassessmentreports
+func GetRbacassessmentreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListRbacassessmentreports, error) {
+	var resources apiresourcecontracts.ResourceListRbacassessmentreports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "RbacAssessmentReport",
@@ -1189,8 +1189,8 @@ func GetRbacassessmentreports(ctx context.Context, ownerref apiresourcecontracts
 
 // Functions to get Tanzukubernetesclusters by ownerref
 // The function is intended for use by internal functions
-func GetTanzukubernetesclusters(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceTanzukubernetesclusters, error) {
-	var resources apiresourcecontracts.ResourceTanzukubernetesclusters
+func GetTanzukubernetesclusters(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListTanzukubernetesclusters, error) {
+	var resources apiresourcecontracts.ResourceListTanzukubernetesclusters
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "TanzuKubernetesCluster",
@@ -1207,8 +1207,8 @@ func GetTanzukubernetesclusters(ctx context.Context, ownerref apiresourcecontrac
 
 // Functions to get Tanzukubernetesreleases by ownerref
 // The function is intended for use by internal functions
-func GetTanzukubernetesreleases(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceTanzukubernetesreleases, error) {
-	var resources apiresourcecontracts.ResourceTanzukubernetesreleases
+func GetTanzukubernetesreleases(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListTanzukubernetesreleases, error) {
+	var resources apiresourcecontracts.ResourceListTanzukubernetesreleases
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "TanzuKubernetesRelease",
@@ -1225,8 +1225,8 @@ func GetTanzukubernetesreleases(ctx context.Context, ownerref apiresourcecontrac
 
 // Functions to get Virtualmachineclasses by ownerref
 // The function is intended for use by internal functions
-func GetVirtualmachineclasses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVirtualmachineclasses, error) {
-	var resources apiresourcecontracts.ResourceVirtualmachineclasses
+func GetVirtualmachineclasses(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListVirtualmachineclasses, error) {
+	var resources apiresourcecontracts.ResourceListVirtualmachineclasses
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "VirtualMachineClass",
@@ -1243,8 +1243,8 @@ func GetVirtualmachineclasses(ctx context.Context, ownerref apiresourcecontracts
 
 // Functions to get Virtualmachineclassbindings by ownerref
 // The function is intended for use by internal functions
-func GetVirtualmachineclassbindings(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVirtualmachineclassbindings, error) {
-	var resources apiresourcecontracts.ResourceVirtualmachineclassbindings
+func GetVirtualmachineclassbindings(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListVirtualmachineclassbindings, error) {
+	var resources apiresourcecontracts.ResourceListVirtualmachineclassbindings
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "VirtualMachineClassBinding",
@@ -1261,8 +1261,8 @@ func GetVirtualmachineclassbindings(ctx context.Context, ownerref apiresourcecon
 
 // Functions to get Kubernetesclusters by ownerref
 // The function is intended for use by internal functions
-func GetKubernetesclusters(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceKubernetesclusters, error) {
-	var resources apiresourcecontracts.ResourceKubernetesclusters
+func GetKubernetesclusters(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListKubernetesclusters, error) {
+	var resources apiresourcecontracts.ResourceListKubernetesclusters
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "KubernetesCluster",
@@ -1279,8 +1279,8 @@ func GetKubernetesclusters(ctx context.Context, ownerref apiresourcecontracts.Re
 
 // Functions to get Clusterorders by ownerref
 // The function is intended for use by internal functions
-func GetClusterorders(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceClusterorders, error) {
-	var resources apiresourcecontracts.ResourceClusterorders
+func GetClusterorders(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListClusterorders, error) {
+	var resources apiresourcecontracts.ResourceListClusterorders
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "ClusterOrder",
@@ -1297,8 +1297,8 @@ func GetClusterorders(ctx context.Context, ownerref apiresourcecontracts.Resourc
 
 // Functions to get Projects by ownerref
 // The function is intended for use by internal functions
-func GetProjects(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceProjects, error) {
-	var resources apiresourcecontracts.ResourceProjects
+func GetProjects(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListProjects, error) {
+	var resources apiresourcecontracts.ResourceListProjects
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Project",
@@ -1315,8 +1315,8 @@ func GetProjects(ctx context.Context, ownerref apiresourcecontracts.ResourceOwne
 
 // Functions to get Configurations by ownerref
 // The function is intended for use by internal functions
-func GetConfigurations(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceConfigurations, error) {
-	var resources apiresourcecontracts.ResourceConfigurations
+func GetConfigurations(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListConfigurations, error) {
+	var resources apiresourcecontracts.ResourceListConfigurations
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Configuration",
@@ -1333,8 +1333,8 @@ func GetConfigurations(ctx context.Context, ownerref apiresourcecontracts.Resour
 
 // Functions to get Clustercompliancereports by ownerref
 // The function is intended for use by internal functions
-func GetClustercompliancereports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceClustercompliancereports, error) {
-	var resources apiresourcecontracts.ResourceClustercompliancereports
+func GetClustercompliancereports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListClustercompliancereports, error) {
+	var resources apiresourcecontracts.ResourceListClustercompliancereports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "ClusterComplianceReport",
@@ -1351,8 +1351,8 @@ func GetClustercompliancereports(ctx context.Context, ownerref apiresourcecontra
 
 // Functions to get Clustervulnerabilityreports by ownerref
 // The function is intended for use by internal functions
-func GetClustervulnerabilityreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceClustervulnerabilityreports, error) {
-	var resources apiresourcecontracts.ResourceClustervulnerabilityreports
+func GetClustervulnerabilityreports(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListClustervulnerabilityreports, error) {
+	var resources apiresourcecontracts.ResourceListClustervulnerabilityreports
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "ClusterVulnerabilityReport",
@@ -1369,8 +1369,8 @@ func GetClustervulnerabilityreports(ctx context.Context, ownerref apiresourcecon
 
 // Functions to get Routes by ownerref
 // The function is intended for use by internal functions
-func GetRoutes(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceRoutes, error) {
-	var resources apiresourcecontracts.ResourceRoutes
+func GetRoutes(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListRoutes, error) {
+	var resources apiresourcecontracts.ResourceListRoutes
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "Route",
@@ -1387,8 +1387,8 @@ func GetRoutes(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerR
 
 // Functions to get Slackmessages by ownerref
 // The function is intended for use by internal functions
-func GetSlackmessages(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceSlackmessages, error) {
-	var resources apiresourcecontracts.ResourceSlackmessages
+func GetSlackmessages(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListSlackmessages, error) {
+	var resources apiresourcecontracts.ResourceListSlackmessages
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "SlackMessage",
@@ -1405,8 +1405,8 @@ func GetSlackmessages(ctx context.Context, ownerref apiresourcecontracts.Resourc
 
 // Functions to get Vulnerabilityevents by ownerref
 // The function is intended for use by internal functions
-func GetVulnerabilityevents(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVulnerabilityevents, error) {
-	var resources apiresourcecontracts.ResourceVulnerabilityevents
+func GetVulnerabilityevents(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListVulnerabilityevents, error) {
+	var resources apiresourcecontracts.ResourceListVulnerabilityevents
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "VulnerabilityEvent",
@@ -1423,8 +1423,8 @@ func GetVulnerabilityevents(ctx context.Context, ownerref apiresourcecontracts.R
 
 // Functions to get Virtualmachines by ownerref
 // The function is intended for use by internal functions
-func GetVirtualmachines(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceVirtualmachines, error) {
-	var resources apiresourcecontracts.ResourceVirtualmachines
+func GetVirtualmachines(ctx context.Context, ownerref apiresourcecontracts.ResourceOwnerReference) (apiresourcecontracts.ResourceListVirtualmachines, error) {
+	var resources apiresourcecontracts.ResourceListVirtualmachines
 	query := apiresourcecontracts.ResourceQuery{
 		Owner:      ownerref,
 		Kind:       "VirtualMachine",

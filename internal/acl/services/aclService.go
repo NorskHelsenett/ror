@@ -3,10 +3,11 @@ package aclservice
 import (
 	"context"
 	"fmt"
+	"time"
+
 	aclrepository "github.com/NorskHelsenett/ror/internal/acl/repositories"
 	"github.com/NorskHelsenett/ror/internal/auditlog"
 	"github.com/NorskHelsenett/ror/internal/models"
-	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 
@@ -16,7 +17,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"

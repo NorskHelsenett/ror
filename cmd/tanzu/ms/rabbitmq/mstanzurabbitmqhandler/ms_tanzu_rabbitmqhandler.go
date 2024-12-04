@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/NorskHelsenett/ror/cmd/tanzu/ms/mstanzuconnections"
 	"github.com/NorskHelsenett/ror/cmd/tanzu/ms/rabbitmq/mstanzurabbitmqdefinitions"
 	"github.com/NorskHelsenett/ror/cmd/tanzu/ms/rorclient"
@@ -13,7 +14,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/handlers/rabbitmqhandler"
 	"github.com/NorskHelsenett/ror/pkg/messagebuscontracts"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/providers"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"

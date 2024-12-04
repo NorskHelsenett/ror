@@ -1,16 +1,17 @@
 package clusters
 
 import (
+	"net/http"
+
 	"github.com/NorskHelsenett/ror/cmd/api/responses"
 	clustersservice "github.com/NorskHelsenett/ror/cmd/api/services/clustersService"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 	"github.com/NorskHelsenett/ror/internal/models/viewsmodels"
-	"net/http"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"

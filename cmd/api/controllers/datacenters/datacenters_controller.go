@@ -2,14 +2,15 @@
 package datacenters
 
 import (
+	"net/http"
+
 	datacentersservice "github.com/NorskHelsenett/ror/cmd/api/services/datacentersService"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
-	"net/http"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"

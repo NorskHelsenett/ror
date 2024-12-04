@@ -3,14 +3,15 @@ package operatorconfigs
 
 import (
 	"fmt"
-	operatorconfigservice "github.com/NorskHelsenett/ror/cmd/api/services/operatorConfigService"
-	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 	"net/http"
 	"strings"
 
+	operatorconfigservice "github.com/NorskHelsenett/ror/cmd/api/services/operatorConfigService"
+	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
+
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"

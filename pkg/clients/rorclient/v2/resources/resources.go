@@ -10,5 +10,5 @@ type ResourcesInterface interface {
 	Update(res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error)
 	Delete(uid string) (*rorresources.ResourceUpdateResults, error)
 	Exists(uid string) (bool, error)
-	GetOwnHashes() (apicontractsv2resources.HashList, error)
+	GetOwnHashes(clusterId string) (apicontractsv2resources.HashList, error)
 }

@@ -3,14 +3,15 @@ package prices
 
 import (
 	"fmt"
-	pricesService "github.com/NorskHelsenett/ror/cmd/api/services/pricesService"
-	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 	"net/http"
 	"strings"
 
+	pricesService "github.com/NorskHelsenett/ror/cmd/api/services/pricesService"
+	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
+
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	rorerror "github.com/NorskHelsenett/ror/pkg/helpers/rorerror"

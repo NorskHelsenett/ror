@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	aclrepo "github.com/NorskHelsenett/ror/internal/acl/repositories"
 	"github.com/NorskHelsenett/ror/internal/helpers/mapping"
 	mongoHelper "github.com/NorskHelsenett/ror/internal/helpers/mongoHelper"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 

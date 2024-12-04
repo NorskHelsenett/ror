@@ -5,7 +5,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 

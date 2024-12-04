@@ -1,14 +1,15 @@
 package resourcescontroller
 
 import (
+	"net/http"
+
 	"github.com/NorskHelsenett/ror/cmd/api/responses"
 	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
-	"net/http"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 

@@ -4,7 +4,7 @@ package authservice
 import (
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 

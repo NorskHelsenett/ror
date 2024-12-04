@@ -15,13 +15,14 @@ type AclV2QueryAccessScope struct {
 
 func NewAclV2QueryAccessScopeSubject(scope any, subject any) AclV2QueryAccessScopeSubject {
 	var returnQuery AclV2QueryAccessScopeSubject
-	switch scope.(type) {
+
+	switch s := scope.(type) {
 	case Acl2Scope:
-		returnQuery.Scope = scope.(Acl2Scope)
+		returnQuery.Scope = s
 	case string:
-		returnQuery.Scope = Acl2Scope(scope.(string))
+		returnQuery.Scope = Acl2Scope(s)
 	default:
-		input, ok := scope.(string)
+		input, ok := s.(string)
 		if !ok && input == "" {
 			returnQuery.Scope = Acl2ScopeUnknown
 		} else {
@@ -29,13 +30,13 @@ func NewAclV2QueryAccessScopeSubject(scope any, subject any) AclV2QueryAccessSco
 		}
 	}
 
-	switch subject.(type) {
+	switch s := subject.(type) {
 	case Acl2Subject:
-		returnQuery.Subject = subject.(Acl2Subject)
+		returnQuery.Subject = s
 	case string:
-		returnQuery.Subject = Acl2Subject(subject.(string))
+		returnQuery.Subject = Acl2Subject(s)
 	default:
-		inputsubject, ok := subject.(string)
+		inputsubject, ok := s.(string)
 		if !ok && inputsubject == "" {
 			returnQuery.Subject = Acl2Subject("ErrorSubject")
 		} else {

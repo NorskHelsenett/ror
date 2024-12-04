@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	resourcesservice "github.com/NorskHelsenett/ror/cmd/api/services/resourcesService"
 	"github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/rulesetsRepo"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/messages"

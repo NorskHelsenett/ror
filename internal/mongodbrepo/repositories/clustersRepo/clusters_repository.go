@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+
 	clusterhelper "github.com/NorskHelsenett/ror/internal/helpers/clusterHelper"
 	"github.com/NorskHelsenett/ror/internal/helpers/mapping"
 	mongoHelper "github.com/NorskHelsenett/ror/internal/helpers/mongoHelper"
 	"github.com/NorskHelsenett/ror/internal/mongodbrepo/mongoTypes"
-	"strings"
 
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 
@@ -21,7 +22,7 @@ import (
 	aclrepo "github.com/NorskHelsenett/ror/internal/acl/repositories"
 	workspacesRepo "github.com/NorskHelsenett/ror/internal/mongodbrepo/repositories/workspacesRepo"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"

@@ -3,13 +3,14 @@ package auditservice
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/NorskHelsenett/ror/cmd/audit/helsegitlabclient"
 	aclrepository "github.com/NorskHelsenett/ror/internal/acl/repositories"
-	"strings"
 
 	"github.com/NorskHelsenett/ror/pkg/messagebuscontracts"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )

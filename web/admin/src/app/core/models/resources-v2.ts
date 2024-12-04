@@ -11,6 +11,105 @@ export enum VulnerabilityDismissalReason {
   FALSE_POSITIVE = 1,
   NOT_APPLICABLE = 2,
 }
+export interface ResourceNetworkPolicyCondition {
+  lastTransitionTime: string;
+  message: string;
+  observedGeneration: number;
+  reason: string;
+  status: string;
+  type: string;
+}
+export interface ResourceNetworkPolicyStatus {
+  conditions: ResourceNetworkPolicyCondition[];
+}
+export interface ResourceNetworkPolicyPodSelector {
+  matchLabels: { [key: string]: string };
+}
+export interface ResourceNetworkPolicyIngressRule {
+  from: ResourceNetworkPolicyPeer[];
+  ports: ResourceNetworkPolicyPort[];
+}
+export interface ResourceNetworkPolicySelectorExpression {
+  key: string;
+  operator: string;
+  values: string[];
+}
+export interface ResourceNetworkPolicySelector {
+  matchExpressions: ResourceNetworkPolicySelectorExpression[];
+  matchLabels: { [key: string]: string };
+}
+export interface ResourceNetworkPolicyIpBlock {
+  cidr: string;
+  except: string[];
+}
+export interface ResourceNetworkPolicyPeer {
+  ipBlock?: ResourceNetworkPolicyIpBlock;
+  namespaceSelector?: ResourceNetworkPolicySelector;
+  podSelector?: ResourceNetworkPolicySelector;
+}
+export interface ResourceNetworkPolicyPort {
+  endPort: number;
+  port: IntOrString;
+  protocol: string;
+}
+export interface ResourceNetworkPolicyEgressRule {
+  ports: ResourceNetworkPolicyPort[];
+  to: ResourceNetworkPolicyPeer[];
+}
+export interface ResourceNetworkPolicySpec {
+  egress: ResourceNetworkPolicyEgressRule[];
+  ingress: ResourceNetworkPolicyIngressRule[];
+  podSelector: ResourceNetworkPolicyPodSelector;
+  policyTypes: string[];
+}
+export interface ResourceNetworkPolicy {
+  spec: ResourceNetworkPolicySpec;
+  status: ResourceNetworkPolicyStatus;
+}
+export interface ResourceEndpointSpecSubsetsPorts {
+  appProtocol?: string;
+  name?: string;
+  port?: number;
+  protocol?: string;
+}
+export interface ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef {
+  apiVersion?: string;
+  fieldPath?: string;
+  kind?: string;
+  name?: string;
+  namespace?: string;
+  resourceVersion?: string;
+  uid?: string;
+}
+export interface ResourceEndpointSpecSubsetsNotReadyAddresses {
+  hostname?: string;
+  ip?: string;
+  nodeName?: string;
+  targetRef?: ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef;
+}
+export interface ResourceEndpointSpecSubsetsAddressesTargetRef {
+  apiVersion?: string;
+  fieldPath?: string;
+  kind?: string;
+  name?: string;
+  namespace?: string;
+  resourceVersion?: string;
+  uid?: string;
+}
+export interface ResourceEndpointSpecSubsetsAddresses {
+  hostname?: string;
+  ip?: string;
+  nodeName?: string;
+  targetRef?: ResourceEndpointSpecSubsetsAddressesTargetRef;
+}
+export interface ResourceEndpointSpecSubsets {
+  addresses?: ResourceEndpointSpecSubsetsAddresses[];
+  notReadyAddresses?: ResourceEndpointSpecSubsetsNotReadyAddresses[];
+  ports?: ResourceEndpointSpecSubsetsPorts[];
+}
+export interface ResourceEndpoints {
+  subsets?: ResourceEndpointSpecSubsets[];
+}
 export interface ResourceVirtualMachineOperatingSystemStatus {
   id: string;
   name: string;
@@ -983,6 +1082,8 @@ export interface Resource {
   slackmessage?: ResourceSlackMessage;
   vulnerabilityevent?: ResourceVulnerabilityEvent;
   virtualmachine?: ResourceVirtualMachine;
+  endpoints?: ResourceEndpoints;
+  networkpolicy?: ResourceNetworkPolicy;
 }
 export interface ResourceSet {
   resources?: Resource[];

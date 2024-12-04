@@ -2,15 +2,16 @@ package projects
 
 import (
 	"fmt"
-	"github.com/NorskHelsenett/ror/cmd/api/customvalidators"
 	"net/http"
+
+	"github.com/NorskHelsenett/ror/cmd/api/customvalidators"
 
 	projectService "github.com/NorskHelsenett/ror/cmd/api/services/projectsService"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"

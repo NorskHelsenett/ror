@@ -3,17 +3,18 @@ package apikeys
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/NorskHelsenett/ror/cmd/api/customvalidators"
 	apikeysservice "github.com/NorskHelsenett/ror/cmd/api/services/apikeysService"
 	aclservice "github.com/NorskHelsenett/ror/internal/acl/services"
-	"net/http"
-	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/context/gincontext"
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 

@@ -1,11 +1,12 @@
 package aclrepository
 
 import (
-	"github.com/NorskHelsenett/ror/internal/mocks/identitymocks"
 	"reflect"
 	"testing"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	"github.com/NorskHelsenett/ror/internal/mocks/identitymocks"
+
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
