@@ -21,7 +21,7 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 	var timeout time.Duration
 	timeoutstring, exists := c.Get("timeout")
 	if !exists {
-		rlog.Warn("timeout not set in gin context")
+		rlog.Warn("timeout not set in gin context", rlog.String("uri", c.Request.RequestURI))
 		timeout = 10 * time.Second
 	} else {
 		rlog.Debug("timeout set in gin context", rlog.String("timeout", timeoutstring.(time.Duration).String()))
