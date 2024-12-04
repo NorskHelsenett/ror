@@ -4,7 +4,7 @@ package rortypes
 import (
 	"errors"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
