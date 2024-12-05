@@ -8,7 +8,7 @@ import { AclScopes, AclAccess } from '../../../core/models/acl-scopes';
 import { AclService } from '../../../core/services/acl.service';
 import { ClustersService } from '../../../core/services/clusters.service';
 import { ResourceType } from '../../../core/models/resources/resourceType';
-import { ResourceQuery } from '../../../core/models/resources-v2';
+import { ResourceQuery } from '@rork8s/ror-resources/models';
 
 @Component({
   selector: 'app-cluster-details',

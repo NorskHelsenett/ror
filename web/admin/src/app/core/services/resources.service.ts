@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 import { Observable } from 'rxjs';
-import { ResourceQuery, ResourceSet } from '../models/resources-v2';
+import { ResourceQuery, ResourceSet } from '@rork8s/ror-resources/models';
 
 @Injectable({
   providedIn: 'root',

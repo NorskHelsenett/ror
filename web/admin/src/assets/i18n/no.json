@@ -864,6 +864,16 @@
           "detail": {
             "class": "Nettverk",
             "status": "Ingress status"
+          },
+          "errors": {
+            "noIngress": "Ingen ingress",
+            "noIngressClass": "Ingen ingress class satt",
+            "noService": "Ingen service",
+            "noEndpoints": "Ingen endpoints",
+            "noNodePort": "Ikke en NodePort service",
+            "noRules": "Ingen regler",
+            "noIP": "Ingen IP",
+            "noIngressRules": "Ingen ingress regler"
           }
         },
         "ingress": {

@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Resource } from '../../core/models/resources-v2';
+import { Resource } from '@rork8s/ror-resources/models';
 
 @Injectable({
   providedIn: 'root',
@@ -8,6 +8,7 @@ export class ClusterIngressService {
   private cluster = signal<any>(undefined);
   private ingress = signal<Resource>(undefined);
   private services = signal<Resource[]>(undefined);
+  private endpoints = signal<Resource[]>(undefined);
   private pods = signal<Resource[]>(undefined);
   private certificates = signal<Resource[]>(undefined);
 
@@ -29,6 +30,14 @@ export class ClusterIngressService {
 
   setServices(resources: Resource[]) {
     this.services.update(() => resources);
+  }
+
+  setEndpoints(resources: Resource[]) {
+    this.endpoints.update(() => resources);
+  }
+
+  getEndpoints() {
+    return this.endpoints();
   }
 
   getServices() {

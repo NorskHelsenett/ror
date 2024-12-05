@@ -24,7 +24,7 @@
 
     <ng-template let-node pTemplate="rule">
       <div class="flex flex-col items-center justify-center text-center">
-        <span>Rules</span>
+        <span>Rule</span>
       </div>
     </ng-template>
 
@@ -38,9 +38,10 @@
 
     <ng-template let-node pTemplate="service">
       <div class="flex flex-col items-center justify-center text-center">
-        <img ngSrc="/assets/icons/k8s/resources/labeled/svc.svg" alt="pod" height="66" width="68" />
+        <img ngSrc="/assets/icons/k8s/resources/labeled/svc.svg" alt="service" height="66" width="68" />
         <span>{{ node?.label }}</span>
         <span>{{ node?.data?.service?.spec?.type }}</span>
+        <span>{{ node?.data?.service?.spec?.ipFamilyPolicy }}</span>
         <div>
           <ul>
             @for (ipFam of node?.data?.service?.spec?.ipFamilies; track $index) {
@@ -50,6 +51,23 @@
         </div>
         <span>{{ node?.data?.service?.spec?.clusterIP }}</span>
         <!-- <span>{{ node?.data | json }}</span> -->
+        @if (!node?.children || node?.children?.length == 0) {
+          <span class="text-red-500">{{ 'pages.clusters.details.ingresses.errors.noEndpoints' | translate }}</span>
+        }
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="endpoints">
+      <div class="flex flex-col items-center justify-center text-center">
+        <img ngSrc="/assets/icons/k8s/resources/labeled/ep.svg" alt="endpoints" height="66" width="68" />
+        <span>{{ node?.label }}</span>
+        @if (!node?.data?.ready) {
+          <span class="text-red" style="color: yellow">Not Ready</span>
+        }
+
+        @if (!node?.children || node?.children.length === 0) {
+          <span class="text-green" style="color: red">Missing pods</span>
+        }
       </div>
     </ng-template>
 

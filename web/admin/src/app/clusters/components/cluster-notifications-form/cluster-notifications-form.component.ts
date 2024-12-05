@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ResourcesService } from '../../../core/services/resources.service';
 import { catchError, Observable, tap } from 'rxjs';
-import { Resource, ResourceRoute, ResourceSet } from '../../../core/models/resources-v2';
+import { Resource, ResourceRoute, ResourceSet } from '@rork8s/ror-resources/models';
 
 @Component({
   selector: 'app-cluster-notifications-form',

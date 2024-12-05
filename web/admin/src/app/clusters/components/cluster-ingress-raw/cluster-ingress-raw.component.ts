@@ -18,11 +18,13 @@ export class ClusterIngressRawComponent {
   showIngress: boolean = true;
   showCertificates: boolean = false;
   showServices: boolean = false;
+  showEndpoints: boolean = false;
   showPods: boolean = false;
 
   ingress: Resource | undefined;
   certificates: Resource[] | undefined;
   services: Resource[] | undefined;
+  endpoints: Resource[] | undefined;
   pods: Resource[] | undefined;
 
   private changeDetector = inject(ChangeDetectorRef);
@@ -33,6 +35,7 @@ export class ClusterIngressRawComponent {
       this.ingress = this.clusterIngressService.getIngress();
       this.certificates = this.clusterIngressService.getCertificates();
       this.services = this.clusterIngressService.getServices();
+      this.endpoints = this.clusterIngressService.getEndpoints();
       this.pods = this.clusterIngressService.getPods();
       this.changeDetector.detectChanges();
     });
@@ -42,6 +45,7 @@ export class ClusterIngressRawComponent {
     this.showIngress = type === 'ingress';
     this.showCertificates = type === 'certificates';
     this.showServices = type === 'services';
+    this.showEndpoints = type === 'endpoints';
     this.showPods = type === 'pods';
     this.changeDetector.detectChanges();
   }

@@ -45,6 +45,7 @@
               "src/robots.txt",
               "src/favicon.ico",
               "src/assets",
+              "src/assets/icons",
               "src/assets/config",
               "src/assets/config/config.json",
               "src/assets/styles/highlight",

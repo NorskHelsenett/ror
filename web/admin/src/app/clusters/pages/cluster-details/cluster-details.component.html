@@ -1,7 +1,10 @@
 <div *ngIf="cluster$ | async as cluster; else loadingOrError">
   <div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
-    <h1 *ngIf="cluster?.clusterName.length > 0" class="text-2xl font-semibold">{{ cluster?.clusterName }}</h1>
-    <h1 *ngIf="cluster?.clusterName.length === 0" class="text-2xl font-semibold">{{ clusterId }}</h1>
+    <div class="flex gap-2">
+      <img ngSrc="/assets/icons/k8s/logo.svg" alt="k8s logo" height="5" width="30" />
+      <h1 *ngIf="cluster?.clusterName.length > 0" class="text-2xl font-semibold">{{ cluster?.clusterName }}</h1>
+      <h1 *ngIf="cluster?.clusterName.length === 0" class="text-2xl font-semibold">{{ clusterId }}</h1>
+    </div>
 
     <button
       (click)="fetch()"

@@ -4,23 +4,33 @@
       <li><a (click)="show('ingress')" class="hover:underline">Ingress</a></li>
       <li><a (click)="show('certificates')" class="hover:underline">Certificates</a></li>
       <li><a (click)="show('services')" class="hover:underline">Services</a></li>
+      <li><a (click)="show('endpoints')" class="hover:underline">Endpoints</a></li>
       <li><a (click)="show('pods')" class="hover:underline">Pods</a></li>
     </ul>
   </div>
   <div class="col-span-5">
     @if (showIngress) {
+      <h1 class="text-2xl">Ingress</h1>
       <pre class=""><code class="" [highlight]="ingress | json" language="json" lineNumbers></code></pre>
     }
 
     @if (showCertificates) {
+      <h1 class="text-2xl">Certificates</h1>
       <pre class=""><code class="" [highlight]="certificates | json" language="json" lineNumbers></code></pre>
     }
 
     @if (showServices) {
+      <h1 class="text-2xl">Services</h1>
       <pre class=""><code class="" [highlight]="services | json" language="json" lineNumbers></code></pre>
     }
 
+    @if (showEndpoints) {
+      <h1 class="text-2xl">Endpoints</h1>
+      <pre class=""><code class="" [highlight]="endpoints | json" language="json" lineNumbers></code></pre>
+    }
+
     @if (showPods) {
+      <h1 class="text-2xl">Pods</h1>
       <pre class=""><code class="" [highlight]="pods | json" language="json" lineNumbers></code></pre>
     }
   </div>

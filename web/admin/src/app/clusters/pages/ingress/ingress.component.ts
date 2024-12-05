@@ -1,6 +1,5 @@
-import { ResourceQueryFilter } from './../../../core/models/resources-v2';
 import { Resourcesv2Service } from './../../../core/services/resourcesv2.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, OnDestroy } from '@angular/core';
 import { catchError, finalize, map, Observable, Subscription, tap } from 'rxjs';
@@ -11,7 +10,7 @@ import { HighlightModule } from 'ngx-highlightjs';
 import { TabViewModule } from 'primeng/tabview';
 import { ClusterIngressAnnotationsComponent } from '../../components/cluster-ingress-annotations/cluster-ingress-annotations.component';
 import { ClusterIngressService } from '../../services/cluster-ingress.service';
-import { Resource, ResourceSet, ResourceQuery, ResourceIngressSpecTls, ResourcePod } from '@rork8s/ror-resources/models';
+import { Resource, ResourceSet, ResourceQuery, ResourceIngressSpecTls, ResourceQueryFilter } from '@rork8s/ror-resources/models';
 import { ClusterIngressDetailsComponent } from '../../components/cluster-ingress-details/cluster-ingress-details.component';
 import { ClusterIngressChartComponent } from '../../components/cluster-ingress-chart/cluster-ingress-chart.component';
 import { ClusterIngressCertmanagerComponent } from '../../components/cluster-ingress-certmanager/cluster-ingress-certmanager.component';
@@ -33,6 +32,7 @@ import { ClusterIngressRawComponent } from '../../components/cluster-ingress-raw
     ClusterIngressChartComponent,
     ClusterIngressCertmanagerComponent,
     ClusterIngressRawComponent,
+    NgOptimizedImage,
   ],
   templateUrl: './ingress.component.html',
   styleUrl: './ingress.component.scss',
@@ -52,6 +52,9 @@ export class IngressComponent implements OnInit, OnDestroy {
 
   services: Resource[] | undefined;
   servicesFetchError: any;
+
+  endpoints: Resource[] | undefined;
+  endpointsFetchError: any;
 
   pods: Resource[] | undefined;
   podsFetchError: any;
@@ -214,11 +217,8 @@ export class IngressComponent implements OnInit, OnDestroy {
           map((data: ResourceSet) => {
             if (data?.resources.length === 1) {
               this.clusterIngressService.setServices(data?.resources);
-
-              let namespaces = data?.resources.map((service) => service.metadata.namespace);
-              let serviceNames = data?.resources.map((service) => service.metadata.name);
-
-              this.fetchPodsByNamespaceAndService(namespaces, serviceNames);
+              let sNames = data?.resources.map((service) => service.metadata.name);
+              this.fetchEndpoints(sNames);
               return data?.resources;
             } else {
               return null;
@@ -237,10 +237,87 @@ export class IngressComponent implements OnInit, OnDestroy {
     );
   }
 
-  fetchPodsByNamespaceAndService(namespaces: string[], serviceNames: string[]) {
+  fetchEndpoints(serviceNames: string[]) {
+    this.services = undefined;
+    this.servicesFetchError = undefined;
+    if (!serviceNames || serviceNames.length === 0) {
+      return;
+    }
+
+    const query: ResourceQuery = {
+      versionkind: {
+        Group: '',
+        Kind: 'Endpoints',
+        Version: 'v1',
+      },
+      filters: [
+        {
+          field: 'rormeta.ownerref.subject',
+          type: 'string',
+          operator: 'eq',
+          value: this.clusterId,
+        },
+      ],
+    };
+
+    let serviceFilters: ResourceQueryFilter[] = [];
+    serviceNames.forEach((serviceName) => {
+      serviceFilters.push({
+        field: 'metadata.name',
+        type: 'string',
+        operator: 'eq',
+        value: serviceName,
+      });
+    });
+
+    query.filters = query.filters.concat(serviceFilters);
+
+    this.subscriptions.add(
+      this.resourcesv2Service
+        .getResources(query)
+        .pipe(
+          map((data: ResourceSet) => {
+            if (data?.resources.length === 1) {
+              this.clusterIngressService.setEndpoints(data?.resources);
+              let podIds = [];
+              data?.resources?.forEach((resource: any) => {
+                resource?.endpoints?.subsets?.forEach((subset: any) => {
+                  subset?.addresses?.forEach((address: any) => {
+                    if (address?.targetRef?.kind === 'Pod') {
+                      podIds.push(address?.targetRef?.name);
+                    }
+                  });
+                  subset?.notReadyAddresses?.forEach((address: any) => {
+                    if (address?.targetRef?.kind === 'Pod') {
+                      podIds.push(address?.targetRef?.name);
+                    }
+                  });
+                });
+              });
+
+              this.fetchPodsByIds(podIds);
+              return data?.resources;
+            } else {
+              return null;
+            }
+          }),
+          catchError((error) => {
+            this.servicesFetchError = error;
+            this.changeDetector.detectChanges();
+            throw error;
+          }),
+          finalize(() => {
+            this.changeDetector.detectChanges();
+          }),
+        )
+        .subscribe(),
+    );
+  }
+
+  fetchPodsByIds(podIds: string[]) {
     this.pods = undefined;
     this.podsFetchError = undefined;
-    if (!serviceNames || serviceNames.length === 0 || !namespaces || namespaces.length === 0) {
+    if (!podIds || podIds.length === 0) {
       return;
     }
 
@@ -260,23 +337,23 @@ export class IngressComponent implements OnInit, OnDestroy {
       ],
     };
 
-    let namespaceFilters: ResourceQueryFilter[] = [];
-    namespaces.forEach((namespace) => {
-      if (!namespace) {
+    let podFilter: ResourceQueryFilter[] = [];
+    podIds.forEach((podId: string) => {
+      if (!podId) {
         return;
       }
 
-      if (namespaceFilters.filter((filter) => filter.value === namespace).length === 0) {
-        namespaceFilters.push({
-          field: 'metadata.namespace',
+      if (podFilter.filter((filter) => filter.value === podId).length === 0) {
+        podFilter.push({
+          field: 'metadata.name',
           type: 'string',
           operator: 'eq',
-          value: namespace,
+          value: podId,
         });
       }
     });
 
-    query.filters = query.filters.concat(namespaceFilters);
+    query.filters = query.filters.concat(podFilter);
 
     this.subscriptions.add(
       this.resourcesv2Service
@@ -284,17 +361,8 @@ export class IngressComponent implements OnInit, OnDestroy {
         .pipe(
           map((data: ResourceSet) => {
             if (data?.resources) {
-              let result = data?.resources.filter((pod: Resource) => {
-                let instanceName = pod.metadata.labels['app.kubernetes.io/instance'];
-                let name = pod.metadata.labels['app.kubernetes.io/name'];
-                if (serviceNames.includes(instanceName) || serviceNames.includes(name)) {
-                  return true;
-                }
-                return false;
-              });
-
-              this.clusterIngressService.setPods(result);
-              return result;
+              this.clusterIngressService.setPods(data?.resources);
+              return data?.resources;
             } else {
               return null;
             }

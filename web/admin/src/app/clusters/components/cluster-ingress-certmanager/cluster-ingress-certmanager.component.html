@@ -1,16 +1,78 @@
-<table class="table-fixed">
-  <thead>
-    <tr class="text-left">
-      <th class="w-60">Name</th>
-      <th>Namespace</th>
+<p-table
+  [value]="certificates"
+  styleClass="p-datatable-striped"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [rows]="10"
+  dataKey="metadata.uid"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 5rem"></th>
+      <th pSortableColumn="metadata.name">Name <p-sortIcon field="metadata.name"></p-sortIcon></th>
+      <th pSortableColumn="metadata.namespace">Namespace <p-sortIcon field="metadata.namespace"></p-sortIcon></th>
+      <th pSortableColumn="certificate.status.notBefore">Not valid before <p-sortIcon field="certificate.status.notBefore"></p-sortIcon></th>
+      <th pSortableColumn="certificate.status.notAfter">Not valid after <p-sortIcon field="certificate.status.notAfter"></p-sortIcon></th>
+      <th pSortableColumn="certificate.status.renewalTime">Renewal time <p-sortIcon field="certificate.status.renewalTime"></p-sortIcon></th>
     </tr>
-  </thead>
-  <tbody>
-    @for (cert of certificates; track $index) {
-      <tr>
-        <td>{{ cert?.metadata?.name }}</td>
-        <td>{{ cert?.metadata?.namespace }}</td>
-      </tr>
-    }
-  </tbody>
-</table>
+  </ng-template>
+  <ng-template pTemplate="body" let-cert let-expanded="expanded">
+    <tr>
+      <td>
+        <p-button
+          type="button"
+          pRipple
+          [pRowToggler]="cert"
+          [text]="true"
+          [rounded]="true"
+          [plain]="true"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+        />
+      </td>
+      <td>{{ cert?.metadata?.name }}</td>
+      <td>{{ cert?.metadata?.namespace }}</td>
+      <td>{{ cert?.certificate?.status?.notBefore | time: 'DD. MMM YYYY HH:mm:ss' }}</td>
+      <td>{{ cert?.certificate?.status?.notAfter | time: 'DD. MMM YYYY HH:mm:ss' }}</td>
+      <td>{{ cert?.certificate?.status?.renewalTime | time: 'DD. MMM YYYY HH:mm:ss' }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="rowexpansion" let-item>
+    <tr>
+      <td colspan="7">
+        <div class="p-3">
+          <p-table
+            [value]="item?.certificate?.status?.conditions"
+            styleClass="p-datatable-striped"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [rows]="10"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="lastTransitionTime">Last transition time <p-sortIcon field="lastTransitionTime" /></th>
+                <th pSortableColumn="message">Message <p-sortIcon field="message" /></th>
+                <th pSortableColumn="reason">Reason <p-sortIcon field="reason" /></th>
+                <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+                <th pSortableColumn="type">Type <p-sortIcon field="type" /></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-condition>
+              <tr>
+                <td>{{ condition?.lastTransitionTime | time: 'DD. MMM YYYY HH:mm:ss' }}</td>
+                <td>{{ condition?.message }}</td>
+                <td>{{ condition?.reason }}</td>
+                <td>{{ condition?.status }}</td>
+                <td>{{ condition?.type }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6">There are no order for this product yet.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

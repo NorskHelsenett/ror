@@ -10,12 +10,12 @@ import {
 } from '@rork8s/ror-resources/models';
 import { TreeNode } from 'primeng/api';
 import { TranslateModule } from '@ngx-translate/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule, JsonPipe, NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-cluster-ingress-chart',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, TranslateModule, OrganizationChartModule, TooltipModule],
+  imports: [CommonModule, NgOptimizedImage, TranslateModule, OrganizationChartModule, TooltipModule, JsonPipe],
   templateUrl: './cluster-ingress-chart.component.html',
   styleUrl: './cluster-ingress-chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +27,7 @@ export class ClusterIngressChartComponent {
   cluster: any | undefined;
   ingress: Resource | undefined;
   services: Resource[] | undefined;
+  endpoints: Resource[] | undefined;
   certificates: Resource[] | undefined;
   pods: Resource[] | undefined;
 
@@ -38,6 +39,7 @@ export class ClusterIngressChartComponent {
       this.cluster = this.clusterIngressService.getCluster();
       this.ingress = this.clusterIngressService.getIngress();
       this.services = this.clusterIngressService.getServices();
+      this.endpoints = this.clusterIngressService.getEndpoints();
       this.pods = this.clusterIngressService.getPods();
       this.certificates = this.clusterIngressService.getCertificates();
       this.setGraphData();
@@ -57,7 +59,7 @@ export class ClusterIngressChartComponent {
     };
 
     let loadbalancer = this.ingress?.ingress?.status?.loadBalancer;
-    loadbalancer.ingress.forEach((lbIngressInfo: ResourceIngressStatusLoadBalancerIngress) => {
+    loadbalancer?.ingress?.forEach((lbIngressInfo: ResourceIngressStatusLoadBalancerIngress) => {
       let loadbalancerNode: TreeNode = {
         label: lbIngressInfo?.hostname,
         type: 'loadbalancer',
@@ -69,8 +71,8 @@ export class ClusterIngressChartComponent {
     });
 
     let ruleNodes: TreeNode[] = [];
+    let pathNodes: TreeNode[] = [];
     this.ingress?.ingress?.spec?.rules?.forEach((ingressRule: ResourceIngressSpecRules) => {
-      let pathNodes: TreeNode[] = [];
       ingressRule?.http?.paths?.forEach((path: ResourceIngressSpecRulesHttpPaths) => {
         let pathNode: TreeNode = {
           label: path.path,
@@ -80,19 +82,51 @@ export class ClusterIngressChartComponent {
           children: [],
         };
 
-        let podNodes: TreeNode[] = [];
-        this.pods?.forEach((pod: Resource) => {
-          if (
-            path?.backend?.service?.name !== pod.metadata.labels['app.kubernetes.io/instance'] &&
-            path?.backend?.service?.name !== pod.metadata.labels['app.kubernetes.io/name']
-          ) {
+        let epNodes: TreeNode[] = [];
+        this.endpoints?.forEach((endpoint: any) => {
+          if (path?.backend?.service?.name !== endpoint?.metadata?.name) {
             return null;
           }
-          podNodes.push({
-            label: pod.metadata.name,
-            type: 'pod',
-            data: pod,
-            expanded: true,
+
+          endpoint?.endpoints?.subsets?.forEach((subset: any) => {
+            subset?.addresses?.forEach((address: any) => {
+              let pods = this.pods?.filter((pod: Resource) => {
+                return pod?.metadata?.name === address?.targetRef?.name;
+              });
+              epNodes.push({
+                label: `${endpoint?.metadata?.name} (${address?.ip})`,
+                type: 'endpoints',
+                data: { address, ready: true },
+                expanded: true,
+                children: pods?.map((pod: Resource) => {
+                  return {
+                    label: pod?.metadata?.name,
+                    type: 'pod',
+                    data: pod,
+                    expanded: true,
+                  };
+                }),
+              });
+            });
+            subset?.notReadyAddresses?.forEach((address: any) => {
+              let pods = this.pods?.filter((pod: Resource) => {
+                return pod.metadata.name === address.targetRef.name;
+              });
+              epNodes.push({
+                label: `${endpoint?.metadata?.name} (${address?.ip})`,
+                type: 'endpoints',
+                data: { address, ready: false },
+                expanded: true,
+                children: pods?.map((pod: Resource) => {
+                  return {
+                    label: pod.metadata.name,
+                    type: 'pod',
+                    data: pod,
+                    expanded: true,
+                  };
+                }),
+              });
+            });
           });
         });
 
@@ -103,7 +137,7 @@ export class ClusterIngressChartComponent {
             return service.metadata.name === path.backend.service?.name;
           }),
           expanded: true,
-          children: podNodes,
+          children: epNodes,
         };
 
         pathNode.children.push(serviceNode);
@@ -120,7 +154,7 @@ export class ClusterIngressChartComponent {
       ruleNodes.push(rule);
     });
 
-    ingressNode.children = ruleNodes;
+    ingressNode.children = pathNodes;
     graph.push(ingressNode);
 
     this.data = graph;

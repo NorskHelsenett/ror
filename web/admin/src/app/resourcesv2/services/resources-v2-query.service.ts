@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ResourceQuery } from '../../core/models/resources-v2';
+import { ResourceQuery } from '@rork8s/ror-resources/models';
 
 @Injectable({
   providedIn: 'root',

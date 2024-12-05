@@ -1,4 +1,3 @@
-import { Resourcesv2Service } from './../../../core/services/resourcesv2.service';
 import { TypesService } from './../../../resources/services/types.service';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
