@@ -2,14 +2,66 @@ package mongodb
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+type MongodbQuery []bson.M
+
+func (m MongodbQuery) PrettyPrint() {
+	var prettyDocs []bson.M
+	for _, doc := range m {
+		bsonDoc, err := bson.Marshal(doc)
+		if err != nil {
+			rlog.Error("error marshalling bson", err)
+		}
+		var prettyDoc bson.M
+		err = bson.Unmarshal(bsonDoc, &prettyDoc)
+		if err != nil {
+			rlog.Error("error unmarshalling bson", err)
+		}
+		prettyDocs = append(prettyDocs, prettyDoc)
+	}
+	prettyJSON, err := json.MarshalIndent(prettyDocs, "", "  ")
+	if err != nil {
+		rlog.Error("error marshalling json", err)
+	}
+
+	fmt.Println(string(prettyJSON))
+}
+
+func (m MongodbQuery) MongoshPrint(collection string) {
+	var prettyDocs []bson.M
+	for _, doc := range m {
+		bsonDoc, err := bson.Marshal(doc)
+		if err != nil {
+			rlog.Error("error marshalling bson", err)
+		}
+		var prettyDoc bson.M
+		err = bson.Unmarshal(bsonDoc, &prettyDoc)
+		if err != nil {
+			rlog.Error("error unmarshalling bson", err)
+		}
+		prettyDocs = append(prettyDocs, prettyDoc)
+	}
+	prettyJSON, err := json.Marshal(prettyDocs)
+	if err != nil {
+		rlog.Error("error marshalling json", err)
+	}
+
+	fmt.Printf("db.%s.aggregate(%s)", collection, string(prettyJSON))
+}
+
+func NewMongodbQuery(input []bson.M) MongodbQuery {
+	return MongodbQuery(input)
+}
 
 func (rc MongodbCon) Aggregate(ctx context.Context, col string, query []bson.M, value interface{}) error {
 	db := rc.GetMongoDb()
