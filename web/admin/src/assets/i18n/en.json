@@ -863,7 +863,23 @@
           "detail": {
             "class": "Infrastructure",
             "status": "Ingress status"
+          },
+          "errors": {
+            "noIngress": "No ingress",
+            "noIngressClass": "No ingress class",
+            "noService": "No service",
+            "noEndpoints": "No endpoints",
+            "noNodePort": "No NodePort",
+            "noRules": "No rules",
+            "noIP": "No IP",
+            "noIngressRules": "No ingress rules"
           }
+        },
+        "ingress": {
+          "title": "Ingress",
+          "cluster": "Cluster",
+          "ingresses": "Ingresses",
+          "annotations": "Annotations"
         },
         "policyreports": {
           "title": "Policy reports",

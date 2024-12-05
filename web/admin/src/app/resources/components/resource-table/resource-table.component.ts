@@ -25,7 +25,7 @@ import { ResourceType } from '../../../core/models/resources/resourceType';
 import { ClustersService } from '../../../core/services/clusters.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { SharedModule } from '../../../shared/shared.module';
-import { ResourceQuery } from '../../../core/models/resources-v2';
+import { ResourceQuery } from '@rork8s/ror-resources/models';
 
 @Component({
   selector: 'app-resource-table',
