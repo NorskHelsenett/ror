@@ -246,10 +246,12 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 		rorResourceQuery.Limit = 1000
 	}
 
-	if rorResourceQuery.Limit != 0 {
-		query = append(query, bson.M{"$limit": rorResourceQuery.Limit})
-	} else {
+	if rorResourceQuery.Limit == 0 {
 		query = append(query, bson.M{"$limit": 100})
+	}
+
+	if rorResourceQuery.Limit != -1 {
+		query = append(query, bson.M{"$limit": rorResourceQuery.Limit})
 	}
 
 	return query
