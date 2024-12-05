@@ -59,6 +59,7 @@ func NewResourceQuery() *ResourceQuery {
 		Order:            make([]ResourceQueryOrder, 0),
 		Filters:          make([]ResourceQueryFilter, 0),
 		RelatedResources: make([]ResourceQuery, 0),
+		Limit:            100,
 	}
 }
 
@@ -67,6 +68,11 @@ func (rq *ResourceQuery) WithUID(uid string) *ResourceQuery {
 		rq.Uids = make([]string, 0)
 	}
 	rq.Uids = append(rq.Uids, uid)
+	return rq
+}
+
+func (rq *ResourceQuery) SetLimit(limit int) *ResourceQuery {
+	rq.Limit = limit
 	return rq
 }
 
