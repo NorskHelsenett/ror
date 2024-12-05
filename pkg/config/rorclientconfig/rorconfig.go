@@ -18,7 +18,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/acl"
+	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"

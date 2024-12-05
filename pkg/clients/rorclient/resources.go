@@ -79,8 +79,8 @@ func (r *ResourceClient) Exists(ctx context.Context, uid string) (bool, error) {
 	return res, nil
 }
 
-func (r *ResourceClient) GetOwnHashes() (*apicontractsv2resources.HashList, error) {
-	res, err := r.Transport.GetOwnHashes()
+func (r *ResourceClient) GetOwnHashes(clusterId string) (*apicontractsv2resources.HashList, error) {
+	res, err := r.Transport.GetOwnHashes(clusterId)
 	if err != nil {
 		return nil, err
 	}

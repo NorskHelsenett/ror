@@ -9,6 +9,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 )
@@ -80,9 +81,16 @@ func (c *V2Client) Exists(uid string) (bool, error) {
 	return false, nil
 }
 
-func (c *V2Client) GetOwnHashes() (apicontractsv2resources.HashList, error) {
+func (c *V2Client) GetOwnHashes(clusterId string) (apicontractsv2resources.HashList, error) {
 	var hashList apicontractsv2resources.HashList
-	err := c.Client.GetJSON(c.basePath+"/hashes", &hashList)
+	params := httpclient.HttpTransportClientParams{
+		Key: httpclient.HttpTransportClientOptsQuery,
+		Value: map[string]string{
+			"ownerScope":   string(aclmodels.Acl2ScopeCluster),
+			"ownerSubject": clusterId,
+		},
+	}
+	err := c.Client.GetJSON(c.basePath+"/hashes", &hashList, params)
 	if err != nil {
 		return hashList, err
 	}

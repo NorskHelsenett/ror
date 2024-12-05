@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 type CyberarkClient struct {
@@ -87,7 +89,7 @@ func (c *CyberarkClient) Ping() bool {
 	}
 	_, err := client.Get(c.Url)
 	if err != nil {
-		fmt.Println(err)
+		rlog.Error("Could not ping Cyberark", err, rlog.String("url", c.Url))
 	}
 	return err == nil
 }
