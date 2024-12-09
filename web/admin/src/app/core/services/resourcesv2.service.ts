@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { ResourceSet, ResourceQuery } from '../models/resources-v2';
+import { ResourceSet, ResourceQuery } from '@rork8s/ror-resources/models';
 
 @Injectable({
   providedIn: 'root',

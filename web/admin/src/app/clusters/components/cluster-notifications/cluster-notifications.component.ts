@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ResourcesService } from '../../../core/services/resources.service';
 import { v4 } from 'uuid';
 import { catchError, map, mergeMap, Observable, tap } from 'rxjs';
-import { Resource, ResourceQuery, ResourceRoute, ResourceSet } from '../../../core/models/resources-v2';
+import { Resource, ResourceQuery, ResourceRoute, ResourceSet } from '@rork8s/ror-resources/models';
 
 @Component({
   selector: 'app-cluster-notifications',

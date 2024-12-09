@@ -1,7 +1,10 @@
 <div *ngIf="cluster$ | async as cluster; else loadingOrError">
   <div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
-    <h1 *ngIf="cluster?.clusterName.length > 0" class="text-2xl font-semibold">{{ cluster?.clusterName }}</h1>
-    <h1 *ngIf="cluster?.clusterName.length === 0" class="text-2xl font-semibold">{{ clusterId }}</h1>
+    <div class="flex gap-2">
+      <img ngSrc="/assets/icons/k8s/logo.svg" alt="k8s logo" height="5" width="30" />
+      <h1 *ngIf="cluster?.clusterName.length > 0" class="text-2xl font-semibold">{{ cluster?.clusterName }}</h1>
+      <h1 *ngIf="cluster?.clusterName.length === 0" class="text-2xl font-semibold">{{ clusterId }}</h1>
+    </div>
 
     <button
       (click)="fetch()"
@@ -50,7 +53,11 @@
       </ng-template>
       <ng-template pTemplate="content">
         <div class="">
-          <app-cluster-ingress-list [cluster]="cluster"></app-cluster-ingress-list>
+          <div class="dark:bg-darker flex flex-col rounded-md bg-white">
+            <div class="p-3 flex flex-col">
+              <app-cluster-ingress-table [cluster]="cluster"></app-cluster-ingress-table>
+            </div>
+          </div>
         </div>
       </ng-template>
     </p-tabPanel>
@@ -134,30 +141,7 @@
           </div>
         </ng-template>
         <ng-template pTemplate="content">
-          <div class="dark:bg-darker flex flex-col rounded-md bg-white">
-            <div class="dark:border-primary flex items-center justify-between border-b p-3">
-              <app-resourcesv2-filter
-                class="flex-grow"
-                [clusters]="[cluster]"
-                [resourceTypes]="resourceTypes"
-                (filterChange)="resourcesTable.filterChanged($event)"
-                (reset)="resourcesTable.reset()"
-              ></app-resourcesv2-filter>
-              <button
-                (click)="resourcesTable.refreshData()"
-                class="hover:bg-primary-dark focus:ring-primary dark:focus:ring-offset-dark ml-2 rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
-              >
-                {{ 'common.refresh' | translate }}
-              </button>
-            </div>
-            <div class="p-3 flex flex-col">
-              <app-resources-v2-list
-                [clusterId]="clusterId"
-                #resourcesTable
-                (resourceSelected)="showSelectedResource($event)"
-              ></app-resources-v2-list>
-            </div>
-          </div>
+          <app-cluster-resource-table [cluster]="cluster" (resourceSelected)="showSelectedResource($event)"></app-cluster-resource-table>
         </ng-template>
       </p-tabPanel>
 
