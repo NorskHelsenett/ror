@@ -50,12 +50,12 @@ func (c *V2Client) Update(res *rorresources.ResourceSet) (*rorresources.Resource
 func (c *V2Client) Delete(uid string) (*rorresources.ResourceUpdateResults, error) {
 	var out rorresources.ResourceUpdateResults
 
-	url, err := url.JoinPath(c.basePath, "uid", uid)
+	uri, err := url.JoinPath(c.basePath, "uid", uid)
 	if err != nil {
 		return nil, fmt.Errorf("could not create url: %w", err)
 	}
 
-	err = c.Client.Delete(url, &out)
+	err = c.Client.Delete(uri, &out)
 	if err != nil {
 		return nil, err
 	}
@@ -64,12 +64,12 @@ func (c *V2Client) Delete(uid string) (*rorresources.ResourceUpdateResults, erro
 }
 
 func (c *V2Client) Exists(uid string) (bool, error) {
-	url, err := url.JoinPath(c.basePath, "uid", uid)
+	uri, err := url.JoinPath(c.basePath, "uid", uid)
 	if err != nil {
 		return false, fmt.Errorf("could not create url: %w", err)
 	}
 
-	_, status, err := c.Client.Head(url)
+	_, status, err := c.Client.Head(uri)
 	if err != nil {
 		return false, err
 	}
