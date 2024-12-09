@@ -4,13 +4,16 @@ import { ClusterIngressService } from '../../services/cluster-ingress.service';
 import { OrganizationChartModule } from 'primeng/organizationchart';
 import {
   Resource,
+  ResourceEndpointSpecSubsetsAddresses,
+  ResourceEndpointSpecSubsetsNotReadyAddresses,
   ResourceIngressSpecRules,
   ResourceIngressSpecRulesHttpPaths,
   ResourceIngressStatusLoadBalancerIngress,
 } from '@rork8s/ror-resources/models';
 import { TreeNode } from 'primeng/api';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule, JsonPipe, NgOptimizedImage } from '@angular/common';
+import { HealtStatus } from '../../../core/models/healthstatus';
 
 @Component({
   selector: 'app-cluster-ingress-chart',
@@ -32,6 +35,7 @@ export class ClusterIngressChartComponent {
   pods: Resource[] | undefined;
 
   private changeDetector = inject(ChangeDetectorRef);
+  private translateService = inject(TranslateService);
   private clusterIngressService = inject(ClusterIngressService);
 
   constructor() {
@@ -42,6 +46,11 @@ export class ClusterIngressChartComponent {
       this.endpoints = this.clusterIngressService.getEndpoints();
       this.pods = this.clusterIngressService.getPods();
       this.certificates = this.clusterIngressService.getCertificates();
+      this.setGraphData();
+      this.changeDetector.detectChanges();
+    });
+
+    this.translateService.onLangChange.subscribe(() => {
       this.setGraphData();
       this.changeDetector.detectChanges();
     });
@@ -89,9 +98,9 @@ export class ClusterIngressChartComponent {
           }
 
           endpoint?.endpoints?.subsets?.forEach((subset: any) => {
-            subset?.addresses?.forEach((address: any) => {
+            subset?.addresses?.forEach((address: ResourceEndpointSpecSubsetsAddresses) => {
               let pods = this.pods?.filter((pod: Resource) => {
-                return pod?.metadata?.name === address?.targetRef?.name;
+                return pod?.metadata?.name === address?.targetRef?.name && address?.targetRef.kind === 'Pod';
               });
               epNodes.push({
                 label: `${endpoint?.metadata?.name} (${address?.ip})`,
@@ -108,9 +117,9 @@ export class ClusterIngressChartComponent {
                 }),
               });
             });
-            subset?.notReadyAddresses?.forEach((address: any) => {
+            subset?.notReadyAddresses?.forEach((address: ResourceEndpointSpecSubsetsNotReadyAddresses) => {
               let pods = this.pods?.filter((pod: Resource) => {
-                return pod.metadata.name === address.targetRef.name;
+                return pod.metadata.name === address.targetRef.name && address.targetRef.kind === 'Pod';
               });
               epNodes.push({
                 label: `${endpoint?.metadata?.name} (${address?.ip})`,
@@ -158,5 +167,17 @@ export class ClusterIngressChartComponent {
     graph.push(ingressNode);
 
     this.data = graph;
+  }
+
+  getHealthStatusForIngress(): HealtStatus {
+    return this.clusterIngressService.getHealthStatusForIngress();
+  }
+
+  getHealthStatusForServices(): HealtStatus {
+    return this.clusterIngressService.getHealthStatusForServices();
+  }
+
+  getHealthStatusForEndpoints(): HealtStatus {
+    return this.clusterIngressService.getHealthStatusForEndpoints();
   }
 }

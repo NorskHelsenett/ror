@@ -49,10 +49,21 @@
             }
           </ul>
         </div>
-        <span>{{ node?.data?.service?.spec?.clusterIP }}</span>
-        <!-- <span>{{ node?.data | json }}</span> -->
-        @if (!node?.children || node?.children?.length == 0) {
-          <span class="text-red-500">{{ 'pages.clusters.details.ingresses.errors.noEndpoints' | translate }}</span>
+        <div>
+          <ul *ngIf="node?.data?.service?.spec?.clusterIPs">
+            @for (clusterip of node?.data?.service?.spec?.clusterIPs; track $index) {
+              <li>{{ clusterip }}</li>
+            }
+          </ul>
+        </div>
+
+        @if (getHealthStatusForServices()?.healthy === false) {
+          <span *ngFor="let message of getHealthStatusForServices()?.messages" class="text-red-500">{{ message }}</span>
+        }
+        @if (!node?.children || node?.children?.length == 0 || getHealthStatusForServices()?.healthy === false) {
+          <div class="text-red-500">
+            <span *ngFor="let message of getHealthStatusForEndpoints()?.messages" class="text-red-500">{{ message }}</span>
+          </div>
         }
       </div>
     </ng-template>
@@ -66,7 +77,11 @@
         }
 
         @if (!node?.children || node?.children.length === 0) {
-          <span class="text-green" style="color: red">Missing pods</span>
+          <span class="text-red-500">{{ 'pages.clusters.details.ingresses.errors.endpoints.nopods' | translate }}</span>
+        }
+
+        @if (getHealthStatusForEndpoints()?.healthy === false) {
+          <span *ngFor="let message of getHealthStatusForEndpoints()?.messages" class="text-red-500">{{ message }}</span>
         }
       </div>
     </ng-template>
@@ -79,3 +94,4 @@
     </ng-template>
   </p-organizationChart>
 </div>
+<div></div>

@@ -873,7 +873,29 @@
             "noNodePort": "Ikke en NodePort service",
             "noRules": "Ingen regler",
             "noIP": "Ingen IP",
-            "noIngressRules": "Ingen ingress regler"
+            "noIngressRules": "Ingen ingress regler",
+            "service": {
+              "missingservice": "Mangler service",
+              "noservice": "Ingen service data",
+              "noname": "Ingen service navn",
+              "noipfamiliypolicy": "Ingen IP familie policy",
+              "noclusterips": "Ingen cluster IPer",
+              "noipfamilies": "Ingen IP familier",
+              "notype": "Ingen service type",
+              "wrongtype": "Feil service type",
+              "wrongakotype": "Feil service type for AKO (Mangler NodePort)"
+            },
+            "endpoints": {
+              "noendpoint": "Ingen endpoints",
+              "nosubsets": "Ingen enpoints subsets",
+              "noaddresses": "Ingen endpoint adresser funnet",
+              "nopods": "Ingen pods"
+            },
+            "pods": {
+              "nopods": "Ingen pods",
+              "noname": "Ingen pod navn",
+              "noorwrongphase": "Feil eller ikke kjørende "
+            }
           }
         },
         "ingress": {

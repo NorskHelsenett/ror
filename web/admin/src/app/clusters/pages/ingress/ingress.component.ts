@@ -433,6 +433,6 @@ export class IngressComponent implements OnInit, OnDestroy {
   }
 
   isCertManagerIngress(ingress: Resource): boolean {
-    return ingress?.metadata?.annotations?.['cert-manager.io/cluster-issuer'] !== undefined;
+    return this.clusterIngressService.isCertManagerIngress();
   }
 }
