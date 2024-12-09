@@ -864,6 +864,16 @@
             "class": "Infrastructure",
             "status": "Ingress status"
           },
+          "meta": {
+            "title": "Metadata",
+            "name": "Name",
+            "namespace": "Namespace",
+            "className": "Ingress class",
+            "cluster": "Cluster",
+            "provider": "Provider",
+            "health": "Health",
+            "errormessages": "Error messages"
+          },
           "errors": {
             "noIngress": "No ingress",
             "noIngressClass": "No ingress class",
@@ -885,14 +895,26 @@
             },
             "endpoints": {
               "noendpoint": "No endpoints",
-              "nosubsets": "No endpoints subsets",
+              "nosubsets": "No pods connected to service",
               "noaddressess": "No endpoint addresses found",
               "nopods": "No pods found"
             },
             "pods": {
               "nopods": "No pods found",
-              "noname": "Ingen pod navn",
-              "noorwrongphase": "Feil eller ikke kjørende "
+              "noname": "No pod name",
+              "noorwrongphase": "No running phase",
+              "nophase": "No running phase"
+            },
+            "ingress": {
+              "noingress": "No ingress",
+              "noingressname": "Missing ingress name",
+              "noingressclassname": "Missing ingress class name",
+              "nobackendportnameornumber": "Missing backend port name or number",
+              "norules": "No ingress rules",
+              "nopaths": "No paths",
+              "nopath": "No path",
+              "noPathType": "No path type",
+              "wrongPathTupe": "Wrong path type"
             }
           }
         },

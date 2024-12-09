@@ -865,6 +865,16 @@
             "class": "Nettverk",
             "status": "Ingress status"
           },
+          "meta": {
+            "title": "Metadata",
+            "name": "Navn",
+            "namespace": "Område",
+            "className": "Klasse",
+            "cluster": "Cluster",
+            "provider": "Tilbyder",
+            "health": "Helse",
+            "errormessages": "Feilmeldinger"
+          },
           "errors": {
             "noIngress": "Ingen ingress",
             "noIngressClass": "Ingen ingress class satt",
@@ -889,12 +899,24 @@
               "noendpoint": "Ingen endpoints",
               "nosubsets": "Ingen enpoints subsets",
               "noaddresses": "Ingen endpoint adresser funnet",
-              "nopods": "Ingen pods"
+              "nopods": "Ingen pods",
+              "nophase": "Pod ikke kjørende"
             },
             "pods": {
               "nopods": "Ingen pods",
               "noname": "Ingen pod navn",
               "noorwrongphase": "Feil eller ikke kjørende "
+            },
+            "ingress": {
+              "noingress": "Ingen ingress",
+              "noingressname": "Mangler ingress-navn",
+              "noingressclassname": "Mangler ingress-klasse",
+              "nobackendportnameornumber": "Mangler backend port navn eller nummer",
+              "norules": "Ingen ingress-regler",
+              "nopaths": "Ingen ingress-stier",
+              "nopath": "Ingen ingress-sti",
+              "noPathType": "Ingen sti-type",
+              "wrongPathType": "Feil sti-type"
             }
           }
         },

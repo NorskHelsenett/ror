@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { inject, Injectable, signal } from '@angular/core';
-import { Resource } from '@rork8s/ror-resources/models';
-import { HealtStatus } from '../../core/models/healthstatus';
+import { Resource, ResourceIngressSpecRules, ResourceIngressSpecRulesHttpPaths } from '@rork8s/ror-resources/models';
+import { HealthStatus } from '../../core/models/healthstatus';
 
 @Injectable({
   providedIn: 'root',
@@ -64,15 +64,191 @@ export class ClusterIngressService {
     return this.certificates();
   }
 
-  getHealthStatusForIngress(): HealtStatus {
-    return {
-      healthy: true,
-      messages: ['Healthy'],
+  getHealthStatus(): HealthStatus {
+    let result: HealthStatus = {
+      healthy: false,
+      messages: [],
     };
+
+    let healthStatusForIngress = this.getHealthStatusForIngress();
+    let healthStatusForServices = this.getHealthStatusForServices();
+    let healthStatusForEndpoints = this.getHealthStatusForEndpoints();
+    let healthStatusForPods = this.getHealthStatusForPods();
+    let healthStatusForIngressPaths: HealthStatus = {
+      healthy: false,
+      messages: [],
+    };
+
+    if (this.ingress()?.ingress?.spec?.rules) {
+      this.ingress()?.ingress?.spec?.rules?.forEach((rule: ResourceIngressSpecRules) => {
+        rule?.http?.paths?.forEach((path) => {
+          let healthStatusForIngressPath = this.getHealthStatusForIngressPath(path);
+          if (!healthStatusForIngressPath.healthy) {
+            healthStatusForIngressPaths.healthy = false;
+            healthStatusForIngressPaths.messages.push(...healthStatusForIngressPath.messages);
+          }
+        });
+      });
+    }
+
+    if (healthStatusForIngress.healthy) {
+      result.healthy = true;
+    } else {
+      result.healthy = false;
+      result.messages.push(...healthStatusForIngress.messages);
+    }
+
+    if (healthStatusForServices.healthy) {
+      result.healthy = true;
+    } else {
+      result.healthy = false;
+      result.messages.push(...healthStatusForServices.messages);
+    }
+
+    if (healthStatusForEndpoints.healthy) {
+      result.healthy = true;
+    } else {
+      result.healthy = false;
+      result.messages.push(...healthStatusForEndpoints.messages);
+    }
+
+    if (healthStatusForPods.healthy) {
+      result.healthy = true;
+    } else {
+      result.healthy = false;
+      result.messages.push(...healthStatusForPods.messages);
+    }
+
+    if (healthStatusForIngressPaths.healthy) {
+      result.healthy = true;
+    } else {
+      result.healthy = false;
+      result.messages.push(...healthStatusForIngressPaths.messages);
+    }
+
+    if (result.messages.length === 0) {
+      result.healthy = true;
+    }
+
+    return result;
   }
 
-  getHealthStatusForServices(): HealtStatus {
-    let result: HealtStatus = {
+  getHealthStatusForIngress(): HealthStatus {
+    let result: HealthStatus = {
+      healthy: false,
+      messages: [],
+    };
+
+    if (!this.ingress()) {
+      return {
+        healthy: false,
+        messages: [this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.noingress')],
+      };
+    }
+
+    if (!this.ingress()?.ingress?.spec?.ingressClassName || this.ingress()?.ingress?.spec?.ingressClassName === '') {
+      return {
+        healthy: false,
+        messages: [this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.noingressclassname')],
+      };
+    }
+
+    if (!this.ingress()?.metadata?.name) {
+      return {
+        healthy: false,
+        messages: [this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.noingressname')],
+      };
+    }
+
+    if (!this.ingress()?.metadata?.namespace) {
+      return {
+        healthy: false,
+        messages: [this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.noingressnamespace')],
+      };
+    }
+
+    if (!this.ingress()?.metadata?.annotations) {
+      return {
+        healthy: false,
+        messages: [this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.noingressannotations')],
+      };
+    }
+
+    if (!this.ingress()?.ingress?.spec?.rules || this.ingress()?.ingress?.spec?.rules.length === 0) {
+      return {
+        healthy: false,
+        messages: [this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.norules')],
+      };
+    }
+
+    this.ingress()?.ingress?.spec?.rules?.forEach((rule) => {
+      if (!rule?.http?.paths || rule?.http?.paths.length === 0) {
+        result.healthy = false;
+        result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.nopaths'));
+      }
+    });
+
+    if (result.messages.length === 0) {
+      result.healthy = true;
+    }
+
+    return result;
+  }
+
+  getHealthStatusForIngressPath(path: ResourceIngressSpecRulesHttpPaths): HealthStatus {
+    let result: HealthStatus = {
+      healthy: true,
+      messages: [],
+    };
+
+    if (!path) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.nopath'));
+    }
+
+    if (!path?.path || path?.path === '') {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.nopath'));
+    }
+
+    if (!path?.pathType || path?.pathType === '') {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.noPathType'));
+    }
+
+    let supportedPathTypes = ['Exact', 'Prefix', 'ImplementationSpecific'];
+    if (!supportedPathTypes.includes(path?.pathType)) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.wrongPathType'));
+    }
+
+    if (!path?.backend) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.nopath'));
+    }
+
+    if (!path?.backend?.service?.name) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.nobackendservice'));
+    }
+
+    if (
+      (!path?.backend?.service?.port?.name || path?.backend?.service?.port?.name === '') &&
+      (!path?.backend?.service?.port?.number || path?.backend?.service?.port?.number === 0)
+    ) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.ingress.nobackendportnameornumber'));
+    }
+
+    if (result.messages.length === 0) {
+      result.healthy = true;
+    }
+
+    return result;
+  }
+
+  getHealthStatusForServices(): HealthStatus {
+    let result: HealthStatus = {
       healthy: false,
       messages: [],
     };
@@ -140,8 +316,8 @@ export class ClusterIngressService {
     return result;
   }
 
-  getHealthStatusForEndpoints(): HealtStatus {
-    let result: HealtStatus = {
+  getHealthStatusForEndpoints(): HealthStatus {
+    let result: HealthStatus = {
       healthy: false,
       messages: [],
     };
@@ -182,8 +358,8 @@ export class ClusterIngressService {
     return result;
   }
 
-  getHealthStatusForPods(): HealtStatus {
-    let result: HealtStatus = {
+  getHealthStatusForPods(): HealthStatus {
+    let result: HealthStatus = {
       healthy: false,
       messages: [],
     };
@@ -194,21 +370,44 @@ export class ClusterIngressService {
     }
 
     this.pods()?.forEach((pod) => {
-      if (!pod) {
+      let healthStatusForPod = this.getHealthStatusForPod(pod);
+      if (!healthStatusForPod.healthy) {
         result.healthy = false;
-        result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.pods.nopods'));
-      }
-
-      if (!pod?.metadata?.name) {
-        result.healthy = false;
-        result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.pods.noname'));
-      }
-
-      if (!pod?.pod?.status?.phase || pod?.pod?.status?.phase === '' || pod?.pod?.status?.phase?.trim()?.toLocaleLowerCase() !== 'Running') {
-        result.healthy = false;
-        result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.pods.nophase'));
+        result.messages.push(...healthStatusForPod.messages);
       }
     });
+
+    if (result.messages.length === 0) {
+      result.healthy = true;
+    }
+    return result;
+  }
+
+  getHealthStatusForPod(pod: Resource): HealthStatus {
+    let result: HealthStatus = {
+      healthy: false,
+      messages: [],
+    };
+
+    if (!pod) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.pods.nopods'));
+    }
+
+    if (!pod?.metadata?.name) {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.pods.noname'));
+    }
+
+    if (!pod?.pod?.status?.phase || pod?.pod?.status?.phase === '' || pod?.pod?.status?.phase?.trim()?.toLocaleLowerCase() !== 'running') {
+      result.healthy = false;
+      result.messages.push(this.translateService.instant('pages.clusters.details.ingresses.errors.pods.nophase'));
+    }
+
+    if (result.messages.length === 0) {
+      result.healthy = true;
+    }
+
     return result;
   }
 

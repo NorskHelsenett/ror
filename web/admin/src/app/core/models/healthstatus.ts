@@ -1,4 +1,4 @@
-export interface HealtStatus {
+export interface HealthStatus {
   healthy: boolean;
   messages: string[];
 }

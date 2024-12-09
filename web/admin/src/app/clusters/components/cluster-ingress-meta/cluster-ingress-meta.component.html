@@ -1,27 +1,53 @@
 <div>
-  <span class="text-lg font-semibold">Metadata</span>
+  <span class="text-lg font-semibold">{{ 'pages.clusters.details.ingresses.meta.title' | translate }}</span>
   <div class="flex items-center">
-    <span class="mr-2">Name:</span>
+    <span class="mr-2">{{ 'pages.clusters.details.ingresses.meta.name' | translate }}:</span>
     <span class="font-bold">{{ ingress?.metadata?.name }}</span>
   </div>
   <div class="flex items-center">
-    <span class="mr-2">Namespace:</span>
+    <span class="mr-2">{{ 'pages.clusters.details.ingresses.meta.namespace' | translate }}:</span>
     <span class="font-bold">{{ ingress?.metadata?.namespace }}</span>
   </div>
-  <div class="flex items-center">
-    <span class="mr-2">Class name:</span>
+  <div class="flex items-center" [ngClass]="!ingress?.ingress?.spec?.ingressClassName ? 'text-red-500' : ''">
+    <span class="mr-2">{{ 'pages.clusters.details.ingresses.meta.className' | translate }}:</span>
     <span class="font-bold">{{ ingress?.ingress?.spec?.ingressClassName }}</span>
   </div>
   <div class="flex items-center">
-    <span class="mr-2">Cluster name:</span>
+    <span class="mr-2">{{ 'pages.clusters.details.ingresses.meta.cluster' | translate }}:</span>
     <span class="font-bold"
-      ><a routerLink="../../" class="hover:underline">{{ cluster?.clusterName }}</a></span
+      ><a [routerLink]="['../../']" class="hover:underline hover:cursor-pointer">{{ cluster?.clusterName }}</a></span
     >
   </div>
   <div class="flex items-center">
-    <span class="mr-2">Cluster provider:</span>
+    <span class="mr-2">{{ 'pages.clusters.details.ingresses.meta.provider' | translate }}:</span>
     <span class="font-bold">
       {{ cluster?.workspace?.datacenter?.provider }}
     </span>
   </div>
+
+  <div class="flex items-center">
+    <span class="mr-2">{{ 'pages.clusters.details.ingresses.meta.health' | translate }}:</span>
+    <span class="font-bold">
+      <app-cluster-status [status]="getIngressStatus()?.healthy ? 1 : 3" tooltipPosition="top"></app-cluster-status>
+    </span>
+  </div>
+</div>
+
+<div>
+  @if (getIngressStatus()?.healthy === false) {
+    <div class="text-red-500 mt-3">
+      <table>
+        <thead>
+          <tr class="text-left">
+            <th>{{ 'pages.clusters.details.ingresses.meta.errormessages' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let message of getIngressStatus().messages">
+            <td>{{ message }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
 </div>

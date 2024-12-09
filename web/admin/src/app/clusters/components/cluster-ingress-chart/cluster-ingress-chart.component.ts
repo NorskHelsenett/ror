@@ -12,13 +12,13 @@ import {
 } from '@rork8s/ror-resources/models';
 import { TreeNode } from 'primeng/api';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CommonModule, JsonPipe, NgOptimizedImage } from '@angular/common';
-import { HealtStatus } from '../../../core/models/healthstatus';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { HealthStatus } from '../../../core/models/healthstatus';
 
 @Component({
   selector: 'app-cluster-ingress-chart',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, TranslateModule, OrganizationChartModule, TooltipModule, JsonPipe],
+  imports: [CommonModule, NgOptimizedImage, TranslateModule, OrganizationChartModule, TooltipModule],
   templateUrl: './cluster-ingress-chart.component.html',
   styleUrl: './cluster-ingress-chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -169,15 +169,27 @@ export class ClusterIngressChartComponent {
     this.data = graph;
   }
 
-  getHealthStatusForIngress(): HealtStatus {
+  getHealthStatus(): HealthStatus {
+    return this.clusterIngressService.getHealthStatus();
+  }
+
+  getHealthStatusForIngress(): HealthStatus {
     return this.clusterIngressService.getHealthStatusForIngress();
   }
 
-  getHealthStatusForServices(): HealtStatus {
+  getHealthStatusForIngressHttpPath(path: ResourceIngressSpecRulesHttpPaths): HealthStatus {
+    return this.clusterIngressService.getHealthStatusForIngressPath(path);
+  }
+
+  getHealthStatusForServices(): HealthStatus {
     return this.clusterIngressService.getHealthStatusForServices();
   }
 
-  getHealthStatusForEndpoints(): HealtStatus {
+  getHealthStatusForEndpoints(): HealthStatus {
     return this.clusterIngressService.getHealthStatusForEndpoints();
+  }
+
+  getHealthStatusForPod(pod: Resource): HealthStatus {
+    return this.clusterIngressService.getHealthStatusForPod(pod);
   }
 }

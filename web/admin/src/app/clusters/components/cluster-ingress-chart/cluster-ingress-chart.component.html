@@ -16,15 +16,11 @@
         <span class="">{{ node?.label }}</span>
         <!-- <span>{{ node?.data | json }}</span> -->
 
-        <span *ngIf="node?.data?.classError" class="mt-2 font-bold text-red-800 dark:text-red-300">{{
-          'pages.clusters.details.ingresses.noIngressClass' | translate
-        }}</span>
-      </div>
-    </ng-template>
-
-    <ng-template let-node pTemplate="rule">
-      <div class="flex flex-col items-center justify-center text-center">
-        <span>Rule</span>
+        @if (!node?.children || node?.children.length === 0 || getHealthStatusForIngress()?.healthy === false) {
+          <div class="text-red-500">
+            <span *ngFor="let message of getHealthStatusForIngress()?.messages" class="text-red-500">{{ message }}</span>
+          </div>
+        }
       </div>
     </ng-template>
 
@@ -33,6 +29,11 @@
         <span>{{ 'pages.clusters.details.ingresses.path' | translate }}: </span>
         <a>{{ node?.data?.path }}</a>
         <span>{{ node?.data?.pathType }}</span>
+        @if (!node?.children || node?.children.length === 0 || getHealthStatusForIngressHttpPath(node?.data)?.healthy === false) {
+          <div class="text-red-500">
+            <span *ngFor="let message of getHealthStatusForIngressHttpPath(node?.data)?.messages" class="text-red-500">{{ message }}</span>
+          </div>
+        }
       </div>
     </ng-template>
 
@@ -60,7 +61,7 @@
         @if (getHealthStatusForServices()?.healthy === false) {
           <span *ngFor="let message of getHealthStatusForServices()?.messages" class="text-red-500">{{ message }}</span>
         }
-        @if (!node?.children || node?.children?.length == 0 || getHealthStatusForServices()?.healthy === false) {
+        @if (!node?.children || node?.children?.length == 0 || getHealthStatusForEndpoints()?.healthy === false) {
           <div class="text-red-500">
             <span *ngFor="let message of getHealthStatusForEndpoints()?.messages" class="text-red-500">{{ message }}</span>
           </div>
@@ -76,11 +77,7 @@
           <span class="text-red" style="color: yellow">Not Ready</span>
         }
 
-        @if (!node?.children || node?.children.length === 0) {
-          <span class="text-red-500">{{ 'pages.clusters.details.ingresses.errors.endpoints.nopods' | translate }}</span>
-        }
-
-        @if (getHealthStatusForEndpoints()?.healthy === false) {
+        @if (!node?.children || node?.children.length === 0 || getHealthStatusForEndpoints()?.healthy === false) {
           <span *ngFor="let message of getHealthStatusForEndpoints()?.messages" class="text-red-500">{{ message }}</span>
         }
       </div>
@@ -90,6 +87,10 @@
       <div class="flex flex-col items-center justify-center text-center">
         <img ngSrc="/assets/icons/k8s/resources/labeled/pod.svg" alt="pod" height="66" width="68" />
         <span>{{ node?.label }}</span>
+
+        @if (!node?.children || node?.children.length === 0 || getHealthStatusForPod(node?.data)?.healthy === false) {
+          <span *ngFor="let message of getHealthStatusForPod(node?.data)?.messages" class="text-red-500">{{ message }}</span>
+        }
       </div>
     </ng-template>
   </p-organizationChart>
