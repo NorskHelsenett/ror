@@ -4,11 +4,11 @@
 
 -   Linux distro or WSL2 for windows
 -   Docker runtime
-    -   wsl2 tips: https://learn.microsoft.com/en-us/windows/wsl/systemd
+    - Docker CE: https://docs.docker.com/engine/install/ 
+    - WSL2 tips: https://learn.microsoft.com/en-us/windows/wsl/systemd
 -   Golang SDK (if you want to change and debug ROR) https://go.dev
 
 Optional:
-
 -   Docker Desktop (https://www.docker.com/products/docker-desktop/)
 -   Talosctl (https://www.talos.dev/v1.8/introduction/quickstart/)
 -   Kind (https://kind.sigs.k8s.io)
@@ -18,11 +18,98 @@ Optional:
 ## Clone
 
 1.  Create a folder on you computer where you want to put the code
-2.  git clone (ROR GIT URL, https:// or git://)
+2.  Clone the repository
+```bash
+git clone git@github.com:NorskHelsenett/ror.git
+```
 
-## Hardware demands:
+```bash
+git clone https://github.com/NorskHelsenett/ror.git
+```
 
-Minimum 16 gb RAM, but this will potentially painfull... Recommended is 32 gb RAM or more
+## Hardware requirements:
+
+|Recommendations|CPU|Memory|
+|Minimum        |2  |16GB  |
+|Recommended    |4  |32GB  |
+
+## Install docker
+
+### Linux
+Installation steps for Linux:
+https://docs.docker.com/engine/install
+Post-installation steps:
+https://docs.docker.com/engine/install/linux-postinstall/
+
+#### Fedora
+<details>
+  <summary>Fedora</summary>
+
+### Installations:
+    
+```
+sudo dnf -y install dnf-plugins-core
+sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+```
+
+:warning: if you receive errors like this, you might have an old Docker installation already installed:
+```
+- package docker-ce-3:27.3.1-1.fc40.x86_64 from docker-ce-stable conflicts with docker provided by moby-engine-24.0.5-4.fc40.x86_64 from fedora
+- package moby-engine-24.0.5-4.fc40.x86_64 from fedora conflicts with docker-ce provided by docker-ce-3:27.3.1-1.fc40.x86_64 from docker-ce-stable
+```
+
+#### Install the Docker Engine
+
+```
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+#### Start the Docker engine
+
+```
+sudo systemctl enable --now docker
+```
+
+#### (Optional) Install Docker auto-complete 
+
+https://docs.docker.com/engine/cli/completion/
+
+#### (Optional) Test the docker installation 
+
+```
+sudo docker run hello-world
+```
+
+#### Manage Dockker as a non-root
+
+Doc reference: https://docs.docker.com/engine/install/linux-postinstall/
+
+#### Create the docker group.
+```
+sudo groupadd docker
+```
+
+#### Add your user to the docker group.
+
+```
+sudo usermod -aG docker $USER
+```
+
+Log out and log back in so that your group membership is re-evaluated.
+:warning: If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
+
+#### Verify
+
+```
+docker run hello-world
+```
+</details>
+
+### Windows
+
+https://learn.microsoft.com/en-us/windows/wsl/systemd
+
+TODO
 
 ## Run with docker
 
@@ -30,9 +117,20 @@ Minimum 16 gb RAM, but this will potentially painfull... Recommended is 32 gb RA
 ./r.sh api web
 ```
 
-This runs containers; **dex**, **openldap**, **vault**, **rabbitmq**, **mongodb**, **mongo-express**, **redis**, **ms-auth**, **ms-kind**, **ms-talos**. Does not use that much memory
+Which will start the following containers:
+- **dex**
+- **openldap**
+- **vault**
+- **rabbitmq**
+- **mongodb**
+- **mongo-express**
+- **redis**
+- **ms-auth**
+- **ms-kind**
+- **ms-talos**
 
-If you want to run **_all_**, this includes all the container above, and jaeger and opentelemetry collector
+  
+If you want to run the **entire** application stack, which includes all the container above, and jaeger and opentelemetry collector
 
 ```bash
 docker compose up
