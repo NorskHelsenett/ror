@@ -29,9 +29,10 @@ git clone https://github.com/NorskHelsenett/ror.git
 
 ## Hardware requirements:
 
-|Recommendations|CPU|Memory|
-|Minimum        |2  |16GB  |
-|Recommended    |4  |32GB  |
+| Recommendations | CPU | Memory |
+| --------------  | --  | -----  |
+| Minimum         | 2   | 16GB   |
+| Recommended     | 4   | 32GB   |
 
 ## Install docker
 
