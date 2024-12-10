@@ -9,11 +9,24 @@
   <ng-template pTemplate="header">
     <tr>
       <th style="width: 5rem"></th>
-      <th pSortableColumn="metadata.name">Name <p-sortIcon field="metadata.name"></p-sortIcon></th>
-      <th pSortableColumn="metadata.namespace">Namespace <p-sortIcon field="metadata.namespace"></p-sortIcon></th>
-      <th pSortableColumn="certificate.status.notBefore">Not valid before <p-sortIcon field="certificate.status.notBefore"></p-sortIcon></th>
-      <th pSortableColumn="certificate.status.notAfter">Not valid after <p-sortIcon field="certificate.status.notAfter"></p-sortIcon></th>
-      <th pSortableColumn="certificate.status.renewalTime">Renewal time <p-sortIcon field="certificate.status.renewalTime"></p-sortIcon></th>
+      <th pSortableColumn="metadata.name">
+        {{ 'pages.clusters.details.ingresses.certmanager.columns.name' | translate }} <p-sortIcon field="metadata.name"></p-sortIcon>
+      </th>
+      <th pSortableColumn="metadata.namespace">
+        {{ 'pages.clusters.details.ingresses.certmanager.columns.namespace' | translate }} <p-sortIcon field="metadata.namespace"></p-sortIcon>
+      </th>
+      <th pSortableColumn="certificate.status.notBefore">
+        {{ 'pages.clusters.details.ingresses.certmanager.columns.notvalidbefore' | translate }}
+        <p-sortIcon field="certificate.status.notBefore"></p-sortIcon>
+      </th>
+      <th pSortableColumn="certificate.status.notAfter">
+        {{ 'pages.clusters.details.ingresses.certmanager.columns.notvalidafter' | translate }}
+        <p-sortIcon field="certificate.status.notAfter"></p-sortIcon>
+      </th>
+      <th pSortableColumn="certificate.status.renewalTime">
+        {{ 'pages.clusters.details.ingresses.certmanager.columns.renewaltime' | translate }}
+        <p-sortIcon field="certificate.status.renewalTime"></p-sortIcon>
+      </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-cert let-expanded="expanded">
@@ -49,11 +62,22 @@
           >
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="lastTransitionTime">Last transition time <p-sortIcon field="lastTransitionTime" /></th>
-                <th pSortableColumn="message">Message <p-sortIcon field="message" /></th>
-                <th pSortableColumn="reason">Reason <p-sortIcon field="reason" /></th>
-                <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
-                <th pSortableColumn="type">Type <p-sortIcon field="type" /></th>
+                <th pSortableColumn="lastTransitionTime">
+                  {{ 'pages.clusters.details.ingresses.certmanager.columns.lasttransitiontime' | translate }}
+                  <p-sortIcon field="lastTransitionTime" />
+                </th>
+                <th pSortableColumn="message">
+                  {{ 'pages.clusters.details.ingresses.certmanager.columns.message' | translate }} <p-sortIcon field="message" />
+                </th>
+                <th pSortableColumn="reason">
+                  {{ 'pages.clusters.details.ingresses.certmanager.columns.reason' | translate }} <p-sortIcon field="reason" />
+                </th>
+                <th pSortableColumn="status">
+                  {{ 'pages.clusters.details.ingresses.certmanager.columns.status' | translate }} <p-sortIcon field="status" />
+                </th>
+                <th pSortableColumn="type">
+                  {{ 'pages.clusters.details.ingresses.certmanager.columns.type' | translate }} <p-sortIcon field="type" />
+                </th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-condition>

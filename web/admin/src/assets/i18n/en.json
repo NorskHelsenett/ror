@@ -864,6 +864,12 @@
             "class": "Infrastructure",
             "status": "Ingress status"
           },
+          "tabs": {
+            "details": "Details",
+            "annotations": "Annotations",
+            "certmanager": "Certmanager",
+            "raw": "Raw data"
+          },
           "meta": {
             "title": "Metadata",
             "name": "Name",
@@ -916,6 +922,27 @@
               "noPathType": "No path type",
               "wrongPathTupe": "Wrong path type"
             }
+          },
+          "certmanager": {
+            "columns": {
+              "name": "Name",
+              "namespace": "Namespace",
+              "notvalidbefore": "Not valid before",
+              "notvalidafter": "Not valid after",
+              "renewaltime": "Renewal time",
+              "lasttransitiontime": "Last transition time",
+              "message": "Message",
+              "reason": "Reason",
+              "status": "Status",
+              "type": "Type"
+            }
+          },
+          "raw": {
+            "ingress": "Ingress",
+            "certificates": "Certificates",
+            "services": "Services",
+            "endpoints": "Endpoints",
+            "pods": "Pods"
           }
         },
         "ingress": {

@@ -4,12 +4,12 @@ import { Resource } from '@rork8s/ror-resources/models';
 import { TableModule } from 'primeng/table';
 import { SharedModule } from '../../../shared/shared.module';
 import { ButtonModule } from 'primeng/button';
-import { JsonPipe } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-cluster-ingress-certmanager',
   standalone: true,
-  imports: [TableModule, ButtonModule, SharedModule, JsonPipe],
+  imports: [TableModule, ButtonModule, SharedModule, TranslateModule],
   templateUrl: './cluster-ingress-certmanager.component.html',
   styleUrl: './cluster-ingress-certmanager.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -865,6 +865,12 @@
             "class": "Nettverk",
             "status": "Ingress status"
           },
+          "tabs": {
+            "details": "Detaljer",
+            "annotations": "Annotasjoner",
+            "certmanager": "Cert manager",
+            "raw": "Rådata"
+          },
           "meta": {
             "title": "Metadata",
             "name": "Navn",
@@ -918,6 +924,27 @@
               "noPathType": "Ingen sti-type",
               "wrongPathType": "Feil sti-type"
             }
+          },
+          "certmanager": {
+            "columns": {
+              "name": "Navn",
+              "namespace": "Område",
+              "notvalidbefore": "Ikke gyldig før",
+              "notvalidafter": "Ikke gyldig etter",
+              "renewaltime": "Fornyelsestid",
+              "lasttransitiontime": "Siste overgangstid",
+              "message": "Melding",
+              "reason": "Årsak",
+              "status": "Status",
+              "type": "Type"
+            }
+          },
+          "raw": {
+            "ingress": "Ingress",
+            "certificates": "Sertifikater",
+            "services": "Servicer/Tjenester",
+            "endpoints": "Endepunkter",
+            "pods": "Poder"
           }
         },
         "ingress": {
