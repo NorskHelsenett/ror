@@ -147,11 +147,30 @@ docker compose up
 Which will start the yamls located under "ror/hacks/docker-compose"
 
 ### ROR API
-
 See https://github.com/NorskHelsenett/ror-api
+
+#### VSCode
+
+1. Open the repository in VSCode
+2. Go to Debugging
+3. On "Run and debug" select "Debug ROR-Api" or "Debug ROR-Api tests"
+
+#### Terminal
+
+TODO
+
 
 ### ROR WEB
 See https://github.com/NorskHelsenett/ror-web-rork8s
+
+#### VSCode
+
+TODO
+
+#### Terminal
+
+TODO
+
 
 ### Environment Variables
 
