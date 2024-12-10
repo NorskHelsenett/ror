@@ -12,7 +12,7 @@ Optional:
 -   Docker Desktop (https://www.docker.com/products/docker-desktop/)
 -   Talosctl (https://www.talos.dev/v1.8/introduction/quickstart/)
 -   Kind (https://kind.sigs.k8s.io)
--   K3d (https://k3d.io/v5.7.4/#releases)
+-   K3d (https://k3d.io/stable/)
 -   Python for running documentation with mkdocs
 
 ## Clone
@@ -121,14 +121,7 @@ To start the ROR infrastructure you can run:
 ```bash
 ./r.sh
 ```
-To exclude certain services you can add the exluded services as arguments as shown:
-
-```bash
-./r.sh api web
-```
-
-
-Which will start the following containers:
+Which will start the core containers:
 - **dex**
 - **openldap**
 - **vault**
@@ -140,35 +133,48 @@ Which will start the following containers:
 - **ms-kind**
 - **ms-talos**
 
+To include extra services you can add them as arguments as shown:
+
+```bash
+./r.sh jaeger opentelemetry-collector
+```
   
-If you want to run the **entire** application stack, which includes all the container above, and jaeger and opentelemetry collector
+If you want to run the **entire** application stack, you can run the following:
 
 ```bash
 docker compose up
 ```
+Which will start the yamls located under "ror/hacks/docker-compose"
 
-## Login to ROR-web
+### ROR API
 
-Open your favorite browser, and go to http://localhost:11000
-Log in with:
-Accounts:
+See https://github.com/NorskHelsenett/ror-api
 
--   "super admin"
-    -   Login with `superadmin@ror.dev` and `S3cret!`
--   Read only admin
-    -   Login with `readadmin@ror.dev` and `S3cret!`
--   developer 1
-    -   Login with `dev1@ror.dev` and `S3cret!`
--   developer 2
-    -   Login with `dev2@ror.dev` and `S3cret!`
-
-To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
+### ROR WEB
+See https://github.com/NorskHelsenett/ror-web-rork8s
 
 ### Environment Variables
 
 -   &lt;repo root&gt;/`.env` has the default settings for docker compose
 -   Env variables used during development are set in `hacks/docker-compose/`
--   Env varaibles used in cluster are set with charts in `charts/`
+-   Env variables used in cluster are set with charts in `charts/`
+
+## Login to ROR-web
+
+Open your favorite browser, and go to http://localhost:11000
+Log in with any of these accounts:
+
+| Title           | Username             | Password  |
+| --------------- | -------------------- | --------- |
+| super admin     | `superadmin@ror.dev` | `S3cret!` |
+| read only admin | `readadmin@ror.dev`  | `S3cret!` |
+| developer 1     | `dev1@ror.dev`       | `S3cret!` |
+| developer 2     | `dev2@ror.dev`       | `S3cret!` |
+
+
+## Swagger
+
+To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 
 ## Needed infrastructure
 
