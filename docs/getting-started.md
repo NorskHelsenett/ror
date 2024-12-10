@@ -114,9 +114,19 @@ TODO
 
 ## Run with docker
 
+*Note Specific environment variables need to be set up for ROR to run, see* [Environment Variables](#Environment-Variables)
+
+To start the ROR infrastructure you can run:
+
+```bash
+./r.sh
+```
+To exclude certain services you can add the exluded services as arguments as shown:
+
 ```bash
 ./r.sh api web
 ```
+
 
 Which will start the following containers:
 - **dex**
