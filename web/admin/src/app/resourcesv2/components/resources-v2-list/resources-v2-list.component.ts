@@ -1,8 +1,6 @@
-import { ResourceQuery } from './../../../core/models/resource-query';
 import { catchError, finalize, map, Observable, share } from 'rxjs';
 import { Component, OnInit, ChangeDetectorRef, inject, ChangeDetectionStrategy, Output, EventEmitter, Input } from '@angular/core';
 import { Resourcesv2Service } from '../../../core/services/resourcesv2.service';
-import { Resource, ResourceSet } from '../../../core/models/resources-v2';
 import { SharedModule } from '../../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -19,6 +17,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FilterService } from '../../services/filter.service';
 import { ColumnDefinition } from '../../../resources/models/columnDefinition';
 import { TooltipModule } from 'primeng/tooltip';
+import { Resource, ResourceSet } from '@rork8s/ror-resources/models';
 
 @Component({
   selector: 'app-resources-v2-list',
@@ -32,15 +31,7 @@ export class ResourcesV2ListComponent implements OnInit {
   @Input() clusterId: string | undefined;
   @Output() resourceSelected = new EventEmitter<any>();
 
-  resourceQuery = new ResourceQuery({
-    limit: 10,
-    order: {
-      field: 'metadata.name',
-      descending: true,
-      index: 0,
-    },
-  });
-
+  resourceQuery: any;
   loading = false;
   showLoadMore = true;
 

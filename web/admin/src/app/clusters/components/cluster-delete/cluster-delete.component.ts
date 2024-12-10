@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 import { ResourcesService } from '../../../core/services/resources.service';
 import { Observable, catchError, share, tap } from 'rxjs';
 import { ResourceNamespace } from '../../../core/models/resources';
-import { ResourceQuery } from '../../../core/models/resources-v2';
+import { ResourceQuery } from '@rork8s/ror-resources/models';
 
 @Component({
   selector: 'app-cluster-delete',

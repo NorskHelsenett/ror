@@ -1,0 +1,102 @@
+@let cluster = cluster$ | async;
+@let ingress = ingress$ | async;
+
+@defer (when cluster && ingress) {
+  <div class="dark:border-primary-darker flex items-center justify-between border-b px-4 py-4 lg:py-6">
+    <div class="flex flex-row gap-3">
+      <img ngSrc="/assets/icons/k8s/logo.svg" alt="k8s logo" height="5" width="30" />
+      <a routerLink="../../" class="text-2xl font-bold hover:underline">{{ cluster?.clusterName }}</a>
+      <span> - </span>
+
+      <div class="flex gap-1">
+        <i class="pi pi-bars mt-1"></i>
+        <a class="text-2xl" [routerLink]="['../../']" [queryParams]="{ tab: 'ingresses' }">{{
+          'pages.clusters.details.ingress.ingresses' | translate
+        }}</a>
+      </div>
+      <span> - </span>
+      <img ngSrc="/assets/icons/k8s/resources/labeled/ing.svg" alt="k8s logo" height="8" width="30" />
+      <h1 class="text-2xl font-semibold">{{ ingress?.metadata?.name }}</h1>
+    </div>
+
+    <div class="flex-grow"></div>
+
+    <button
+      (click)="refresh()"
+      class="hover:bg-green-600 focus:ring-primary dark:focus:ring-offset-dark rounded-md bg-green-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring focus:ring-offset-1 focus:ring-offset-white"
+    >
+      {{ 'common.refresh' | translate }}
+    </button>
+  </div>
+  <div class="xs:m-1 md:mt-2 md:ml-4">
+    <div class="dark:bg-darker flex flex-col rounded-md bg-white p-4">
+      <div class="">
+        <p-tabView [scrollable]="true">
+          <p-tabPanel header="Details">
+            <ng-template pTemplate="header">
+              <div class="flex text-nowrap">
+                <i class="pi pi-objects-column mt-1"></i>
+                <span class="ml-2">{{ 'pages.clusters.details.ingresses.tabs.details' | translate }}</span>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <div>
+                <app-cluster-ingress-details></app-cluster-ingress-details>
+                <app-cluster-ingress-chart></app-cluster-ingress-chart>
+              </div>
+            </ng-template>
+          </p-tabPanel>
+          <p-tabPanel header="Annotations">
+            <ng-template pTemplate="header">
+              <div class="flex text-nowrap">
+                <i class="pi pi-list mt-1"></i>
+                <span class="ml-2">{{ 'pages.clusters.details.ingress.annotations' | translate }}</span>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="content">
+              <app-cluster-ingress-annotations></app-cluster-ingress-annotations>
+            </ng-template>
+          </p-tabPanel>
+          @if (isCertManagerIngress(ingress) && certNames.length > 0) {
+            <p-tabPanel header="Cert manager">
+              <ng-template pTemplate="header">
+                <div class="flex text-nowrap">
+                  <i class="pi pi-book mt-1"></i>
+                  <span class="ml-2">{{ 'pages.clusters.details.ingresses.tabs.certmanager' | translate }}</span>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="content"><app-cluster-ingress-certmanager></app-cluster-ingress-certmanager></ng-template>
+            </p-tabPanel>
+          }
+          <p-tabPanel header="Raw">
+            <ng-template pTemplate="header">
+              <div class="flex text-nowrap">
+                <i class="pi pi-warehouse mt-1"></i>
+                <span class="ml-2">{{ 'pages.clusters.details.ingresses.tabs.raw' | translate }}</span>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="content"><app-cluster-ingress-raw></app-cluster-ingress-raw></ng-template>
+          </p-tabPanel>
+        </p-tabView>
+      </div>
+    </div>
+  </div>
+} @placeholder {
+  <div class="m-4">
+    <app-spinner></app-spinner>
+    {{ 'common.fetching' | translate }}
+  </div>
+} @loading (after 300ms; minimum 2s) {
+  <div class="m-4">
+    <app-spinner></app-spinner>
+    {{ 'common.fetching' | translate }} and more ...
+  </div>
+} @error {
+  <div class="mx-auto my-4 flex items-center rounded-md bg-red-200 px-6 py-4 text-lg">
+    <span class="p-2 text-red-800"> {{ 'pages.apikeys.error' | translate }} </span>
+    <button class="btn text-black" (click)="refresh()">{{ 'common.tryAgain' | translate }}</button>
+  </div>
+}

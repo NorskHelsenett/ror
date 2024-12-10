@@ -864,7 +864,94 @@
           "detail": {
             "class": "Nettverk",
             "status": "Ingress status"
+          },
+          "tabs": {
+            "details": "Detaljer",
+            "annotations": "Annotasjoner",
+            "certmanager": "Cert manager",
+            "raw": "Rådata"
+          },
+          "meta": {
+            "title": "Metadata",
+            "name": "Navn",
+            "namespace": "Område",
+            "className": "Klasse",
+            "cluster": "Cluster",
+            "provider": "Tilbyder",
+            "health": "Helse",
+            "errormessages": "Feilmeldinger"
+          },
+          "errors": {
+            "noIngress": "Ingen ingress",
+            "noIngressClass": "Ingen ingress class satt",
+            "noService": "Ingen service",
+            "noEndpoints": "Ingen endpoints",
+            "noNodePort": "Ikke en NodePort service",
+            "noRules": "Ingen regler",
+            "noIP": "Ingen IP",
+            "noIngressRules": "Ingen ingress regler",
+            "service": {
+              "missingservice": "Mangler service",
+              "noservice": "Ingen service data",
+              "noname": "Ingen service navn",
+              "noipfamiliypolicy": "Ingen IP familie policy",
+              "noclusterips": "Ingen cluster IPer",
+              "noipfamilies": "Ingen IP familier",
+              "notype": "Ingen service type",
+              "wrongtype": "Feil service type",
+              "wrongakotype": "Feil service type for AKO (Mangler NodePort)"
+            },
+            "endpoints": {
+              "noendpoint": "Ingen endpoints",
+              "nosubsets": "Ingen enpoints subsets",
+              "noaddresses": "Ingen endpoint adresser funnet",
+              "nopods": "Ingen pods",
+              "nophase": "Pod ikke kjørende"
+            },
+            "pods": {
+              "nopods": "Ingen pods",
+              "noname": "Ingen pod navn",
+              "noorwrongphase": "Feil eller ikke kjørende "
+            },
+            "ingress": {
+              "noingress": "Ingen ingress",
+              "noingressname": "Mangler ingress-navn",
+              "noingressclassname": "Mangler ingress-klasse",
+              "nobackendportnameornumber": "Mangler backend port navn eller nummer",
+              "norules": "Ingen ingress-regler",
+              "nopaths": "Ingen ingress-stier",
+              "nopath": "Ingen ingress-sti",
+              "noPathType": "Ingen sti-type",
+              "wrongPathType": "Feil sti-type"
+            }
+          },
+          "certmanager": {
+            "columns": {
+              "name": "Navn",
+              "namespace": "Område",
+              "notvalidbefore": "Ikke gyldig før",
+              "notvalidafter": "Ikke gyldig etter",
+              "renewaltime": "Fornyelsestid",
+              "lasttransitiontime": "Siste overgangstid",
+              "message": "Melding",
+              "reason": "Årsak",
+              "status": "Status",
+              "type": "Type"
+            }
+          },
+          "raw": {
+            "ingress": "Ingress",
+            "certificates": "Sertifikater",
+            "services": "Servicer/Tjenester",
+            "endpoints": "Endepunkter",
+            "pods": "Poder"
           }
+        },
+        "ingress": {
+          "title": "Ingress",
+          "cluster": "Cluster",
+          "ingresses": "Ingresser",
+          "annotations": "Annotasjoner"
         },
         "policyreports": {
           "title": "Policyrapporter",
