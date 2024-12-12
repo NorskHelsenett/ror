@@ -123,33 +123,18 @@ To start the ROR infrastructure you can run:
 ```bash
 ./r.sh
 ```
-Which will start the core containers:
-- **dex**
-- **openldap**
-- **vault**
-- **rabbitmq**
-- **mongodb**
-- **mongo-express**
-- **redis**
-- **ms-auth**
-- **ms-kind**
-- **ms-talos**
+Which will start the [Core infrastructure](#Core-infrastructure)
 
-To include extra services you can add them as arguments as shown:
+To include any [optional services](#Optional-services) you can add them as arguments as shown:
 
 ```bash
 ./r.sh jaeger opentelemetry-collector
 ```
   
-If you want to run the **entire** application stack, you can run the following:
-
-```bash
-docker compose up
-```
-Which will start the yamls located under "ror/hacks/docker-compose"
-
 ### ROR API
-See https://github.com/NorskHelsenett/ror-api
+
+For ROR to work you require minimum the API, which can be found here:
+https://github.com/NorskHelsenett/ror-api
 
 #### Visual Studio Code
 
@@ -161,7 +146,6 @@ See https://github.com/NorskHelsenett/ror-api
 
 TODO
 
-
 ### ROR WEB
 See https://github.com/NorskHelsenett/ror-web-rork8s
 
@@ -172,7 +156,6 @@ TODO
 #### Terminal
 
 TODO
-
 
 ### Environment Variables
 
@@ -209,6 +192,13 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 | Vault         | Secrets handling      | GUI: http://localhost:8200                                         |                                                                                       |                                             |
 | Redis         | Cache                 | GUI: http://localhost:6379                                         |                                                                                       |                                             |
 | Redis-insight | Cache insight         | GUI: http://localhost:8001                                         |                                                                                       |                                             |
+
+## Optional services
+
+ Service                  | What                  | Url                                                                | ReadMe link                                                                           | Comment                                     |
+| ----------------------- | --------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------- |
+| jaeger                  |                       |                                                                    |                                                                                       |                                             |
+| opentelemetry-collector |                       |                                                                    |                                                                                       |                                             |
 
 ## NHN-ROR services
 
