@@ -38,4 +38,9 @@ if ! test -f "$envfile"; then
   exit 1
 fi
 
+if ! which docker-compose 1>&2 2>/dev/null; then
+  echo "docker-compose must be installed, exiting ..."
+  exit 1
+fi
+
 docker compose --env-file $envfile up openldap dex init-dex-db vault mongodb rabbitmq mongo-express redis ms-auth ms-kind ms-talos $services
