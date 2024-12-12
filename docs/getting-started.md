@@ -6,7 +6,9 @@
 -   Docker runtime
     - Docker CE: https://docs.docker.com/engine/install/ 
     - WSL2 tips: https://learn.microsoft.com/en-us/windows/wsl/systemd
--   Golang SDK (if you want to change and debug ROR) https://go.dev
+-   Golang SDK (For debugging and changing) https://go.dev
+- ROR API: https://github.com/NorskHelsenett/ror-api
+- ROR Web: https://github.com/NorskHelsenett/ror-webapp
 
 Optional:
 -   Docker Desktop (https://www.docker.com/products/docker-desktop/)
@@ -39,7 +41,7 @@ git clone https://github.com/NorskHelsenett/ror.git
 ### Linux
 Installation steps for Linux:
 https://docs.docker.com/engine/install
-Post-installation steps:
+Recommended post-installation steps:
 https://docs.docker.com/engine/install/linux-postinstall/
 
 #### Fedora
@@ -149,7 +151,7 @@ Which will start the yamls located under "ror/hacks/docker-compose"
 ### ROR API
 See https://github.com/NorskHelsenett/ror-api
 
-#### VSCode
+#### Visual Studio Code
 
 1. Open the repository in VSCode
 2. Go to Debugging
@@ -195,7 +197,7 @@ Log in with any of these accounts:
 
 To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 
-## Needed infrastructure
+## Core infrastructure
 
 | Service       | What                  | Url                                                                | ReadMe link                                                                           | Comment                                     |
 | ------------- | --------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------- |
@@ -210,11 +212,11 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 
 ## NHN-ROR services
 
-| Service   | What            | Url                    | Port | ReadMe link                                    | Comment                   |
-| --------- | --------------- | ---------------------- | ---- | ---------------------------------------------- | ------------------------- |
-| ROR-Api   | WebApi          | http://localhost:10000 | 8080 | [ReadMe.md](./src/backend/ror-api/ReadMe.md)   |                           |
-| ROR-Admin | Adminportal GUI | http://localhost:11000 | 8090 | [ReadMe.md](./src/clients/ror-admin/README.md) |                           |
-| ROR-Agent | K8s agent       | http://localhost:8100  | 8100 | [ReadMe.md](./src/clients/ror-agent/README.md) | Not run by docker-compose |
+| Service   | What            | Url                    | Port | ReadMe link                                              | Comment                   |
+| --------- | --------------- | ---------------------- | ---- | -------------------------------------------------------- | ------------------------- |
+| ROR-Api   | WebApi          | http://localhost:10000 | 8080 | [ReadMe.md](https://github.com/NorskHelsenett/ror-api)   |                           |
+| ROR-Admin | Adminportal GUI | http://localhost:11000 | 8090 | [ReadMe.md](./src/clients/ror-admin/README.md)           |                           |
+| ROR-Agent | K8s agent       | http://localhost:8100  | 8100 | [ReadMe.md](./src/clients/ror-agent/README.md)           | Not run by docker-compose |
 
 ## Documentation
 
