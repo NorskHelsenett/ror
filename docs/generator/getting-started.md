@@ -9,13 +9,13 @@
 
 - A clear picture of what you want to implement and how go generalize it
 
-## Getting started
-
 ## General information
 
 When creating a new resource for ROR the entire procedure needs to be followed.
-If you're just updating the existing resources - As in not adding or removing structs - You don't need to follow any of these instructions from the ROR side
+If you're just updating the existing resources - As in not adding or removing structs - You don't need to follow any of these instructions from the ROR side beyond merging it to main.
 If you're adding more sub structs but not adding a core struct you need to rerun the generator again.
+
+## Getting started
 
 ### Cloning the repository
 
