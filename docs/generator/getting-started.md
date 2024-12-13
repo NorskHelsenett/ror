@@ -115,5 +115,17 @@ func (r *<ResourceName>) ApplyInputFilter(cr *CommonResource) error {
 }
 ```
 
+#### Running the generator
 
+1. Go to the root folder of ROR
+2. Run the following command:
 
+```
+go run cmd/generator/main.go
+```
+
+3. And you're done, commit to the branch and make a pull/merge request.
+
+### Afterwards
+
+- To import data to this (newly) created ROR resource, you need to implement the ROR client, which you can read more about here: ror/docs/rorclient/getting-started.md
