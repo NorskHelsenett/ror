@@ -10,7 +10,7 @@
 - ROR API: https://github.com/NorskHelsenett/ror-api
 - ROR Web: https://github.com/NorskHelsenett/ror-webapp
 
-Optional:
+### Optional:
 -   Docker Desktop (https://www.docker.com/products/docker-desktop/)
 -   Talosctl (https://www.talos.dev/v1.8/introduction/quickstart/)
 -   Kind (https://kind.sigs.k8s.io)
