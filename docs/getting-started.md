@@ -147,7 +147,8 @@ https://github.com/NorskHelsenett/ror-api
 TODO
 
 ### ROR WEB
-See https://github.com/NorskHelsenett/ror-web-rork8s
+
+TODO
 
 #### VSCode
 
