@@ -52,9 +52,7 @@ The name of the client, for example vpshereAgent
 
 ### Implementation
 
-#### Example
-
-##### Implementing the ROR client
+#### Implementing the ROR client
 
 <details>
   <summary>Example</summary>
@@ -116,7 +114,7 @@ func NewRorClient(config config.Config) *RorClient {
 
 </details>
 
-##### Converting the resource to the ROR resource
+#### Converting the resource to the ROR resource
 
 <details>
   <summary>Example</summary>
@@ -156,7 +154,7 @@ func (r *RorClient) UpdateVms(ctx context.Context, vmResources []*rortypes.Resou
 
 </details>
 
-##### Adding or updating using the ROR client
+#### Adding or updating using the ROR client
 
 <details>
   <summary>Example</summary>
@@ -206,7 +204,7 @@ func (r *RorClient) DeleteVms(ctx context.Context, uuids []string) error {
 
 </details>
 
-##### Deleting using the ROR client
+#### Deleting using the ROR client
 
 <details>
   <summary>Example</summary>
@@ -227,7 +225,4 @@ func (r *RorClient) DeleteVms(ctx context.Context, uuids []string) error {
 ```
 
 </details>
-
-
-### Instructions
 
