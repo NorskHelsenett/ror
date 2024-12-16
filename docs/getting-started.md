@@ -16,6 +16,7 @@
 -   Kind (https://kind.sigs.k8s.io)
 -   K3d (https://k3d.io/stable/)
 -   Python for running documentation with mkdocs
+-   RO Agent: https://github.com/NorskHelsenett/ror-agent
 
 ## Clone
 
@@ -216,13 +217,13 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 | jaeger                  |                       |                                                                    |                                                                                       |                                             |
 | opentelemetry-collector |                       |                                                                    |                                                                                       |                                             |
 
-## NHN-ROR services
+## ROR services
 
-| Service   | What            | Url                    | Port | ReadMe link                                              | Comment                   |
-| --------- | --------------- | ---------------------- | ---- | -------------------------------------------------------- | ------------------------- |
-| ROR-Api   | WebApi          | http://localhost:10000 | 8080 | [ReadMe.md](https://github.com/NorskHelsenett/ror-api)   |                           |
-| ROR-Admin | Adminportal GUI | http://localhost:11000 | 8090 | [ReadMe.md](./src/clients/ror-admin/README.md)           |                           |
-| ROR-Agent | K8s agent       | http://localhost:8100  | 8100 | [ReadMe.md](./src/clients/ror-agent/README.md)           | Not run by docker-compose |
+| Service    | What      | Url                    | Port | ReadMe link                                                | Comment                   |
+| ---------  | --------- | ---------------------- | ---- | ---------------------------------------------------------- | ------------------------- |
+| ROR-Api    | Api       | http://localhost:10000 | 8080 | [ror-api](https://github.com/NorskHelsenett/ror-api)       |                           |
+| ROR-WebApp | Web       | http://localhost:11000 | 8090 | [ror-webapp](https://github.com/NorskHelsenett/ror-webapp) |                           |
+| ROR-Agent  | K8s Agent | http://localhost:8100  | 8100 | [ror-agent](https://github.com/NorskHelsenett/ror-agent)   | Not run by docker-compose |
 
 ## Documentation
 
