@@ -1530,38 +1530,3 @@ func (m ResourceListNetworkpolicies) GetByLabels(search map[string]string) []Res
 	}
 	return Response
 }
-
-// Function to return BackupJob resource by name.
-func (m ResourceListBackupjobs) GetByName(search string) ResourceBackupJob {
-	for _, resource := range m.Backupjobs {
-		if resource.Metadata.Name == search {
-			return resource
-		}
-	}
-	var emptyResponse ResourceBackupJob
-	return emptyResponse
-}
-
-// Function to return BackupJob resource by uid.
-func (m ResourceListBackupjobs) GetByUid(search string) ResourceBackupJob {
-	for _, res := range m.Backupjobs {
-		if res.Metadata.Uid == search {
-			return res
-		}
-	}
-	var emptyResponse ResourceBackupJob
-	return emptyResponse
-}
-
-// Function to return BackupJob resource by label.
-func (m ResourceListBackupjobs) GetByLabels(search map[string]string) []ResourceBackupJob {
-	var Response []ResourceBackupJob
-	for _, res := range m.Backupjobs {
-		if len(res.Metadata.Labels) != 0 {
-			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
-				Response = append(Response, res)
-			}
-		}
-	}
-	return Response
-}

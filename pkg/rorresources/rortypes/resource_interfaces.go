@@ -224,9 +224,3 @@ type NetworkPolicyinterface interface {
 	CommonResourceInterface
 	Get() *ResourceNetworkPolicy
 }
-
-// BackupJobinterface represents the interface for resources of the type backupjob
-type BackupJobinterface interface {
-	CommonResourceInterface
-	Get() *ResourceBackupJob
-}

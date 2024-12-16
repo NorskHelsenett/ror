@@ -656,21 +656,3 @@ func (r *ResourceNetworkPolicy) GetRorHash() string {
 func (r *ResourceNetworkPolicy) Get() *ResourceNetworkPolicy {
 	return r
 }
-
-// (r *ResourceBackupJob) GetRorHash calculates the hash of the resource
-//
-// it uses the hashstructure library to calculate the hash of the resource
-// fields can be ignored by adding the tag `hash:"ignore"` to the field
-func (r *ResourceBackupJob) GetRorHash() string {
-	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
-	if err != nil {
-		return ""
-	}
-
-	return fmt.Sprintf("%d", hash)
-}
-
-// (r ResourceBackupJob) Get returns a pointer to the resource of type ResourceBackupJob
-func (r *ResourceBackupJob) Get() *ResourceBackupJob {
-	return r
-}
