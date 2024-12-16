@@ -50,26 +50,26 @@ https://docs.docker.com/engine/install/linux-postinstall/
 
 ### Installations:
     
-```
+```bash
 sudo dnf -y install dnf-plugins-core
 sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 ```
 
 :warning: if you receive errors like this, you might have an old Docker installation already installed:
-```
+```bash
 - package docker-ce-3:27.3.1-1.fc40.x86_64 from docker-ce-stable conflicts with docker provided by moby-engine-24.0.5-4.fc40.x86_64 from fedora
 - package moby-engine-24.0.5-4.fc40.x86_64 from fedora conflicts with docker-ce provided by docker-ce-3:27.3.1-1.fc40.x86_64 from docker-ce-stable
 ```
 
 #### Install the Docker Engine
 
-```
+```bash
 sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
 #### Start the Docker engine
 
-```
+```bash
 sudo systemctl enable --now docker
 ```
 
@@ -79,7 +79,7 @@ https://docs.docker.com/engine/cli/completion/
 
 #### (Optional) Test the docker installation 
 
-```
+```bash
 sudo docker run hello-world
 ```
 
@@ -88,13 +88,14 @@ sudo docker run hello-world
 Doc reference: https://docs.docker.com/engine/install/linux-postinstall/
 
 #### Create the docker group.
-```
+
+```bash
 sudo groupadd docker
 ```
 
 #### Add your user to the docker group.
 
-```
+```bash
 sudo usermod -aG docker $USER
 ```
 
@@ -103,9 +104,10 @@ Log out and log back in so that your group membership is re-evaluated.
 
 #### Verify
 
-```
+```bash
 docker run hello-world
 ```
+
 </details>
 
 ### Windows
@@ -114,7 +116,9 @@ https://learn.microsoft.com/en-us/windows/wsl/systemd
 
 TODO
 
-## Run with docker
+## Starting ROR
+
+### Run with docker
 
 *Note Specific environment variables need to be set up for ROR to run, see* [Environment Variables](#Environment-Variables)
 
@@ -123,6 +127,7 @@ To start the ROR infrastructure you can run:
 ```bash
 ./r.sh
 ```
+
 Which will start the [Core infrastructure](#Core-infrastructure)
 
 To include any [optional services](#Optional-services) you can add them as arguments as shown:
@@ -148,7 +153,17 @@ TODO
 
 ### ROR WEB
 
-TODO
+Clone the ror-webapp repository
+
+```bash
+git clone https://github.com/NorskHelsenett/ror-webapp
+```
+
+Start the core services as mentioned [Here](#Starting-ROR)
+
+Start the API as mentioned [Here](#ROR-API)
+
+Start the webapp as mentioned [Here](https://github.com/NorskHelsenett/ror-webapp)
 
 #### VSCode
 
