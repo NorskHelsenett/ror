@@ -54,6 +54,8 @@ The name of the client, for example vpshereAgent
 
 #### Example
 
+##### Implementing the ROR client
+
 <details>
   <summary>Example</summary>
 
@@ -68,10 +70,6 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
 
-type RorClient struct {
-	rorclient.RorClient
-}
-
 type config struct {
     RorUrl string
     RorRole string
@@ -79,11 +77,14 @@ type config struct {
     RorVersion string
 }
 
+// Populates the Config with values from environmental variables or static values 
 func NewConfig() *Config {
 ...
 ...
 ...
 }
+
+var config Config = NewConfig()
 
 type UpdateError struct {
 	uuid    string
@@ -91,8 +92,12 @@ type UpdateError struct {
 	message string
 }
 
-var config Config = NewConfig()
+// So we can add our own methods to the RorClient struct
+type RorClient struct {
+	rorclient.RorClient
+}
 
+// Constructs 
 func NewRorClient(config config.Config) *RorClient {
 	transport := resttransport.NewRorHttpTransport(&httpclient.HttpTransportClientConfig{
 		BaseURL:      config.RorUrl,
@@ -107,6 +112,17 @@ func NewRorClient(config config.Config) *RorClient {
 
 	return &rorClient
 }
+```
+
+</details>
+
+##### Converting the resource to the ROR resource
+
+<details>
+  <summary>Example</summary>
+
+```go
+package rorclient
 
 // Adds or updates the VMs in ROR
 func (r *RorClient) UpdateVms(ctx context.Context, vmResources []*rortypes.ResourceVirtualMachine) error {
@@ -135,6 +151,22 @@ func (r *RorClient) UpdateVms(ctx context.Context, vmResources []*rortypes.Resou
 	}
 
 	res, err := r.ResourceV2().Update(ctx, *set)
+}
+```
+
+</details>
+
+##### Adding or updating using the ROR client
+
+<details>
+  <summary>Example</summary>
+
+```go
+package rorclient
+
+// Adds or updates the VMs in ROR
+func (r *RorClient) UpdateVms(ctx context.Context, vmResources []*rortypes.ResourceVirtualMachine) error {
+		res, err := r.ResourceV2().Update(ctx, *set)
 	if err != nil {
 		return fmt.Errorf("could not update vm, ROR returned: %w", err)
 	}
@@ -170,7 +202,28 @@ func (r *RorClient) DeleteVms(ctx context.Context, uuids []string) error {
 	}
 	return nil
 }
+```
 
+</details>
+
+##### Deleting using the ROR client
+
+<details>
+  <summary>Example</summary>
+
+```go
+package rorclient
+
+func (r *RorClient) DeleteVms(ctx context.Context, uuids []string) error {
+	for _, uid := range uuids {
+		del, err := r.ResourceV2().Delete(ctx, uid)
+		slog.Info("deleted vm", "info", del)
+		if err != nil {
+			return fmt.Errorf("could not delete vm, ROR returned %w", err)
+		}
+	}
+	return nil
+}
 ```
 
 </details>
