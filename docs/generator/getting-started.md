@@ -19,8 +19,8 @@ If you're adding more sub structs but not adding a core struct you need to rerun
 
 ### Cloning the repository
 
-1. Create a folder where you want to store the code.
-2. Clone the repository to where you have Go installed.
+1. Create a folder for where you want to store the code.
+2. Clone the repository into it.
 
 ```bash
 git clone git@github.com:NorskHelsenett/ror.git
@@ -67,7 +67,6 @@ type ResourceVirtualMachine struct {
         Status ResourceVirtualMachineStatus `json:"status"`
 }
 
-// Desired state
 type ResourceVirtualMachineSpec struct {
         Cpu             ResourceVirtualMachineCpuSpec             `json:"cpu"`
         Tags            []ResourceVirtualMachineTagSpec           `json:"tags"`
@@ -77,7 +76,6 @@ type ResourceVirtualMachineSpec struct {
         OperatingSystem ResourceVirtualMachineOperatingSystemSpec `json:"operatingSystem"`
 }
 
-// Observed state
 type ResourceVirtualMachineStatus struct {
         Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
         Disks           []ResourceVirtualMachineDiskStatus          `json:"disks"`
@@ -89,6 +87,14 @@ type ResourceVirtualMachineStatus struct {
 .
 .
 ```
+
+##### Spec
+
+Spec will be what we can change about this resource
+
+##### Status
+
+Status will be what we observe about this resource, not necessarily can change.
 
 #### Create the resource_input_filter definition 
 
