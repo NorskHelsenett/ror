@@ -11,67 +11,6 @@ export enum VulnerabilityDismissalReason {
   FALSE_POSITIVE = 1,
   NOT_APPLICABLE = 2,
 }
-export interface ResourceBackupJobSpec {
-  name: string;
-  sourceName: string;
-  sourceId: string;
-  policyId: string;
-  targetObjectsRefs: string[];
-  directBackupTarget: ResourceIndirectBackupTarget[];
-  indirectBackupTarget: ResourceDirectBackupTarget[];
-  backupDestination: ResourceBackupDestination[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
-}
-export interface ResourceBackupStorage {
-  unit: string;
-  sourceSize: number;
-  logicalSize: number;
-  physicalSize: number;
-}
-export interface ResourceBackupDestination {
-  name: string;
-  id: string;
-  type: string;
-  success: boolean;
-  expiryTime: Time;
-}
-export interface ResourceBackupRun {
-  backupTarget: ResourceDirectBackupTarget[];
-  backupDestination: ResourceBackupDestination[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
-  backupStorage: ResourceBackupStorage;
-}
-export interface ResourceDirectBackupTarget {
-  name: string;
-  id: string;
-  externalIds: { [key: string]: string };
-}
-export interface ResourceIndirectBackupTarget {
-  type: string;
-  ids: string[];
-  keyValues: { [key: string]: string[] };
-}
-export interface ResourceBackupJobStatus {
-  name: string;
-  sourceName: string;
-  sourceId: string;
-  jobId: string;
-  policyId: string;
-  DirectBackupTarget: ResourceIndirectBackupTarget[];
-  backupTarget: ResourceDirectBackupTarget[];
-  resourceBackupRuns: ResourceBackupRun[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
-}
-export interface ResourceBackupJob {
-  status: ResourceBackupJobStatus;
-  spec: ResourceBackupJobSpec;
-}
 export interface ResourceNetworkPolicyCondition {
   lastTransitionTime: string;
   message: string;
@@ -1145,7 +1084,6 @@ export interface Resource {
   virtualmachine?: ResourceVirtualMachine;
   endpoints?: ResourceEndpoints;
   networkpolicy?: ResourceNetworkPolicy;
-  backupjob?: ResourceBackupJob;
 }
 export interface ResourceSet {
   resources?: Resource[];
