@@ -233,6 +233,10 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 | ROR-WebApp | Web       | http://localhost:11000 | 8090 | [ror-webapp](https://github.com/NorskHelsenett/ror-webapp) |                           |
 | ROR-Agent  | K8s Agent | http://localhost:8100  | 8100 | [ror-agent](https://github.com/NorskHelsenett/ror-agent)   | Not run by docker-compose |
 
+## Known issues
+
+See [Known-issues](https://github.com/NorskHelsenett/ror/docs/nkown-issues.md)
+
 ## Documentation
 
 We pull documentation from code using **_some go package_**. Thus all functions should be annotated with a comment describing its use and any caveats. We keep system documentation in `cmd/docs/`, some files are copied in from .md files located in other parts of the repo using the `cmd/docs/collectdocs.sh` script. If you see any documentation that is out of date or wrong, please update it.
