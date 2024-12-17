@@ -215,7 +215,7 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 | Service       | Username   | Password  |
 | -------       | ---------- | --------- |
 | MongoDB       | `someone`  | `S3cret!` |
-| Mongo-Express | `someone`  | `S3cret!` |
+| Mongo-Express | `test`     | `S3cr3t`  |
 | RabbitMQ      | `admin`    | `S3cret!` |
 
 ## Optional services
