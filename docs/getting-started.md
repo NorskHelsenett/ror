@@ -235,7 +235,7 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 
 ## Known issues
 
-See [Known-issues](https://github.com/NorskHelsenett/ror/docs/nkown-issues.md)
+See [Known-issues](known-issues.md)
 
 ## Documentation
 
