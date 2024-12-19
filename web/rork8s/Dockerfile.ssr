@@ -1,6 +1,0 @@
-ARG DOCKER_MIRROR=docker.io/
-FROM ${DOCKER_MIRROR}node:lts-alpine
-WORKDIR /app
-
-COPY dist/rork8s/server /app
-CMD node /app/server.mjs

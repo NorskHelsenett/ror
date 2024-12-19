@@ -13,7 +13,7 @@ require (
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
-	github.com/microsoftgraph/msgraph-sdk-go v1.51.0
+	github.com/microsoftgraph/msgraph-sdk-go v1.53.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/pkg/errors v0.9.1
@@ -25,7 +25,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/tkrajina/typescriptify-golang-structs v0.2.0
 	go.mongodb.org/mongo-driver v1.17.1
-	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.56.0
+	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.57.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.57.0
 	go.opentelemetry.io/otel v1.32.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.32.0
@@ -33,18 +33,18 @@ require (
 	go.opentelemetry.io/otel/trace v1.32.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
-	golang.org/x/text v0.20.0
-	google.golang.org/grpc v1.68.0
+	golang.org/x/text v0.21.0
+	google.golang.org/grpc v1.68.1
 	k8s.io/api v0.31.3
 	k8s.io/apimachinery v0.31.3
-	k8s.io/cli-runtime v0.31.2
+	k8s.io/cli-runtime v0.31.3
 	k8s.io/client-go v0.31.3
 	k8s.io/metrics v0.31.3
 	sigs.k8s.io/controller-runtime v0.19.1
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.15.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.16.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/microsoft/kiota-abstractions-go v1.7.0 // indirect
+	github.com/microsoft/kiota-abstractions-go v1.8.1 // indirect
 	github.com/microsoft/kiota-authentication-azure-go v1.1.0 // indirect
 	github.com/microsoft/kiota-http-go v1.4.4 // indirect
 	github.com/microsoft/kiota-serialization-form-go v1.0.0 // indirect
@@ -142,7 +142,7 @@ require (
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/std-uritemplate/std-uritemplate/go v0.0.57 // indirect
+	github.com/std-uritemplate/std-uritemplate/go/v2 v2.0.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tkrajina/go-reflector v0.5.5 // indirect
@@ -164,7 +164,7 @@ require (
 	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
-	golang.org/x/sync v0.9.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/term v0.26.0 // indirect
 	golang.org/x/time v0.6.0 // indirect

@@ -72,8 +72,8 @@ func (rc MongodbCon) Aggregate(ctx context.Context, col string, query []bson.M, 
 	if err != nil {
 		return fmt.Errorf("could not decode mongo document: %w", err)
 	}
-	defer func(results *mongo.Cursor, ctx context.Context) {
-		_ = results.Close(ctx)
+	defer func(cursor *mongo.Cursor, closeCtx context.Context) {
+		_ = cursor.Close(closeCtx)
 	}(results, ctx)
 
 	err = results.All(ctx, value)
@@ -167,8 +167,8 @@ func (rc MongodbCon) CountWithQuery(ctx context.Context, col string, query any) 
 	if err != nil {
 		return 0, fmt.Errorf("could not decode mongo document: %w", err)
 	}
-	defer func(results *mongo.Cursor, ctx context.Context) {
-		_ = results.Close(ctx)
+	defer func(cursor *mongo.Cursor, closeCtx context.Context) {
+		_ = cursor.Close(closeCtx)
 	}(results, ctx)
 	returnvalue := results.RemainingBatchLength()
 	return returnvalue, nil
@@ -180,8 +180,8 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	if rorResourceQuery == nil {
 		return query
 	}
-	// Add filters
 
+	// Add filters
 	if !rorResourceQuery.VersionKind.Empty() {
 		apiversion, kind := rorResourceQuery.VersionKind.ToAPIVersionAndKind()
 		if apiversion != "" {
@@ -200,65 +200,29 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 		match["rormeta.ownerref"] = bson.M{"$in": rorResourceQuery.OwnerRefs}
 	}
 
-	if len(rorResourceQuery.Filters) > 0 {
+	if len(rorResourceQuery.Filters) == 1 {
+		addMatchFilter(rorResourceQuery.Filters[0], match)
+	} else if len(rorResourceQuery.Filters) > 1 {
+		filterCount := map[string]int{}
 		for _, filter := range rorResourceQuery.Filters {
-			switch filter.Type {
-			case rorresources.FilterTypeString:
-				if filter.Operator == "eq" {
-					match[filter.Field] = bson.M{"$eq": filter.Value}
-				}
-				if filter.Operator == "ne" {
-					match[filter.Field] = bson.M{"$ne": filter.Value}
-				}
-				if filter.Operator == "regexp" {
-					match[filter.Field] = bson.M{"$regex": filter.Value, "$options": "i"}
-				}
-			case rorresources.FilterTypeInt:
-				if filter.Operator == "eq" {
-					match[filter.Field] = bson.M{"$eq": filter.Value}
-				}
-				if filter.Operator == "gt" {
-					match[filter.Field] = bson.M{"$gt": filter.Value}
-				}
-				if filter.Operator == "lt" {
-					match[filter.Field] = bson.M{"$lt": filter.Value}
-				}
-				if filter.Operator == "ge" {
-					match[filter.Field] = bson.M{"$gte": filter.Value}
-				}
-				if filter.Operator == "le" {
-					match[filter.Field] = bson.M{"$lte": filter.Value}
-				}
-			case rorresources.FilterTypeBool:
-				if filter.Operator == "eq" {
-					boolfilter, err := strconv.ParseBool(filter.Value)
-					if err == nil {
-						match[filter.Field] = bson.M{"$eq": boolfilter}
+			filterCount[filter.Field]++
+		}
+
+		for key, value := range filterCount {
+			if value == 1 {
+				for _, filter := range rorResourceQuery.Filters {
+					if filter.Field == key {
+						addMatchFilter(filter, match)
 					}
 				}
-				// case rorresources.FilterTypeTime:
-
-				// 	format := "2006-01-02 15:04:05.999999999 -0700 MST"
-				// 	timevalue, err := time.Parse(format, filter.Value)
-
-				// 	if err == nil {
-				// 		//timevalue := time.ParseTimestamps(filter.Value)
-				// 		if filter.Operator == "eq" {
-				// 			match[filter.Field] = bson.M{"$eq": timevalue}
-				// 		}
-				// 		if filter.Operator == "gt" {
-				// 			match[filter.Field] = bson.M{"$gt": timevalue}
-				// 		}
-				// 		if filter.Operator == "lt" {
-				// 			match[filter.Field] = bson.M{"$lt": timevalue}
-				// 		}
-				// 		if filter.Operator == "ge" {
-				// 			match[filter.Field] = bson.M{"$gte": timevalue}
-				// 		}
-				// 		if filter.Operator == "le" {
-				// 			match[filter.Field] = bson.M{"$lte": timevalue}
-				// 		}
-				// 	}
+			} else {
+				var filterList []string
+				for _, filter := range rorResourceQuery.Filters {
+					if filter.Field == key {
+						filterList = append(filterList, filter.Value)
+					}
+				}
+				match[key] = bson.M{"$in": filterList}
 			}
 		}
 	}
@@ -307,6 +271,64 @@ func (rc MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.Resou
 	if rorResourceQuery.Limit != -1 {
 		query = append(query, bson.M{"$limit": rorResourceQuery.Limit})
 	}
-
 	return query
+}
+
+func addMatchFilter(filter rorresources.ResourceQueryFilter, match bson.M) {
+	switch filter.Type {
+	case rorresources.FilterTypeString:
+		if filter.Operator == "eq" {
+			match[filter.Field] = bson.M{"$eq": filter.Value}
+		}
+		if filter.Operator == "ne" {
+			match[filter.Field] = bson.M{"$ne": filter.Value}
+		}
+		if filter.Operator == "regexp" {
+			match[filter.Field] = bson.M{"$regex": filter.Value, "$options": "i"}
+		}
+	case rorresources.FilterTypeInt:
+		if filter.Operator == "eq" {
+			match[filter.Field] = bson.M{"$eq": filter.Value}
+		}
+		if filter.Operator == "gt" {
+			match[filter.Field] = bson.M{"$gt": filter.Value}
+		}
+		if filter.Operator == "lt" {
+			match[filter.Field] = bson.M{"$lt": filter.Value}
+		}
+		if filter.Operator == "ge" {
+			match[filter.Field] = bson.M{"$gte": filter.Value}
+		}
+		if filter.Operator == "le" {
+			match[filter.Field] = bson.M{"$lte": filter.Value}
+		}
+	case rorresources.FilterTypeBool:
+		if filter.Operator == "eq" {
+			boolfilter, err := strconv.ParseBool(filter.Value)
+			if err == nil {
+				match[filter.Field] = bson.M{"$eq": boolfilter}
+			}
+		}
+		// case rorresources.FilterTypeTime:
+		// 	format := "2006-01-02 15:04:05.999999999 -0700 MST"
+		// 	timevalue, err := time.Parse(format, filter.Value)
+		// 	if err == nil {
+		// 		//timevalue := time.ParseTimestamps(filter.Value)
+		// 		if filter.Operator == "eq" {
+		// 			match[filter.Field] = bson.M{"$eq": timevalue}
+		// 		}
+		// 		if filter.Operator == "gt" {
+		// 			match[filter.Field] = bson.M{"$gt": timevalue}
+		// 		}
+		// 		if filter.Operator == "lt" {
+		// 			match[filter.Field] = bson.M{"$lt": timevalue}
+		// 		}
+		// 		if filter.Operator == "ge" {
+		// 			match[filter.Field] = bson.M{"$gte": timevalue}
+		// 		}
+		// 		if filter.Operator == "le" {
+		// 			match[filter.Field] = bson.M{"$lte": timevalue}
+		// 		}
+		// 	}
+	}
 }
