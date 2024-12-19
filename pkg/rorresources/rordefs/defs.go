@@ -12,11 +12,12 @@ import (
 type ApiResourceType string
 
 const (
-	ApiResourceTypeUnknown    ApiResourceType = ""
-	ApiResourceTypeAgent      ApiResourceType = "Agent"
-	ApiResourceTypeVmAgent    ApiResourceType = "VmAgent"
-	ApiResourceTypeTanzuAgent ApiResourceType = "TanzuAgent"
-	ApiResourceTypeInternal   ApiResourceType = "Internal"
+	ApiResourceTypeUnknown     ApiResourceType = ""
+	ApiResourceTypeAgent       ApiResourceType = "Agent"
+	ApiResourceTypeVmAgent     ApiResourceType = "VmAgent"
+	ApiResourceTypeTanzuAgent  ApiResourceType = "TanzuAgent"
+	ApiResourceTypeBackupAgent ApiResourceType = "BackupAgent"
+	ApiResourceTypeInternal    ApiResourceType = "Internal"
 )
 
 // ApiResource
@@ -387,5 +388,13 @@ var Resourcedefs = []ApiResource{
 		Plural:     "networkpolicies",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "BackupJob",
+			APIVersion: "backupjob.ror.internal/v1alpha1",
+		},
+		Plural:     "backupjobs",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeBackupAgent},
 	},
 }
