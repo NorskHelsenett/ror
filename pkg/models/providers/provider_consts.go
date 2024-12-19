@@ -11,3 +11,8 @@ const (
 	ProviderTypeGke     ProviderType = "gke"
 	ProviderTypeTalos   ProviderType = "talos"
 )
+
+// String returns the string representation of the ProviderType.
+func (p ProviderType) String() string {
+	return string(p)
+}
