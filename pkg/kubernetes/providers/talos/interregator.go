@@ -3,7 +3,6 @@ package talosproviderinterregator
 import (
 	"strings"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/providerclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/models/providers"
 	v1 "k8s.io/api/core/v1"
 )
@@ -27,14 +26,24 @@ func (t Talostypes) GetProvider(nodes []v1.Node) providers.ProviderType {
 }
 
 func (t Talostypes) GetClusterName(nodes []v1.Node) string {
-	hostname := nodes[0].GetLabels()["kubernetes.io/hostname"]
-	return providerclusternamehelper.GetKindClustername(hostname)
+	clusterName := nodes[0].GetAnnotations()["ror.io/name"]
+	return clusterName
 }
 
 func (t Talostypes) GetWorkspace(nodes []v1.Node) string {
-	return "Talos"
+	workspace, ok := nodes[0].GetAnnotations()["ror.io/namespace"]
+	if !ok {
+		workspace = "Talos"
+	}
+
+	return workspace
 }
 
 func (t Talostypes) GetDatacenter(nodes []v1.Node) string {
-	return "tempDatacenter"
+	dataCenter, ok := nodes[0].GetAnnotations()["ror.io/datacenter"]
+	if !ok {
+		dataCenter = "TalosDC"
+	}
+
+	return dataCenter
 }
