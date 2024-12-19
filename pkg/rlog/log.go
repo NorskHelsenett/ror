@@ -59,6 +59,11 @@ func InitializeRlog() {
 	Debug("global logger initialized", String("level", logLevel.String()))
 }
 
+// GetLogLevel returns the current loglevel as a string
+func GetLogLevel() string {
+	return logLevel.String()
+}
+
 // AddContextKeyField adds a key to look for in a contexts so that we
 // can add the context value as a persistent field to all logs
 func AddContextKeyField(key string) error {
