@@ -26,11 +26,17 @@ const (
 	HttpTransportClientTimeout     HttpTransportClientOpts = "TIMEOUT"
 )
 
+// HttpTransportClientConfig is the configuration for the HTTP transport client
 type HttpTransportClientConfig struct {
-	BaseURL      string
+	// BaseURL is the base URL for the API
+	// Example: https://api.example.com
+	BaseURL string
+	// AuthProvider is the provider for the authentication
 	AuthProvider HttpTransportAuthProvider
-	Role         string
-	Version      rorversion.RorVersion
+	// Role is the role of the client
+	Role string
+	// Version is the version of the client
+	Version rorversion.RorVersion
 }
 
 type HttpTransportAuthProvider interface {
@@ -197,6 +203,8 @@ func handleResponse(res *http.Response, out any) error {
 func (t *HttpTransportClient) AddAuthHeaders(req *http.Request) {
 	t.Config.AuthProvider.AddAuthHeaders(req)
 }
+
+// AddCommonHeaders adds common headers to the request
 func (t *HttpTransportClient) AddCommonHeaders(req *http.Request) {
 	req.Header.Set("User-Agent", fmt.Sprintf("%s - v%s (%s)", t.Config.Role, t.Config.Version.GetVersion(), t.Config.Version.GetCommit()))
 	req.Header.Add("Accept", `application/json`)
