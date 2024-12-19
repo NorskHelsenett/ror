@@ -805,6 +805,28 @@ func TestNewResourceSetFromDynamicClientNetworkPolicy(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "BackupJob",
+			"apiVersion": "backupjob.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-backupjob",
+			},
+		},
+	}
+
+	expected := rorresources.NewRorResource("BackupJob", "backupjob.ror.internal/v1alpha1")
+	expected.SetBackupJob(newBackupJobFromDynamicClient(input))
+	expected.SetCommonInterface(newBackupJobFromDynamicClient(input))
+
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
