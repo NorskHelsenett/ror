@@ -183,8 +183,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetCommonInterface(res.NetworkPolicyResource)
 
 	default:
-		rlog.Warn("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
-		return nil
+		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 	}
 	return r
 }
