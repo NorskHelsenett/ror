@@ -49,6 +49,9 @@ type Resource struct {
 	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
 	EndpointsResource                  *rortypes.ResourceEndpoints                  `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
 	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
+	FirewallRuleResource               *rortypes.ResourceFirewallRule               `json:"firewallrule,omitempty" bson:"firewallrule,omitempty"`
+	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
+	FirewallPolicyResource             *rortypes.ResourceFirewallPolicy             `json:"firewallpolicy,omitempty" bson:"firewallpolicy,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -213,6 +216,18 @@ func (r *Resource) SetEndpoints(res *rortypes.ResourceEndpoints) {
 
 func (r *Resource) SetNetworkPolicy(res *rortypes.ResourceNetworkPolicy) {
 	r.NetworkPolicyResource = res
+}
+
+func (r *Resource) SetFirewallRule(res *rortypes.ResourceFirewallRule) {
+	r.FirewallRuleResource = res
+}
+
+func (r *Resource) SetVirtualMachine(res *rortypes.ResourceVirtualMachine) {
+	r.VirtualMachineResource = res
+}
+
+func (r *Resource) SetFirewallPolicy(res *rortypes.ResourceFirewallPolicy) {
+	r.FirewallPolicyResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -393,6 +408,21 @@ func (r *Resource) Endpoints() rortypes.Endpointsinterface {
 // NetworkPolicy is a wrapper for the underlying resource, it provides a NetworkPolicyinterface to work with networkpolicies
 func (r *Resource) NetworkPolicy() rortypes.NetworkPolicyinterface {
 	return r.NetworkPolicyResource
+}
+
+// FirewallRule is a wrapper for the underlying resource, it provides a FirewallRuleinterface to work with FirewallRules
+func (r *Resource) FirewallRule() rortypes.FirewallRuleinterface {
+	return r.FirewallRuleResource
+}
+
+// VirtualMachine is a wrapper for the underlying resource, it provides a VirtualMachineinterface to work with VirtualMachines
+func (r *Resource) VirtualMachine() rortypes.VirtualMachineinterface {
+	return r.VirtualMachineResource
+}
+
+// FirewallPolicy is a wrapper for the underlying resource, it provides a FirewallPolicyinterface to work with FirewallPolicies
+func (r *Resource) FirewallPolicy() rortypes.FirewallPolicyinterface {
+	return r.FirewallPolicyResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface
