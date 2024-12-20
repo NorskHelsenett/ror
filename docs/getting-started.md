@@ -136,6 +136,15 @@ To include any [optional services](#Optional-services) you can add them as argum
 ```bash
 ./r.sh jaeger opentelemetry-collector
 ```
+
+When the containers start you'll note that the following services will keep crashing,
+This is intended as they're dependent on the API service which has yet to be started:
+- dex
+- ms-auth
+- ms-talos
+- ms-kind
+
+
   
 ### ROR API
 
