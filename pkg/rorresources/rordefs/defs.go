@@ -12,11 +12,12 @@ import (
 type ApiResourceType string
 
 const (
-	ApiResourceTypeUnknown    ApiResourceType = ""
-	ApiResourceTypeAgent      ApiResourceType = "Agent"
-	ApiResourceTypeVmAgent    ApiResourceType = "VmAgent"
-	ApiResourceTypeTanzuAgent ApiResourceType = "TanzuAgent"
-	ApiResourceTypeInternal   ApiResourceType = "Internal"
+	ApiResourceTypeUnknown       ApiResourceType = ""
+	ApiResourceTypeAgent         ApiResourceType = "Agent"
+	ApiResourceTypeVmAgent       ApiResourceType = "VmAgent"
+	ApiResourceTypeFirewallAgent ApiResourceType = "FirewallAgent"
+	ApiResourceTypeTanzuAgent    ApiResourceType = "TanzuAgent"
+	ApiResourceTypeInternal      ApiResourceType = "Internal"
 )
 
 // ApiResource
@@ -387,5 +388,32 @@ var Resourcedefs = []ApiResource{
 		Plural:     "networkpolicies",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	},
+	{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "FirewallRule",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "FirewallRules",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeAgent},
+	},
+	{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "VirtualMachine",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "VirtualMachines",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
+	},
+	{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "FirewallPolicy",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "FirewallPolicies",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeFirewallAgent},
 	},
 }

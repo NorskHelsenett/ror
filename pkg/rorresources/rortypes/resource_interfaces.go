@@ -224,3 +224,21 @@ type NetworkPolicyinterface interface {
 	CommonResourceInterface
 	Get() *ResourceNetworkPolicy
 }
+
+// FirewallRuleinterface represents the interface for resources of the type firewallrule
+type FirewallRuleinterface interface {
+	CommonResourceInterface
+	Get() *ResourceFirewallRule
+}
+
+// VirtualMachineinterface represents the interface for resources of the type virtualmachine
+type VirtualMachineinterface interface {
+	CommonResourceInterface
+	Get() *ResourceVirtualMachine
+}
+
+// FirewallPolicyinterface represents the interface for resources of the type firewallpolicy
+type FirewallPolicyinterface interface {
+	CommonResourceInterface
+	Get() *ResourceFirewallPolicy
+}
