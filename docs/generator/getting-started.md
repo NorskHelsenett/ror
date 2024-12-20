@@ -1,4 +1,4 @@
-# Getting started with creating a ROR resource definition
+![image](https://github.com/user-attachments/assets/01cf3ae5-ce20-4149-b2a6-42e05864df0a)![image](https://github.com/user-attachments/assets/a7c763d7-deca-477f-a92b-4b67fcecb4eb)![image](https://github.com/user-attachments/assets/b3cba9a0-68dc-4fb2-bd78-279c21609fcf)# Getting started with creating a ROR resource definition
 
 ## Prerequisites
 
@@ -119,6 +119,31 @@ package rortypes
 func (r *<ResourceName>) ApplyInputFilter(cr *CommonResource) error {
         return nil
 }
+```
+
+#### ROR definitions
+
+1. Go to:
+```bash
+ror/pkg/rorresources/rordefs
+```
+2. And edit defs.go
+3. On the top const definition, add your new agent in the format:
+```
+ApiResoureType<Name> ApiReesourceType = "<AgentName>"
+```
+
+4. And at the near bottom at at to the Resroucedefs slice:
+```
+{
+        TypeMeta: metav1.TypeMeta{
+                Kind:       "<Name",
+                APIVersion: "<Version of your choice>",
+        },
+        Plural:     "<Plural of name>",
+        Namespaced: false,
+        Types:      []ApiResourceType{<Type>},
+},
 ```
 
 #### Running the generator
