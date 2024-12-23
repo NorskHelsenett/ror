@@ -391,24 +391,6 @@ var Resourcedefs = []ApiResource{
 	},
 	{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "FirewallRule",
-			APIVersion: "general.ror.internal/v1alpha1",
-		},
-		Plural:     "FirewallRules",
-		Namespaced: false,
-		Types:      []ApiResourceType{ApiResourceTypeAgent},
-	},
-	{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "VirtualMachine",
-			APIVersion: "general.ror.internal/v1alpha1",
-		},
-		Plural:     "VirtualMachines",
-		Namespaced: false,
-		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
-	},
-	{
-		TypeMeta: metav1.TypeMeta{
 			Kind:       "FirewallPolicy",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},

@@ -5,7 +5,7 @@ package apiresourcecontracts
 
 // Resourcetypes allowed in the generic resource models.
 type Resourcetypes interface {
-	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent | ResourceVirtualMachine | ResourceEndpoints | ResourceNetworkPolicy | ResourceFirewallRule | ResourceVirtualMachine | ResourceFirewallPolicy
+	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent | ResourceVirtualMachine | ResourceEndpoints | ResourceNetworkPolicy | ResourceFirewallPolicy
 }
 
 // type for returning Namespace resources to internal functions
@@ -222,18 +222,6 @@ type ResourceListEndpoints struct {
 type ResourceListNetworkpolicies struct {
 	Owner           ResourceOwnerReference  `json:"owner"`
 	Networkpolicies []ResourceNetworkPolicy `json:"networkpolicies"`
-}
-
-// type for returning FirewallRule resources to internal functions
-type ResourceListFirewallrules struct {
-	Owner         ResourceOwnerReference `json:"owner"`
-	Firewallrules []ResourceFirewallRule `json:"FirewallRules"`
-}
-
-// type for returning VirtualMachine resources to internal functions
-type ResourceListVirtualmachines struct {
-	Owner           ResourceOwnerReference   `json:"owner"`
-	Virtualmachines []ResourceVirtualMachine `json:"VirtualMachines"`
 }
 
 // type for returning FirewallPolicy resources to internal functions

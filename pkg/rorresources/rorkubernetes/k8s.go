@@ -223,16 +223,6 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetNetworkPolicy(res)
 		r.SetCommonInterface(res)
 
-	case "general.ror.internal/v1alpha1, Kind=FirewallRule":
-		res := newFirewallRuleFromDynamicClient(input)
-		r.SetFirewallRule(res)
-		r.SetCommonInterface(res)
-
-	case "general.ror.internal/v1alpha1, Kind=VirtualMachine":
-		res := newVirtualMachineFromDynamicClient(input)
-		r.SetVirtualMachine(res)
-		r.SetCommonInterface(res)
-
 	case "general.ror.internal/v1alpha1, Kind=FirewallPolicy":
 		res := newFirewallPolicyFromDynamicClient(input)
 		r.SetFirewallPolicy(res)
@@ -817,38 +807,6 @@ func newNetworkPolicyFromDynamicClient(obj *unstructured.Unstructured) *rortypes
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to NetworkPolicy", err)
-	}
-	return &nr
-}
-
-// newFirewallRuleFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
-// by the kubernetes universal client.
-func newFirewallRuleFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceFirewallRule {
-	nr := rortypes.ResourceFirewallRule{}
-	nrjson, err := obj.MarshalJSON()
-	if err != nil {
-		rlog.Error("Could not mashal unstructired to json", err)
-	}
-
-	err = json.Unmarshal(nrjson, &nr)
-	if err != nil {
-		rlog.Error("Could not unmarshal json to FirewallRule", err)
-	}
-	return &nr
-}
-
-// newVirtualMachineFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
-// by the kubernetes universal client.
-func newVirtualMachineFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceVirtualMachine {
-	nr := rortypes.ResourceVirtualMachine{}
-	nrjson, err := obj.MarshalJSON()
-	if err != nil {
-		rlog.Error("Could not mashal unstructired to json", err)
-	}
-
-	err = json.Unmarshal(nrjson, &nr)
-	if err != nil {
-		rlog.Error("Could not unmarshal json to VirtualMachine", err)
 	}
 	return &nr
 }

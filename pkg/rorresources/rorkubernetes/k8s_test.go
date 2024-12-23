@@ -805,50 +805,6 @@ func TestNewResourceSetFromDynamicClientNetworkPolicy(t *testing.T) {
 	}
 }
 
-func TestNewResourceSetFromDynamicClientFirewallRule(t *testing.T) {
-	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"kind":       "FirewallRule",
-			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
-				"name": "test-firewallrule",
-			},
-		},
-	}
-
-	expected := rorresources.NewRorResource("FirewallRule", "general.ror.internal/v1alpha1")
-	expected.SetFirewallRule(newFirewallRuleFromDynamicClient(input))
-	expected.SetCommonInterface(newFirewallRuleFromDynamicClient(input))
-
-	result := NewResourceSetFromDynamicClient(input)
-
-	if !reflect.DeepEqual(result.Get(), expected) {
-		t.Errorf("Expected %v, but got %v", expected, result)
-	}
-}
-
-func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
-	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"kind":       "VirtualMachine",
-			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
-				"name": "test-virtualmachine",
-			},
-		},
-	}
-
-	expected := rorresources.NewRorResource("VirtualMachine", "general.ror.internal/v1alpha1")
-	expected.SetVirtualMachine(newVirtualMachineFromDynamicClient(input))
-	expected.SetCommonInterface(newVirtualMachineFromDynamicClient(input))
-
-	result := NewResourceSetFromDynamicClient(input)
-
-	if !reflect.DeepEqual(result.Get(), expected) {
-		t.Errorf("Expected %v, but got %v", expected, result)
-	}
-}
-
 func TestNewResourceSetFromDynamicClientFirewallPolicy(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

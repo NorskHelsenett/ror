@@ -182,14 +182,6 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetNetworkPolicy(res.NetworkPolicyResource)
 		r.SetCommonInterface(res.NetworkPolicyResource)
 
-	case "general.ror.internal/v1alpha1, Kind=FirewallRule":
-		r.SetFirewallRule(res.FirewallRuleResource)
-		r.SetCommonInterface(res.FirewallRuleResource)
-
-	case "general.ror.internal/v1alpha1, Kind=VirtualMachine":
-		r.SetVirtualMachine(res.VirtualMachineResource)
-		r.SetCommonInterface(res.VirtualMachineResource)
-
 	case "general.ror.internal/v1alpha1, Kind=FirewallPolicy":
 		r.SetFirewallPolicy(res.FirewallPolicyResource)
 		r.SetCommonInterface(res.FirewallPolicyResource)

@@ -657,42 +657,6 @@ func (r *ResourceNetworkPolicy) Get() *ResourceNetworkPolicy {
 	return r
 }
 
-// (r *ResourceFirewallRule) GetRorHash calculates the hash of the resource
-//
-// it uses the hashstructure library to calculate the hash of the resource
-// fields can be ignored by adding the tag `hash:"ignore"` to the field
-func (r *ResourceFirewallRule) GetRorHash() string {
-	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
-	if err != nil {
-		return ""
-	}
-
-	return fmt.Sprintf("%d", hash)
-}
-
-// (r ResourceFirewallRule) Get returns a pointer to the resource of type ResourceFirewallRule
-func (r *ResourceFirewallRule) Get() *ResourceFirewallRule {
-	return r
-}
-
-// (r *ResourceVirtualMachine) GetRorHash calculates the hash of the resource
-//
-// it uses the hashstructure library to calculate the hash of the resource
-// fields can be ignored by adding the tag `hash:"ignore"` to the field
-func (r *ResourceVirtualMachine) GetRorHash() string {
-	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
-	if err != nil {
-		return ""
-	}
-
-	return fmt.Sprintf("%d", hash)
-}
-
-// (r ResourceVirtualMachine) Get returns a pointer to the resource of type ResourceVirtualMachine
-func (r *ResourceVirtualMachine) Get() *ResourceVirtualMachine {
-	return r
-}
-
 // (r *ResourceFirewallPolicy) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource
