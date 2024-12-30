@@ -8,7 +8,6 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-co-op/gocron v1.37.0
-	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/go-cmp v0.6.0
@@ -168,7 +167,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20241219192143-6b3ec007d9bb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241219192143-6b3ec007d9bb // indirect
 	google.golang.org/protobuf v1.36.0 // indirect
-	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
