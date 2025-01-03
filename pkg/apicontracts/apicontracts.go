@@ -401,6 +401,7 @@ type MetricList struct {
 
 type MetricItem struct {
 	Id      string  `json:"id"`
+	Name    string  `json:"name"`
 	Metrics Metrics `json:"metrics"`
 }
 
@@ -415,6 +416,7 @@ type MetricsCustomItem struct {
 
 type Metric struct {
 	Id               string `json:"id"`
+	Name             string `json:"name"`
 	PriceMonth       int64  `json:"priceMonth"`
 	PriceYear        int64  `json:"priceYear"`
 	Cpu              int64  `json:"cpu"`
