@@ -16,7 +16,7 @@ import (
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	newhealth "github.com/dotse/go-health"
-	"github.com/go-ldap/ldap"
+	"github.com/go-ldap/ldap/v3"
 )
 
 var DefaultTimeout = 10 * time.Second
