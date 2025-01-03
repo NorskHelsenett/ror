@@ -223,6 +223,11 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetNetworkPolicy(res)
 		r.SetCommonInterface(res)
 
+	case "general.ror.internal/v1alpha1, Kind=FirewallPolicy":
+		res := newFirewallPolicyFromDynamicClient(input)
+		r.SetFirewallPolicy(res)
+		r.SetCommonInterface(res)
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return r
@@ -802,6 +807,22 @@ func newNetworkPolicyFromDynamicClient(obj *unstructured.Unstructured) *rortypes
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to NetworkPolicy", err)
+	}
+	return &nr
+}
+
+// newFirewallPolicyFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newFirewallPolicyFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceFirewallPolicy {
+	nr := rortypes.ResourceFirewallPolicy{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to FirewallPolicy", err)
 	}
 	return &nr
 }

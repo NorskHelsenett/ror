@@ -182,9 +182,12 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetNetworkPolicy(res.NetworkPolicyResource)
 		r.SetCommonInterface(res.NetworkPolicyResource)
 
+	case "general.ror.internal/v1alpha1, Kind=FirewallPolicy":
+		r.SetFirewallPolicy(res.FirewallPolicyResource)
+		r.SetCommonInterface(res.FirewallPolicyResource)
+
 	default:
-		rlog.Warn("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
-		return nil
+		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 	}
 	return r
 }

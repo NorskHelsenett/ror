@@ -656,3 +656,21 @@ func (r *ResourceNetworkPolicy) GetRorHash() string {
 func (r *ResourceNetworkPolicy) Get() *ResourceNetworkPolicy {
 	return r
 }
+
+// (r *ResourceFirewallPolicy) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceFirewallPolicy) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceFirewallPolicy) Get returns a pointer to the resource of type ResourceFirewallPolicy
+func (r *ResourceFirewallPolicy) Get() *ResourceFirewallPolicy {
+	return r
+}

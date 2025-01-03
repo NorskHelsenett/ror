@@ -1530,3 +1530,38 @@ func (m ResourceListNetworkpolicies) GetByLabels(search map[string]string) []Res
 	}
 	return Response
 }
+
+// Function to return FirewallPolicy resource by name.
+func (m ResourceListFirewallpolicies) GetByName(search string) ResourceFirewallPolicy {
+	for _, resource := range m.Firewallpolicies {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceFirewallPolicy
+	return emptyResponse
+}
+
+// Function to return FirewallPolicy resource by uid.
+func (m ResourceListFirewallpolicies) GetByUid(search string) ResourceFirewallPolicy {
+	for _, res := range m.Firewallpolicies {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceFirewallPolicy
+	return emptyResponse
+}
+
+// Function to return FirewallPolicy resource by label.
+func (m ResourceListFirewallpolicies) GetByLabels(search map[string]string) []ResourceFirewallPolicy {
+	var Response []ResourceFirewallPolicy
+	for _, res := range m.Firewallpolicies {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}

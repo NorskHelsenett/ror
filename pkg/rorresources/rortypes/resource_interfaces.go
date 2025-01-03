@@ -224,3 +224,9 @@ type NetworkPolicyinterface interface {
 	CommonResourceInterface
 	Get() *ResourceNetworkPolicy
 }
+
+// FirewallPolicyinterface represents the interface for resources of the type firewallpolicy
+type FirewallPolicyinterface interface {
+	CommonResourceInterface
+	Get() *ResourceFirewallPolicy
+}
