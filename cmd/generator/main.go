@@ -1,8 +1,9 @@
 // The Generator package provides a way to generate code for collecting,
 // transfering and saving resources in the agent and api.
-// It also provides functions to fetc the resources.
+// It also provides functions to fetch the resources.
 //
-//	go run build/generator/main.go
+//	 To run the generator stand in the root folder and run:
+//		go run cmd/generator/main.go
 //
 // The package updates the files:
 //   - cmd/agent/clients/dynamicclient_generated.go
