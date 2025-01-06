@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/01cf3ae5-ce20-4149-b2a6-42e05864df0a)![image](https://github.com/user-attachments/assets/a7c763d7-deca-477f-a92b-4b67fcecb4eb)![image](https://github.com/user-attachments/assets/b3cba9a0-68dc-4fb2-bd78-279c21609fcf)# Getting started with creating a ROR resource definition
+# Getting started with creating a ROR resource definition
 
 ## Prerequisites
 
@@ -97,6 +97,10 @@ Spec will be what we can change about this resource
 Status will be what we observe about this resource, not necessarily can change.
 
 #### Create the resource_input_filter definition 
+
+The resource_input_filter runs on import on that type, it can be used to censor, anonymize, remove, or change before data before import.
+
+While it has to be defined on every type, generally we create it and return nil for no action.
 
 1. Create it at:
 
