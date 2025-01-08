@@ -2,22 +2,20 @@ package rortypes
 
 type ResourceVirtualMachine struct {
 	Id     string                       `json:"id"`
-	Name   string                       `json:"name"`
 	Spec   ResourceVirtualMachineSpec   `json:"spec"`
 	Status ResourceVirtualMachineStatus `json:"status"`
 }
 
-// Desired state
+// things we can change
 type ResourceVirtualMachineSpec struct {
-	Cpu             ResourceVirtualMachineCpuSpec             `json:"cpu"`
-	Tags            []ResourceVirtualMachineTagSpec           `json:"tags"`
-	Disks           []ResourceVirtualMachineDiskSpec          `json:"disks"`
-	Memory          ResourceVirtualMachineMemorySpec          `json:"memory"`
-	Networks        []ResourceVirtualMachineNetworkSpec       `json:"networks"`
-	OperatingSystem ResourceVirtualMachineOperatingSystemSpec `json:"operatingSystem"`
+	Name   string                           `json:"name"`
+	Cpu    ResourceVirtualMachineCpuSpec    `json:"cpu"`
+	Tags   []ResourceVirtualMachineTagSpec  `json:"tags"`
+	Disks  []ResourceVirtualMachineDiskSpec `json:"disks"`
+	Memory ResourceVirtualMachineMemorySpec `json:"memory"`
 }
 
-// Observed state
+// things we can't change
 type ResourceVirtualMachineStatus struct {
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
 	Disks           []ResourceVirtualMachineDiskStatus          `json:"disks"`
@@ -38,21 +36,13 @@ type ResourceVirtualMachineDiskStatus struct {
 	UsageBytes string `json:"usageBytes"`
 }
 
-type ResourceVirtualMachineNetworkSpec struct {
+type ResourceVirtualMachineNetworkStatus struct {
 	Id      string `json:"id"`
 	Dns     string `json:"dns"`
 	Ipv4    string `json:"ipv4"`
 	Ipv6    string `json:"ipv6"`
 	Mask    string `json:"mask"`
 	Gateway string `json:"gateway"`
-}
-
-type ResourceVirtualMachineNetworkStatus struct {
-	Id string `json:"id"`
-}
-
-type ResourceVirtualMachineOperatingSystemSpec struct {
-	Id string `json:"id"`
 }
 
 type ResourceVirtualMachineOperatingSystemStatus struct {
