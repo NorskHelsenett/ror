@@ -52,8 +52,8 @@ resourcedef_<resourceName>.go
 2. When creating this file the following rule must be followed:
     - The package name is ``rortypes``
     - The structs all begin with ``Resource`` resulting your type to be ``Resource<YourResourceName>``
-    - Your main struct should contain a ``spec`` and a ``status`` field
-    - The ``spec`` is the desired state, while ``status`` is observed state
+    - Your main struct should contain a ``Spec`` and a ``Status`` field
+    - The ``Spec`` is the desired state, while ``Status`` is observed state, more about that further down.
 
 An example of a resourcedef:
 
@@ -90,15 +90,18 @@ type ResourceVirtualMachineStatus struct {
 
 ##### Spec
 
-Spec will be what we can change about this resource
+Spec will be what we desire the configuration to be for when we wish to change something, like cpu, disk, or memory for the example above.
+Any parameter within here it is expected we're allowed to change if change from ROR is implmeneted.
+
+If the resource is read-only Spec is necessary to implement.
 
 ##### Status
 
-Status will be what we observe about this resource, not necessarily can change.
+Status will be what we observe about this resource, like ids, the current cpu, disk, or memory for the example above.
 
 #### Create the resource_input_filter definition 
 
-The resource_input_filter runs on import on that type, it can be used to censor, anonymize, remove, or change before data before import.
+The resource_input_filter runs on import on that type, it can be used to censor, anonymize, remove, or change data before import.
 
 While it has to be defined on every type, generally we create it and return nil for no action.
 
