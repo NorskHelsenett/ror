@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - main
-    paths-ignore:
+    paths:
       - 'pkg/**'
 jobs:
   build-app:
