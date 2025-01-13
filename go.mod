@@ -40,7 +40,7 @@ require (
 	k8s.io/cli-runtime v0.32.0
 	k8s.io/client-go v0.32.0
 	k8s.io/metrics v0.32.0
-	sigs.k8s.io/controller-runtime v0.19.3
+	sigs.k8s.io/controller-runtime v0.19.4
 )
 
 require (
