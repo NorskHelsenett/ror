@@ -21,6 +21,11 @@ jobs:
       run: |
         echo running generator...
         go run cmd/generator/main.go
+        git diff --exit-code --numstat pkg/
+        if [ $? -ne 0 ]; then
+          echo "Generator generated new files, please run the generator locally and commit the changes"
+          exit 1
+        fi
     - name: Test
       run: |
           echo testing...
