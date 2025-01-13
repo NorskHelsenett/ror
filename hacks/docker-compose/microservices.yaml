@@ -1,9 +1,7 @@
 services:
   ms-nhn:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/nhn/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-nhn:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       mongodb:
@@ -40,9 +38,7 @@ services:
 
   ms-auth:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/auth/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-auth:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       dex:
@@ -80,9 +76,7 @@ services:
 
   ms-slack:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/slack/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-slack:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
@@ -112,9 +106,7 @@ services:
 
   ms-switchboard:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/switchboard/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-switchboard:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
@@ -144,9 +136,7 @@ services:
 
   ms-audit:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/audit/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-audit:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       dex:
@@ -188,9 +178,7 @@ services:
       retries: 5
   ms-kind:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/kind/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-kind:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
@@ -233,9 +221,7 @@ services:
 
   ms-talos:
     platform: linux/amd64
-    build:
-      context: ../../
-      dockerfile: cmd/talos/Dockerfile.compose
+    image: ${ROR_REPO}ror-ms-talos:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
