@@ -1,8 +1,7 @@
 services:
   ms-nhn:
-    build:
-      context: ../../
-      dockerfile: cmd/nhn/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-nhn:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       mongodb:
@@ -38,9 +37,8 @@ services:
       retries: 5
 
   ms-auth:
-    build:
-      context: ../../
-      dockerfile: cmd/auth/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-auth:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       dex:
@@ -77,9 +75,8 @@ services:
       retries: 5
 
   ms-slack:
-    build:
-      context: ../../
-      dockerfile: cmd/slack/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-slack:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
@@ -108,9 +105,8 @@ services:
       retries: 5
 
   ms-switchboard:
-    build:
-      context: ../../
-      dockerfile: cmd/switchboard/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-switchboard:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
@@ -139,9 +135,8 @@ services:
       retries: 5
 
   ms-audit:
-    build:
-      context: ../../
-      dockerfile: cmd/audit/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-audit:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       dex:
@@ -182,9 +177,8 @@ services:
       timeout: 10s
       retries: 5
   ms-kind:
-    build:
-      context: ../../
-      dockerfile: cmd/kind/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-kind:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:
@@ -226,9 +220,8 @@ services:
       retries: 5
 
   ms-talos:
-    build:
-      context: ../../
-      dockerfile: cmd/talos/Dockerfile.compose
+    platform: linux/amd64
+    image: ${ROR_REPO}ror-ms-talos:${ROR_BUILD_TAG}
     restart: always
     depends_on:
       rabbitmq:

@@ -38,4 +38,4 @@ if ! test -f "$envfile"; then
   exit 1
 fi
 
-docker compose --env-file $envfile up openldap dex init-dex-db vault mongodb rabbitmq mongo-express redis ms-auth ms-kind ms-talos $services
+docker compose --env-file $envfile up openldap dex init-dex-db vault mongodb rabbitmq mongo-express redis ms-auth ms-kind $services
