@@ -75,6 +75,9 @@ func (r *ResourceSet) Get() *Resource {
 		rlog.Error("ResourceSet.Get() cursor out of bounds", nil)
 		return nil
 	}
+	if r.Resources == nil {
+		return nil
+	}
 	return r.Resources[cursor]
 }
 
