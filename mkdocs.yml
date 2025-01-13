@@ -79,3 +79,6 @@ nav:
       - ror-operator/index.md
     - ror-agent:
       - ror-agent/index.md
+  - Design:
+    - design/index.md
+    - design/react-framework.md

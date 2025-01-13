@@ -1,5 +1,0 @@
-services:
-  tanzuagent:
-    build:
-      context: ../../
-      dockerfile: cmd/tanzu/agent/Dockerfile

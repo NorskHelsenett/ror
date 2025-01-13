@@ -225,7 +225,7 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 
 	default:
 		rlog.Warn("could not create ResourceSet")
-		return r
+		return nil
 	}
 	return r
 }
