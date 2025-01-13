@@ -1,0 +1,29 @@
+name: Generate and test
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'pkg/**'
+jobs:
+  build-app:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+    #TODO: Check if generator needs to be run, fail if the generator generates new files
+    - name: run generator
+      run: |
+        echo running generator...
+        go run cmd/generator/main.go
+    - name: Test
+      run: |
+          echo testing...
+          go get -t ./...
+          go vet ./...
+          go test -v ./...
