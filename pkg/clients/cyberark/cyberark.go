@@ -16,11 +16,25 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
+type CyberArkAuthMethod string
+
+const (
+	CyberArkAuthMethodCyberArk CyberArkAuthMethod = "Cyberark"
+	CyberArkAuthMethodWindows  CyberArkAuthMethod = "Windows"
+	CyberArkAuthMethodRadius   CyberArkAuthMethod = "RADIUS"
+	CyberArkAuthMethodLDAP     CyberArkAuthMethod = "LDAP"
+)
+
 type CyberarkClient struct {
 	client       http.Client
 	Url          string
 	token        string
+	method       CyberArkAuthMethod
 	validDomains []string
+}
+
+func (c *CyberArkAuthMethod) String() string {
+	return string(*c)
 }
 
 type CyberarkClientInterface interface {
@@ -73,6 +87,22 @@ func NewCyberarkClient(url string, validDomains ...string) (*CyberarkClient, err
 		client: http.Client{},
 		Url:    url,
 		token:  "",
+		method: CyberArkAuthMethodRadius,
+	}
+	if len(validDomains) == 0 {
+		return nil, fmt.Errorf("no valid domains provided")
+	}
+	cyberarkclient.validDomains = validDomains
+
+	return &cyberarkclient, nil
+}
+func NewCyberarkClientWithMethod(url string, method CyberArkAuthMethod, validDomains ...string) (*CyberarkClient, error) {
+
+	cyberarkclient := CyberarkClient{
+		client: http.Client{},
+		Url:    url,
+		token:  "",
+		method: method,
 	}
 	if len(validDomains) == 0 {
 		return nil, fmt.Errorf("no valid domains provided")
@@ -113,7 +143,7 @@ func (c *CyberarkClient) Authenticate(username, password string) (string, time.T
 		return "", expires, err
 	}
 
-	res, err := c.client.Post(c.Url+"/PasswordVault/API/auth/RADIUS/Logon/", "application/json", bytes.NewBuffer(reqjson))
+	res, err := c.client.Post(c.Url+"/PasswordVault/API/auth/"+c.method.String()+"/Logon/", "application/json", bytes.NewBuffer(reqjson))
 	if err != nil {
 		return "", expires, err
 	}

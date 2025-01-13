@@ -7,6 +7,8 @@ on:
       - docs/**
 permissions:
   contents: write
+env:
+  cache_id: 'rordocs'
 jobs:
   deploy:
     runs-on: ubuntu-latest

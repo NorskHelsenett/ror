@@ -2,27 +2,17 @@
 // transfering and saving resources in the agent and api.
 // It also provides functions to fetc the resources.
 //
-//	go run build/generator/main.go
+//		go run build/generator/main.go
 //
-// The package updates the files:
-//   - cmd/agent/clients/dynamicclient_generated.go
-//   - cmd/agentv2/clients/dynamicclient/dynamicclient_generated.go
-//   - cmd/api/controllers/resourcescontroller/resources_controller_read_generated.go
-//   - cmd/api/services/resourcesService/resourceServices_generated.go
-//   - cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go
-//   - internal/models/rorResources/extractResource.go
-//   - internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go
-//
-// If the ror package is available, the package updates the files in the ror package:
-//   - pkg/apicontracts/apiresourcecontracts/resource_models_generated.go
-//   - pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go
-//   - pkg/rorresources/fromstruct.go
-//   - pkg/rorresources/resource.go
-//   - pkg/rorresources/rorkubernetes/k8s_test.go
-//   - pkg/rorresources/rorkubernetes/k8s.go
-//   - pkg/rorresources/rortypes/resource_interfaces.go
-//   - pkg/rorresources/rortypes/resource_models_methods.go
-//   - pkg/rorresources/rortypes/resource_input_filter_*.go
+//	  - pkg/apicontracts/apiresourcecontracts/resource_models_generated.go
+//	  - pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go
+//	  - pkg/rorresources/fromstruct.go
+//	  - pkg/rorresources/resource.go
+//	  - pkg/rorresources/rorkubernetes/k8s_test.go
+//	  - pkg/rorresources/rorkubernetes/k8s.go
+//	  - pkg/rorresources/rortypes/resource_interfaces.go
+//	  - pkg/rorresources/rortypes/resource_models_methods.go
+//	  - pkg/rorresources/rortypes/resource_input_filter_*.go
 //
 // The repo github.com/NorskHelsenett/ROR, should be placed in the ../ror folder or the ROR_PATH environment variable should be set to the path.
 //
@@ -34,7 +24,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -43,33 +32,14 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
-	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
-	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 
 func main() {
 
-	// Resource controller - api
-	//   - cmd/api/controllers/resourcescontroller/resources_controller_read_generated.go
-	templateFile("cmd/api/controllers/resourcescontroller/resources_controller_read_generated.go.tmpl", rordefs.Resourcedefs)
-
-	// Resource services - api
-	//   - cmd/api/services/resourcesService/resourceServices_generated.go
-	templateFile("cmd/api/services/resourcesService/resourceServices_generated.go.tmpl", rordefs.Resourcedefs)
-
 	// Schema - Tanzu service
 	//   - cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go
-	templateFile("cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go.tmpl", rordefs.GetResourcesByType(rordefs.ApiResourceTypeTanzuAgent))
-
-	// Internal - models
-	//   - internal/models/rorResources/extractResource.go
-	templateFile("internal/models/rorResources/extractResource.go.tmpl", rordefs.Resourcedefs)
-
-	// Resource - mongorepo
-	//   - internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go
-	templateFile("internal/mongodbrepo/repositories/resourcesmongodbrepo/resourcesinsertupdate_generated.go.tmpl", rordefs.Resourcedefs)
+	//templateFile("cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go.tmpl", rordefs.GetResourcesByType(rordefs.ApiResourceTypeTanzuAgent))
 
 	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs)
 	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs)
@@ -84,39 +54,11 @@ func main() {
 
 	// Resource models - input filters
 	for _, res := range rordefs.Resourcedefs {
-		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.Kind)
+		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.GetKind())
 		filepath = strings.ToLower(filepath)
 		templateFileOnce(filepath, "/pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
 	}
 
-	// golang struct to typescript interfaces
-	workingDirectory, err := os.Getwd()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	resourceV2TypescriptFilePath := fmt.Sprintf("%s/web/admin/src/app/core/models/resources-v2.ts", workingDirectory)
-	if _, err = os.Stat(resourceV2TypescriptFilePath); errors.Is(err, os.ErrNotExist) {
-		err = touchFile(resourceV2TypescriptFilePath)
-		if err != nil {
-			panic(err.Error())
-		}
-	}
-
-	converter := typescriptify.New()
-	converter.CreateInterface = true
-	converter.CreateConstructor = true
-	converter.AddEnum(rortypes.AllVulnerabilityStatuses)
-	converter.AddEnum(rortypes.AllVulnerabilityDismissalReasons)
-	converter.BackupDir = os.TempDir()
-	converter.Add(rorresources.ResourceSet{})
-	converter.Add(rorresources.ResourceQuery{})
-	err = converter.ConvertToFile(resourceV2TypescriptFilePath)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	formatTypescript()
 }
 
 func templateFileOnce(filepath string, templatePath string, data any) {
@@ -126,17 +68,6 @@ func templateFileOnce(filepath string, templatePath string, data any) {
 		return
 	}
 	templateToFile(filepath, templatePath, data)
-}
-
-func folderExists(folderPath string) bool {
-	fileInfo, err := os.Stat(folderPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-		// Handle other errors if needed
-	}
-	return fileInfo.IsDir()
 }
 
 func fileExists(filePath string) bool {
@@ -192,37 +123,4 @@ func templateToFile(filepath string, templatePath string, data any) {
 		fmt.Println(err)
 	}
 	fmt.Println("Generated file: ", filepath)
-}
-
-func touchFile(filePath string) error {
-	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, 0600) // #nosec G304 - This is a generator and the files are under control
-	if err != nil {
-		return err
-	}
-	return file.Close()
-}
-
-func formatTypescript() {
-	workingDirectory, err := os.Getwd()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	resourceV2TypescriptFilePath := fmt.Sprintf("%s/web/admin", workingDirectory)
-
-	getNodeDependenciesCmd := exec.Command("npm", "install")
-	getNodeDependenciesCmd.Dir = resourceV2TypescriptFilePath
-	_, err = getNodeDependenciesCmd.CombinedOutput()
-	if err != nil {
-		_, _ = fmt.Println("npm install failed with err: ", err.Error())
-		fmt.Println(err)
-	}
-
-	formatCmd := exec.Command("npm", "run", "format")
-	formatCmd.Dir = resourceV2TypescriptFilePath
-	_, err = formatCmd.CombinedOutput()
-	if err != nil {
-		_, _ = fmt.Println("prettier failed with err: ", err.Error())
-		fmt.Println(err)
-	}
 }

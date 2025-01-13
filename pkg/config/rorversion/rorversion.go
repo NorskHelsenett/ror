@@ -5,15 +5,32 @@ import (
 	"strings"
 )
 
+var (
+	Version string
+	Commit  string
+	LibVer  string
+)
+
 type RorVersion struct {
 	Version string
 	Commit  string
+	LibVer  string
 }
 
 func NewRorVersion(version string, commit string) RorVersion {
+	if Version != "" {
+		version = Version
+	}
+	if Commit != "" {
+		commit = Commit
+	}
+	if LibVer == "" {
+		LibVer = "N/A"
+	}
 	return RorVersion{
 		Version: version,
 		Commit:  commit,
+		LibVer:  LibVer,
 	}
 }
 
@@ -23,6 +40,9 @@ func (v RorVersion) GetVersion() string {
 
 func (v RorVersion) GetCommit() string {
 	return v.Commit
+}
+func (v RorVersion) GetLibVer() string {
+	return v.LibVer
 }
 
 func (v RorVersion) GetMajorVersion() string {
