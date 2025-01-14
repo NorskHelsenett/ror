@@ -38,4 +38,18 @@ if ! test -f "$envfile"; then
   exit 1
 fi
 
-docker compose --env-file $envfile up openldap dex init-dex-db vault mongodb rabbitmq mongo-express redis ms-auth ms-kind $services
+if docker compose > /dev/null 2>&1; then
+  compose_cmd="docker compose"
+elif command -v docker-compose; then
+  compose_cmd="docker-compose"
+else
+  echo "Error: Docker Compose is not installed. Please install it and try again."
+  exit 1
+fi
+version=$($compose_cmd version --short | cut -d "." -f 1)
+if [ "$version" -lt 2 ]; then
+    echo "Docker Compose version is to low, needs to be v2.0.0 or higher."
+    exit 1
+fi
+
+$compose_cmd --env-file $envfile up openldap dex init-dex-db vault mongodb rabbitmq mongo-express redis ms-auth ms-kind $services
