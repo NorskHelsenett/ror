@@ -697,6 +697,25 @@ func TestNewResourceSetFromDynamicClientNetworkPolicy(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientDatacenter(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Datacenter",
+			"apiVersion": "infrastructure.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-datacenter",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

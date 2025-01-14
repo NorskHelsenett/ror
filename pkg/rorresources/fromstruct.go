@@ -182,6 +182,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetNetworkPolicy(res.NetworkPolicyResource)
 		r.SetCommonInterface(res.NetworkPolicyResource)
 
+	case "infrastructure.ror.internal/v1alpha1, Kind=Datacenter":
+		r.SetDatacenter(res.DatacenterResource)
+		r.SetCommonInterface(res.DatacenterResource)
+
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 		return nil
