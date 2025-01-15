@@ -2,15 +2,7 @@
 // transfering and saving resources in the agent and api.
 // It also provides functions to fetc the resources.
 //
-<<<<<<< HEAD
-<<<<<<< HEAD
 //		go run build/generator/main.go
-=======
-//	go run cmd/generator/main.go
->>>>>>> 550cbdd (Added resourceBackupJob types and generator stuff)
-=======
-//	go run build/generator/main.go
->>>>>>> aaf2f15 (Update main.go)
 //
 //	  - pkg/apicontracts/apiresourcecontracts/resource_models_generated.go
 //	  - pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go
