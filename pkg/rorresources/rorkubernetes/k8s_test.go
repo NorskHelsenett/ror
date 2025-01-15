@@ -708,10 +708,7 @@ func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
 		},
 	}
 
-	expected := rorresources.NewRorResource("BackupJob", "backupjob.ror.internal/v1alpha1")
-	expected.SetBackupJob(newBackupJobFromDynamicClient(input))
-	expected.SetCommonInterface(newBackupJobFromDynamicClient(input))
-
+	expected := NewResourceFromDynamicClient(input)
 	result := NewResourceSetFromDynamicClient(input)
 
 	if !reflect.DeepEqual(result.Get(), expected) {

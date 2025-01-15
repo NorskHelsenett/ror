@@ -188,10 +188,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
-<<<<<<< HEAD
 		return nil
-=======
->>>>>>> 550cbdd (Added resourceBackupJob types and generator stuff)
 	}
 	return r
 }
