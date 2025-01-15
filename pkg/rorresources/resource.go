@@ -49,6 +49,7 @@ type Resource struct {
 	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
 	EndpointsResource                  *rortypes.ResourceEndpoints                  `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
 	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
+	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -213,6 +214,10 @@ func (r *Resource) SetEndpoints(res *rortypes.ResourceEndpoints) {
 
 func (r *Resource) SetNetworkPolicy(res *rortypes.ResourceNetworkPolicy) {
 	r.NetworkPolicyResource = res
+}
+
+func (r *Resource) SetBackupJob(res *rortypes.ResourceBackupJob) {
+	r.BackupJobResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -393,6 +398,11 @@ func (r *Resource) Endpoints() rortypes.Endpointsinterface {
 // NetworkPolicy is a wrapper for the underlying resource, it provides a NetworkPolicyinterface to work with networkpolicies
 func (r *Resource) NetworkPolicy() rortypes.NetworkPolicyinterface {
 	return r.NetworkPolicyResource
+}
+
+// BackupJob is a wrapper for the underlying resource, it provides a BackupJobinterface to work with backupjobs
+func (r *Resource) BackupJob() rortypes.BackupJobinterface {
+	return r.BackupJobResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

@@ -56,7 +56,7 @@ func main() {
 	for _, res := range rordefs.Resourcedefs {
 		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.GetKind())
 		filepath = strings.ToLower(filepath)
-		templateFileOnce(filepath, "/pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
+		templateFileOnce(filepath, "pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
 	}
 
 }
