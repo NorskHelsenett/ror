@@ -1,16 +1,16 @@
 package rortypes
 
 type ResourceVirtualMachine struct {
-	Id     string                       `json:"id"`
-	Spec   ResourceVirtualMachineSpec   `json:"spec"`
-	Status ResourceVirtualMachineStatus `json:"status"`
+	Id       string                       `json:"id"`
+	Spec     ResourceVirtualMachineSpec   `json:"spec"`
+	Status   ResourceVirtualMachineStatus `json:"status"`
+	Provider string                       `json:"provider"`
 }
 
 // things we can change
 type ResourceVirtualMachineSpec struct {
-	Name   string                           `json:"name"`
 	Cpu    ResourceVirtualMachineCpuSpec    `json:"cpu"`
-	Tags   []ResourceVirtualMachineTagSpec  `json:"tags"`
+	Name   string                           `json:"name"`
 	Disks  []ResourceVirtualMachineDiskSpec `json:"disks"`
 	Memory ResourceVirtualMachineMemorySpec `json:"memory"`
 }
@@ -18,6 +18,7 @@ type ResourceVirtualMachineSpec struct {
 // things we can't change
 type ResourceVirtualMachineStatus struct {
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
+	Tags            []ResourceVirtualMachineTag                 `json:"tags"`
 	Disks           []ResourceVirtualMachineDiskStatus          `json:"disks"`
 	Memory          ResourceVirtualMachineMemoryStatus          `json:"memory"`
 	Networks        []ResourceVirtualMachineNetworkStatus       `json:"networks"`
@@ -32,8 +33,13 @@ type ResourceVirtualMachineDiskSpec struct {
 }
 
 type ResourceVirtualMachineDiskStatus struct {
-	Id         string `json:"id"`
 	UsageBytes string `json:"usageBytes"`
+
+	// is this disk mounted by the os. A disk might be attached to the vm but
+	// mountd by the OS. Might not be set based on the avalible
+	IsMounted string `json:"isMounted"`
+
+	ResourceVirtualMachineDiskSpec `json:"spec"`
 }
 
 type ResourceVirtualMachineNetworkStatus struct {
@@ -60,10 +66,11 @@ type ResourceVirtualMachineCpuSpec struct {
 	Sockets        int    `json:"sockets"`
 	CoresPerSocket int    `json:"coresPerSocket"` //cores per socket
 }
+
 type ResourceVirtualMachineCpuStatus struct {
-	Id    string `json:"id"`
-	Unit  string `json:"unit"` //describes what unit the usage is given in
-	Usage string `json:"usage"`
+	Unit                          string `json:"unit"` //describes what unit the usage is given in
+	Usage                         int    `json:"usage"`
+	ResourceVirtualMachineCpuSpec `json:"spec"`
 }
 
 type ResourceVirtualMachineMemorySpec struct {
@@ -72,12 +79,12 @@ type ResourceVirtualMachineMemorySpec struct {
 }
 
 type ResourceVirtualMachineMemoryStatus struct {
-	Id    string `json:"id"`
-	Unit  string `json:"unit"` //describes what unit the usage is given in
-	Usage string `json:"usage"`
+	Unit                             string `json:"unit"` //describes what unit the usage is given in
+	Usage                            int    `json:"usage"`
+	ResourceVirtualMachineMemorySpec `json:"spec"`
 }
 
-type ResourceVirtualMachineTagSpec struct {
+type ResourceVirtualMachineTag struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
 	Description string `json:"description"`
