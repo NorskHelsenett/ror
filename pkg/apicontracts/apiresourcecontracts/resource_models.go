@@ -23,7 +23,7 @@ const (
 	ResourceVersionV2 ResourceVersion = "v2"
 )
 
-// Deprecated: Use rortypes.RorResourceOwnerReference instead
+// Deprecated: Use rorresourceowner.RorResourceOwnerReference instead
 // The ResourceOwnerReference or ownereref references the owner og a resource.
 // Its used to chek acl and select resources for valid Scopes.
 type ResourceOwnerReference struct {

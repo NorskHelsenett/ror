@@ -3,10 +3,10 @@ package resources
 import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
-	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
 
-func (c *V1Client) GetHashList(ownerref rortypes.RorResourceOwnerReference) (apiresourcecontracts.HashList, error) {
+func (c *V1Client) GetHashList(ownerref rorresourceowner.RorResourceOwnerReference) (apiresourcecontracts.HashList, error) {
 	var hashList apiresourcecontracts.HashList
 	params := []httpclient.HttpTransportClientParams{
 		{Key: httpclient.HttpTransportClientOptsQuery, Value: ownerref.GetQueryParams()},

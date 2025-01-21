@@ -230,3 +230,9 @@ type Datacenterinterface interface {
 	CommonResourceInterface
 	Get() *ResourceDatacenter
 }
+
+// BackupJobinterface represents the interface for resources of the type backupjob
+type BackupJobinterface interface {
+	CommonResourceInterface
+	Get() *ResourceBackupJob
+}
