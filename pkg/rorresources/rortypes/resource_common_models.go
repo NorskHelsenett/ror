@@ -14,6 +14,18 @@ const (
 	K8sActionUpdate ResourceAction = "Update"
 )
 
+var (
+	// aclmodels.ErrInvalidScope is returned when the scope is invalid
+	ErrInvalidScope   = errors.New("invalid scope")
+	ErrInvalidSubject = errors.New("invalid subject")
+)
+
+type ResourceTagProperties string
+
+const (
+	TagPropertiesColor ResourceTagProperties = "color"
+)
+
 // Commonresource defines the minimum resource definition.
 type CommonResource struct {
 	metav1.TypeMeta `json:",inline"`
@@ -28,7 +40,49 @@ type ResourceRorMeta struct {
 	Internal     bool                                       `json:"internal,omitempty"`
 	Hash         string                                     `json:"hash,omitempty"`
 	Ownerref     rorresourceowner.RorResourceOwnerReference `json:"ownerref,omitempty"`
-	Action       ResourceAction                             `json:"action,omitempty"`
+	Action       ResourceAction            `json:"action,omitempty"`
+	Tags         []ResourceTag             `json:"tags,omitempty"`
+}
+
+type ResourceTag struct {
+	Key        string                           `json:"key"`
+	Value      string                           `json:"value"`
+	Properties map[ResourceTagProperties]string `json:"properties"`
+}
+
+// The RorResourceOwnerReference or ownereref references the owner og a resource.
+// Its used to chek acl and select resources for valid Scopes.
+type RorResourceOwnerReference struct {
+	Scope   aclmodels.Acl2Scope   `json:"scope"`   // cluster, workspace,...
+	Subject aclmodels.Acl2Subject `json:"subject"` // ror id eg clusterId or workspaceName
+}
+
+// Validate validates the ResourceOwnerReference
+func (r *RorResourceOwnerReference) Validate() (bool, error) {
+	if r.Scope == "" {
+		return false, ErrInvalidScope
+	}
+	if r.Subject == "" {
+		return false, ErrInvalidSubject
+	}
+	if !r.Scope.IsValid() {
+		return false, ErrInvalidScope
+	}
+	if !r.Subject.HasValidScope(r.Scope) {
+		return false, ErrInvalidScope
+	}
+	return true, nil
+}
+
+func (r RorResourceOwnerReference) String() string {
+	return string(r.Scope) + ":" + string(r.Subject)
+}
+
+func (r RorResourceOwnerReference) GetQueryParams() map[string]string {
+	response := make(map[string]string)
+	response["ownerScope"] = string(r.Scope)
+	response["ownerSubject"] = string(r.Subject)
+	return response
 }
 
 // GetName returns the name of the resource
