@@ -23,6 +23,12 @@ var (
 	ErrInvalidSubject = errors.New("invalid subject")
 )
 
+type ResourceTagProperties string
+
+const (
+	TagPropertiesColor ResourceTagProperties = "color"
+)
+
 // Commonresource defines the minimum resource definition.
 type CommonResource struct {
 	metav1.TypeMeta `json:",inline"`
@@ -38,6 +44,13 @@ type ResourceRorMeta struct {
 	Hash         string                    `json:"hash,omitempty"`
 	Ownerref     RorResourceOwnerReference `json:"ownerref,omitempty"`
 	Action       ResourceAction            `json:"action,omitempty"`
+	Tags         []ResourceTag             `json:"tags,omitempty"`
+}
+
+type ResourceTag struct {
+	Key        string                           `json:"key"`
+	Value      string                           `json:"value"`
+	Properties map[ResourceTagProperties]string `json:"properties"`
 }
 
 // The RorResourceOwnerReference or ownereref references the owner og a resource.
