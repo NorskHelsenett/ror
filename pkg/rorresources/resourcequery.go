@@ -4,8 +4,9 @@ import (
 	"cmp"
 	"slices"
 
-	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
 
 const (
@@ -42,15 +43,15 @@ type ResourceQueryOrder struct {
 }
 
 type ResourceQuery struct {
-	VersionKind      schema.GroupVersionKind              `json:"versionkind,omitempty"`      // memory
-	Uids             []string                             `json:"uids,omitempty"`             // memory
-	OwnerRefs        []rortypes.RorResourceOwnerReference `json:"ownerrefs,omitempty"`        // memory
-	Fields           []string                             `json:"fields,omitempty"`           // post or db
-	Order            []ResourceQueryOrder                 `json:"order,omitempty"`            // post or db
-	Filters          []ResourceQueryFilter                `json:"filters,omitempty"`          // db
-	Offset           int                                  `json:"offset,omitempty"`           // post or db
-	Limit            int                                  `json:"limit,omitempty"`            // post or db
-	RelatedResources []ResourceQuery                      `json:"relatedresources,omitempty"` // memory or db
+	VersionKind      schema.GroupVersionKind                      `json:"versionkind,omitempty"`      // memory
+	Uids             []string                                     `json:"uids,omitempty"`             // memory
+	OwnerRefs        []rorresourceowner.RorResourceOwnerReference `json:"ownerrefs,omitempty"`        // memory
+	Fields           []string                                     `json:"fields,omitempty"`           // post or db
+	Order            []ResourceQueryOrder                         `json:"order,omitempty"`            // post or db
+	Filters          []ResourceQueryFilter                        `json:"filters,omitempty"`          // db
+	Offset           int                                          `json:"offset,omitempty"`           // post or db
+	Limit            int                                          `json:"limit,omitempty"`            // post or db
+	RelatedResources []ResourceQuery                              `json:"relatedresources,omitempty"` // memory or db
 }
 
 func NewResourceQuery() *ResourceQuery {

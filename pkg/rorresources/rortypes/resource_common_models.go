@@ -4,8 +4,8 @@ package rortypes
 import (
 	"errors"
 
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
-
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -38,13 +38,13 @@ type CommonResource struct {
 
 // ResourceRorMeta represents the metadata stored by ror
 type ResourceRorMeta struct {
-	Version      string                    `json:"version,omitempty"`
-	LastReported string                    `json:"lastReported,omitempty"`
-	Internal     bool                      `json:"internal,omitempty"`
-	Hash         string                    `json:"hash,omitempty"`
-	Ownerref     RorResourceOwnerReference `json:"ownerref,omitempty"`
-	Action       ResourceAction            `json:"action,omitempty"`
-	Tags         []ResourceTag             `json:"tags,omitempty"`
+	Version      string                                     `json:"version,omitempty"`
+	LastReported string                                     `json:"lastReported,omitempty"`
+	Internal     bool                                       `json:"internal,omitempty"`
+	Hash         string                                     `json:"hash,omitempty"`
+	Ownerref     rorresourceowner.RorResourceOwnerReference `json:"ownerref,omitempty"`
+	Action       ResourceAction                             `json:"action,omitempty"`
+	Tags         []ResourceTag                              `json:"tags,omitempty"`
 }
 
 type ResourceTag struct {

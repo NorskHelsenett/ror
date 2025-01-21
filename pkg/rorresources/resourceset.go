@@ -3,9 +3,8 @@ package rorresources
 import (
 	"encoding/json"
 
-	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
-
 	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
@@ -159,7 +158,7 @@ func (r *ResourceSet) FilterByAPIVersionKind(apiVersion string, kind string) *Re
 }
 
 // FilterByOwnerReference returns a ResourceSet filtered by ownerreference.
-func (r *ResourceSet) FilterByOwnerReference(ownerRef rortypes.RorResourceOwnerReference) *ResourceSet {
+func (r *ResourceSet) FilterByOwnerReference(ownerRef rorresourceowner.RorResourceOwnerReference) *ResourceSet {
 	var response ResourceSet
 
 	for _, resource := range r.Resources {

@@ -19,7 +19,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
-	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
@@ -249,8 +249,8 @@ func (a *RorClientConfig) GetRorClient() *rorclient.RorClient {
 	return a.rorClient
 }
 
-func (a *RorClientConfig) CreateOwnerref() rortypes.RorResourceOwnerReference {
-	return rortypes.RorResourceOwnerReference{
+func (a *RorClientConfig) CreateOwnerref() rorresourceowner.RorResourceOwnerReference {
+	return rorresourceowner.RorResourceOwnerReference{
 		Scope:   aclmodels.Acl2ScopeCluster,
 		Subject: aclmodels.Acl2Subject(a.GetClusterId()),
 	}
