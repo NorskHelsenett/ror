@@ -68,29 +68,3 @@ func (e RorError) AsJson() []byte {
 func (e RorError) AsString() string {
 	return string(e.AsJson())
 }
-func (e RorError) GinLogErrorJSON(c *gin.Context, fields ...Field) {
-	e.logError(c, fields...)
-	c.JSON(e.Status, e)
-}
-func (e RorError) GinLogErrorAbort(c *gin.Context, fields ...Field) {
-	e.logError(c, fields...)
-	c.AbortWithStatusJSON(e.Status, e)
-}
-func (e RorError) logError(c *gin.Context, fields ...Field) {
-	zfields := make([]rlog.Field, len(fields))
-	if len(e.errors) > 0 {
-		for _, errs := range e.errors {
-			zfields = append(zfields, rlog.String("error", errs.Error()))
-		}
-	}
-
-	for _, field := range fields {
-		zfields = append(zfields, field.ToRlog())
-	}
-	rlog.Errorc(c.Request.Context(), "error", e, zfields...)
-}
-
-func (e RorError) GinLogErrorAndAbortWithMessage(c *gin.Context, message string, fields ...rlog.Field) {
-	rlog.Errorc(c.Request.Context(), message, e, fields...)
-	c.AbortWithStatusJSON(e.Status, e)
-}
