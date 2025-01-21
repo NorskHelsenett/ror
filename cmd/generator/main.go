@@ -41,19 +41,20 @@ func main() {
 	//   - cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go
 	//templateFile("cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go.tmpl", rordefs.GetResourcesByType(rordefs.ApiResourceTypeTanzuAgent))
 
-	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs)
-	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs)
+	// Resource models v1
+	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
+	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
 
-	// Resource models
-	templateFile("pkg/rorresources/fromstruct.go.tmpl", rordefs.Resourcedefs)
-	templateFile("pkg/rorresources/resource.go.tmpl", rordefs.Resourcedefs)
-	templateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs)
-	templateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs)
-	templateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs)
-	templateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs)
+	// Resource models v2
+	templateFile("pkg/rorresources/fromstruct.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	templateFile("pkg/rorresources/resource.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	templateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	templateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	templateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	templateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 
 	// Resource models - input filters
-	for _, res := range rordefs.Resourcedefs {
+	for _, res := range rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2) {
 		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.GetKind())
 		filepath = strings.ToLower(filepath)
 		templateFileOnce(filepath, "pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)

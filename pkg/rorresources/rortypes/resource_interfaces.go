@@ -225,6 +225,12 @@ type NetworkPolicyinterface interface {
 	Get() *ResourceNetworkPolicy
 }
 
+// Datacenterinterface represents the interface for resources of the type datacenter
+type Datacenterinterface interface {
+	CommonResourceInterface
+	Get() *ResourceDatacenter
+}
+
 // BackupJobinterface represents the interface for resources of the type backupjob
 type BackupJobinterface interface {
 	CommonResourceInterface

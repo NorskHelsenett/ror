@@ -182,6 +182,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetNetworkPolicy(res.NetworkPolicyResource)
 		r.SetCommonInterface(res.NetworkPolicyResource)
 
+	case "infrastructure.ror.internal/v1alpha1, Kind=Datacenter":
+		r.SetDatacenter(res.DatacenterResource)
+		r.SetCommonInterface(res.DatacenterResource)
+
 	case "backupjob.ror.internal/v1alpha1, Kind=BackupJob":
 		r.SetBackupJob(res.BackupJobResource)
 		r.SetCommonInterface(res.BackupJobResource)

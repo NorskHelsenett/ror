@@ -2,103 +2,15 @@
 package rordefs // Package resourcegeneratormodels
 
 import (
-	"golang.org/x/exp/slices"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 )
-
-type ApiResourceType string
-
-const (
-	ApiResourceTypeUnknown     ApiResourceType = ""
-	ApiResourceTypeAgent       ApiResourceType = "Agent"
-	ApiResourceTypeVmAgent     ApiResourceType = "VmAgent"
-	ApiResourceTypeTanzuAgent  ApiResourceType = "TanzuAgent"
-	ApiResourceTypeBackupAgent ApiResourceType = "BackupAgent"
-	ApiResourceTypeInternal    ApiResourceType = "Internal"
-)
-
-// ApiResource
-// The type describing a resource implemented in ror
-type ApiResource struct {
-	metav1.TypeMeta `json:",inline"`
-	Plural          string
-	Namespaced      bool
-	Types           []ApiResourceType
-}
-
-// GetApiVersion
-// Generates the apiVersion from the resource object to match with kubernetes api resources
-func (m ApiResource) GetApiVersion() string {
-	return m.APIVersion
-}
-
-func (m ApiResource) GetVersion() string {
-	return m.GroupVersionKind().Version
-}
-
-func (m ApiResource) GetGroup() string {
-	return m.GroupVersionKind().Group
-}
-
-func (m ApiResource) GetKind() string {
-	return m.Kind
-}
-
-func (m ApiResource) GetResource() string {
-	return m.Plural
-}
-
-func (m ApiResource) GetGroupVersionKind() schema.GroupVersionKind {
-	return schema.GroupVersionKind{
-		Group:   m.GroupVersionKind().Group,
-		Version: m.GroupVersionKind().Version,
-		Kind:    m.GetKind(),
-	}
-}
-
-func (m ApiResource) GetGroupVersionResource() schema.GroupVersionResource {
-	return schema.GroupVersionResource{
-		Group:    m.GroupVersionKind().Group,
-		Version:  m.GroupVersionKind().Version,
-		Resource: m.GetResource(),
-	}
-}
-
-func (m ApiResource) PluralCapitalized() string {
-	caser := cases.Title(language.Und)
-
-	return caser.String(m.Plural)
-}
-
-func GetSchemasByType(resourceType ApiResourceType) []schema.GroupVersionResource {
-	var resources []schema.GroupVersionResource
-	for _, resource := range GetResourcesByType(resourceType) {
-		resources = append(resources, resource.GetGroupVersionResource())
-	}
-
-	return resources
-}
-
-func GetResourcesByType(resourceType ApiResourceType) []ApiResource {
-	var resources []ApiResource
-	for _, resource := range Resourcedefs {
-		if slices.Contains(resource.Types, resourceType) {
-			resources = append(resources, resource)
-		}
-	}
-
-	return resources
-}
 
 // Resources implemented in ror
 //
 // When changed the generator must be run, and the files generated checked in with the code.
 //
 //	$ go run build/generator/main.go
-var Resourcedefs = []ApiResource{
+var Resourcedefs = ApiResources{
 	{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Namespace",
@@ -107,6 +19,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "namespaces",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Node",
@@ -115,6 +28,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "nodes",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PersistentVolumeClaim",
@@ -123,6 +37,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "persistentvolumeclaims",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
@@ -131,6 +46,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "deployments",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "StorageClass",
@@ -139,6 +55,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "storageclasses",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PolicyReport",
@@ -147,6 +64,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "policyreports",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Application",
@@ -155,6 +73,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "applications",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "AppProject",
@@ -163,6 +82,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "appprojects",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Certificate",
@@ -171,6 +91,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "certificates",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Service",
@@ -179,6 +100,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "services",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Pod",
@@ -187,6 +109,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "pods",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ReplicaSet",
@@ -195,6 +118,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "replicasets",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "StatefulSet",
@@ -203,6 +127,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "statefulsets",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "DaemonSet",
@@ -211,6 +136,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "daemonsets",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Ingress",
@@ -219,6 +145,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "ingresses",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "IngressClass",
@@ -227,6 +154,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "ingressclasses",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VulnerabilityReport",
@@ -235,6 +163,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "vulnerabilityreports",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ExposedSecretReport",
@@ -243,6 +172,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "exposedsecretreports",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ConfigAuditReport",
@@ -251,6 +181,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "configauditreports",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "RbacAssessmentReport",
@@ -259,6 +190,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "rbacassessmentreports",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "TanzuKubernetesCluster",
@@ -267,6 +199,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "tanzukubernetesclusters",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "TanzuKubernetesRelease",
@@ -275,6 +208,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "tanzukubernetesreleases",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VirtualMachineClass",
@@ -283,6 +217,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "virtualmachineclasses",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VirtualMachineClassBinding",
@@ -291,6 +226,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "virtualmachineclassbindings",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "KubernetesCluster",
@@ -299,6 +235,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "kubernetesclusters",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ClusterOrder",
@@ -307,6 +244,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "clusterorders",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Project",
@@ -315,6 +253,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "projects",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Configuration",
@@ -323,6 +262,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "configurations",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ClusterComplianceReport",
@@ -331,6 +271,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "clustercompliancereports",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ClusterVulnerabilityReport",
@@ -339,6 +280,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "clustervulnerabilityreports",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
@@ -347,6 +289,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "routes",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "SlackMessage",
@@ -355,6 +298,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "slackmessages",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VulnerabilityEvent",
@@ -363,6 +307,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "vulnerabilityevents",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VirtualMachine",
@@ -371,6 +316,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "VirtualMachines",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	},
 	{
 		TypeMeta: metav1.TypeMeta{
@@ -380,6 +326,7 @@ var Resourcedefs = []ApiResource{
 		Plural:     "endpoints",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "NetworkPolicy",
@@ -388,6 +335,16 @@ var Resourcedefs = []ApiResource{
 		Plural:     "networkpolicies",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Datacenter",
+			APIVersion: "infrastructure.ror.internal/v1alpha1",
+		},
+		Plural:     "datacenters",
+		Namespaced: true,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BackupJob",
@@ -396,5 +353,6 @@ var Resourcedefs = []ApiResource{
 		Plural:     "backupjobs",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeBackupAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	},
 }
