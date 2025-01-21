@@ -2,6 +2,9 @@
 package rortypes
 
 import (
+	"errors"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -40,8 +43,8 @@ type ResourceRorMeta struct {
 	Internal     bool                                       `json:"internal,omitempty"`
 	Hash         string                                     `json:"hash,omitempty"`
 	Ownerref     rorresourceowner.RorResourceOwnerReference `json:"ownerref,omitempty"`
-	Action       ResourceAction            `json:"action,omitempty"`
-	Tags         []ResourceTag             `json:"tags,omitempty"`
+	Action       ResourceAction                             `json:"action,omitempty"`
+	Tags         []ResourceTag                              `json:"tags,omitempty"`
 }
 
 type ResourceTag struct {
