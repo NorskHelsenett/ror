@@ -1,29 +1,38 @@
 package rortypes
 
+import "time"
+
 type ResourceVirtualMachine struct {
-	Id     string                       `json:"id"`
-	Name   string                       `json:"name"`
-	Spec   ResourceVirtualMachineSpec   `json:"spec"`
-	Status ResourceVirtualMachineStatus `json:"status"`
+	Id       string                       `json:"id"`
+	Spec     ResourceVirtualMachineSpec   `json:"spec"`
+	Status   ResourceVirtualMachineStatus `json:"status"`
+	Provider string                       `json:"provider"`
 }
 
-// Desired state
+// things we can change
 type ResourceVirtualMachineSpec struct {
-	Cpu             ResourceVirtualMachineCpuSpec             `json:"cpu"`
-	Tags            []ResourceVirtualMachineTagSpec           `json:"tags"`
-	Disks           []ResourceVirtualMachineDiskSpec          `json:"disks"`
-	Memory          ResourceVirtualMachineMemorySpec          `json:"memory"`
-	Networks        []ResourceVirtualMachineNetworkSpec       `json:"networks"`
-	OperatingSystem ResourceVirtualMachineOperatingSystemSpec `json:"operatingSystem"`
+	Cpu    ResourceVirtualMachineCpuSpec    `json:"cpu"`
+	Name   string                           `json:"name"`
+	Disks  []ResourceVirtualMachineDiskSpec `json:"disks"`
+	Memory ResourceVirtualMachineMemorySpec `json:"memory"`
 }
 
-// Observed state
+// things we can't change
 type ResourceVirtualMachineStatus struct {
+	LastUpdated     time.Time                                   `json:"lastUpdated"`
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
+	Tags            []ResourceVirtualMachineTag                 `json:"tags"`
+	State           ResourceVirtualMachineState                 `json:"state"`
 	Disks           []ResourceVirtualMachineDiskStatus          `json:"disks"`
 	Memory          ResourceVirtualMachineMemoryStatus          `json:"memory"`
 	Networks        []ResourceVirtualMachineNetworkStatus       `json:"networks"`
 	OperatingSystem ResourceVirtualMachineOperatingSystemStatus `json:"operatingSystem"`
+}
+
+type ResourceVirtualMachineState struct {
+	State  string `json:"state"`
+	Reason string `json:"reason"`
+	Time   string `json:"time"`
 }
 
 type ResourceVirtualMachineDiskSpec struct {
@@ -34,25 +43,24 @@ type ResourceVirtualMachineDiskSpec struct {
 }
 
 type ResourceVirtualMachineDiskStatus struct {
-	Id         string `json:"id"`
 	UsageBytes string `json:"usageBytes"`
+
+	// is this disk mounted by the os? A disk might be attached to the vm but
+	// not mounted by the OS, it can also be unknown because the vm might not report
+	// this or may not have tools installed, false can mean we dont know or that
+	// it is actually not mounted.
+	IsMounted bool `json:"isMounted"`
+
+	ResourceVirtualMachineDiskSpec `json:"spec"`
 }
 
-type ResourceVirtualMachineNetworkSpec struct {
+type ResourceVirtualMachineNetworkStatus struct {
 	Id      string `json:"id"`
 	Dns     string `json:"dns"`
 	Ipv4    string `json:"ipv4"`
 	Ipv6    string `json:"ipv6"`
 	Mask    string `json:"mask"`
 	Gateway string `json:"gateway"`
-}
-
-type ResourceVirtualMachineNetworkStatus struct {
-	Id string `json:"id"`
-}
-
-type ResourceVirtualMachineOperatingSystemSpec struct {
-	Id string `json:"id"`
 }
 
 type ResourceVirtualMachineOperatingSystemStatus struct {
@@ -66,28 +74,27 @@ type ResourceVirtualMachineOperatingSystemStatus struct {
 }
 
 type ResourceVirtualMachineCpuSpec struct {
-	Id             string `json:"id"`
-	Sockets        int    `json:"sockets"`
-	CoresPerSocket int    `json:"coresPerSocket"` //cores per socket
+	Sockets        int `json:"sockets"`
+	CoresPerSocket int `json:"coresPerSocket"` //cores per socket
 }
+
 type ResourceVirtualMachineCpuStatus struct {
-	Id    string `json:"id"`
-	Unit  string `json:"unit"` //describes what unit the usage is given in
-	Usage string `json:"usage"`
+	Unit                          string `json:"unit"` //describes what unit the usage is given in
+	Usage                         int    `json:"usage"`
+	ResourceVirtualMachineCpuSpec `json:"spec"`
 }
 
 type ResourceVirtualMachineMemorySpec struct {
-	Id        string `json:"id"`
-	SizeBytes int    `json:"sizeBytes"`
+	SizeBytes int `json:"sizeBytes"`
 }
 
 type ResourceVirtualMachineMemoryStatus struct {
-	Id    string `json:"id"`
-	Unit  string `json:"unit"` //describes what unit the usage is given in
-	Usage string `json:"usage"`
+	Unit                             string `json:"unit"` //describes what unit the usage is given in
+	Usage                            int    `json:"usage"`
+	ResourceVirtualMachineMemorySpec `json:"spec"`
 }
 
-type ResourceVirtualMachineTagSpec struct {
+type ResourceVirtualMachineTag struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
 	Description string `json:"description"`
