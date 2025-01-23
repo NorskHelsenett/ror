@@ -1,6 +1,7 @@
 services:
   api:
     restart: always
+    platform: linux/amd64
     ports:
       - '10000:8080'
     depends_on:
@@ -22,9 +23,9 @@ services:
       - LOG_LEVEL=debug
       - GIN_MODE=debug
       - ALLOW_ORIGINS=https://ror.sky.test.nhn.no;http://localhost:11000;http://127.0.0.1:11000
-      - OIDC_PROVIDER=http://dex:5556/dex
-      - SKIP_OIDC_ISSUER_VERIFY=true
+      - HTTP_PORT=10000
       - VAULT_URL=http://vault:8200
+      - MONGODB_PORT=27017
       - OPENTELEMETRY_COLLECTOR_ENDPOINT=opentelemetry-collector:4317
       - DEVELOPMENT=false
       - LOCALHOST=false
@@ -33,7 +34,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - REDIS_HOST=redis
       - MONGODB_HOST=mongodb
-      - NO_PROXY=*.nhn.no, vault
+      - HEALTHCHECK_ENDPOINT=localhost:9999
     volumes:
       - ../data/secrets:/tmp/secrets:rw
     healthcheck:
