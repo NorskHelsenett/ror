@@ -13,6 +13,9 @@ type ResourceBackupJobSpec struct {
 	// The name of the job
 	Name string `json:"name"`
 
+	// Status of the backup job, active, paused, etc.
+	Status string `json:"status"`
+
 	// Defines the name of the system the run originates from
 	SourceName string `json:"sourceName"`
 
@@ -21,11 +24,10 @@ type ResourceBackupJobSpec struct {
 
 	// Defines the policy id at the local system that defines the rules for the data, how long it's stored
 	// where's it's stored, and other options
-	PolicyId             string                         `json:"policyId"`
-	TargetObjectsRefs    []string                       `json:"targetObjectsRefs"`
-	DirectBackupTarget   []ResourceIndirectBackupTarget `json:"directBackupTarget"`
-	IndirectBackupTarget []ResourceDirectBackupTarget   `json:"indirectBackupTarget"`
-	BackupDestination    []ResourceBackupDestination    `json:"backupDestination"`
+	PolicyId              string                         `json:"policyId"`
+	ActiveTargets         []ResourceBackupTarget         `json:"ActiveTargets"`
+	IndirectBackupTargets []ResourceIndirectBackupTarget `json:"indirectBackupTargets"`
+	BackupDestinations    []ResourceBackupDestination    `json:"backupDestinations"`
 
 	// Some backup systems allow StartTime to be defined per backupJob, while some use policies
 	StartTime time.Time `json:"startTime"`
@@ -39,48 +41,33 @@ type ResourceBackupJobSpec struct {
 
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
+	ResourceBackupJobSpec
 
-	// The name of the job
-	Name string `json:"name"`
-
-	// Defines the name of the system the run originates from
-	SourceName string `json:"sourceName"`
-
-	// Defines the id of the system the run originates from
-	SourceId string `json:"sourceId"`
-
-	// Defines the id of the job from the system in originates from
-	JobId string `json:"jobId"`
-
-	// Defines the policy id at the local system that defines the rules for the data, how long it's stored
-	// where's it's stored, and other options
-	PolicyId             string                         `json:"policyId"`
-	DirectBackupTarget   []ResourceIndirectBackupTarget `json:"DirectBackupTarget"`
-	IndirectBackupTarget []ResourceDirectBackupTarget   `json:"backupTarget"`
-	ResourceBackupRuns   []ResourceBackupRun            `json:"resourceBackupRuns"`
-
-	// Some backup systems allow StartTime to be defined per backupJob, while some use policies
-	StartTime time.Time `json:"startTime"`
-
-	// Some backup systems allow EndTime to be defined per backupJob, while some use policies
-	EndTime time.Time `json:"endTime"`
-
-	// Some backup systems allow ExpiryTime to be defined per backupJob, while some use policies
-	ExpiryTime time.Time `json:"expiryTime"`
+	Runs []ResourceBackupRun `json:"runs"`
 }
 
 // Once instance of a run from a backup job
 type ResourceBackupRun struct {
-	BackupTarget      []ResourceDirectBackupTarget `json:"backupTarget"`
-	BackupDestination []ResourceBackupDestination  `json:"backupDestination"`
-	StartTime         time.Time                    `json:"startTime"`
-	EndTime           time.Time                    `json:"endTime"`
-	ExpiryTime        time.Time                    `json:"expiryTime"`
-	BackupStorage     ResourceBackupStorage        `json:"backupStorage"`
+	BackupTargets      []ResourceBackupTarget      `json:"backupTargets"`
+	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
+	StartTime          time.Time                   `json:"startTime"`
+	EndTime            time.Time                   `json:"endTime"`
+	ExpiryTime         time.Time                   `json:"expiryTime"`
+	BackupStorage      ResourceBackupStorage       `json:"backupStorage"`
 }
 
 // Defines a singular direct backup target, this could be a VM, a storage object, etc.
 type ResourceDirectBackupTarget struct {
+	BackupTargets     []ResourceBackupTarget    `json:"backupTargets"`
+	BackupDestination ResourceBackupDestination `json:"backupDestination"`
+	StartTime         time.Time                 `json:"startTime"`
+	EndTime           time.Time                 `json:"endTime"`
+	ExpiryTime        time.Time                 `json:"expiryTime"`
+	BackupStorage     ResourceBackupStorage     `json:"backupStorage"`
+}
+
+// Defines a singular backup target, this could be a VM, a storage object, etc.
+type ResourceBackupTarget struct {
 	Name        string            `json:"name"`        // Defines the object's name
 	Id          string            `json:"id"`          // Defines the object's id
 	ExternalIds map[string]string `json:"externalIds"` // Defines any external ids by the backup system(s)
@@ -96,10 +83,14 @@ type ResourceIndirectBackupTarget struct {
 }
 
 type ResourceBackupDestination struct {
-	Name       string    `json:"name"`
-	Id         string    `json:"id"`
-	Type       string    `json:"type"`       // Local, remote, archive, etc.
-	Success    bool      `json:"success"`    // Whether the run was successful in creating a copy, despite any possible issues
+	Name string `json:"name"`
+	Id   string `json:"id"`
+
+	// Local, remote, archive, etc.
+	Type string `json:"type"`
+
+	// Status spesific to the destination - remote being unavailable
+	Status     string    `json:"Status"`
 	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
