@@ -26,7 +26,7 @@ type ResourceBackupJobSpec struct {
 	// Defines the policy id at the local system that defines the rules for the data, how long it's stored
 	// where's it's stored, and other options
 	PolicyId              string                         `json:"policyId"`
-	ActiveTargets         []ResourceBackupTarget         `json:"ActiveTargets"`
+	ActiveTargets         []ResourceBackupTarget         `json:"activeTargets"`
 	IndirectBackupTargets []ResourceIndirectBackupTarget `json:"indirectBackupTargets"`
 	BackupDestinations    []ResourceBackupDestination    `json:"backupDestinations"`
 
@@ -90,7 +90,7 @@ type ResourceBackupDestination struct {
 	Type string `json:"type"`
 
 	// Status spesific to the destination - remote being unavailable
-	Status     string    `json:"Status"`
+	Status     string    `json:"status"`
 	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
