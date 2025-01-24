@@ -3,6 +3,7 @@ package rortypes
 import "time"
 
 type ResourceBackupJob struct {
+	Id     string                  `json:"id"`
 	Status ResourceBackupJobStatus `json:"status"`
 	Spec   ResourceBackupJobSpec   `json:"spec"`
 }
