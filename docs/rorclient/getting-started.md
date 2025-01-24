@@ -131,7 +131,7 @@ func (r *RorClient) UpdateVms(ctx context.Context, vmResources []*rortypes.Resou
 		names = append(names, vm.Name)
 		res := rorresources.NewRorResource("VirtualMachine", "general.ror.internal/v1alpha1")
 
-		res.RorMeta.Ownerref = rortypes.RorResourceOwnerReference{
+		res.RorMeta.Ownerref = rorresourceowner.RorResourceOwnerReference{
 			Scope:   aclmodels.Acl2ScopeRor,
 			Subject: aclmodels.Acl2RorSubjectGlobal,
 		}

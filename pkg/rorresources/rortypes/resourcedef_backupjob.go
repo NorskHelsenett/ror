@@ -43,7 +43,6 @@ type ResourceBackupJobSpec struct {
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
 	ResourceBackupJobSpec
-
 	Runs []ResourceBackupRun `json:"runs"`
 }
 
