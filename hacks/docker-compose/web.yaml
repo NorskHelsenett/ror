@@ -8,6 +8,7 @@ services:
         API_PORT: 10000
     ports:
       - "11000:8090"
+    platform: linux/amd64
     volumes:
       - type: bind
         source: ../../web/admin/nginx/http_compose.conf
