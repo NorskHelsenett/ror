@@ -1,22 +1,11 @@
 /* Do not change, this code is generated from Golang structs */
 
-export enum VulnerabilityStatus {
-  NOT_ASSESSED = 0,
-  NEEDS_TRIAGE = 1,
-  CONFIRMED = 2,
-  DISMISSED = 3,
-}
-export enum VulnerabilityDismissalReason {
-  ACCEPTABLE_RISK = 0,
-  FALSE_POSITIVE = 1,
-  NOT_APPLICABLE = 2,
-}
 export interface ResourceBackupJobSpec {
   name: string;
+  status: string;
   sourceName: string;
   sourceId: string;
   policyId: string;
-  targetObjectsRefs: string[];
   directBackupTarget: ResourceIndirectBackupTarget[];
   indirectBackupTarget: ResourceDirectBackupTarget[];
   backupDestination: ResourceBackupDestination[];
@@ -34,21 +23,21 @@ export interface ResourceBackupDestination {
   name: string;
   id: string;
   type: string;
-  success: boolean;
+  Status: string;
   expiryTime: Time;
 }
-export interface ResourceBackupRun {
-  backupTarget: ResourceDirectBackupTarget[];
+export interface ResourceBackupTarget {
+  name: string;
+  id: string;
+  externalIds: { [key: string]: string };
+}
+export interface ResourceDirectBackupTarget {
+  backupTargets: ResourceBackupTarget[];
   backupDestination: ResourceBackupDestination[];
   startTime: Time;
   endTime: Time;
   expiryTime: Time;
   backupStorage: ResourceBackupStorage;
-}
-export interface ResourceDirectBackupTarget {
-  name: string;
-  id: string;
-  externalIds: { [key: string]: string };
 }
 export interface ResourceIndirectBackupTarget {
   type: string;
@@ -57,13 +46,13 @@ export interface ResourceIndirectBackupTarget {
 }
 export interface ResourceBackupJobStatus {
   name: string;
+  status: string;
   sourceName: string;
   sourceId: string;
-  jobId: string;
   policyId: string;
-  DirectBackupTarget: ResourceIndirectBackupTarget[];
-  backupTarget: ResourceDirectBackupTarget[];
-  resourceBackupRuns: ResourceBackupRun[];
+  directBackupTarget: ResourceIndirectBackupTarget[];
+  indirectBackupTarget: ResourceDirectBackupTarget[];
+  backupDestination: ResourceBackupDestination[];
   startTime: Time;
   endTime: Time;
   expiryTime: Time;
@@ -71,6 +60,22 @@ export interface ResourceBackupJobStatus {
 export interface ResourceBackupJob {
   status: ResourceBackupJobStatus;
   spec: ResourceBackupJobSpec;
+}
+export interface DatacenterLocation {
+  id: string;
+  region: string;
+  country: string;
+}
+export interface Datacenter {
+  id: string;
+  name: string;
+  provider: string;
+  location: DatacenterLocation;
+  apiEndpoint: string;
+}
+export interface ResourceDatacenter {
+  spec: ResourceDaemonSetStatus;
+  legacy: Datacenter;
 }
 export interface ResourceNetworkPolicyCondition {
   lastTransitionTime: string;
@@ -182,41 +187,52 @@ export interface ResourceVirtualMachineOperatingSystemStatus {
 }
 export interface ResourceVirtualMachineNetworkStatus {
   id: string;
-}
-export interface ResourceVirtualMachineMemoryStatus {
-  id: string;
-  unit: string;
-  usage: string;
-}
-export interface ResourceVirtualMachineDiskStatus {
-  id: string;
-  usageBytes: string;
-}
-export interface ResourceVirtualMachineCpuStatus {
-  id: string;
-  unit: string;
-  usage: string;
-}
-export interface ResourceVirtualMachineStatus {
-  cpu: ResourceVirtualMachineCpuStatus;
-  disks: ResourceVirtualMachineDiskStatus[];
-  memory: ResourceVirtualMachineMemoryStatus;
-  networks: ResourceVirtualMachineNetworkStatus[];
-  operatingSystem: ResourceVirtualMachineOperatingSystemStatus;
-}
-export interface ResourceVirtualMachineOperatingSystemSpec {
-  id: string;
-}
-export interface ResourceVirtualMachineNetworkSpec {
-  id: string;
   dns: string;
   ipv4: string;
   ipv6: string;
   mask: string;
   gateway: string;
 }
-export interface ResourceVirtualMachineMemorySpec {
+export interface ResourceVirtualMachineMemoryStatus {
+  unit: string;
+  usage: number;
+  sizeBytes: number;
+}
+export interface ResourceVirtualMachineDiskStatus {
+  usageBytes: string;
+  isMounted: boolean;
   id: string;
+  name: string;
+  type: string;
+  sizeBytes: number;
+}
+export interface ResourceVirtualMachineState {
+  state: string;
+  reason: string;
+  time: string;
+}
+export interface ResourceVirtualMachineTag {
+  key: string;
+  value: string;
+  description: string;
+}
+export interface ResourceVirtualMachineCpuStatus {
+  unit: string;
+  usage: number;
+  sockets: number;
+  coresPerSocket: number;
+}
+export interface ResourceVirtualMachineStatus {
+  lastUpdated: Time;
+  cpu: ResourceVirtualMachineCpuStatus;
+  tags: ResourceVirtualMachineTag[];
+  state: ResourceVirtualMachineState;
+  disks: ResourceVirtualMachineDiskStatus[];
+  memory: ResourceVirtualMachineMemoryStatus;
+  networks: ResourceVirtualMachineNetworkStatus[];
+  operatingSystem: ResourceVirtualMachineOperatingSystemStatus;
+}
+export interface ResourceVirtualMachineMemorySpec {
   sizeBytes: number;
 }
 export interface ResourceVirtualMachineDiskSpec {
@@ -225,29 +241,21 @@ export interface ResourceVirtualMachineDiskSpec {
   type: string;
   sizeBytes: number;
 }
-export interface ResourceVirtualMachineTagSpec {
-  key: string;
-  value: string;
-  description: string;
-}
 export interface ResourceVirtualMachineCpuSpec {
-  id: string;
   sockets: number;
   coresPerSocket: number;
 }
 export interface ResourceVirtualMachineSpec {
   cpu: ResourceVirtualMachineCpuSpec;
-  tags: ResourceVirtualMachineTagSpec[];
+  name: string;
   disks: ResourceVirtualMachineDiskSpec[];
   memory: ResourceVirtualMachineMemorySpec;
-  networks: ResourceVirtualMachineNetworkSpec[];
-  operatingSystem: ResourceVirtualMachineOperatingSystemSpec;
 }
 export interface ResourceVirtualMachine {
   id: string;
-  name: string;
   spec: ResourceVirtualMachineSpec;
   status: ResourceVirtualMachineStatus;
+  provider: string;
 }
 export interface ResourceVulnerabilityEventSpec {
   owner: RorResourceOwnerReference;
@@ -287,9 +295,9 @@ export interface ResourceRoute {
   spec: ResourceRouteSpec;
 }
 export interface ResourceClusterVulnerabilityReportReportStatus {
-  status: VulnerabilityStatus;
+  status: number;
   until?: Time;
-  reason?: VulnerabilityDismissalReason;
+  reason?: number;
   comment?: string;
   riskAssessment?: string;
 }
@@ -1056,6 +1064,11 @@ export interface ResourceNode {
   status: ResourceNodeStatus;
 }
 export interface ResourceNamespace {}
+export interface ResourceTag {
+  key: string;
+  value: string;
+  properties: { [key: string]: string };
+}
 export interface RorResourceOwnerReference {
   scope: string;
   subject: string;
@@ -1067,6 +1080,7 @@ export interface ResourceRorMeta {
   hash?: string;
   ownerref?: RorResourceOwnerReference;
   action?: string;
+  tags?: ResourceTag[];
 }
 export interface FieldsV1 {}
 export interface ManagedFieldsEntry {
@@ -1145,6 +1159,7 @@ export interface Resource {
   virtualmachine?: ResourceVirtualMachine;
   endpoints?: ResourceEndpoints;
   networkpolicy?: ResourceNetworkPolicy;
+  datacenter?: ResourceDatacenter;
   backupjob?: ResourceBackupJob;
 }
 export interface ResourceSet {
