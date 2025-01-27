@@ -25,7 +25,7 @@ jobs:
         name: Set env
         run: |
           echo "ROR_VERSION=${GITHUB_REF#refs/*/}" >> "$GITHUB_OUTPUT"
-          echo "VERSION=$(echo $ROR_VERSION | cut -d'v' -f 2)"
+          echo "VERSION=$(echo $ROR_VERSION | cut -d'v' -f 2)" >> "$GITHUB_OUTPUT"
           echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
   publish-ror-resource-models:
@@ -52,7 +52,7 @@ jobs:
           node-version: '22.x'
       - name: Build package
         run: |
-          echo "Building ${{ env.PACKAGE_ORG }}/${{ env.PACKAGE_NAME }} ${{ needs.setenv.outputs.rorversion}} (${{ needs.setenv.outputs.shortsha}})"
+          echo "Building ${{ env.PACKAGE_ORG }}/${{ env.PACKAGE_NAME }} ${{ needs.setenv.outputs.version}} (${{ needs.setenv.outputs.shortsha}})"
       - run: mv package.json package-backup.json
       - run: jq --arg rorversion ${{ needs.setenv.outputs.version}} --arg shortsha ${{ needs.setenv.outputs.shortsha}} '.version = $rorversion | .commit = $shortsha' package-backup.json > package.json
       - run: npm ci
