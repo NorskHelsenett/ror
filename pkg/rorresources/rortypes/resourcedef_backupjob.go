@@ -3,9 +3,10 @@ package rortypes
 import "time"
 
 type ResourceBackupJob struct {
-	Id     string                  `json:"id"`
-	Status ResourceBackupJobStatus `json:"status"`
-	Spec   ResourceBackupJobSpec   `json:"spec"`
+	Id       string                  `json:"id"`
+	Provider string                  `json:"provider"`
+	Status   ResourceBackupJobStatus `json:"status"`
+	Spec     ResourceBackupJobSpec   `json:"spec"`
 }
 
 // The requested parameters about a job
@@ -23,12 +24,19 @@ type ResourceBackupJobSpec struct {
 	// Defines the id of the system the run originates from
 	SourceId string `json:"sourceId"`
 
-	// Defines the policy id at the local system that defines the rules for the data, how long it's stored
-	// where's it's stored, and other options
-	PolicyId              string                         `json:"policyId"`
-	ActiveTargets         []ResourceBackupTarget         `json:"activeTargets"`
+	// Defines the policy if applicable at the local system
+	// If policies are not used these can be left as blank
+	PolicyId   string `json:"policyId"`
+	PolicyName string `json:"policyName"`
+
+	// Direct targets for this backup job
+	ActiveTargets []ResourceBackupTarget `json:"activeTargets"`
+
+	// Indirect targets for this backup job
 	IndirectBackupTargets []ResourceIndirectBackupTarget `json:"indirectBackupTargets"`
-	BackupDestinations    []ResourceBackupDestination    `json:"backupDestinations"`
+
+	// Any destination defined by this backup job
+	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
 
 	// Some backup systems allow StartTime to be defined per backupJob, while some use policies
 	StartTime time.Time `json:"startTime"`
