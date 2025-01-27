@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "ES2020",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "declaration": true,
+    "sourceMap": true,
+    "lib": ["ES5", "ES6", "ES2020", "ES2021", "ES2022", "ES2023"]
+  },
+  "exclude": ["node_modules"],
+  "include": ["src/**/*.ts"]
+}

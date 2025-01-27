@@ -1,0 +1,61 @@
+name: Release ROR resource models to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  PACKAGE_NAME: ror-resources
+  PACKAGE_ORG: "@rork8s"
+
+jobs:
+  setenv:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      rorversion: ${{ steps.env.outputs.ROR_VERSION }}
+      version: ${{ steps.env.outputs.VERSION }}
+      shortsha: ${{ steps.env.outputs.SHA_SHORT }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: env
+        name: Set env
+        run: |
+          echo "ROR_VERSION=${GITHUB_REF#refs/*/}" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$(echo $ROR_VERSION | cut -d'v' -f 2)"
+          echo "SHA_SHORT=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+  publish-ror-resource-models:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    needs: setenv
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install jq
+        uses: dcarbone/install-jq-action@v3.0.1
+
+      - name: Use node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+      - name: Build package
+        run: |
+          echo "Building ${{ env.PACKAGE_ORG }}/${{ env.PACKAGE_NAME }} ${{ needs.setenv.outputs.rorversion}} (${{ needs.setenv.outputs.shortsha}})"
+      - run: mv package.json package-backup.json
+      - run: jq --arg rorversion ${{ needs.setenv.outputs.version}} --arg shortsha ${{ needs.setenv.outputs.shortsha}} '.version = $rorversion | .commit = $shortsha' package-backup.json > package.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm pack
+      - name: Publish package
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMPUBLISHTOKEN }}" > ~/.npmrc
+          npm publish --access public
+         

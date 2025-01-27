@@ -1,0 +1,61 @@
+{
+  "author": "ROR Team",
+  "commit": "FFFFFF",
+  "description": "ROR resource models",
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
+  },
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "import": "./dist/index.js",
+      "node": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./models": {
+      "default": "./dist/resources.js",
+      "import": "./dist/resources.js",
+      "node": "./dist/resources.js",
+      "require": "./dist/resources.js",
+      "types": "./dist/resources.d.ts"
+    }
+  },
+  "homepage": "https://rork8s.nhn.no",
+  "keywords": [
+    "ROR",
+    "resources",
+    "models"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "name": "@rork8s/ror-resources",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:NorskHelsenett/ror.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write .",
+    "prepack": "npm run format && npm run build"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "dist/*"
+      ],
+      "models": [
+        "dist/resources.d.ts"
+      ]
+    }
+  },
+  "typings": "dist/index.d.ts",
+  "version": "0.0.0"
+}

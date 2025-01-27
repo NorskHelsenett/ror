@@ -50,7 +50,7 @@ type ResourceRorMeta struct {
 type ResourceTag struct {
 	Key        string                           `json:"key"`
 	Value      string                           `json:"value"`
-	Properties map[ResourceTagProperties]string `json:"properties"`
+	Properties map[ResourceTagProperties]string `json:"properties" ts_type:"{ [key: string]: string }"`
 }
 
 // The RorResourceOwnerReference or ownereref references the owner og a resource.

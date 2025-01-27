@@ -24,6 +24,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -32,7 +33,9 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
+	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 
 func main() {
@@ -60,6 +63,7 @@ func main() {
 		templateFileOnce(filepath, "pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
 	}
 
+	generateTypescriptModels()
 }
 
 func templateFileOnce(filepath string, templatePath string, data any) {
@@ -124,4 +128,65 @@ func templateToFile(filepath string, templatePath string, data any) {
 		fmt.Println(err)
 	}
 	fmt.Println("Generated file: ", filepath)
+}
+
+func touchFile(filePath string) error {
+	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	return file.Close()
+}
+
+func generateTypescriptModels() {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
+	resourceV2TypescriptFilePath := fmt.Sprintf("%s/typescript/models/src/resources.ts", workingDirectory)
+	if _, err = os.Stat(resourceV2TypescriptFilePath); errors.Is(err, os.ErrNotExist) {
+		err = touchFile(resourceV2TypescriptFilePath)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	converter := typescriptify.New()
+	converter.CreateInterface = true
+	converter.CreateConstructor = true
+
+	converter.Add(rorresources.ResourceSet{})
+	converter.Add(rorresources.ResourceQuery{})
+
+	err = converter.ConvertToFile(resourceV2TypescriptFilePath)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	formatTypescript()
+}
+
+func formatTypescript() {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	resourceV2TypescriptFilePath := fmt.Sprintf("%s/typescript/models", workingDirectory)
+
+	getNodeDependenciesCmd := exec.Command("npm", "install")
+	getNodeDependenciesCmd.Dir = resourceV2TypescriptFilePath
+	_, err = getNodeDependenciesCmd.CombinedOutput()
+	if err != nil {
+		_, _ = fmt.Println("npm install failed with err: ", err.Error())
+		fmt.Println(err)
+	}
+
+	formatCmd := exec.Command("npm", "run", "format")
+	formatCmd.Dir = resourceV2TypescriptFilePath
+	_, err = formatCmd.CombinedOutput()
+	if err != nil {
+		_, _ = fmt.Println("prettier failed with err: ", err.Error())
+		fmt.Println(err)
+	}
 }

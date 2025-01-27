@@ -1,0 +1,13 @@
+// Select the database to use.
+use('nhn-ror');
+
+//delete cluster
+let clusterId = '';
+var result = db.clusters.deleteOne({ clusterid: clusterId });
+printjson(result);
+result = db.resources.deleteMany({ 'owner.subject': clusterId });
+printjson(result);
+result = db.resources2.deleteMany({ 'rormeta.ownerref.subject': clusterId });
+printjson(result);
+result = db.apikeys.deleteMany({ displayname: clusterId });
+printjson(result);
