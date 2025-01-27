@@ -10,8 +10,8 @@ import (
 )
 
 type RorError struct {
-	Status  int    `json:"status"`
-	Message string `json:"message"`
+	Status  int    `json:"status" example:"400"`          // HTTP status code
+	Message string `json:"message" example:"Bad Request"` // Error message
 	errors  []error
 }
 
