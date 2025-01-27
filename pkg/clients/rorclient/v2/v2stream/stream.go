@@ -3,8 +3,8 @@ package v2stream
 import "encoding/json"
 
 type RorEvent struct {
-	Type string
-	Data []byte
+	Type string `json:"event"`
+	Data []byte `json:"data"`
 }
 
 type EventData struct {
@@ -16,9 +16,17 @@ type EventData struct {
 type StreamInterface interface {
 	StartEventstream() (<-chan RorEvent, error)
 	StartEventstreamWithCallback(callbackfunc func(RorEvent)) (<-chan struct{}, error)
+	BroadcastEvent(event RorEvent) error
 }
 
-func NewRorEvent(eventType string, data string) RorEvent {
+func NewRorEvent(eventType string, data []byte) RorEvent {
+	return RorEvent{
+		Type: eventType,
+		Data: data,
+	}
+}
+
+func NewRorEventAsJSON(eventType string, data string) RorEvent {
 	event := EventData{
 		Event: eventType,
 		Data:  data,

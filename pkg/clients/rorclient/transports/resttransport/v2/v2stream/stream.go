@@ -29,3 +29,7 @@ func (c *V2Client) StartEventstream() (<-chan v2stream.RorEvent, error) {
 func (c *V2Client) StartEventstreamWithCallback(callback func(v2stream.RorEvent)) (<-chan struct{}, error) {
 	return c.Client.OpenSSEStreamWithCallback(callback, c.basePath+"/listen")
 }
+
+func (c *V2Client) BroadcastEvent(event v2stream.RorEvent) error {
+	return c.Client.BroadcastEvent(c.basePath+"/send", event)
+}

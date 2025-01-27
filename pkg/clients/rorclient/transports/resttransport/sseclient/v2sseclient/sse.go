@@ -61,7 +61,7 @@ func (s *SSEClient) CheckRetry() bool {
 	}
 	time.Sleep(time.Second * time.Duration(s.retyrInterval))
 	s.retries++
-	s.callback(v2stream.NewRorEvent("info", fmt.Sprintf("Retrying, attempt %d of %d", s.retries, s.retryLimit)))
+	s.callback(v2stream.NewRorEventAsJSON("info", fmt.Sprintf("Retrying, attempt %d of %d", s.retries, s.retryLimit)))
 	return s.retries < s.retryLimit
 }
 
@@ -150,11 +150,11 @@ func (sse *SSEClient) OpenSSEStreamWithCallback(callback func(v2stream.RorEvent)
 
 				if err != nil {
 					if !sseClient.CheckRetry() {
-						callback(v2stream.NewRorEvent("error", "retying failed, closing channel"))
+						callback(v2stream.NewRorEventAsJSON("error", "retying failed, closing channel"))
 						close(cancelCh)
 						return
 					} else {
-						callback(v2stream.NewRorEvent("error", "retying failed, retrying in 5 seconds"))
+						callback(v2stream.NewRorEventAsJSON("error", "retying failed, retrying in 5 seconds"))
 						time.Sleep(time.Second * time.Duration(retryinterval))
 						continue
 					}
@@ -205,7 +205,7 @@ func loop(client *SSEClient, reader *bufio.Reader, events chan v2stream.RorEvent
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			events <- v2stream.NewRorEvent("error", fmt.Sprintf("error during resp.Body read:%s", err))
+			events <- v2stream.NewRorEventAsJSON("error", fmt.Sprintf("error during resp.Body read:%s", err))
 			close(events)
 			return
 		}
@@ -267,4 +267,13 @@ func hasPrefix(s []byte, prefix string) bool {
 
 func removeNewlineFromBytes(s []byte) []byte {
 	return bytes.TrimSuffix(s, []byte("\n"))
+}
+
+func (s *SSEClient) BroadcastEvent(path string, event v2stream.RorEvent) error {
+
+	err := s.client.PostJSON(path, event, nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
