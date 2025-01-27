@@ -3,6 +3,7 @@ package rortypes
 import "time"
 
 type ResourceBackupJob struct {
+	Id     string                  `json:"id"`
 	Status ResourceBackupJobStatus `json:"status"`
 	Spec   ResourceBackupJobSpec   `json:"spec"`
 }
@@ -24,10 +25,10 @@ type ResourceBackupJobSpec struct {
 
 	// Defines the policy id at the local system that defines the rules for the data, how long it's stored
 	// where's it's stored, and other options
-	PolicyId             string                         `json:"policyId"`
-	DirectBackupTarget   []ResourceIndirectBackupTarget `json:"directBackupTarget"`
-	IndirectBackupTarget []ResourceDirectBackupTarget   `json:"indirectBackupTarget"`
-	BackupDestination    []ResourceBackupDestination    `json:"backupDestination"`
+	PolicyId              string                         `json:"policyId"`
+	ActiveTargets         []ResourceBackupTarget         `json:"activeTargets"`
+	IndirectBackupTargets []ResourceIndirectBackupTarget `json:"indirectBackupTargets"`
+	BackupDestinations    []ResourceBackupDestination    `json:"backupDestinations"`
 
 	// Some backup systems allow StartTime to be defined per backupJob, while some use policies
 	StartTime time.Time `json:"startTime"`
@@ -42,28 +43,27 @@ type ResourceBackupJobSpec struct {
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
 	ResourceBackupJobSpec
+	Runs []ResourceBackupRun `json:"runs"`
 }
 
 // Once instance of a run from a backup job
 type ResourceBackupRun struct {
-	BackupTarget      []ResourceDirectBackupTarget `json:"backupTarget"`
-	BackupDestination []ResourceBackupDestination  `json:"backupDestination"`
-	StartTime         time.Time                    `json:"startTime"`
-	EndTime           time.Time                    `json:"endTime"`
-	ExpiryTime        time.Time                    `json:"expiryTime"`
-	BackupStorage     ResourceBackupStorage        `json:"backupStorage"`
+	BackupTargets      []ResourceBackupTarget      `json:"backupTargets"`
+	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
+	StartTime          time.Time                   `json:"startTime"`
+	EndTime            time.Time                   `json:"endTime"`
+	ExpiryTime         time.Time                   `json:"expiryTime"`
+	BackupStorage      ResourceBackupStorage       `json:"backupStorage"`
 }
 
 // Defines a singular direct backup target, this could be a VM, a storage object, etc.
 type ResourceDirectBackupTarget struct {
-	BackupTargets []ResourceBackupTarget `json:"backupTargets"`
-
-	// A run can have multiple destinations defined into a single job
-	BackupDestination []ResourceBackupDestination `json:"backupDestination"`
-	StartTime         time.Time                   `json:"startTime"`
-	EndTime           time.Time                   `json:"endTime"`
-	ExpiryTime        time.Time                   `json:"expiryTime"`
-	BackupStorage     ResourceBackupStorage       `json:"backupStorage"`
+	BackupTargets     []ResourceBackupTarget    `json:"backupTargets"`
+	BackupDestination ResourceBackupDestination `json:"backupDestination"`
+	StartTime         time.Time                 `json:"startTime"`
+	EndTime           time.Time                 `json:"endTime"`
+	ExpiryTime        time.Time                 `json:"expiryTime"`
+	BackupStorage     ResourceBackupStorage     `json:"backupStorage"`
 }
 
 // Defines a singular backup target, this could be a VM, a storage object, etc.
@@ -90,7 +90,7 @@ type ResourceBackupDestination struct {
 	Type string `json:"type"`
 
 	// Status spesific to the destination - remote being unavailable
-	Status     string    `json:"Status"`
+	Status     string    `json:"status"`
 	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
