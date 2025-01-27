@@ -1,4 +1,4 @@
-package stream
+package v2stream
 
 import "encoding/json"
 

@@ -11,6 +11,7 @@ import (
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
+	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
 type RorConfig struct {
@@ -29,6 +30,7 @@ type RorClient struct {
 	resourceClientV1   v1resources.ResourceInterface
 	metricsClientV1    v1metrics.MetricsInterface
 	resourcesClientV2  ResourceClient
+	streamClientV2     v2stream.StreamInterface
 }
 
 func NewRorClient(transport transports.RorTransport) *RorClient {
@@ -44,6 +46,7 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		resourceClientV1:   transport.Resources(),
 		metricsClientV1:    transport.Metrics(),
 		resourcesClientV2:  NewResourceClient(transport.ResourcesV2()),
+		streamClientV2:     transport.Streamv2(),
 	}
 }
 
@@ -86,4 +89,7 @@ func (c *RorClient) Ping() error {
 
 func (c *RorClient) ResourceV2() *ResourceClient {
 	return &c.resourcesClientV2
+}
+func (c *RorClient) StreamV2() v2stream.StreamInterface {
+	return c.streamClientV2
 }

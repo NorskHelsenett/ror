@@ -1,29 +1,38 @@
-package httpclient
+package v1sseclient
 
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/NorskHelsenett/ror/pkg/apicontracts"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 type SSEClient struct {
-	mu         sync.RWMutex
-	client     *HttpTransportClient
-	request    *http.Request
-	callback   func(stream.RorEvent)
-	isRetry    bool
-	isClosing  bool
-	retries    int
-	retryLimit int
-	url        string
+	mu            sync.RWMutex
+	client        *httpclient.HttpTransportClient
+	request       *http.Request
+	callback      func(stream.RorEvent)
+	isRetry       bool
+	isClosing     bool
+	retries       int
+	retryLimit    int
+	url           string
+	lastEvetnID   string
+	retyrInterval int
+}
+
+func NewSSEClient(client *httpclient.HttpTransportClient) *SSEClient {
+	return &SSEClient{
+		client: client,
+	}
 }
 
 func (s *SSEClient) createRequest() error {
@@ -50,9 +59,32 @@ func (s *SSEClient) CheckRetry() bool {
 		s.isRetry = true
 		return true
 	}
+	time.Sleep(time.Second * time.Duration(s.retyrInterval))
 	s.retries++
 	s.callback(stream.NewRorEvent("info", fmt.Sprintf("Retrying, attempt %d of %d", s.retries, s.retryLimit)))
 	return s.retries < s.retryLimit
+}
+
+func (s *SSEClient) SetLastEventID(id string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.lastEvetnID = id
+}
+
+func (s *SSEClient) SetRetryLimit(limit int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if limit < 0 {
+		s.retryLimit = 1
+		return
+	}
+
+	if limit > 30 {
+		s.retryLimit = 30
+		return
+	}
+	s.retryLimit = limit
 }
 
 func (s *SSEClient) UnSetRetry() {
@@ -89,20 +121,21 @@ func (s *SSEClient) Listen() (<-chan stream.RorEvent, error) {
 
 	//events <- stream.NewRorEvent("debug", fmt.Sprintf("OpenURL resp: %+v", resp))
 
-	go loop(reader, events)
+	go loop(s, reader, events)
 	return events, nil
 }
 
-func (t *HttpTransportClient) OpenSSEStreamWithCallback(callback func(stream.RorEvent), path string) (<-chan struct{}, error) {
+func (sse *SSEClient) OpenSSEStreamWithCallback(callback func(stream.RorEvent), path string) (<-chan struct{}, error) {
 	var err error
 	var retryinterval int = 5
 	cancelCh := make(chan struct{})
 
 	sseClient := &SSEClient{
-		client:     t,
-		url:        t.Config.BaseURL + path,
-		retryLimit: 20,
-		callback:   callback,
+		client:        sse.client,
+		url:           sse.client.Config.BaseURL + path,
+		retryLimit:    20,
+		callback:      callback,
+		retyrInterval: 1,
 	}
 	rorEvents := make(<-chan stream.RorEvent)
 	rorEvents, err = sseClient.Listen()
@@ -141,12 +174,13 @@ func (t *HttpTransportClient) OpenSSEStreamWithCallback(callback func(stream.Ror
 	return cancelCh, nil
 }
 
-func (t *HttpTransportClient) OpenSSEStream(path string) (<-chan stream.RorEvent, error) {
+func (sse *SSEClient) OpenSSEStream(path string) (<-chan stream.RorEvent, error) {
 	var err error
 
 	sseClient := &SSEClient{
-		client: t,
-		url:    t.Config.BaseURL + path,
+		client:        sse.client,
+		url:           sse.client.Config.BaseURL + path,
+		retyrInterval: 1,
 	}
 	events := make(chan stream.RorEvent)
 	rorEvents, err := sseClient.Listen()
@@ -162,59 +196,61 @@ func (t *HttpTransportClient) OpenSSEStream(path string) (<-chan stream.RorEvent
 	return events, nil
 }
 
-func loop(reader *bufio.Reader, events chan stream.RorEvent) {
+func loop(client *SSEClient, reader *bufio.Reader, events chan stream.RorEvent) {
+	eventId := ""
+	eventdata := []byte{}
+	eventtype := "unknown"
 
 	for {
-
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			//fmt.Fprintf(os.Stderr, "error during resp.Body read:%s\n", err)
 			events <- stream.NewRorEvent("error", fmt.Sprintf("error during resp.Body read:%s", err))
 			close(events)
 			return
 		}
-		eventdata := []byte{}
-		eventtype := "unknown"
 
-		switch {
-		case hasPrefix(line, "\n"):
-			// Empty line, do nothing
-		case hasPrefix(line, ":"):
-			// Comment, do nothing
-		case hasPrefix(line, "retry:"):
-			// Retry, do nothing for now
-		case hasPrefix(line, "data: "):
-			eventdata = line[6:]
-		case hasPrefix(line, "data:"):
-			eventdata = line[5:]
-
-		// name of event
-		case hasPrefix(line, "event: "):
-			eventdata = line[7 : len(line)-1]
-		case hasPrefix(line, "event:"):
-			eventdata = line[6 : len(line)-1]
-		default:
-			events <- stream.NewRorEvent("error", fmt.Sprintf("Error: len:%d\n%s", len(line), line))
-			close(events)
-		}
-		if len(eventdata) == 0 {
+		if hasPrefix(line, "\n") {
+			// Empty line, dispatch message
+			events <- stream.RorEvent{Type: eventtype, Data: []byte(eventdata)}
+			client.SetLastEventID(eventId)
+			eventId = ""
+			eventdata = []byte{}
+			eventtype = "unknown"
 			continue
 		}
-		if hasPostfix(eventdata, "\n") {
-			eventdata = trimPostfix(eventdata, "\n")
+		if hasPrefix(line, ":") {
+			// Comment, do nothing
+			continue
 		}
-		if contains(eventdata, "event") {
-			event := apicontracts.SSEMessage{}
-			err := json.Unmarshal(eventdata, &event)
-			if err != nil {
-				continue
+
+		key, value := readLine(line)
+		switch key {
+		case "retry":
+			// Retry, set retry interval
+			retryInterval, err := strconv.Atoi(string(value))
+			if err == nil {
+				client.retyrInterval = retryInterval
 			}
-			eventtype = event.Event
+		case "id":
+			eventId = string(value)
+		case "data":
+			eventdata = append(eventdata, []byte(value)...)
+		case "event":
+			eventtype = removeNewlineFromBytes(value)
 		}
-
-		events <- stream.RorEvent{Type: string(eventtype), Data: eventdata}
 	}
+}
 
+// readLine reads a line from the reader and returns the key and value
+// If the line does not contain a colon, the whole line is returned as key
+func readLine(line []byte) (string, []byte) {
+	input := string(line)
+	if strings.Contains(input, ":") {
+		splits := strings.Split(input, ":")
+		return splits[0], []byte(splits[1])
+	}
+	// No colon, return input as key
+	return input, []byte{}
 }
 
 func hasPrefix(s []byte, prefix string) bool {
@@ -226,6 +262,14 @@ func hasPostfix(s []byte, postfix string) bool {
 
 func trimPostfix(s []byte, postfix string) []byte {
 	return bytes.TrimSuffix(s, []byte(postfix))
+}
+
+func removeNewlineFromBytes(s []byte) string {
+	return removeNewline(string(s))
+}
+
+func removeNewline(s string) string {
+	return strings.TrimSuffix(s, "\n")
 }
 
 func contains(s []byte, contaninsstring string) bool {
