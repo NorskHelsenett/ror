@@ -50,7 +50,7 @@ jobs:
           node-version: '22.x'
       - name: Build package
         run: |
-          export VERSION=${ROR_VERSION#v*}
+          export VERSION=${${{ needs.setenv.outputs.rorversion}}#v*}
           echo "Building ${{ env.PACKAGE_ORG }}/${{ env.PACKAGE_NAME }} ${VERSION} (${{ needs.setenv.outputs.shortsha}})"
           mv package.json package-backup.json
           jq --arg rorversion ${VERSION} --arg shortsha ${{ needs.setenv.outputs.shortsha}} '.version = $rorversion | .commit = $shortsha' package-backup.json > package.json
