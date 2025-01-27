@@ -11,6 +11,7 @@ import (
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
+	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
 type RorTransport interface {
@@ -24,5 +25,6 @@ type RorTransport interface {
 	Resources() v1resources.ResourceInterface
 	Metrics() v1metrics.MetricsInterface
 	ResourcesV2() v2resources.ResourcesInterface
+	Streamv2() v2stream.StreamInterface
 	Ping() error
 }

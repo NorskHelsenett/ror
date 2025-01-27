@@ -1,16 +1,16 @@
-package stream
+package v1stream
 
 import (
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
+	v1sseclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 )
 
 type V1Client struct {
-	Client   *httpclient.HttpTransportClient
+	Client   *v1sseclient.SSEClient
 	basePath string
 }
 
-func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
+func NewV1Client(client *v1sseclient.SSEClient) *V1Client {
 	return &V1Client{
 		Client:   client,
 		basePath: "/v1/events",
