@@ -1086,7 +1086,7 @@ export interface ResourceNamespace {}
 export interface ResourceTag {
   key: string;
   value: string;
-  properties: { [key: ResourceTagProperties]: string };
+  properties: { [key: string]: string };
 }
 export interface RorResourceOwnerReference {
   scope: string;
