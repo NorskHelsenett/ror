@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'pkg/**'
+      - 'typescript/models/**'
 jobs:
   build-app:
     permissions:
