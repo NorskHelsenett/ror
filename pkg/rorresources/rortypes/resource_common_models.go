@@ -29,6 +29,19 @@ const (
 	TagPropertiesColor ResourceTagProperties = "color"
 )
 
+var AllResourceTagProperties = []ResourceTagProperties{
+	TagPropertiesColor,
+}
+
+func (p ResourceTagProperties) TSName() string {
+	switch p {
+	case TagPropertiesColor:
+		return "color"
+	default:
+		return "unknown"
+	}
+}
+
 // Commonresource defines the minimum resource definition.
 type CommonResource struct {
 	metav1.TypeMeta `json:",inline"`

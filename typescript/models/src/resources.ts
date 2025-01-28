@@ -1,14 +1,29 @@
 /* Do not change, this code is generated from Golang structs */
 
+export enum VulnerabilityStatus {
+  NOT_ASSESSED = 0,
+  NEEDS_TRIAGE = 1,
+  CONFIRMED = 2,
+  DISMISSED = 3,
+}
+export enum VulnerabilityDismissalReason {
+  ACCEPTABLE_RISK = 0,
+  FALSE_POSITIVE = 1,
+  NOT_APPLICABLE = 2,
+}
+export enum ResourceTagProperties {
+  color = 'color',
+}
 export interface ResourceBackupJobSpec {
   name: string;
   status: string;
   sourceName: string;
   sourceId: string;
   policyId: string;
-  directBackupTarget: ResourceIndirectBackupTarget[];
-  indirectBackupTarget: ResourceDirectBackupTarget[];
-  backupDestination: ResourceBackupDestination[];
+  policyName: string;
+  activeTargets: ResourceBackupTarget[];
+  indirectBackupTargets: ResourceIndirectBackupTarget[];
+  backupDestinations: ResourceBackupDestination[];
   startTime: Time;
   endTime: Time;
   expiryTime: Time;
@@ -19,30 +34,30 @@ export interface ResourceBackupStorage {
   logicalSize: number;
   physicalSize: number;
 }
-export interface ResourceBackupDestination {
-  name: string;
-  id: string;
-  type: string;
-  Status: string;
-  expiryTime: Time;
-}
-export interface ResourceBackupTarget {
-  name: string;
-  id: string;
-  externalIds: { [key: string]: string };
-}
-export interface ResourceDirectBackupTarget {
+export interface ResourceBackupRun {
   backupTargets: ResourceBackupTarget[];
-  backupDestination: ResourceBackupDestination[];
+  backupDestinations: ResourceBackupDestination[];
   startTime: Time;
   endTime: Time;
   expiryTime: Time;
   backupStorage: ResourceBackupStorage;
 }
+export interface ResourceBackupDestination {
+  name: string;
+  id: string;
+  type: string;
+  status: string;
+  expiryTime: Time;
+}
 export interface ResourceIndirectBackupTarget {
   type: string;
   ids: string[];
   keyValues: { [key: string]: string[] };
+}
+export interface ResourceBackupTarget {
+  name: string;
+  id: string;
+  externalIds: { [key: string]: string };
 }
 export interface ResourceBackupJobStatus {
   name: string;
@@ -50,14 +65,18 @@ export interface ResourceBackupJobStatus {
   sourceName: string;
   sourceId: string;
   policyId: string;
-  directBackupTarget: ResourceIndirectBackupTarget[];
-  indirectBackupTarget: ResourceDirectBackupTarget[];
-  backupDestination: ResourceBackupDestination[];
+  policyName: string;
+  activeTargets: ResourceBackupTarget[];
+  indirectBackupTargets: ResourceIndirectBackupTarget[];
+  backupDestinations: ResourceBackupDestination[];
   startTime: Time;
   endTime: Time;
   expiryTime: Time;
+  runs: ResourceBackupRun[];
 }
 export interface ResourceBackupJob {
+  id: string;
+  provider: string;
   status: ResourceBackupJobStatus;
   spec: ResourceBackupJobSpec;
 }
@@ -295,9 +314,9 @@ export interface ResourceRoute {
   spec: ResourceRouteSpec;
 }
 export interface ResourceClusterVulnerabilityReportReportStatus {
-  status: number;
+  status: VulnerabilityStatus;
   until?: Time;
-  reason?: number;
+  reason?: VulnerabilityDismissalReason;
   comment?: string;
   riskAssessment?: string;
 }
@@ -1067,7 +1086,7 @@ export interface ResourceNamespace {}
 export interface ResourceTag {
   key: string;
   value: string;
-  properties: { [key: string]: string };
+  properties: { [key: ResourceTagProperties]: string };
 }
 export interface RorResourceOwnerReference {
   scope: string;
