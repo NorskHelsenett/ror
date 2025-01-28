@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'pkg/**'
+      - 'typescript/models/**'
 jobs:
   build-app:
     permissions:
@@ -32,3 +33,20 @@ jobs:
           go get -t ./...
           go vet ./...
           go test -v ./...
+  build-typescript-models:
+    defaults:
+      run:
+        working-directory: ./typescript/models
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+    - name: Install dependencies
+      run: npm install
+    - name: Test
+      run: npm run build

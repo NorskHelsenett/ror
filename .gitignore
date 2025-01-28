@@ -45,3 +45,4 @@ update-charts
 charts/*.tgz
 ~
 **/isbuilt
+resources.ts-*.backup
