@@ -9,7 +9,7 @@ Npm publish token in environment variables
 ## Build
 
 ```bash
-bun i
+npm i
 ```
 
 ## Test locally
@@ -27,7 +27,7 @@ To use in another `package.json`
 Replace dependency url, while testing to example this:
 
 ```json
-"@rork8s/ror-resources": "file:../../../ror-typescript-resource-models/rork8s-ror-resources-0.0.6.tgz",
+"@rork8s/ror-resources": "file:../<ref to repo path>/typescript/models/rork8s-ror-resources-0.0.0.tgz",
 ```
 
 ## Publish

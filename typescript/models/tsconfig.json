@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "lib": ["ES5", "ES6", "ES2020", "ES2021", "ES2022", "ES2023"],
     "module": "ES2020",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "declaration": true,
     "sourceMap": true,
-    "lib": ["ES5", "ES6", "ES2020", "ES2021", "ES2022", "ES2023"]
+    "strict": true,
+    "target": "es5"
   },
   "exclude": ["node_modules"],
   "include": ["src/**/*.ts"]
