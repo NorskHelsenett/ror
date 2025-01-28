@@ -113,7 +113,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      redis:
+      valkey:
         condition: service_healthy
     links:
       - mongodb
@@ -167,16 +167,16 @@ services:
       - jaeger
     ports:
       - '4317:4317'
-  redis:
-    image: ${DOCKER_MIRROR}redis/redis-stack
+  valkey:
+    image: ${DOCKER_MIRROR}valkey/valkey
     environment:
-      REDIS_ARGS: '--requirepass S3cret!'
+      VALKEY_EXTRA_FLAGS: '--requirepass S3cret!'
     volumes:
-      - ../data/redis/data:/data
+      - ../data/valkey/data:/data
     ports:
       - '6379:6379'
       - '8001:8001'
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ['CMD', 'valkey-cli', 'ping']
 volumes:
   data: {}
