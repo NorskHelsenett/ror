@@ -172,7 +172,7 @@ vault write database/config/redis \
 
 vault write database/roles/redis-ror-api-role \
     db_name="redis" \
-    creation_statements='["~*", "+@string", "+PING","+json.get", "+json.set"]' \
+    creation_statements='["~*", "+@string", "+PING"]' \
     default_ttl="5m" \
     max_ttl="1h"
 
