@@ -43,7 +43,7 @@ type ResourceVirtualMachineDiskSpec struct {
 }
 
 type ResourceVirtualMachineDiskStatus struct {
-	UsageBytes string `json:"usageBytes"`
+	UsageBytes int `json:"usageBytes"`
 
 	// is this disk mounted by the os? A disk might be attached to the vm but
 	// not mounted by the OS, it can also be unknown because the vm might not report
