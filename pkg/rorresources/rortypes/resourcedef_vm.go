@@ -20,6 +20,7 @@ type ResourceVirtualMachineSpec struct {
 // things we can't change
 type ResourceVirtualMachineStatus struct {
 	LastUpdated     time.Time                                   `json:"lastUpdated"`
+	Location        string                                      `json:"location"`
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
 	Tags            []ResourceVirtualMachineTag                 `json:"tags"`
 	State           ResourceVirtualMachineState                 `json:"state"`
