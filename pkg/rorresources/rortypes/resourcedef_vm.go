@@ -67,6 +67,7 @@ type ResourceVirtualMachineNetworkStatus struct {
 type ResourceVirtualMachineOperatingSystemStatus struct {
 	Id           string `json:"id"`
 	Name         string `json:"name"`
+	Family       string `json:"family"`
 	Version      string `json:"version"`
 	HostName     string `json:"hostName"`
 	PowerState   string `json:"powerState"`
