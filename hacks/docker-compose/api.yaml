@@ -32,7 +32,7 @@ services:
       - ENABLE_TRACING=false
       - PROFILER_ENABLED=false
       - RABBITMQ_HOST=rabbitmq
-      - REDIS_HOST=redis
+      - REDIS_HOST=valkey
       - MONGODB_HOST=mongodb
       - HEALTHCHECK_ENDPOINT=localhost:9999
     volumes:
