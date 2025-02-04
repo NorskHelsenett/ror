@@ -52,7 +52,7 @@ type ResourceVirtualMachineDiskStatus struct {
 	// it is actually not mounted.
 	IsMounted bool `json:"isMounted"`
 
-	ResourceVirtualMachineDiskSpec `json:"spec"`
+	ResourceVirtualMachineDiskSpec
 }
 
 type ResourceVirtualMachineNetworkStatus struct {
@@ -81,9 +81,9 @@ type ResourceVirtualMachineCpuSpec struct {
 }
 
 type ResourceVirtualMachineCpuStatus struct {
-	Unit                          string `json:"unit"` //describes what unit the usage is given in
-	Usage                         int    `json:"usage"`
-	ResourceVirtualMachineCpuSpec `json:"spec"`
+	Unit  string `json:"unit"` //describes what unit the usage is given in
+	Usage int    `json:"usage"`
+	ResourceVirtualMachineCpuSpec
 }
 
 type ResourceVirtualMachineMemorySpec struct {
@@ -91,9 +91,9 @@ type ResourceVirtualMachineMemorySpec struct {
 }
 
 type ResourceVirtualMachineMemoryStatus struct {
-	Unit                             string `json:"unit"` //describes what unit the usage is given in
-	Usage                            int    `json:"usage"`
-	ResourceVirtualMachineMemorySpec `json:"spec"`
+	Unit  string `json:"unit"` //describes what unit the usage is given in
+	Usage int    `json:"usage"`
+	ResourceVirtualMachineMemorySpec
 }
 
 type ResourceVirtualMachineTag struct {
