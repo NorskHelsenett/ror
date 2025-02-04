@@ -198,6 +198,7 @@ export interface ResourceEndpoints {
 export interface ResourceVirtualMachineOperatingSystemStatus {
   id: string;
   name: string;
+  family: string;
   version: string;
   hostName: string;
   powerState: string;
@@ -218,7 +219,7 @@ export interface ResourceVirtualMachineMemoryStatus {
   sizeBytes: number;
 }
 export interface ResourceVirtualMachineDiskStatus {
-  usageBytes: string;
+  usageBytes: number;
   isMounted: boolean;
   id: string;
   name: string;
@@ -243,6 +244,7 @@ export interface ResourceVirtualMachineCpuStatus {
 }
 export interface ResourceVirtualMachineStatus {
   lastUpdated: Time;
+  location: string;
   cpu: ResourceVirtualMachineCpuStatus;
   tags: ResourceVirtualMachineTag[];
   state: ResourceVirtualMachineState;
