@@ -35,6 +35,7 @@ hacks/data/rabbitmq
 hacks/data/vault
 hacks/data/secrets
 hacks/data/redis
+hacks/data/valkey
 hacks/data/talos/*/**
 hacks/data/influxdb2
 hacks/docker-compose/vault/.env
