@@ -23,7 +23,7 @@ type ResourceBackupJobSpec struct {
 	// If policies are not used these can be left as blank
 	PolicyId string `json:"policyId"`
 
-	Schedule []ResourceBackupSchedule `json:"schedule"`
+	Schedules []ResourceBackupSchedule `json:"schedules"`
 
 	// Direct targets for this backup job
 	ActiveTargets []ResourceBackupTarget `json:"activeTargets"`
