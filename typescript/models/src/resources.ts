@@ -212,6 +212,7 @@ export interface ResourceVirtualMachineNetworkStatus {
   ipv6: string;
   mask: string;
   gateway: string;
+  mac: string;
 }
 export interface ResourceVirtualMachineMemoryStatus {
   unit: string;
