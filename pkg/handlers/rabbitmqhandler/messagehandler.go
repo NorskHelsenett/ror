@@ -17,57 +17,92 @@ type RabbitMQMessageHandler interface {
 }
 
 type RabbitMQListner struct {
-	Client    rabbitmqclient.RabbitMQConnection
-	QueueName string
-	Consumer  string
-	AutoAck   bool
-	Exclusive bool
-	NoLocal   bool
-	NoWait    bool
-	Args      amqp.Table
-	Handler   RabbitMQMessageHandler
+	Client             rabbitmqclient.RabbitMQConnection
+	queueName          string
+	queueConsumer      string
+	queueAutoAck       bool
+	queueAutoDelete    bool
+	queueExclusive     bool
+	queueNoLocal       bool
+	queueNoWait        bool
+	queueArgs          amqp.Table
+	Handler            RabbitMQMessageHandler
+	exchange           string
+	excahngeRoutingKey string
 }
 
 type RabbitMQListnerConfig struct {
-	Client    rabbitmqclient.RabbitMQConnection
-	QueueName string
-	Consumer  string
-	AutoAck   bool
-	Exclusive bool
-	NoLocal   bool
-	NoWait    bool
-	Args      amqp.Table
+	Client             rabbitmqclient.RabbitMQConnection
+	QueueName          string
+	Consumer           string
+	AutoAck            bool
+	QueueAutoDelete    bool
+	Exclusive          bool
+	NoLocal            bool
+	NoWait             bool
+	Args               amqp.Table
+	Exchange           string
+	ExcahngeRoutingKey string
 }
 
 func New(config RabbitMQListnerConfig, handler RabbitMQMessageHandler) RabbitMQListner {
 	return RabbitMQListner{
-		Client:    config.Client,
-		QueueName: config.QueueName,
-		Consumer:  config.Consumer,
-		AutoAck:   config.AutoAck,
-		Exclusive: config.Exclusive,
-		NoLocal:   config.NoLocal,
-		NoWait:    config.NoWait,
-		Args:      config.Args,
-		Handler:   handler,
+		Client:             config.Client,
+		queueName:          config.QueueName,
+		queueConsumer:      config.Consumer,
+		queueAutoAck:       config.AutoAck,
+		queueAutoDelete:    config.QueueAutoDelete,
+		queueExclusive:     config.Exclusive,
+		queueNoLocal:       config.NoLocal,
+		queueNoWait:        config.NoWait,
+		queueArgs:          config.Args,
+		Handler:            handler,
+		exchange:           config.Exchange,
+		excahngeRoutingKey: config.ExcahngeRoutingKey,
 	}
 }
 
 func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
-	messages, err := r.Client.GetChannel().Consume(
-		r.QueueName, // queue
-		r.Consumer,  // consumer
-		r.AutoAck,   // auto-ack
-		r.Exclusive, // exclusive
-		r.NoLocal,   // no-local
-		r.NoWait,    // no-wait
-		r.Args,      // args
+
+	queue, err := r.Client.GetChannel().QueueDeclare(
+		r.queueName,       // name
+		true,              // durable
+		r.queueAutoDelete, // delete when unused
+		r.queueExclusive,  // exclusive
+		r.queueNoWait,     // no-wait
+		nil,               // arguments
 	)
 	if err != nil {
-		rlog.Fatal("failed to register a consumer on queue", err, rlog.String("queue", r.QueueName))
+		rlog.Fatal("failed to declare a queue", err, rlog.String("queue", r.queueName))
 	}
 
-	rlog.Info("listening on RabbitMQ queue", rlog.String("queue", r.QueueName))
+	if r.exchange != "" {
+		err = r.Client.GetChannel().QueueBind(
+			queue.Name,           // queue name
+			r.excahngeRoutingKey, // routing key
+			r.exchange,           // exchange
+			r.queueNoWait,
+			nil,
+		)
+		if err != nil {
+			rlog.Fatal("failed to bind queue to exchange", err, rlog.String("queue", r.queueName), rlog.String("exchange", r.exchange))
+		}
+	}
+
+	messages, err := r.Client.GetChannel().Consume(
+		queue.Name,       // queue
+		r.queueConsumer,  // consumer
+		r.queueAutoAck,   // auto-ack
+		r.queueExclusive, // exclusive
+		r.queueNoLocal,   // no-local
+		r.queueNoWait,    // no-wait
+		r.queueArgs,      // args
+	)
+	if err != nil {
+		rlog.Fatal("failed to register a consumer on queue", err, rlog.String("queue", r.queueName))
+	}
+
+	rlog.Info("listening on RabbitMQ queue", rlog.String("queue", r.queueName))
 
 	go func() {
 		for message := range messages {
