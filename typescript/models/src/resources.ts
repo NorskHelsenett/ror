@@ -59,7 +59,7 @@ export interface ResourceIndirectBackupTarget {
 export interface ResourceBackupSource {
   name: string;
   id: string;
-  Uuid: string;
+  uuid: string;
   type: string;
 }
 export interface ResourceBackupTarget {
