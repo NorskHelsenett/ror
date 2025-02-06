@@ -62,6 +62,7 @@ type ResourceVirtualMachineNetworkStatus struct {
 	Ipv6    string `json:"ipv6"`
 	Mask    string `json:"mask"`
 	Gateway string `json:"gateway"`
+	Mac     string `json:"mac"`
 }
 
 type ResourceVirtualMachineOperatingSystemStatus struct {

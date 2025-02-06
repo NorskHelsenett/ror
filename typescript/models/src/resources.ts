@@ -17,16 +17,11 @@ export enum ResourceTagProperties {
 export interface ResourceBackupJobSpec {
   name: string;
   status: string;
-  sourceName: string;
-  sourceId: string;
   policyId: string;
-  policyName: string;
+  schedules: ResourceBackupSchedule[];
   activeTargets: ResourceBackupTarget[];
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   backupDestinations: ResourceBackupDestination[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
 }
 export interface ResourceBackupStorage {
   unit: string;
@@ -34,9 +29,17 @@ export interface ResourceBackupStorage {
   logicalSize: number;
   physicalSize: number;
 }
+export interface ResourceBackupRunDestination {
+  name: string;
+  id: string;
+  type: string;
+  status: string;
+  expiryTime: Time;
+}
 export interface ResourceBackupRun {
+  id: string;
   backupTargets: ResourceBackupTarget[];
-  backupDestinations: ResourceBackupDestination[];
+  backupDestinations: ResourceBackupRunDestination[];
   startTime: Time;
   endTime: Time;
   expiryTime: Time;
@@ -47,36 +50,52 @@ export interface ResourceBackupDestination {
   id: string;
   type: string;
   status: string;
-  expiryTime: Time;
 }
 export interface ResourceIndirectBackupTarget {
   type: string;
   ids: string[];
   keyValues: { [key: string]: string[] };
 }
+export interface ResourceBackupSource {
+  name: string;
+  id: string;
+  uuid: string;
+  type: string;
+}
 export interface ResourceBackupTarget {
   name: string;
   id: string;
-  externalIds: { [key: string]: string };
+  externalId: string;
+  source?: ResourceBackupSource;
+}
+export interface ResourceBackupRetention {
+  unit: string;
+  duration: number;
+}
+export interface ResourceBackupSchedule {
+  startTime: string;
+  endTime: string;
+  frequency: number;
+  unit: string;
+  retention: ResourceBackupRetention;
 }
 export interface ResourceBackupJobStatus {
   name: string;
   status: string;
-  sourceName: string;
-  sourceId: string;
   policyId: string;
-  policyName: string;
+  schedules: ResourceBackupSchedule[];
   activeTargets: ResourceBackupTarget[];
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   backupDestinations: ResourceBackupDestination[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
+  location: string;
+  lastUpdated: Time;
+  policyName: string;
   runs: ResourceBackupRun[];
 }
 export interface ResourceBackupJob {
   id: string;
   provider: string;
+  source: string;
   status: ResourceBackupJobStatus;
   spec: ResourceBackupJobSpec;
 }
@@ -212,6 +231,7 @@ export interface ResourceVirtualMachineNetworkStatus {
   ipv6: string;
   mask: string;
   gateway: string;
+  mac: string;
 }
 export interface ResourceVirtualMachineMemoryStatus {
   unit: string;
