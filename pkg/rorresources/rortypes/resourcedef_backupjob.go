@@ -80,7 +80,7 @@ type ResourceBackupTarget struct {
 type ResourceBackupSource struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
-	Uuid string `json:"Uuid"`
+	Uuid string `json:"uuid"`
 	Type string `json:"type"`
 }
 
