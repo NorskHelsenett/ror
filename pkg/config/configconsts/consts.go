@@ -1,9 +1,13 @@
 package configconsts
 
 const (
-	ROLE                 = "ROLE"
-	HTTP_PORT            = "HTTP_PORT"
-	HTTP_TIMEOUT         = "HTTP_TIMEOUT"
+	ROLE             = "ROLE"
+	HTTP_HOST        = "HTTP_HOST"
+	HTTP_PORT        = "HTTP_PORT"
+	HTTP_HEALTH_HOST = "HTTP_HEALTH_HOST"
+	HTTP_HEALTH_PORT = "HTTP_HEALTH_PORT"
+	HTTP_TIMEOUT     = "HTTP_TIMEOUT"
+	// Deprecated: use HTTP_HEALTH_HOST / HTTP_HEALTH_PORT instead
 	HEALTH_ENDPOINT      = "HEALTH_ENDPOINT"
 	API_KEY_SALT         = "API_KEY_SALT"
 	API_KEY              = "API_KEY"
