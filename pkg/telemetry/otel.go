@@ -52,7 +52,8 @@ func SetupOTel(ctx context.Context, opts ...Option) (shutdown func(context.Conte
 	res := newResource(ctx, opts...)
 
 	if cfg.WithTracer {
-		tracerProvider, err := newTracerProvider(ctx, res)
+		var tracerProvider *trace.TracerProvider
+		tracerProvider, err = newTracerProvider(ctx, res)
 		if err != nil {
 			handleErr(err)
 			return
@@ -62,7 +63,8 @@ func SetupOTel(ctx context.Context, opts ...Option) (shutdown func(context.Conte
 	}
 
 	if cfg.WithMeter {
-		meterProvider, err := newMeterProvider(res)
+		var meterProvider *metric.MeterProvider
+		meterProvider, err = newMeterProvider(res)
 		if err != nil {
 			handleErr(err)
 			return
@@ -72,7 +74,8 @@ func SetupOTel(ctx context.Context, opts ...Option) (shutdown func(context.Conte
 	}
 
 	if cfg.WithLogger {
-		loggerProvider, err := newLoggerProvider(res)
+		var loggerProvider *log.LoggerProvider
+		loggerProvider, err = newLoggerProvider(res)
 		if err != nil {
 			handleErr(err)
 			return
