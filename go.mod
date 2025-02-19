@@ -12,6 +12,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/go-cmp v0.6.0
+	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/microsoftgraph/msgraph-sdk-go v1.61.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
@@ -91,7 +92,6 @@ require (
 	github.com/google/gnostic-models v0.6.9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1 // indirect
