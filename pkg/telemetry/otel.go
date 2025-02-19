@@ -3,6 +3,7 @@ package telemetry
 import (
 	"context"
 	"errors"
+
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
