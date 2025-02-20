@@ -36,39 +36,6 @@ func WithDeploymentEnvironment(environment string) Option {
 	return deploymentEnvironmentOption(environment)
 }
 
-type withLoggerOption bool
-
-func (o withLoggerOption) apply(cfg config) config {
-	cfg.WithLogger = bool(o)
-	return cfg
-}
-
-func WithLogger() Option {
-	return withLoggerOption(true)
-}
-
-type withMeterOption bool
-
-func (o withMeterOption) apply(cfg config) config {
-	cfg.WithMeter = bool(o)
-	return cfg
-}
-
-func WithMeter() Option {
-	return withMeterOption(true)
-}
-
-type withTracerOption bool
-
-func (o withTracerOption) apply(cfg config) config {
-	cfg.WithTracer = bool(o)
-	return cfg
-}
-
-func WithTracer() Option {
-	return withTracerOption(true)
-}
-
 func applyEnvOptions(cfg config) config {
 	opts := getOptionsFromEnv()
 	for _, opt := range opts {
