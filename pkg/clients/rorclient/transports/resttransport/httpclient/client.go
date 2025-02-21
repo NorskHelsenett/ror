@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -75,12 +76,66 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 	return nil
 }
 
+func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	req, err := http.NewRequestWithContext(ctx, "GET", t.Config.BaseURL+path, nil)
+	if err != nil {
+		return err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode > 399 || res.StatusCode < 200 {
+		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
+	}
+	defer res.Body.Close()
+
+	err = handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	jsonData, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
 	req, err := http.NewRequest("POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+	t.Client.Timeout = time.Second * 60
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	err = handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	jsonData, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, "POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -129,8 +184,58 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 	return nil
 }
 
+func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	jsonData, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, "PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	err = handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
 	req, err := http.NewRequest("DELETE", t.Config.BaseURL+path, nil)
+	if err != nil {
+		return err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	err = handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	req, err := http.NewRequestWithContext(ctx, "DELETE", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return err
 	}
@@ -156,6 +261,24 @@ func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTranspo
 // It returns only the header and status code from the result, as it expects no body in return.
 func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
 	req, err := http.NewRequest("HEAD", t.Config.BaseURL+path, nil)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return nil, -1, err
+	}
+	defer res.Body.Close()
+
+	return res.Header, res.StatusCode, nil
+}
+
+func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
+	req, err := http.NewRequestWithContext(ctx, "HEAD", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return nil, -1, err
 	}
