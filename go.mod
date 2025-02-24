@@ -11,7 +11,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.10
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gomodule/redigo v1.9.2
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/microsoftgraph/msgraph-sdk-go v1.61.0
