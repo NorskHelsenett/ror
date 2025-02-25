@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
@@ -39,7 +40,7 @@ func (c *V2Client) Get(query rorresources.ResourceQuery) (rorresources.ResourceS
 
 func (c *V2Client) Update(res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
 	var ret *rorresources.ResourceUpdateResults
-	err := c.Client.PostJSON(c.basePath, res, &ret)
+	err := c.Client.PostJSON(c.basePath, res, &ret, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsHeaders, Value: map[string]string{"X-Resources-Count": strconv.Itoa(res.Len())}})
 	if err != nil {
 		return nil, err
 	}
