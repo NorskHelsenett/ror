@@ -397,7 +397,7 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "TanzuKubernetesCluster",
-			"apiVersion": "run.tanzu.vmware.com/v1alpha2",
+			"apiVersion": "run.tanzu.vmware.com/v1alpha3",
 			"metadata": map[string]interface{}{
 				"name": "test-tanzukubernetescluster",
 			},

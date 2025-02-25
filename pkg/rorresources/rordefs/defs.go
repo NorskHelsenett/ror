@@ -194,7 +194,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "TanzuKubernetesCluster",
-			APIVersion: "run.tanzu.vmware.com/v1alpha2",
+			APIVersion: "run.tanzu.vmware.com/v1alpha3",
 		},
 		Plural:     "tanzukubernetesclusters",
 		Namespaced: true,

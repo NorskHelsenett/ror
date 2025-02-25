@@ -143,7 +143,7 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetRbacAssessmentReport(res)
 		r.SetCommonInterface(res)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesCluster":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesCluster":
 		res := newTanzuKubernetesClusterFromDynamicClient(input)
 		r.SetTanzuKubernetesCluster(res)
 		r.SetCommonInterface(res)

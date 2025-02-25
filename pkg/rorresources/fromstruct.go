@@ -118,7 +118,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetRbacAssessmentReport(res.RbacAssessmentReportResource)
 		r.SetCommonInterface(res.RbacAssessmentReportResource)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesCluster":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesCluster":
 		r.SetTanzuKubernetesCluster(res.TanzuKubernetesClusterResource)
 		r.SetCommonInterface(res.TanzuKubernetesClusterResource)
 
