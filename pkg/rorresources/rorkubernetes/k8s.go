@@ -233,6 +233,11 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetBackupJob(res)
 		r.SetCommonInterface(res)
 
+	case "backuprun.ror.internal/v1alpha1, Kind=BackupRun":
+		res := newBackupRunFromDynamicClient(input)
+		r.SetBackupRun(res)
+		r.SetCommonInterface(res)
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return nil
@@ -844,6 +849,22 @@ func newBackupJobFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to BackupJob", err)
+	}
+	return &nr
+}
+
+// newBackupRunFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newBackupRunFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceBackupRun {
+	nr := rortypes.ResourceBackupRun{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to BackupRun", err)
 	}
 	return &nr
 }

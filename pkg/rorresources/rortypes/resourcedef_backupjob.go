@@ -38,27 +38,9 @@ type ResourceBackupJobSpec struct {
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
 	ResourceBackupJobSpec
-	Location    string              `json:"location"`
-	LastUpdated time.Time           `json:"lastUpdated"`
-	PolicyName  string              `json:"policyName"`
-	Runs        []ResourceBackupRun `json:"runs"`
-}
-
-// Once instance of a run from a backup job
-type ResourceBackupRun struct {
-	Id                 string                         `json:"id"`
-	BackupTargets      []ResourceBackupTarget         `json:"backupTargets"`
-	BackupDestinations []ResourceBackupRunDestination `json:"backupDestinations"`
-
-	// When the run was started
-	StartTime time.Time `json:"startTime"`
-
-	// When the run was finished
-	EndTime time.Time `json:"endTime"`
-
-	// When the run will expire and be deleted
-	ExpiryTime    time.Time             `json:"expiryTime"`
-	BackupStorage ResourceBackupStorage `json:"backupStorage"`
+	Location    string    `json:"location"`
+	LastUpdated time.Time `json:"lastUpdated"`
+	PolicyName  string    `json:"policyName"`
 }
 
 // Defines a singular backup target, this could be a VM, a storage object, etc.
@@ -114,20 +96,6 @@ type ResourceBackupRunDestination struct {
 	// Status spesific to the destination - remote being unavailable
 	Status     string    `json:"status"`
 	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
-}
-
-type ResourceBackupStorage struct {
-	// What unit are the sizes in
-	Unit string `json:"unit"`
-
-	// Total changed data in the run, incremental will have changes since last time, full runs will have the entire VM - not including unusued space
-	SourceSize int `json:"sourceSize"`
-
-	// The total logical size of the VM
-	LogicalSize int `json:"logicalSize"`
-
-	// Physical data written to the backup system
-	PhysicalSize int `json:"physicalSize"`
 }
 
 type ResourceBackupSchedule struct {

@@ -23,28 +23,6 @@ export interface ResourceBackupJobSpec {
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   backupDestinations: ResourceBackupDestination[];
 }
-export interface ResourceBackupStorage {
-  unit: string;
-  sourceSize: number;
-  logicalSize: number;
-  physicalSize: number;
-}
-export interface ResourceBackupRunDestination {
-  name: string;
-  id: string;
-  type: string;
-  status: string;
-  expiryTime: Time;
-}
-export interface ResourceBackupRun {
-  id: string;
-  backupTargets: ResourceBackupTarget[];
-  backupDestinations: ResourceBackupRunDestination[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
-  backupStorage: ResourceBackupStorage;
-}
 export interface ResourceBackupDestination {
   name: string;
   id: string;
@@ -90,7 +68,6 @@ export interface ResourceBackupJobStatus {
   location: string;
   lastUpdated: Time;
   policyName: string;
-  runs: ResourceBackupRun[];
 }
 export interface ResourceBackupJob {
   id: string;

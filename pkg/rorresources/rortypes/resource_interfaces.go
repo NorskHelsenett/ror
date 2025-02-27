@@ -236,3 +236,9 @@ type BackupJobinterface interface {
 	CommonResourceInterface
 	Get() *ResourceBackupJob
 }
+
+// BackupRuninterface represents the interface for resources of the type backuprun
+type BackupRuninterface interface {
+	CommonResourceInterface
+	Get() *ResourceBackupRun
+}

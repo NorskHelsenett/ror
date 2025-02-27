@@ -1565,3 +1565,38 @@ func (m ResourceListBackupjobs) GetByLabels(search map[string]string) []Resource
 	}
 	return Response
 }
+
+// Function to return BackupRun resource by name.
+func (m ResourceListBackupruns) GetByName(search string) ResourceBackupRun {
+	for _, resource := range m.Backupruns {
+		if resource.Metadata.Name == search {
+			return resource
+		}
+	}
+	var emptyResponse ResourceBackupRun
+	return emptyResponse
+}
+
+// Function to return BackupRun resource by uid.
+func (m ResourceListBackupruns) GetByUid(search string) ResourceBackupRun {
+	for _, res := range m.Backupruns {
+		if res.Metadata.Uid == search {
+			return res
+		}
+	}
+	var emptyResponse ResourceBackupRun
+	return emptyResponse
+}
+
+// Function to return BackupRun resource by label.
+func (m ResourceListBackupruns) GetByLabels(search map[string]string) []ResourceBackupRun {
+	var Response []ResourceBackupRun
+	for _, res := range m.Backupruns {
+		if len(res.Metadata.Labels) != 0 {
+			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
+				Response = append(Response, res)
+			}
+		}
+	}
+	return Response
+}

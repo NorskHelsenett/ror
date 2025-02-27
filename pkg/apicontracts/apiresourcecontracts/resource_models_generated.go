@@ -5,7 +5,7 @@ package apiresourcecontracts
 
 // Resourcetypes allowed in the generic resource models.
 type Resourcetypes interface {
-	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent | ResourceVirtualMachine | ResourceEndpoints | ResourceNetworkPolicy | ResourceBackupJob
+	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent | ResourceVirtualMachine | ResourceEndpoints | ResourceNetworkPolicy | ResourceBackupJob | ResourceBackupRun
 }
 
 // type for returning Namespace resources to internal functions
@@ -228,4 +228,10 @@ type ResourceListNetworkpolicies struct {
 type ResourceListBackupjobs struct {
 	Owner      ResourceOwnerReference `json:"owner"`
 	Backupjobs []ResourceBackupJob    `json:"backupjobs"`
+}
+
+// type for returning BackupRun resources to internal functions
+type ResourceListBackupruns struct {
+	Owner      ResourceOwnerReference `json:"owner"`
+	Backupruns []ResourceBackupRun    `json:"backupruns"`
 }
