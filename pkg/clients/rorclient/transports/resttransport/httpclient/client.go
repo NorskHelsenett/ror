@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -49,7 +50,11 @@ type HttpTransportClient struct {
 }
 
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
-	req, err := http.NewRequest("GET", t.Config.BaseURL+path, nil)
+	return t.GetJSONWithContext(context.TODO(), path, out, params...)
+}
+
+func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	req, err := http.NewRequestWithContext(ctx, "GET", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return err
 	}
@@ -76,11 +81,15 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 }
 
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
+	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
+}
+
+func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	jsonData, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(ctx, "POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -103,11 +112,15 @@ func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...H
 }
 
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
+	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
+}
+
+func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	jsonData, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(ctx, "PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -130,7 +143,11 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 }
 
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
-	req, err := http.NewRequest("DELETE", t.Config.BaseURL+path, nil)
+	return t.DeleteWithContext(context.TODO(), path, out, params...)
+}
+
+func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	req, err := http.NewRequestWithContext(ctx, "DELETE", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return err
 	}
@@ -155,7 +172,11 @@ func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTranspo
 // Head makes a HEAD request with the given path and params.
 // It returns only the header and status code from the result, as it expects no body in return.
 func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
-	req, err := http.NewRequest("HEAD", t.Config.BaseURL+path, nil)
+	return t.HeadWithContext(context.TODO(), path, params...)
+}
+
+func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
+	req, err := http.NewRequestWithContext(ctx, "HEAD", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return nil, -1, err
 	}
@@ -188,6 +209,7 @@ func handleResponse(res *http.Response, out any) error {
 		if v.Kind() != reflect.Ptr || v.IsNil() {
 			return fmt.Errorf("out must be a pointer and not nil")
 		}
+		// this might panic
 		v.Elem().Set(reflect.ValueOf(string(body)))
 		return nil
 	}
