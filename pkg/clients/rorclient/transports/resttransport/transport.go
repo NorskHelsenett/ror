@@ -68,6 +68,28 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 	return t
 }
 
+func NewWithCustomHttpClient(config *httpclient.HttpTransportClientConfig, httpClient *http.Client) *RorHttpTransport {
+	client := &httpclient.HttpTransportClient{
+		Client: httpClient,
+		Config: config,
+	}
+	t := &RorHttpTransport{
+		Client:             client,
+		streamClientV1:     restv1stream.NewV1Client(v1sseclient.NewSSEClient(client)),
+		infoClientV1:       restv1info.NewV1Client(client),
+		datacenterClientV1: restv1datacenter.NewV1Client(client),
+		clustersClientV1:   restv1clusters.NewV1Client(client),
+		selfClientV2:       restclientv2self.NewV2Client(client),
+		workspacesClientV1: restv1workspaces.NewV1Client(client),
+		projectsClientV1:   restv1projects.NewV1Client(client),
+		resourcesClientV1:  restv1resources.NewV1Client(client),
+		metricsClientV1:    restv1metrics.NewV1Client(client),
+		resourcesClientV2:  restv2resources.NewV2Client(client),
+		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
+	}
+	return t
+}
+
 func (t *RorHttpTransport) Stream() v1stream.StreamInterface {
 	return t.streamClientV1
 }
