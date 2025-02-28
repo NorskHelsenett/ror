@@ -188,6 +188,7 @@ func handleResponse(res *http.Response, out any) error {
 		if v.Kind() != reflect.Ptr || v.IsNil() {
 			return fmt.Errorf("out must be a pointer and not nil")
 		}
+		// this might panic
 		v.Elem().Set(reflect.ValueOf(string(body)))
 		return nil
 	}
