@@ -50,30 +50,7 @@ type HttpTransportClient struct {
 }
 
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
-	req, err := http.NewRequest("GET", t.Config.BaseURL+path, nil)
-	if err != nil {
-		return err
-	}
-
-	t.AddCommonHeaders(req)
-	t.ParseParams(req, params...)
-
-	res, err := t.Client.Do(req)
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
-	}
-	defer res.Body.Close()
-
-	err = handleResponse(res, out)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return t.GetJSONWithContext(context.TODO(), path, out, params...)
 }
 
 func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
@@ -104,30 +81,7 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 }
 
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
-	jsonData, err := json.Marshal(in)
-	if err != nil {
-		return err
-	}
-	req, err := http.NewRequest("POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return err
-	}
-
-	t.AddCommonHeaders(req)
-	t.ParseParams(req, params...)
-	t.Client.Timeout = time.Second * 60
-	res, err := t.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	err = handleResponse(res, out)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
 func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
@@ -158,30 +112,7 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 }
 
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
-	jsonData, err := json.Marshal(in)
-	if err != nil {
-		return err
-	}
-	req, err := http.NewRequest("PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return err
-	}
-
-	t.AddCommonHeaders(req)
-	t.ParseParams(req, params...)
-
-	res, err := t.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	err = handleResponse(res, out)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
 func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
@@ -212,26 +143,7 @@ func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path strin
 }
 
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
-	req, err := http.NewRequest("DELETE", t.Config.BaseURL+path, nil)
-	if err != nil {
-		return err
-	}
-
-	t.AddCommonHeaders(req)
-	t.ParseParams(req, params...)
-
-	res, err := t.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	err = handleResponse(res, out)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return t.DeleteWithContext(context.TODO(), path, out, params...)
 }
 
 func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
@@ -260,21 +172,7 @@ func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string
 // Head makes a HEAD request with the given path and params.
 // It returns only the header and status code from the result, as it expects no body in return.
 func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
-	req, err := http.NewRequest("HEAD", t.Config.BaseURL+path, nil)
-	if err != nil {
-		return nil, -1, err
-	}
-
-	t.AddCommonHeaders(req)
-	t.ParseParams(req, params...)
-
-	res, err := t.Client.Do(req)
-	if err != nil {
-		return nil, -1, err
-	}
-	defer res.Body.Close()
-
-	return res.Header, res.StatusCode, nil
+	return t.HeadWithContext(context.TODO(), path, params...)
 }
 
 func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
