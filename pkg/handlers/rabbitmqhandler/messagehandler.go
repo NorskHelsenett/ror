@@ -2,6 +2,7 @@ package rabbitmqhandler
 
 import (
 	"context"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rabbitmqclient"
 
@@ -60,6 +61,20 @@ func New(config RabbitMQListnerConfig, handler RabbitMQMessageHandler) RabbitMQL
 		exchange:           config.Exchange,
 		excahngeRoutingKey: config.ExcahngeRoutingKey,
 	}
+}
+
+// ListenWithTTL Convience method for setting up channel with TTL on messages
+func (r RabbitMQListner) ListenWithTTL(hangup chan *amqp.Error, TTL time.Duration) {
+	// create new args if listener is declared without args, otherwise override ttl
+	if r.queueArgs == nil {
+		r.queueArgs = amqp.Table{
+			amqp.QueueMessageTTLArg: TTL.Milliseconds(),
+		}
+	} else {
+		r.queueArgs[amqp.QueueMessageTTLArg] = TTL.Milliseconds()
+	}
+
+	r.Listen(hangup)
 }
 
 func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
