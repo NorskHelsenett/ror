@@ -85,7 +85,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 		r.queueAutoDelete, // delete when unused
 		r.queueExclusive,  // exclusive
 		r.queueNoWait,     // no-wait
-		nil,               // arguments
+		r.queueArgs,       // arguments
 	)
 	if err != nil {
 		rlog.Fatal("failed to declare a queue", err, rlog.String("queue", r.queueName))
@@ -97,7 +97,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 			r.excahngeRoutingKey, // routing key
 			r.exchange,           // exchange
 			r.queueNoWait,
-			nil,
+			r.queueArgs,
 		)
 		if err != nil {
 			rlog.Fatal("failed to bind queue to exchange", err, rlog.String("queue", r.queueName), rlog.String("exchange", r.exchange))
