@@ -416,7 +416,7 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesRelease(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "TanzuKubernetesRelease",
-			"apiVersion": "run.tanzu.vmware.com/v1alpha2",
+			"apiVersion": "run.tanzu.vmware.com/v1alpha3",
 			"metadata": map[string]interface{}{
 				"name": "test-tanzukubernetesrelease",
 			},
@@ -435,7 +435,7 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClass(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "VirtualMachineClass",
-			"apiVersion": "vmoperator.vmware.com/v1alpha1",
+			"apiVersion": "vmoperator.vmware.com/v1alpha2",
 			"metadata": map[string]interface{}{
 				"name": "test-virtualmachineclass",
 			},
@@ -454,7 +454,7 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClassBinding(t *testing.T)
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "VirtualMachineClassBinding",
-			"apiVersion": "vmoperator.vmware.com/v1alpha1",
+			"apiVersion": "vmoperator.vmware.com/v1alpha2",
 			"metadata": map[string]interface{}{
 				"name": "test-virtualmachineclassbinding",
 			},

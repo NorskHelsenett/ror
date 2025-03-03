@@ -122,15 +122,15 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetTanzuKubernetesCluster(res.TanzuKubernetesClusterResource)
 		r.SetCommonInterface(res.TanzuKubernetesClusterResource)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesRelease":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesRelease":
 		r.SetTanzuKubernetesRelease(res.TanzuKubernetesReleaseResource)
 		r.SetCommonInterface(res.TanzuKubernetesReleaseResource)
 
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClass":
+	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClass":
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
 		r.SetCommonInterface(res.VirtualMachineClassResource)
 
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClassBinding":
+	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClassBinding":
 		r.SetVirtualMachineClassBinding(res.VirtualMachineClassBindingResource)
 		r.SetCommonInterface(res.VirtualMachineClassBindingResource)
 

@@ -148,17 +148,17 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetTanzuKubernetesCluster(res)
 		r.SetCommonInterface(res)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesRelease":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesRelease":
 		res := newTanzuKubernetesReleaseFromDynamicClient(input)
 		r.SetTanzuKubernetesRelease(res)
 		r.SetCommonInterface(res)
 
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClass":
+	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClass":
 		res := newVirtualMachineClassFromDynamicClient(input)
 		r.SetVirtualMachineClass(res)
 		r.SetCommonInterface(res)
 
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClassBinding":
+	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClassBinding":
 		res := newVirtualMachineClassBindingFromDynamicClient(input)
 		r.SetVirtualMachineClassBinding(res)
 		r.SetCommonInterface(res)
