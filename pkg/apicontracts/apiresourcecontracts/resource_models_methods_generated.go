@@ -999,52 +999,6 @@ func (m ResourceListVirtualmachineclasses) GetByLabels(search map[string]string)
 	return Response
 }
 
-// Function to return VirtualMachineClassBinding resource by name.
-func (m ResourceListVirtualmachineclassbindings) GetByName(search string) ResourceVirtualMachineClassBinding {
-	for _, resource := range m.Virtualmachineclassbindings {
-		if resource.Metadata.Name == search {
-			return resource
-		}
-	}
-	var emptyResponse ResourceVirtualMachineClassBinding
-	return emptyResponse
-}
-
-// Function to return VirtualMachineClassBinding resource by namespace.
-func (m ResourceListVirtualmachineclassbindings) GetByNamespace(search string) ResourceVirtualMachineClassBinding {
-	for _, res := range m.Virtualmachineclassbindings {
-		if res.Metadata.Namespace == search {
-			return res
-		}
-	}
-	var emptyResponse ResourceVirtualMachineClassBinding
-	return emptyResponse
-}
-
-// Function to return VirtualMachineClassBinding resource by uid.
-func (m ResourceListVirtualmachineclassbindings) GetByUid(search string) ResourceVirtualMachineClassBinding {
-	for _, res := range m.Virtualmachineclassbindings {
-		if res.Metadata.Uid == search {
-			return res
-		}
-	}
-	var emptyResponse ResourceVirtualMachineClassBinding
-	return emptyResponse
-}
-
-// Function to return VirtualMachineClassBinding resource by label.
-func (m ResourceListVirtualmachineclassbindings) GetByLabels(search map[string]string) []ResourceVirtualMachineClassBinding {
-	var Response []ResourceVirtualMachineClassBinding
-	for _, res := range m.Virtualmachineclassbindings {
-		if len(res.Metadata.Labels) != 0 {
-			if stringhelper.CompareLabels(search, res.Metadata.Labels) {
-				Response = append(Response, res)
-			}
-		}
-	}
-	return Response
-}
-
 // Function to return KubernetesCluster resource by name.
 func (m ResourceListKubernetesclusters) GetByName(search string) ResourceKubernetesCluster {
 	for _, resource := range m.Kubernetesclusters {

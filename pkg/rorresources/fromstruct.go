@@ -130,10 +130,6 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
 		r.SetCommonInterface(res.VirtualMachineClassResource)
 
-	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClassBinding":
-		r.SetVirtualMachineClassBinding(res.VirtualMachineClassBindingResource)
-		r.SetCommonInterface(res.VirtualMachineClassBindingResource)
-
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		r.SetKubernetesCluster(res.KubernetesClusterResource)
 		r.SetCommonInterface(res.KubernetesClusterResource)

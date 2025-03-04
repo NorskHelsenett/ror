@@ -158,11 +158,6 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetVirtualMachineClass(res)
 		r.SetCommonInterface(res)
 
-	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClassBinding":
-		res := newVirtualMachineClassBindingFromDynamicClient(input)
-		r.SetVirtualMachineClassBinding(res)
-		r.SetCommonInterface(res)
-
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		res := newKubernetesClusterFromDynamicClient(input)
 		r.SetKubernetesCluster(res)
@@ -604,22 +599,6 @@ func newVirtualMachineClassFromDynamicClient(obj *unstructured.Unstructured) *ro
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to VirtualMachineClass", err)
-	}
-	return &nr
-}
-
-// newVirtualMachineClassBindingFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
-// by the kubernetes universal client.
-func newVirtualMachineClassBindingFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceVirtualMachineClassBinding {
-	nr := rortypes.ResourceVirtualMachineClassBinding{}
-	nrjson, err := obj.MarshalJSON()
-	if err != nil {
-		rlog.Error("Could not mashal unstructired to json", err)
-	}
-
-	err = json.Unmarshal(nrjson, &nr)
-	if err != nil {
-		rlog.Error("Could not unmarshal json to VirtualMachineClassBinding", err)
 	}
 	return &nr
 }

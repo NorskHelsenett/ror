@@ -450,25 +450,6 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClass(t *testing.T) {
 	}
 }
 
-func TestNewResourceSetFromDynamicClientVirtualMachineClassBinding(t *testing.T) {
-	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"kind":       "VirtualMachineClassBinding",
-			"apiVersion": "vmoperator.vmware.com/v1alpha2",
-			"metadata": map[string]interface{}{
-				"name": "test-virtualmachineclassbinding",
-			},
-		},
-	}
-
-	expected := NewResourceFromDynamicClient(input)
-	result := NewResourceSetFromDynamicClient(input)
-
-	if !reflect.DeepEqual(result.Get(), expected) {
-		t.Errorf("Expected %v, but got %v", expected, result)
-	}
-}
-
 func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

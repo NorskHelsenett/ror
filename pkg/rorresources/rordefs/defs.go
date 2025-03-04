@@ -220,15 +220,6 @@ var Resourcedefs = ApiResources{
 		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "VirtualMachineClassBinding",
-			APIVersion: "vmoperator.vmware.com/v1alpha2",
-		},
-		Plural:     "virtualmachineclassbindings",
-		Namespaced: true,
-		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
-		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
-	}, {
-		TypeMeta: metav1.TypeMeta{
 			Kind:       "KubernetesCluster",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
