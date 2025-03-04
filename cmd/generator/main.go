@@ -26,117 +26,43 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
-	"path"
 	"strings"
-	"text/template"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rorgenerator"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 
+var generator *rorgenerator.Generator
+
 func main() {
 
-	// Schema - Tanzu service
-	//   - cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go
-	//templateFile("cmd/tanzu/agent/tanzuservice/schemas/schemas_generated.go.tmpl", rordefs.GetResourcesByType(rordefs.ApiResourceTypeTanzuAgent))
+	generator = rorgenerator.NewGenerator()
 
 	// Resource models v1
-	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
-	templateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
+	generator.TemplateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
+	generator.TemplateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
 
 	// Resource models v2
-	templateFile("pkg/rorresources/fromstruct.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	templateFile("pkg/rorresources/resource.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	templateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	templateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	templateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	templateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	generator.TemplateFile("pkg/rorresources/fromstruct.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	generator.TemplateFile("pkg/rorresources/resource.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	generator.TemplateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	generator.TemplateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 
 	// Resource models - input filters
 	for _, res := range rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2) {
 		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.GetKind())
 		filepath = strings.ToLower(filepath)
-		templateFileOnce(filepath, "pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
+		generator.TemplateFileOnce(filepath, "pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
 	}
 
 	generateTypescriptModels()
-}
-
-func templateFileOnce(filepath string, templatePath string, data any) {
-
-	if fileExists(filepath) {
-		fmt.Println("File exists: ", filepath)
-		return
-	}
-	templateToFile(filepath, templatePath, data)
-}
-
-func fileExists(filePath string) bool {
-	fileInfo, err := os.Stat(filePath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-		// Handle other errors if needed
-	}
-	return !fileInfo.IsDir()
-}
-
-func templateFile(filepath string, data any) {
-
-	outfile := strings.TrimSuffix(filepath, path.Ext(filepath))
-	templateToFile(outfile, filepath, data)
-}
-
-func templateToFile(filepath string, templatePath string, data any) {
-
-	t, err := os.ReadFile(templatePath) // #nosec G304 - This is a generator and the files are under control
-
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	funcMap := template.FuncMap{
-		"lower": strings.ToLower,
-	}
-	tmpl, err := template.New("Template").Funcs(funcMap).Parse(string(t))
-	if err != nil {
-		panic(err)
-	}
-
-	f, err := os.Create(filepath) // #nosec G304 - This is a generator and the files are under control
-
-	if err != nil {
-		panic(err)
-	}
-	defer func(f *os.File) {
-		_ = f.Close()
-	}(f)
-	err = tmpl.Execute(f, data)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmtcmd := exec.Command("go", "fmt", filepath)
-	_, err = fmtcmd.Output()
-	if err != nil {
-		_, _ = fmt.Println("go formater failed with err: ", err.Error())
-		fmt.Println(err)
-	}
-	fmt.Println("Generated file: ", filepath)
-}
-
-func touchFile(filePath string) error {
-	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, 0644)
-	if err != nil {
-		return err
-	}
-	return file.Close()
 }
 
 func generateTypescriptModels() {
@@ -146,7 +72,7 @@ func generateTypescriptModels() {
 	}
 	resourceV2TypescriptFilePath := fmt.Sprintf("%s/typescript/models/src/resources.ts", workingDirectory)
 	if _, err = os.Stat(resourceV2TypescriptFilePath); errors.Is(err, os.ErrNotExist) {
-		err = touchFile(resourceV2TypescriptFilePath)
+		err = generator.TouchFile(resourceV2TypescriptFilePath)
 		if err != nil {
 			panic(err.Error())
 		}
