@@ -38,12 +38,12 @@ type ResourceClusterOrderSpecNodePool struct {
 }
 
 type ResourceClusterOrderStatus struct {
-	Status           string                                     `json:"status"`
-	Phase            string                                     `json:"phase"`
-	Conditions       []ResourceKubernetesClusterStatusCondition `json:"conditions"`
-	CreatedTime      string                                     `json:"createdTime"`
-	UpdatedTime      string                                     `json:"updatedTime"`
-	LastObservedTime string                                     `json:"lastObservedTime"`
+	Status           string                                          `json:"status"`
+	Phase            string                                          `json:"phase"`
+	Conditions       []ResourceKubernetesClusterOrderStatusCondition `json:"conditions"`
+	CreatedTime      string                                          `json:"createdTime"`
+	UpdatedTime      string                                          `json:"updatedTime"`
+	LastObservedTime string                                          `json:"lastObservedTime"`
 }
 
 type ResourceClusterOrderCondition struct {
@@ -92,3 +92,11 @@ const (
 	ProviderTypeAzure   ProviderType = "Azure"
 	ProviderTypeK3d     ProviderType = "K3D"
 )
+
+type ResourceKubernetesClusterOrderStatusCondition struct {
+	Type               string `json:"type"`
+	Status             string `json:"status"`
+	LastTransitionTime string `json:"lastTransitionTime"`
+	Reason             string `json:"reason"`
+	Message            string `json:"message"`
+}
