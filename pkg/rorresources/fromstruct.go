@@ -118,21 +118,17 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetRbacAssessmentReport(res.RbacAssessmentReportResource)
 		r.SetCommonInterface(res.RbacAssessmentReportResource)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesCluster":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesCluster":
 		r.SetTanzuKubernetesCluster(res.TanzuKubernetesClusterResource)
 		r.SetCommonInterface(res.TanzuKubernetesClusterResource)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesRelease":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesRelease":
 		r.SetTanzuKubernetesRelease(res.TanzuKubernetesReleaseResource)
 		r.SetCommonInterface(res.TanzuKubernetesReleaseResource)
 
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClass":
+	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClass":
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
 		r.SetCommonInterface(res.VirtualMachineClassResource)
-
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClassBinding":
-		r.SetVirtualMachineClassBinding(res.VirtualMachineClassBindingResource)
-		r.SetCommonInterface(res.VirtualMachineClassBindingResource)
 
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		r.SetKubernetesCluster(res.KubernetesClusterResource)

@@ -194,7 +194,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "TanzuKubernetesCluster",
-			APIVersion: "run.tanzu.vmware.com/v1alpha2",
+			APIVersion: "run.tanzu.vmware.com/v1alpha3",
 		},
 		Plural:     "tanzukubernetesclusters",
 		Namespaced: true,
@@ -203,7 +203,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "TanzuKubernetesRelease",
-			APIVersion: "run.tanzu.vmware.com/v1alpha2",
+			APIVersion: "run.tanzu.vmware.com/v1alpha3",
 		},
 		Plural:     "tanzukubernetesreleases",
 		Namespaced: false,
@@ -212,19 +212,10 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VirtualMachineClass",
-			APIVersion: "vmoperator.vmware.com/v1alpha1",
+			APIVersion: "vmoperator.vmware.com/v1alpha2",
 		},
 		Plural:     "virtualmachineclasses",
 		Namespaced: false,
-		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
-		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
-	}, {
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "VirtualMachineClassBinding",
-			APIVersion: "vmoperator.vmware.com/v1alpha1",
-		},
-		Plural:     "virtualmachineclassbindings",
-		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeTanzuAgent},
 		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
