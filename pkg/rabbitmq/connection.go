@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log/slog"
 	"sync"
+
+	"github.com/google/uuid"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // Connection interface for handling rabbitmq connections.
@@ -252,7 +253,7 @@ func (c *connection) Ping(ctx context.Context) error {
 }
 
 // getConnectionString creates a connectionString from the connections endpoint
-// and the credentials provides from the registered Authenticator.
+// and the credentials provided from the registered Authenticator.
 func (c *connection) getConnectionString() string {
 	username, password := c.GetCredentials()
 	return fmt.Sprintf("amqp://%s:%s@%s", username, password, c.endpoint)
