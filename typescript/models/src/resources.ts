@@ -14,6 +14,35 @@ export enum VulnerabilityDismissalReason {
 export enum ResourceTagProperties {
   color = 'color',
 }
+export interface ResourceBackupStorage {
+  unit: string;
+  sourceSize: number;
+  logicalSize: number;
+  physicalSize: number;
+}
+export interface ResourceBackupRunDestination {
+  name: string;
+  id: string;
+  type: string;
+  status: string;
+  expiryTime: Time;
+}
+export interface ResourceBackupRunStatus {
+  id: string;
+  backupTargets: ResourceBackupTarget[];
+  backupDestinations: ResourceBackupRunDestination[];
+  startTime: Time;
+  endTime: Time;
+  expiryTime: Time;
+  backupStorage: ResourceBackupStorage;
+}
+export interface ResourceBackupRun {
+  id: string;
+  provider: string;
+  source: string;
+  status: ResourceBackupRunStatus;
+  spec: ResourceBackupJobSpec;
+}
 export interface ResourceBackupJobSpec {
   name: string;
   status: string;
@@ -1179,6 +1208,7 @@ export interface Resource {
   networkpolicy?: ResourceNetworkPolicy;
   datacenter?: ResourceDatacenter;
   backupjob?: ResourceBackupJob;
+  backuprun?: ResourceBackupRun;
 }
 export interface ResourceSet {
   resources?: Resource[];
