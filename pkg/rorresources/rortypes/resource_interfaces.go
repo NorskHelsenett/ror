@@ -147,12 +147,6 @@ type VirtualMachineClassinterface interface {
 	Get() *ResourceVirtualMachineClass
 }
 
-// VirtualMachineClassBindinginterface represents the interface for resources of the type virtualmachineclassbinding
-type VirtualMachineClassBindinginterface interface {
-	CommonResourceInterface
-	Get() *ResourceVirtualMachineClassBinding
-}
-
 // KubernetesClusterinterface represents the interface for resources of the type kubernetescluster
 type KubernetesClusterinterface interface {
 	CommonResourceInterface

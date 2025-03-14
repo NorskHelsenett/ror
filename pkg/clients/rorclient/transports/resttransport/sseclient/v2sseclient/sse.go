@@ -27,6 +27,7 @@ type SSEClient struct {
 	url           string
 	lastEvetnID   string
 	retyrInterval int
+	clientId      string
 }
 
 func NewSSEClient(client *httpclient.HttpTransportClient) *SSEClient {
@@ -47,6 +48,9 @@ func (s *SSEClient) createRequest() error {
 	s.request.Header.Set("Cache-Control", "no-cache")
 	s.request.Header.Set("Accept", "text/event-stream")
 	s.request.Header.Set("Connection", "keep-alive")
+	if s.clientId != "" {
+		s.request.Header.Set("X-Client-Id", s.clientId)
+	}
 
 	return nil
 
@@ -168,6 +172,7 @@ func (sse *SSEClient) OpenSSEStreamWithCallback(callback func(v2stream.RorEvent)
 			if !open && sseClient.CheckRetry() {
 				continue
 			}
+
 			callback(event)
 		}
 	}()
@@ -201,8 +206,21 @@ func loop(client *SSEClient, reader *bufio.Reader, events chan v2stream.RorEvent
 	eventId := ""
 	eventdata := []byte{}
 	eventtype := "unknown"
+	lastKeepAlive := time.Now()
+	ticker := time.NewTicker(5 * time.Second)
+
+	go func() {
+		for range ticker.C {
+			if time.Since(lastKeepAlive) > 5*time.Second {
+				events <- v2stream.NewRorEventAsJSON("error", "no keepalive received, closing connection")
+				close(events)
+				return
+			}
+		}
+	}()
 
 	for {
+
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
 			events <- v2stream.NewRorEventAsJSON("error", fmt.Sprintf("error during resp.Body read:%s", err))
@@ -212,6 +230,14 @@ func loop(client *SSEClient, reader *bufio.Reader, events chan v2stream.RorEvent
 
 		if hasPrefix(line, "\n") {
 			// Empty line, dispatch message
+
+			// Handle internal events
+			if strings.HasPrefix(eventtype, "connection.") {
+
+				if eventtype == "connection.id" {
+					client.clientId = string(removeNewlineFromBytes(eventdata))
+				}
+			}
 			if len(eventdata) != 0 {
 				events <- v2stream.RorEvent{Type: eventtype, Data: removeNewlineFromBytes(eventdata)}
 				client.SetLastEventID(eventId)
@@ -223,6 +249,9 @@ func loop(client *SSEClient, reader *bufio.Reader, events chan v2stream.RorEvent
 			continue
 		}
 		if hasPrefix(line, ":") {
+			if string(line) == ":keepalive\n" {
+				lastKeepAlive = time.Now()
+			}
 			// Comment, do nothing
 			continue
 		}

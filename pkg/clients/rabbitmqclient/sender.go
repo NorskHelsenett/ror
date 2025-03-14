@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"maps"
 
 	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
@@ -48,9 +47,6 @@ func (rc rabbitmqcon) SendMessage(ctx context.Context, message any, routing stri
 	})
 	if err != nil {
 		return err
-	}
-	if err != nil {
-		return fmt.Errorf("could not publish message")
 	}
 
 	span5.End()

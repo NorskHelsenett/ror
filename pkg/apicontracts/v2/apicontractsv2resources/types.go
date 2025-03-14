@@ -1,6 +1,10 @@
 package apicontractsv2resources
 
-import "github.com/NorskHelsenett/ror/pkg/rlog"
+import (
+	"fmt"
+
+	"github.com/NorskHelsenett/ror/pkg/rlog"
+)
 
 type HashList struct {
 	Items []HashItem `json:"items"`
@@ -23,6 +27,9 @@ func (hl HashList) GetInactiveUid() []string {
 	for i := range hl.Items {
 		if !hl.Items[i].active {
 			ret = append(ret, hl.Items[i].Uid)
+			if hl.Items[i].Uid == "" {
+				rlog.Warn(fmt.Sprintf("resource %s has empty uid", hl.Items[i].Hash))
+			}
 		}
 	}
 	return ret

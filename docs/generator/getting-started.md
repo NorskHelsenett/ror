@@ -11,9 +11,7 @@
 
 ## General information
 
-When creating a new resource for ROR the entire procedure needs to be followed.
-If you're just updating the existing resources - As in not adding or removing structs - You don't need to follow any of these instructions from the ROR side beyond merging it to main.
-If you're adding more sub structs but not adding a core struct you need to rerun the generator again.
+When creating a new resource, editing, or deleting an existing resource for ROR the generator MUST be ran, this is required for amongst other things to update the TypeScript types.
 
 ## Getting started
 

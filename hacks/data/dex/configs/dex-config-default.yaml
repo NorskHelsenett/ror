@@ -24,6 +24,8 @@ web:
     - "http://127.0.0.1:10000"
     - "http://localhost:11000"
     - "http://127.0.0.1:11000"
+    - "http://localhost:11100"
+    - "http://127.0.0.1:11100"
 
 # Configuration for dex appearance
 # frontend:
@@ -73,22 +75,26 @@ staticClients:
 #   - 'http://localhost:31337/auth/callback'
 #   name: 'ROR-Admin'
 #   secret: ZXhhbXBsZS1hcHAtc2VjcmV0
-- id: ror.sky.nhn.no
-  name: ror.sky.nhn.no
-  redirectURIs:
-  - https://ror.sky.nhn.no/auth/callback
-  - http://localhost:11000/auth/callback
-  - http://127.0.0.1:11000/auth/callback
-  secret: ZXhhbXBsZS1hcHAtc2VjcmV0
-  scopes: [openid profile email groups offline_access]
 - id: ror.sky.test.nhn.no
   name: ror.sky.test.nhn.no
   redirectURIs:
   - https://ror.sky.test.nhn.no/auth/callback
   - http://localhost:11000/auth/callback
   - http://127.0.0.1:11000/auth/callback
+  - http://localhost:11100/api/auth/callback/dex
+  - http://127.0.0.1:11100/api/auth/callback/dex
   secret: VQEj6sMwgxPsa8t9
-  scopes: [openid profile email groups]
+  scopes: [openid profile email groups offline_access]
+- id: rorwebapp
+  name: rorwebapp
+  redirectURIs:
+  - https://ror.sky.test.nhn.no/auth/callback
+  - http://localhost:11000/auth/callback
+  - http://127.0.0.1:11000/auth/callback
+  - http://localhost:11100/api/auth/callback/dex
+  - http://127.0.0.1:11100/api/auth/callback/dex
+  secret: VQEj6sMwgxPsa8t9
+  scopes: [openid profile email groups offline_access]
 - id: ror-cli
   name: 'ROR CLI'
   redirectURIs:

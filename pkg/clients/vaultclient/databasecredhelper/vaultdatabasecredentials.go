@@ -17,16 +17,20 @@ type VaultDBCredentials struct {
 	VaultClient *vaultclient.VaultClient
 	Username    string
 	Password    string
-	VaultPath   string
+	VaultRole   string
 	MountPath   string
 	Exp         int64
 }
 
-func NewVaultDBCredentials(vcli *vaultclient.VaultClient, vaultpath string, mountpath string) *VaultDBCredentials {
+// NewVaultDBCredentials creates a new VaultDBCredentials object
+// vcli is the vault client
+// vaultRole is the role to request credentials for
+// mountpath is the path to the database mount in vault
+func NewVaultDBCredentials(vcli *vaultclient.VaultClient, vaultRole string, mountpath string) *VaultDBCredentials {
 
 	vc := VaultDBCredentials{
 		VaultClient: vcli,
-		VaultPath:   vaultpath,
+		VaultRole:   vaultRole,
 		Exp:         0,
 	}
 	if mountpath != "" {
@@ -49,7 +53,7 @@ func (dbc *VaultDBCredentials) CheckAndRenew() bool {
 		dbc.lock.Lock()
 		defer dbc.lock.Unlock()
 
-		msg := fmt.Sprintf("Renewing lease for database %s/credentials/%s", dbc.MountPath, dbc.VaultPath)
+		msg := fmt.Sprintf("Renewing lease for database %s/credentials/%s", dbc.MountPath, dbc.VaultRole)
 		rlog.Debug(msg)
 		_ = dbc.updateCreds()
 		return true
@@ -68,11 +72,11 @@ func (dbc *VaultDBCredentials) GetCredentials() (string, string) {
 }
 func (dbc *VaultDBCredentials) updateCreds() error {
 
-	if dbc.VaultPath == "" {
+	if dbc.VaultRole == "" {
 		return errors.New("secret path is nil or empty")
 	}
 
-	data, err := dbc.VaultClient.Client.Secrets.DatabaseGenerateCredentials(dbc.VaultClient.Context, dbc.VaultPath, vault.WithMountPath(dbc.MountPath))
+	data, err := dbc.VaultClient.Client.Secrets.DatabaseGenerateCredentials(dbc.VaultClient.Context, dbc.VaultRole, vault.WithMountPath(dbc.MountPath))
 	if err != nil {
 		msg := "could not get secret, are you sure that the token is valid? "
 		rlog.Error(msg, err)
@@ -82,7 +86,7 @@ func (dbc *VaultDBCredentials) updateCreds() error {
 		dbc.Username = data.Data["username"].(string)
 		dbc.Password = data.Data["password"].(string)
 		dbc.Exp = time.Now().Unix() + int64(data.LeaseDuration)
-		msg := fmt.Sprintf("new user: %s for path %s", dbc.Username, dbc.VaultPath)
+		msg := fmt.Sprintf("new user: %s for path %s", dbc.Username, dbc.VaultRole)
 		rlog.Debug(msg)
 		return nil
 	}
