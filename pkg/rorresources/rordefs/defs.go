@@ -353,7 +353,7 @@ var Resourcedefs = ApiResources{
 		Plural:     "backupjobs",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeBackupAgent},
-		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BackupRun",
@@ -362,6 +362,6 @@ var Resourcedefs = ApiResources{
 		Plural:     "backupruns",
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeBackupAgent},
-		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+		Versions:   []ApiVersions{ApiVersionV2},
 	},
 }
