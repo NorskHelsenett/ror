@@ -83,7 +83,7 @@ func (c *consumer) WithAuthenticator(authenticator Authenticator) Consumer {
 	return c
 }
 
-// Consume declares and binds the exchange and queue for this consumer and starts
+// Consume declares and binds the queue for this consumer and starts
 // the consume loop. It handles the consumed messages using the registered
 // handler. If a reconnect happens the consume loop is restarted.
 //
@@ -162,9 +162,9 @@ consumeLoop:
 	return c.Consume(ctx)
 }
 
-// setupConsumeQueue declares the queue and exchange used by this consumer, and
-// then binds the queue to the exchange. If any of the operations fails this
-// method returns an error.
+// setupConsumeQueue declares the queue used by this consumer, and then binds the
+// queue to an exchange. If any of the operations fails this method returns an
+// error.
 func (c *consumer) setupConsumeQueue() error {
 	_, err := c.amqpChannel.QueueDeclare(
 		c.queueName,
@@ -176,20 +176,6 @@ func (c *consumer) setupConsumeQueue() error {
 	)
 	if err != nil {
 		c.logger.Error("failed to declare consumer queue", "error", err)
-		return err
-	}
-
-	err = c.amqpChannel.ExchangeDeclare(
-		c.exchangeName,
-		amqp.ExchangeDirect,
-		true,
-		false,
-		false,
-		false,
-		c.args,
-	)
-	if err != nil {
-		c.logger.Error("failed to declare consumer exchange", "error", err)
 		return err
 	}
 
