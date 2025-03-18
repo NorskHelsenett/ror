@@ -2,11 +2,12 @@ package rabbitmq
 
 import (
 	"context"
+	"log/slog"
+	"sync"
+
 	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
 	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"log/slog"
-	"sync"
 )
 
 // Consumer interface used for defining a rabbitmq consumer. The Connection
@@ -56,14 +57,14 @@ func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Con
 
 	// apply consumer overrides from the environment and options passed in the
 	// constructor. The options passed in the constructor take precedence.
-	c = applyEnvOptions(c)
+	applyEnvOptions(c)
 	for _, opt := range opts {
-		c = opt.apply(c)
+		opt(c)
 	}
 
 	// register the handler provided in the constructor.
 	if handler == nil {
-		c.logger.Warn("starting consumer with default noop handler")
+		c.logger.Warn("starting consumer with default No-Op handler")
 		c.handler = defaultHandler
 	} else {
 		c.handler = handler
