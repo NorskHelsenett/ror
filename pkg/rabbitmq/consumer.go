@@ -2,8 +2,6 @@ package rabbitmq
 
 import (
 	"context"
-	"log/slog"
-	"sync"
 
 	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
 	"github.com/google/uuid"
@@ -15,14 +13,13 @@ import (
 type Consumer interface {
 	Connection
 	Consume(context.Context) error
-	WithAuthenticator(Authenticator) Consumer
 }
 
 // consumer struct used for representing a rabbitmq consumer. The connection
 // struct is embedded in this interface. The handler in this struct handles
 // messages consumed from rabbitmq.
 type consumer struct {
-	connection
+	*connection
 	consumerName string
 	queueName    string
 	exchangeName string
@@ -33,22 +30,18 @@ type consumer struct {
 
 // NewConsumer creates a new Consumer with an underlying Connection. The consumer
 // is configurable through environment variables or by passing in an array of
-// ConsumerOption.
+// Option.
 //
 // This method returns an error if the underlying connection fails to connect.
 //
 // If no configuration is provided, a default connection is set up.
 //
-// Use the method WithAuthenticator to use a custom Authenticator.
-func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...ConsumerOption) (Consumer, error) {
-	// create a default connection with a default authenticator.
+// Pass an option WithAuthenticator to use a custom Authenticator.
+func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Option) (Consumer, error) {
+	// create a default connection with a default authenticator and uuids for
+	// consumer names and keys.
 	c := &consumer{
-		connection: connection{
-			endpoint:      "localhost:5672",
-			reconnect:     sync.WaitGroup{},
-			logger:        slog.Default(),
-			Authenticator: &authenticator{},
-		},
+		connection:   newConnection(),
 		consumerName: uuid.NewString(),
 		queueName:    uuid.NewString(),
 		exchangeName: uuid.NewString(),
@@ -78,12 +71,6 @@ func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Con
 	return c, nil
 }
 
-// WithAuthenticator registers a custom authenticator for the Consumer.
-func (c *consumer) WithAuthenticator(authenticator Authenticator) Consumer {
-	c.Authenticator = authenticator
-	return c
-}
-
 // Consume declares and binds the queue for this consumer and starts
 // the consume loop. It handles the consumed messages using the registered
 // handler. If a reconnect happens the consume loop is restarted.
@@ -107,17 +94,8 @@ func (c *consumer) Consume(ctx context.Context) error {
 		return err
 	}
 
-	deliveryChan, err := c.amqpChannel.ConsumeWithContext(
-		ctx,
-		c.queueName,
-		c.consumerName,
-		false,
-		false,
-		// the noLocal flag is not supported but rabbitmq, so we just set to false.
-		false,
-		false,
-		c.args,
-	)
+	deliveryChan, err := c.amqpChannel.ConsumeWithContext(ctx, c.queueName, c.consumerName, false, false, // the noLocal flag is not supported but rabbitmq, so we just set to false.
+		false, false, c.args)
 	if err != nil {
 		return err
 	}
@@ -167,26 +145,13 @@ consumeLoop:
 // queue to an exchange. If any of the operations fails this method returns an
 // error.
 func (c *consumer) setupConsumeQueue() error {
-	_, err := c.amqpChannel.QueueDeclare(
-		c.queueName,
-		false,
-		true,
-		false,
-		false,
-		c.args,
-	)
+	_, err := c.amqpChannel.QueueDeclare(c.queueName, false, true, false, false, c.args)
 	if err != nil {
 		c.logger.Error("failed to declare consumer queue", "error", err)
 		return err
 	}
 
-	err = c.amqpChannel.QueueBind(
-		c.queueName,
-		c.routingKey,
-		c.exchangeName,
-		false,
-		c.args,
-	)
+	err = c.amqpChannel.QueueBind(c.queueName, c.routingKey, c.exchangeName, false, c.args)
 	if err != nil {
 		c.logger.Error("failed to bind consumer queue to exchange", "error", err)
 		return err
@@ -199,3 +164,26 @@ func (c *consumer) setupConsumeQueue() error {
 func defaultHandler(context.Context, amqp.Delivery) error {
 	return nil
 }
+
+func (c *consumer) setArgs(a amqp.Table) {
+	c.args = a
+}
+
+func (c *consumer) setQueueName(q string) {
+	c.queueName = q
+}
+
+func (c *consumer) setRoutingKey(r string) {
+	c.routingKey = r
+}
+
+func (c *consumer) setExchangeName(e string) {
+	c.exchangeName = e
+}
+
+func (c *consumer) setConsumerName(n string) {
+	c.consumerName = n
+}
+
+// No-Op method to satisfy the option interface
+func (c *consumer) setExchangeType(s string) {}
