@@ -258,3 +258,15 @@ func (c *connection) getConnectionString() string {
 	username, password := c.GetCredentials()
 	return fmt.Sprintf("amqp://%s:%s@%s", username, password, c.endpoint)
 }
+
+func (c *connection) setAuthenticator(a Authenticator) {
+	c.Authenticator = a
+}
+
+func (c *connection) setLogger(l *slog.Logger) {
+	c.logger = l
+}
+
+func (c *connection) setEndpoint(e string) {
+	c.endpoint = e
+}
