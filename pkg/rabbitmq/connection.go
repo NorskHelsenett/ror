@@ -177,38 +177,17 @@ func (c *connection) setupHealthQueue() error {
 	c.healthQueue = uuid.NewString()
 	c.healthRoutingKey = uuid.NewString()
 
-	err := c.amqpChannel.ExchangeDeclare(
-		c.healthExchange,
-		amqp.ExchangeDirect,
-		false,
-		true,
-		false,
-		false,
-		nil,
-	)
+	err := c.amqpChannel.ExchangeDeclare(c.healthExchange, amqp.ExchangeDirect, false, true, false, false, nil)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.amqpChannel.QueueDeclare(
-		c.healthQueue,
-		false,
-		true,
-		true,
-		false,
-		nil,
-	)
+	_, err = c.amqpChannel.QueueDeclare(c.healthQueue, false, true, true, false, nil)
 	if err != nil {
 		return err
 	}
 
-	err = c.amqpChannel.QueueBind(
-		c.healthQueue,
-		c.healthRoutingKey,
-		c.healthExchange,
-		false,
-		nil,
-	)
+	err = c.amqpChannel.QueueBind(c.healthQueue, c.healthRoutingKey, c.healthExchange, false, nil)
 	if err != nil {
 		return err
 	}
