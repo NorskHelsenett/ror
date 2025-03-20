@@ -16,7 +16,7 @@ type Consumer interface {
 }
 
 // consumer struct used for representing a rabbitmq consumer. The connection
-// struct is embedded in this interface. The handler in this struct handles
+// struct is embedded in this struct. The handler in this struct handles
 // messages consumed from rabbitmq.
 type consumer struct {
 	*connection
@@ -38,7 +38,7 @@ type consumer struct {
 //
 // Pass an option WithAuthenticator to use a custom Authenticator.
 func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Option) (Consumer, error) {
-	// create a default connection with a default authenticator and uuids for
+	// Create a default connection with a default authenticator and uuids for
 	// consumer names and keys.
 	c := &consumer{
 		connection:   newConnection(),
@@ -48,14 +48,14 @@ func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Opt
 		routingKey:   uuid.NewString(),
 	}
 
-	// apply consumer overrides from the environment and options passed in the
+	// Apply consumer overrides from the environment and options passed in the
 	// constructor. The options passed in the constructor take precedence.
 	applyEnvOptions(c)
 	for _, opt := range opts {
 		opt(c)
 	}
 
-	// register the handler provided in the constructor.
+	// Register the handler provided in the constructor.
 	if handler == nil {
 		c.logger.Warn("starting consumer with default No-Op handler")
 		c.handler = defaultHandler
@@ -80,13 +80,13 @@ func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Opt
 // This is a blocking method. If the provided context is cancelled this method
 // will return.
 func (c *consumer) Consume(ctx context.Context) error {
-	// if the connection is in shutdown mode we return immediately.
+	// If the connection is in shutdown mode we return immediately.
 	if c.connectionShutdown {
 		c.logger.InfoContext(ctx, "connection shutdown started, not restarting consume loop")
 		return nil
 	}
 
-	// we wait for the reconnection to finish
+	// We wait for the reconnection to finish.
 	c.reconnect.Wait()
 
 	err := c.setupConsumeQueue()
@@ -106,12 +106,12 @@ consumeLoop:
 	for {
 		select {
 		case delivery, ok := <-deliveryChan:
-			// if the delivery channel is cancelled or closed we break the consume loop.
+			// If the delivery channel is cancelled or closed we break the consume loop.
 			if !ok {
 				break consumeLoop
 			}
 
-			// we extract trace headers from the delivery. If no trace headers are found this
+			// We extract trace headers from the delivery. If no trace headers are found this
 			// is a No-Op.
 			ctx = trace.ExtractAMQPHeaders(ctx, delivery.Headers)
 			err = c.handler(ctx, delivery)
@@ -119,7 +119,7 @@ consumeLoop:
 				c.logger.ErrorContext(ctx, "failed to handle message", "error", err)
 			}
 
-			// we only ack the delivery if the handler error is nil.
+			// We only ack the delivery if the handler error is nil.
 			if err == nil {
 				err = c.amqpChannel.Ack(delivery.DeliveryTag, false)
 				if err != nil {
@@ -127,7 +127,7 @@ consumeLoop:
 				}
 			}
 
-		// we need to handle connection close since the delivery channel will not be
+		// We need to handle connection close since the delivery channel will not be
 		// closed if the connection is closed.
 		case <-c.connectionCloseChan:
 			break consumeLoop
@@ -137,7 +137,7 @@ consumeLoop:
 		}
 	}
 
-	// we restart the consume loop if the consumeLoop is broken
+	// We restart the consume loop if the consumeLoop is broken
 	return c.Consume(ctx)
 }
 
