@@ -35,6 +35,18 @@ type connection struct {
 	Authenticator
 }
 
+// newConnection is a convenience method for creating a default connection
+// struct.
+func newConnection() *connection {
+	c := &connection{
+		endpoint:      "localhost:5672",
+		logger:        slog.Default(),
+		reconnect:     sync.WaitGroup{},
+		Authenticator: &authenticator{},
+	}
+	return c
+}
+
 // connect sets up the amqpConnection and amqpChannel, runs setupHealthQueue, and
 // runs handleReconnect in a separate goroutine. It also creates the
 // connectionCloseChan, channelCloseChan, and channelCancelChan and registers
