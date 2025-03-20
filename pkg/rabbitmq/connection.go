@@ -153,7 +153,7 @@ func (c *connection) Shutdown(ctx context.Context) error {
 		return err
 	}
 
-	// use context deadline when shutting down amqp connection if it exists
+	// Use context deadline when shutting down amqp connection if it exists.
 	deadline, ok := ctx.Deadline()
 	if !ok {
 		err = c.amqpConnection.Close()
@@ -201,12 +201,12 @@ func (c *connection) setupHealthQueue() error {
 // the health queue synchronously. This method can be used to check the health of
 // the connection.
 func (c *connection) Ping(ctx context.Context) error {
-	// we return immediately if the connection is in shutdown mode
+	// We return immediately if the connection is in shutdown mode.
 	if c.connectionShutdown {
 		return nil
 	}
 
-	// we wait for either the context to be done or for the reconnect to finish
+	// We wait for either the context to be done or for the reconnect to finish.
 	waitChan := make(chan struct{})
 	go func() {
 		defer close(waitChan)
