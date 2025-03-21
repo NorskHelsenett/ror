@@ -225,7 +225,7 @@ var Resourcedefs = ApiResources{
 		},
 		Plural:     "kubernetesclusters",
 		Namespaced: true,
-		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeAgent},
+		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeTanzuAgent},
 		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	},
 	{
@@ -235,7 +235,7 @@ var Resourcedefs = ApiResources{
 		},
 		Plural:     "providers",
 		Namespaced: true,
-		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeAgent},
+		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeTanzuAgent},
 		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
@@ -244,7 +244,7 @@ var Resourcedefs = ApiResources{
 		},
 		Plural:     "workspaces",
 		Namespaced: true,
-		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeAgent},
+		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeTanzuAgent},
 		Versions:   []ApiVersions{ApiVersionV2},
 	},
 	{
@@ -252,9 +252,9 @@ var Resourcedefs = ApiResources{
 			Kind:       "KubernetesMachineClass",
 			APIVersion: "general.ror.internal/v1alpha1",
 		},
-		Plural:     "kubernetesmachineclasses",
+		Plural:     "Kubernetesmachineclasses",
 		Namespaced: true,
-		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeAgent},
+		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeTanzuAgent},
 		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
@@ -363,7 +363,7 @@ var Resourcedefs = ApiResources{
 		},
 		Plural:     "datacenters",
 		Namespaced: true,
-		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeAgent},
+		Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeTanzuAgent},
 		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
