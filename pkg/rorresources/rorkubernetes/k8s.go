@@ -163,6 +163,21 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetKubernetesCluster(res)
 		r.SetCommonInterface(res)
 
+	case "general.ror.internal/v1alpha1, Kind=Provider":
+		res := newProviderFromDynamicClient(input)
+		r.SetProvider(res)
+		r.SetCommonInterface(res)
+
+	case "general.ror.internal/v1alpha1, Kind=Workspace":
+		res := newWorkspaceFromDynamicClient(input)
+		r.SetWorkspace(res)
+		r.SetCommonInterface(res)
+
+	case "general.ror.internal/v1alpha1, Kind=KubernetesMachineClass":
+		res := newKubernetesMachineClassFromDynamicClient(input)
+		r.SetKubernetesMachineClass(res)
+		r.SetCommonInterface(res)
+
 	case "general.ror.internal/v1alpha1, Kind=ClusterOrder":
 		res := newClusterOrderFromDynamicClient(input)
 		r.SetClusterOrder(res)
@@ -615,6 +630,54 @@ func newKubernetesClusterFromDynamicClient(obj *unstructured.Unstructured) *rort
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to KubernetesCluster", err)
+	}
+	return &nr
+}
+
+// newProviderFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newProviderFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceProvider {
+	nr := rortypes.ResourceProvider{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Provider", err)
+	}
+	return &nr
+}
+
+// newWorkspaceFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newWorkspaceFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceWorkspace {
+	nr := rortypes.ResourceWorkspace{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Workspace", err)
+	}
+	return &nr
+}
+
+// newKubernetesMachineClassFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newKubernetesMachineClassFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceKubernetesMachineClass {
+	nr := rortypes.ResourceKubernetesMachineClass{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to KubernetesMachineClass", err)
 	}
 	return &nr
 }

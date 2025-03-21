@@ -441,6 +441,60 @@ func (r *ResourceKubernetesCluster) Get() *ResourceKubernetesCluster {
 	return r
 }
 
+// (r *ResourceProvider) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceProvider) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceProvider) Get returns a pointer to the resource of type ResourceProvider
+func (r *ResourceProvider) Get() *ResourceProvider {
+	return r
+}
+
+// (r *ResourceWorkspace) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceWorkspace) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceWorkspace) Get returns a pointer to the resource of type ResourceWorkspace
+func (r *ResourceWorkspace) Get() *ResourceWorkspace {
+	return r
+}
+
+// (r *ResourceKubernetesMachineClass) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceKubernetesMachineClass) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceKubernetesMachineClass) Get returns a pointer to the resource of type ResourceKubernetesMachineClass
+func (r *ResourceKubernetesMachineClass) Get() *ResourceKubernetesMachineClass {
+	return r
+}
+
 // (r *ResourceClusterOrder) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource
