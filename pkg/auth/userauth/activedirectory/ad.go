@@ -167,7 +167,7 @@ func (l *AdClient) GetUser(ctx context.Context, userId string) (*identitymodels.
 		return nil, err
 	}
 	filter := fmt.Sprintf("(&(objectClass=user)(sAMAccountName=%s))", userpart)
-	attributes := []string{"cn", "memberOf", "userAccountControl", "accountExpires"}
+	attributes := []string{"cn", "memberOf", "1.2.840.113556.1.4.1941", "userAccountControl", "accountExpires"}
 
 	if l.connection.IsClosing() {
 		rlog.Debug("Reconnecting to Active Directory")
