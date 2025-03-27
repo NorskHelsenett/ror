@@ -70,18 +70,19 @@ type Autoscaling struct {
 }
 
 type KubernetesClusterStatus struct {
-	Status     ClusterStatus `json:"status"`
-	Phase      string        `json:"phase"`
-	Conditions []Condition   `json:"conditions"`
+	State      ClusterState `json:"state"`
+	Phase      string       `json:"phase"` // Provisioning, Running, Deleting, Failed, Updating
+	Conditions []Condition  `json:"conditions"`
 }
 
-type ClusterStatus struct {
-	Cluster       ClusterDetails `json:"cluster"`
-	Versions      []Version      `json:"versions"`
-	EgressIP      string         `json:"egress-ip"`
-	LastUpdated   time.Time      `json:"lastUpdated"`
-	LastUpdatedBy string         `json:"lastUpdatedBy"`
-	Created       time.Time      `json:"created"`
+type ClusterState struct {
+	Cluster              ClusterDetails `json:"cluster"`
+	Versions             []Version      `json:"versions"`
+	ControlplaneEndpoint string         `json:"controlplaneendpoint"`
+	EgressIP             string         `json:"egress-ip"`
+	LastUpdated          time.Time      `json:"lastUpdated"`
+	LastUpdatedBy        string         `json:"lastUpdatedBy"`
+	Created              time.Time      `json:"created"`
 }
 
 type ClusterDetails struct {
