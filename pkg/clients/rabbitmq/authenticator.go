@@ -11,7 +11,7 @@ type authenticator struct {
 }
 
 // GetCredentials sets a default username and password, and overwrites them with
-// values from the environment if they exists.
+// values from the environment if they exist.
 func (a *authenticator) GetCredentials() (string, string) {
 	username, password := "guest", "guest"
 	u, ok := os.LookupEnv("ROR_RABBITMQ_USERNAME")
