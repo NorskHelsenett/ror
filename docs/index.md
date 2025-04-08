@@ -22,7 +22,7 @@ ROR is aimed to be provider/cloud agnostic but stil extensible to provide provid
 
 ## Distributed model
 
-ROR relies on a distributed model using agents in each cluster. This model ensures that ROR cant be used to access the cluster directly.
+ROR relies on a distributed model using agents in each cluster. This model ensures that ROR can't be used to access the cluster directly.
 
 ## Development values
 
