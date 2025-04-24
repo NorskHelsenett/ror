@@ -1,3 +1,26 @@
+// Package rlog provides a structured logging library for the ROR project.
+//
+// rlog is a wrapper around the uber-go/zap logging package that provides:
+// - Structured logging with strongly typed fields
+// - Context-aware logging with automatic extraction of request IDs and trace data
+// - OpenTelemetry integration for distributed tracing
+// - Configurable outputs via environment variables
+// - Support for both development (human-readable) and production (JSON) formats
+// - HTTP middleware for Gin web framework
+//
+// The package is configured via environment variables:
+// - LOG_LEVEL: Sets the minimum log level (debug, info, warn, error)
+// - LOG_OUTPUT: Specifies where logs are written (stderr by default, can be files or multiple targets)
+// - LOG_OUTPUT_ERROR: Specifies where error logs are written
+// - LOG_DEVELOP: When "true", outputs human-readable logs instead of JSON
+//
+// Basic usage:
+//
+//	rlog.Info("This is an informational message", rlog.String("key", "value"))
+//	rlog.Error("An error occurred", err, rlog.Int("status", 500))
+//
+//	// With context (includes trace IDs and context values automatically)
+//	rlog.Infoc(ctx, "Processing request", rlog.String("user", "admin"))
 package rlog
 
 import (
