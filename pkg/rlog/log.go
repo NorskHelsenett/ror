@@ -40,6 +40,10 @@ func init() {
 	InitializeRlog()
 }
 
+// InitializeRlog initializes the global logger based on configuration.
+// It creates either a default or development logger configuration depending on environment
+// settings and initializes a global logger instance.
+// If initialization fails, it will panic with an error message.
 func InitializeRlog() {
 	zapConfig := createDefaultRLogConfig()
 	if getIsDevelop() {
@@ -59,13 +63,21 @@ func InitializeRlog() {
 	Debug("global logger initialized", String("level", logLevel.String()))
 }
 
-// GetLogLevel returns the current loglevel as a string
+// GetLogLevel returns the current log level as a string.
+// The log level indicates the minimum severity of messages that will be logged.
 func GetLogLevel() string {
 	return logLevel.String()
 }
 
-// AddContextKeyField adds a key to look for in a contexts so that we
-// can add the context value as a persistent field to all logs
+// AddContextKeyField adds a key to look for in contexts so that we
+// can add the context value as a persistent field to all logs.
+// This allows automatic inclusion of specified context values in log entries.
+//
+// Parameters:
+//   - key: The context key to extract values from. Must be non-empty.
+//
+// Returns:
+//   - An error if the key is empty, nil otherwise.
 func AddContextKeyField(key string) error {
 	if key == "" {
 		return fmt.Errorf("empty key")
@@ -77,33 +89,55 @@ func AddContextKeyField(key string) error {
 
 // Info logs a message at InfoLevel. The message includes any fields passed
 // at the log site.
+//
+// Parameters:
+//   - msg: The log message
+//   - fields: Optional fields to add context to the log entry
 func Info(msg string, fields ...Field) {
 	l.Info(msg, fields...)
 }
 
-// Debug logs a message at InfoLevel. The message includes any fields passed
+// Debug logs a message at DebugLevel. The message includes any fields passed
 // at the log site.
+//
+// Parameters:
+//   - msg: The log message
+//   - fields: Optional fields to add context to the log entry
 func Debug(msg string, fields ...Field) {
 	l.Debug(msg, fields...)
 }
 
-// Warn logs a message at InfoLevel. The message includes any fields passed
+// Warn logs a message at WarnLevel. The message includes any fields passed
 // at the log site.
+//
+// Parameters:
+//   - msg: The log message
+//   - fields: Optional fields to add context to the log entry
 func Warn(msg string, fields ...Field) {
 	l.Warn(msg, fields...)
 }
 
-// Error logs a message at InfoLevel. The message includes any fields passed
-// at the log site.
+// Error logs a message at ErrorLevel. The message includes any fields passed
+// at the log site and the error.
+//
+// Parameters:
+//   - msg: The log message
+//   - err: The error to log
+//   - fields: Optional fields to add context to the log entry
 func Error(msg string, err error, fields ...Field) {
 	fields = append(fields, zap.Error(err))
 	l.Error(msg, fields...)
 }
 
-// Fatal logs a message at InfoLevel. The message includes any fields passed
-// at the log site.
+// Fatal logs a message at FatalLevel. The message includes any fields passed
+// at the log site and the error.
 // The logger then calls os.Exit(1), even if logging at FatalLevel is
 // disabled.
+//
+// Parameters:
+//   - msg: The log message
+//   - err: The error to log
+//   - fields: Optional fields to add context to the log entry
 func Fatal(msg string, err error, fields ...Field) {
 	fields = append(fields, zap.Error(err))
 	l.Fatal(msg, fields...)
@@ -113,7 +147,12 @@ func Fatal(msg string, err error, fields ...Field) {
 
 // Infoc logs a message at InfoLevel with context. The message includes any fields passed
 // at the log site and any tracing fields in the attached context, if the context
-// contains known fields these are also added
+// contains known fields these are also added.
+//
+// Parameters:
+//   - ctx: The context which may contain trace information
+//   - msg: The log message
+//   - fields: Optional fields to add context to the log entry
 func Infoc(ctx context.Context, msg string, fields ...Field) {
 	correlateWithTrace(ctx, msg, zap.InfoLevel, &fields)
 	getFieldsFromContext(ctx, &fields)
@@ -122,7 +161,12 @@ func Infoc(ctx context.Context, msg string, fields ...Field) {
 
 // Debugc logs a message at DebugLevel with context. The message includes any fields passed
 // at the log site and any tracing fields in the attached context, if the context
-// contains known fields these are also added
+// contains known fields these are also added.
+//
+// Parameters:
+//   - ctx: The context which may contain trace information
+//   - msg: The log message
+//   - fields: Optional fields to add context to the log entry
 func Debugc(ctx context.Context, msg string, fields ...Field) {
 	correlateWithTrace(ctx, msg, zap.DebugLevel, &fields)
 	getFieldsFromContext(ctx, &fields)
@@ -131,7 +175,12 @@ func Debugc(ctx context.Context, msg string, fields ...Field) {
 
 // Warnc logs a message at WarnLevel with context. The message includes any fields passed
 // at the log site and any tracing fields in the attached context, if the context
-// contains known fields these are also added
+// contains known fields these are also added.
+//
+// Parameters:
+//   - ctx: The context which may contain trace information
+//   - msg: The log message
+//   - fields: Optional fields to add context to the log entry
 func Warnc(ctx context.Context, msg string, fields ...Field) {
 	correlateWithTrace(ctx, msg, zap.WarnLevel, &fields)
 	getFieldsFromContext(ctx, &fields)
@@ -140,7 +189,13 @@ func Warnc(ctx context.Context, msg string, fields ...Field) {
 
 // Errorc logs a message at ErrorLevel with context. The message includes any fields passed
 // at the log site and any tracing fields in the attached context, if the context
-// contains known fields these are also added
+// contains known fields these are also added.
+//
+// Parameters:
+//   - ctx: The context which may contain trace information
+//   - msg: The log message
+//   - err: The error to log
+//   - fields: Optional fields to add context to the log entry
 func Errorc(ctx context.Context, msg string, err error, fields ...Field) {
 	correlateWithTrace(ctx, msg, zap.ErrorLevel, &fields)
 	getFieldsFromContext(ctx, &fields)
@@ -150,9 +205,15 @@ func Errorc(ctx context.Context, msg string, err error, fields ...Field) {
 
 // Fatalc logs a message at FatalLevel with context. The message includes any fields passed
 // at the log site and any tracing fields in the attached context, if the context
-// contains known fields these are also added
+// contains known fields these are also added.
 // The logger then calls os.Exit(1), even if logging at FatalLevel is
 // disabled.
+//
+// Parameters:
+//   - ctx: The context which may contain trace information
+//   - msg: The log message
+//   - err: The error to log
+//   - fields: Optional fields to add context to the log entry
 func Fatalc(ctx context.Context, msg string, err error, fields ...Field) {
 	correlateWithTrace(ctx, msg, zap.ErrorLevel, &fields)
 	getFieldsFromContext(ctx, &fields)
@@ -161,6 +222,10 @@ func Fatalc(ctx context.Context, msg string, err error, fields ...Field) {
 }
 
 // Infof logs a message at InfoLevel with context. The message is formated with sprintf.
+//
+// Parameters:
+//   - format: A format string for the message
+//   - v: Values to be formatted into the message
 func Infof(format string, v ...any) {
 	err := fmt.Sprintf(format, v...)
 	Info(err)
@@ -168,34 +233,100 @@ func Infof(format string, v ...any) {
 
 // Field functions
 
+// String creates a field with the given key and string value.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The string value
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func String(key, value string) Field {
 	return zap.String(key, value)
 }
 
+// Strings creates a field with the given key and string slice value.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The string slice value
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func Strings(key string, value []string) Field {
 	return zap.Strings(key, value)
 }
 
+// ByteString creates a field with the given key and byte slice value.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The byte slice value
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func ByteString(key string, value []byte) Field {
 	return zap.ByteString(key, value)
 }
 
+// Int creates a field with the given key and integer value.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The integer value
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func Int(key string, value int) Field {
 	return zap.Int(key, value)
 }
 
+// Int64 creates a field with the given key and int64 value.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The int64 value
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func Int64(key string, value int64) Field {
 	return zap.Int64(key, value)
 }
 
+// Uint creates a field with the given key and unsigned integer value.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The unsigned integer value
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func Uint(key string, value uint) Field {
 	return zap.Uint(key, value)
 }
 
+// Any creates a field with the given key and arbitrary value.
+// Any handles JSON marshaling for arbitrary objects.
+//
+// Parameters:
+//   - key: The field key
+//   - value: The value to be logged (will be marshaled to JSON)
+//
+// Returns:
+//   - A Field object that can be used in logging functions
 func Any(key string, value interface{}) Field {
 	return zap.Any(key, value)
 }
 
+// correlateWithTrace adds OpenTelemetry trace context information to log fields.
+// It extracts trace ID, span ID, and trace flags from the current span in the provided context
+// and adds them as fields to the log entry. It also records the log as a span event.
+//
+// Parameters:
+//   - ctx: The context containing the current span
+//   - msg: The log message to be recorded as a span event
+//   - lvl: The log level of the message
+//   - fields: Pointer to the slice of fields to append trace information to
 func correlateWithTrace(ctx context.Context, msg string, lvl zapcore.Level, fields *[]Field) {
 	span := trace.SpanFromContext(ctx)
 	if !span.SpanContext().TraceID().IsValid() {
@@ -212,8 +343,13 @@ func correlateWithTrace(ctx context.Context, msg string, lvl zapcore.Level, fiel
 	}
 }
 
-// tries to get a predifined set of fields from context, if the field is not
-// present int the context it is ignored
+// getFieldsFromContext extracts predefined fields from the context and adds them to the log fields.
+// It looks for any keys registered in the logger's ContextKeyFields and adds their values
+// to the log entry if present in the context.
+//
+// Parameters:
+//   - ctx: The context from which to extract field values
+//   - fields: Pointer to the slice of fields to append context values to
 func getFieldsFromContext(ctx context.Context, fields *[]Field) {
 	for _, key := range l.ContextKeyFields {
 		if ctx.Value(key) != nil {
@@ -222,8 +358,12 @@ func getFieldsFromContext(ctx context.Context, fields *[]Field) {
 	}
 }
 
-// all configuration of rlog should be done through config files or
-// environment
+// createDefaultRLogConfig creates a default production configuration for the zap logger.
+// It configures JSON output format with production settings and reads the log level
+// and output paths from environment variables or configuration.
+//
+// Returns:
+//   - A zap.Config with production settings
 func createDefaultRLogConfig() zap.Config {
 
 	infoLevel := getLogLevelFromConfig()
@@ -242,6 +382,12 @@ func createDefaultRLogConfig() zap.Config {
 	}
 }
 
+// createDevelopRLogConfig creates a development configuration for the zap logger.
+// It configures a console output format with development settings and reads the log level
+// and output paths from environment variables or configuration.
+//
+// Returns:
+//   - A zap.Config with development settings
 func createDevelopRLogConfig() zap.Config {
 	infoLevel := getLogLevelFromConfig()
 
@@ -259,7 +405,13 @@ func createDevelopRLogConfig() zap.Config {
 	}
 }
 
-// looks for LOG_LEVEL in environment to set loglevel
+// getLogLevelFromConfig retrieves the log level from environment variables or configuration.
+// It checks for a LOG_LEVEL environment variable first, then falls back to viper config.
+// Valid log levels are "debug", "trace", "info", "warn", and "error".
+// If the log level is not set or is invalid, it defaults to "info".
+//
+// Returns:
+//   - The configured zapcore.Level
 func getLogLevelFromConfig() zapcore.Level {
 
 	//since the api does not use viper yet we do this check to preserve
@@ -292,9 +444,13 @@ func getLogLevelFromConfig() zapcore.Level {
 	return logLevel
 }
 
-// looks for LOG_OUTPUT in environment to set output destination
-// to define more than one output separate them with ','
-// outputs must adhere to zaps requirements
+// getOutputsFromConfig retrieves the log output destinations from environment variables or configuration.
+// It checks for a LOG_OUTPUT environment variable first, then falls back to viper config.
+// Multiple outputs can be specified by separating them with commas.
+// If no outputs are specified, it defaults to "stderr".
+//
+// Returns:
+//   - A slice of output destination strings
 func getOutputsFromConfig() []string {
 
 	//since the api does not use viper yet we do this check to preserve
@@ -314,9 +470,13 @@ func getOutputsFromConfig() []string {
 	return outputs
 }
 
-// looks for optional LOG_OUTPUT_ERROR in environment to set output destination
-// to define more than one output separate them with ','
-// outputs must adhere to zaps requirements
+// getErrorOutputsFromConfig retrieves the error log output destinations from environment variables or configuration.
+// It checks for a LOG_OUTPUT_ERROR environment variable first, then falls back to viper config.
+// Multiple outputs can be specified by separating them with commas.
+// If no error outputs are specified, it uses the same outputs as regular logs.
+//
+// Returns:
+//   - A slice of error output destination strings
 func getErrorOutputsFromConfig() []string {
 
 	//since the api does not use viper yet we do this check to preserve
@@ -338,6 +498,12 @@ func getErrorOutputsFromConfig() []string {
 	return outputs
 }
 
+// getIsDevelop checks if development mode is enabled for logging.
+// It checks for a LOG_DEVELOP environment variable first, then falls back to viper config.
+// Development mode is enabled if the value is "true" (case-insensitive).
+//
+// Returns:
+//   - true if development mode is enabled, false otherwise
 func getIsDevelop() bool {
 	isdevelop, present := os.LookupEnv("LOG_DEVELOP")
 	if !present {
