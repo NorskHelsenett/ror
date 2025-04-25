@@ -29,13 +29,25 @@ const (
 	CyberArkAuthMethodWindows  CyberArkAuthMethod = "Windows"  // Windows authentication
 	CyberArkAuthMethodRadius   CyberArkAuthMethod = "RADIUS"   // RADIUS authentication (default)
 	CyberArkAuthMethodLDAP     CyberArkAuthMethod = "LDAP"     // LDAP authentication
+
+	// API endpoint paths
+	baseAPIPath             = "/PasswordVault/api"
+	baseAuthPath            = "/PasswordVault/API/auth"
+	accountsEndpoint        = baseAPIPath + "/Accounts"
+	passwordRetrievePattern = accountsEndpoint + "/%s/Password/Retrieve"
+	authLoginPattern        = baseAuthPath + "/%s/Logon"
+
+	// Default settings
+	defaultTimeout        = 7200      // Default timeout in seconds
+	defaultPingTimeout    = 5         // Default ping timeout in seconds
+	defaultPasswordReason = "ror-cli" // Default reason for password requests
 )
 
-// CyberarkClient is the main structure for interfacing with the CyberArk API.
+// CyberArkClient is the main structure for interfacing with the CyberArk API.
 // It handles authentication, session management, and API operations.
-type CyberarkClient struct {
+type CyberArkClient struct {
 	client       http.Client        // HTTP client for making API requests
-	Url          string             // Base URL of CyberArk API
+	baseURL      string             // Base URL of CyberArk API
 	token        string             // Authentication token
 	method       CyberArkAuthMethod // Authentication method to use
 	validDomains []string           // List of domains to filter secrets by
@@ -46,13 +58,17 @@ func (c *CyberArkAuthMethod) String() string {
 	return string(*c)
 }
 
-// CyberarkClientInterface defines the authentication interface for a CyberArk client.
-type CyberarkClientInterface interface {
-	Authenticate(username, password string) error
+// CyberArkClientInterface defines the authentication interface for a CyberArk client.
+type CyberArkClientInterface interface {
+	Authenticate(username, password string) (string, time.Time, error)
+	GetSecrets() (*[]CyberArkSecret, error)
+	GetSecret(id string) (*CyberArkSecret, error)
+	GetPassword(id string) (string, error)
+	Ping() bool
 }
 
-// CyberarkAuthenticationResquest represents the payload for authenticating with CyberArk.
-type CyberarkAuthenticationResquest struct {
+// CyberArkAuthenticationRequest represents the payload for authenticating with CyberArk.
+type CyberArkAuthenticationRequest struct {
 	Username          string `json:"username"`          // Username for authentication
 	Password          string `json:"password"`          // Password for authentication
 	ConcurrentSession bool   `json:"concurrentSession"` // Whether to allow concurrent sessions
@@ -60,15 +76,15 @@ type CyberarkAuthenticationResquest struct {
 	Timeout           string `json:"timeout"`           // Session timeout in seconds
 }
 
-// CyberarkSecretsResponse represents the response structure when retrieving secrets from CyberArk.
-type CyberarkSecretsResponse struct {
-	Value []CyberarkSecret `json:"value"` // List of secrets
+// CyberArkSecretsResponse represents the response structure when retrieving secrets from CyberArk.
+type CyberArkSecretsResponse struct {
+	Value []CyberArkSecret `json:"value"` // List of secrets
 	Count int              `json:"count"` // Number of secrets returned
 }
 
-// CyberarkSecret represents a secret stored in the CyberArk vault.
+// CyberArkSecret represents a secret stored in the CyberArk vault.
 // It contains account information and related metadata.
-type CyberarkSecret struct {
+type CyberArkSecret struct {
 	CategoryModificationTime  int64  `json:"categoryModificationTime"` // Time when category was last modified
 	PlatformID                string `json:"platformId"`               // Platform identifier
 	SafeName                  string `json:"safeName"`                 // Name of the safe containing the secret
@@ -89,39 +105,28 @@ type CyberarkSecret struct {
 		LastVerifiedTime           int64  `json:"lastVerifiedTime"`           // Last time secret was verified
 	} `json:"secretManagement"`
 	CreatedTime int64  `json:"createdTime"` // Time when secret was created
-	Displayname string // Display name for the secret
+	DisplayName string // Display name for the secret
 }
 
-// CyberarkPasswordRequest represents the request payload for retrieving a password.
-type CyberarkPasswordRequest struct {
+// CyberArkPasswordRequest represents the request payload for retrieving a password.
+type CyberArkPasswordRequest struct {
 	Reason string `json:"reason"` // Reason for accessing the password
 }
 
-// NewCyberarkClient creates a new CyberArk client with RADIUS authentication method (default).
+// NewCyberArkClient creates a new CyberArk client with RADIUS authentication method (default).
 //
 // Parameters:
 //   - url: Base URL for the CyberArk API
 //   - validDomains: List of domains to filter secrets by (at least one required)
 //
 // Returns:
-//   - *CyberarkClient: New CyberArk client
+//   - *CyberArkClient: New CyberArk client
 //   - error: Error if no valid domains are provided
-func NewCyberarkClient(url string, validDomains ...string) (*CyberarkClient, error) {
-	cyberarkclient := CyberarkClient{
-		client: http.Client{},
-		Url:    url,
-		token:  "",
-		method: CyberArkAuthMethodRadius,
-	}
-	if len(validDomains) == 0 {
-		return nil, fmt.Errorf("no valid domains provided")
-	}
-	cyberarkclient.validDomains = validDomains
-
-	return &cyberarkclient, nil
+func NewCyberArkClient(url string, validDomains ...string) (*CyberArkClient, error) {
+	return newCyberArkClientInternal(url, CyberArkAuthMethodRadius, validDomains...)
 }
 
-// NewCyberarkClientWithMethod creates a new CyberArk client with the specified authentication method.
+// NewCyberArkClientWithMethod creates a new CyberArk client with the specified authentication method.
 //
 // Parameters:
 //   - url: Base URL for the CyberArk API
@@ -129,44 +134,130 @@ func NewCyberarkClient(url string, validDomains ...string) (*CyberarkClient, err
 //   - validDomains: List of domains to filter secrets by (at least one required)
 //
 // Returns:
-//   - *CyberarkClient: New CyberArk client
+//   - *CyberArkClient: New CyberArk client
 //   - error: Error if no valid domains are provided
-func NewCyberarkClientWithMethod(url string, method CyberArkAuthMethod, validDomains ...string) (*CyberarkClient, error) {
-	cyberarkclient := CyberarkClient{
-		client: http.Client{},
-		Url:    url,
-		token:  "",
-		method: method,
+func NewCyberArkClientWithMethod(url string, method CyberArkAuthMethod, validDomains ...string) (*CyberArkClient, error) {
+	return newCyberArkClientInternal(url, method, validDomains...)
+}
+
+// newCyberArkClientInternal is an internal helper function for creating CyberArk clients.
+// It handles validation and initialization common to all constructors.
+//
+// Parameters:
+//   - url: Base URL for the CyberArk API
+//   - method: Authentication method to use
+//   - validDomains: List of domains to filter secrets by
+//
+// Returns:
+//   - *CyberArkClient: New CyberArk client
+//   - error: Error if validation fails
+func newCyberArkClientInternal(url string, method CyberArkAuthMethod, validDomains ...string) (*CyberArkClient, error) {
+	// Validate URL
+	if url == "" {
+		return nil, fmt.Errorf("empty CyberArk API URL provided")
 	}
+
+	// Validate domains
 	if len(validDomains) == 0 {
 		return nil, fmt.Errorf("no valid domains provided")
 	}
-	cyberarkclient.validDomains = validDomains
 
-	return &cyberarkclient, nil
+	// Create and return client
+	client := &CyberArkClient{
+		client:       http.Client{},
+		baseURL:      url,
+		token:        "",
+		method:       method,
+		validDomains: validDomains,
+	}
+
+	return client, nil
 }
 
 // Ping checks if the CyberArk service is available.
 //
 // Returns:
 //   - bool: true if service is reachable, false otherwise
-func (c *CyberarkClient) Ping() bool {
-	timeout := time.Duration(5 * time.Second)
+func (c *CyberArkClient) Ping() bool {
 	client := http.Client{
-		Timeout: timeout,
+		Timeout: time.Duration(defaultPingTimeout) * time.Second,
 	}
-	_, err := client.Get(c.Url)
+
+	_, err := client.Get(c.baseURL)
 	if err != nil {
-		rlog.Error("Could not ping Cyberark", err, rlog.String("url", c.Url))
+		rlog.Error("Could not ping CyberArk API", err, rlog.String("url", c.baseURL))
+		return false
 	}
-	return err == nil
+
+	return true
+}
+
+// createRequest is a helper method that creates an HTTP request with common headers.
+//
+// Parameters:
+//   - method: HTTP method (GET, POST, etc.)
+//   - path: API path relative to base URL
+//   - body: Request body (can be nil)
+//
+// Returns:
+//   - *http.Request: Prepared HTTP request
+//   - error: Error if request creation fails
+func (c *CyberArkClient) createRequest(method, path string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequest(method, c.baseURL+path, body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	// Set common headers
+	if c.token != "" {
+		req.Header.Set("Authorization", c.token)
+	}
+	req.Header.Set("Accept", "application/json")
+
+	// Set content type if body is provided
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	return req, nil
+}
+
+// executeRequest is a helper method that executes an HTTP request and handles common error cases.
+//
+// Parameters:
+//   - req: HTTP request to execute
+//
+// Returns:
+//   - *http.Response: HTTP response
+//   - []byte: Response body
+//   - error: Error if request execution or response processing fails
+func (c *CyberArkClient) executeRequest(req *http.Request) (*http.Response, []byte, error) {
+	// Execute the request
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer res.Body.Close()
+
+	// Check response status
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		return res, nil, fmt.Errorf("http error: %s from %s", res.Status, req.URL)
+	}
+
+	// Read response body
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	return res, body, nil
 }
 
 // SetToken sets the authentication token for the CyberArk client.
 //
 // Parameters:
 //   - token: Authentication token to set
-func (c *CyberarkClient) SetToken(token string) {
+func (c *CyberArkClient) SetToken(token string) {
 	c.token = token
 }
 
@@ -180,46 +271,58 @@ func (c *CyberarkClient) SetToken(token string) {
 //   - string: Authentication token if successful
 //   - time.Time: Token expiration time
 //   - error: Error if authentication fails
-func (c *CyberarkClient) Authenticate(username, password string) (string, time.Time, error) {
+func (c *CyberArkClient) Authenticate(username, password string) (string, time.Time, error) {
+	// Initialize expiration time to current time (will be modified on success)
 	expires := time.Now()
 
-	authreq := CyberarkAuthenticationResquest{
+	// Validate inputs
+	if username == "" || password == "" {
+		return "", expires, fmt.Errorf("username and password must not be empty")
+	}
+
+	// Prepare authentication request
+	authReq := CyberArkAuthenticationRequest{
 		Username:          username,
 		Password:          password,
 		ConcurrentSession: false,
 		Verify:            "false",
-		Timeout:           "7200",
+		Timeout:           strconv.Itoa(defaultTimeout),
 	}
-	reqjson, err := json.Marshal(authreq)
+
+	// Convert request to JSON
+	reqJSON, err := json.Marshal(authReq)
 	if err != nil {
-		return "", expires, err
+		return "", expires, fmt.Errorf("failed to marshal authentication request: %w", err)
 	}
 
-	res, err := c.client.Post(c.Url+"/PasswordVault/API/auth/"+c.method.String()+"/Logon/", "application/json", bytes.NewBuffer(reqjson))
+	// Construct the authentication URL and request
+	authURL := fmt.Sprintf(authLoginPattern, c.method.String())
+	req, err := c.createRequest(http.MethodPost, authURL, bytes.NewBuffer(reqJSON))
 	if err != nil {
-		return "", expires, err
+		return "", expires, fmt.Errorf("failed to create authentication request: %w", err)
 	}
 
-	defer res.Body.Close()
-
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-		return "", expires, fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
-	}
-
-	body, err := io.ReadAll(res.Body)
+	// Execute the request
+	_, body, err := c.executeRequest(req)
 	if err != nil {
-		return "", expires, err
+		// For authentication errors, provide more context
+		return "", expires, fmt.Errorf("authentication failed: %w", err)
 	}
-	token := string(body)
-	token, _ = strings.CutPrefix(token, "\"")
-	token, _ = strings.CutSuffix(token, "\"")
+
+	// Extract token (remove surrounding quotes if present)
+	token := strings.Trim(string(body), "\"")
 	c.token = token
 
-	timeout, err := strconv.ParseInt(authreq.Timeout, 10, 64)
+	// Calculate token expiration time
+	timeout, err := strconv.ParseInt(authReq.Timeout, 10, 64)
 	if err != nil {
-		timeout = 0
+		// Default to 2 hours if timeout parsing fails
+		rlog.Warn("Failed to parse timeout value, using default", rlog.String("error", err.Error()))
+		// Set default timeout
+		timeout = defaultTimeout
 	}
 
+	// Set expiration time
 	expires = time.Now().Add(time.Duration(timeout) * time.Second)
 
 	return c.token, expires, nil
@@ -234,76 +337,126 @@ func (c *CyberarkClient) Authenticate(username, password string) (string, time.T
 //   - id: Secret identifier in the format "username@domain"
 //
 // Returns:
-//   - *CyberarkSecret: Pointer to the matching secret if found
+//   - *CyberArkSecret: Pointer to the matching secret if found
 //   - error: Error if secret not found or retrieval fails
-func (c *CyberarkClient) GetSecret(id string) (*CyberarkSecret, error) {
-	secrets, err := c.GetSecrets()
-	if err != nil {
-		return nil, err
-	}
-	user := strings.Split(id, "@")
-	if len(user) != 2 {
-		return nil, fmt.Errorf("not a valid PAM user")
+func (c *CyberArkClient) GetSecret(id string) (*CyberArkSecret, error) {
+	// Validate authentication state
+	if c.token == "" {
+		return nil, fmt.Errorf("not authenticated: token is empty")
 	}
 
+	// Validate the input format
+	if id == "" {
+		return nil, fmt.Errorf("empty secret identifier provided")
+	}
+
+	// Parse username and domain from the identifier
+	user := strings.Split(id, "@")
+	if len(user) != 2 {
+		return nil, fmt.Errorf("invalid secret identifier format: expected 'username@domain', got '%s'", id)
+	}
+
+	username, domain := user[0], user[1]
+
+	// Check if the domain is in the list of valid domains
+	if !slices.Contains(c.validDomains, domain) {
+		return nil, fmt.Errorf("domain '%s' is not in the list of valid domains", domain)
+	}
+
+	// Fetch all secrets
+	secrets, err := c.GetSecrets()
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve secrets: %w", err)
+	}
+
+	if secrets == nil || len(*secrets) == 0 {
+		return nil, fmt.Errorf("no secrets found")
+	}
+
+	// Find the matching secret
+	return c.findSecretByUsernameAndDomain(secrets, username, domain)
+}
+
+// findSecretByUsernameAndDomain is a helper method that searches for a secret
+// with the specified username and domain in a collection of secrets.
+//
+// Parameters:
+//   - secrets: Pointer to slice of secrets to search in
+//   - username: Username to match
+//   - domain: Domain to match
+//
+// Returns:
+//   - *CyberArkSecret: Pointer to the matching secret if found
+//   - error: Error if secret not found
+func (c *CyberArkClient) findSecretByUsernameAndDomain(secrets *[]CyberArkSecret, username, domain string) (*CyberArkSecret, error) {
 	for _, secret := range *secrets {
-		if secret.Address == user[1] && secret.UserName == user[0] {
-			return &secret, nil
+		if secret.Address == domain && secret.UserName == username {
+			// Create a copy to avoid issues with the loop variable
+			matchedSecret := secret
+			return &matchedSecret, nil
 		}
 	}
-	return nil, fmt.Errorf("could not find PAM user")
+
+	return nil, fmt.Errorf("secret not found for user '%s' in domain '%s'", username, domain)
 }
 
 // GetSecrets retrieves all secrets available to the authenticated user,
 // filtered by the valid domains specified during client initialization.
 //
 // Returns:
-//   - *[]CyberarkSecret: Pointer to the list of secrets if successful
-//   - error: Error if retrieval fails
-func (c *CyberarkClient) GetSecrets() (*[]CyberarkSecret, error) {
-	var out CyberarkSecretsResponse
-	var ret []CyberarkSecret
-	req, err := http.NewRequest("GET", c.Url+"/PasswordVault/api/Accounts", nil)
+//   - *[]CyberArkSecret: Pointer to the list of secrets if successful
+//   - error: Error if retrieval fails or if not authenticated
+func (c *CyberArkClient) GetSecrets() (*[]CyberArkSecret, error) {
+	// Validate authentication state
+	if c.token == "" {
+		return nil, fmt.Errorf("not authenticated: token is empty")
+	}
+
+	// Create request to fetch accounts
+	req, err := c.createRequest(http.MethodGet, accountsEndpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", c.token)
-	req.Header.Set("Accept", "application/json")
-	res, err := c.client.Do(req)
+	// Execute the request
+	_, body, err := c.executeRequest(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get secrets: %w", err)
 	}
 
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-
-		return nil, fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
+	// Parse response
+	var response CyberArkSecretsResponse
+	if err = json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	defer res.Body.Close()
+	// Filter secrets by valid domains if necessary
+	return c.filterSecretsByDomain(response.Value), nil
+}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
+// filterSecretsByDomain filters the secrets based on the client's valid domains.
+// This is a helper method extracted from GetSecrets to improve readability.
+//
+// Parameters:
+//   - secrets: Slice of CyberArkSecret from the API response
+//
+// Returns:
+//   - *[]CyberArkSecret: Pointer to filtered slice of secrets
+func (c *CyberArkClient) filterSecretsByDomain(secrets []CyberArkSecret) *[]CyberArkSecret {
+	// If no valid domains specified, return all secrets
+	if len(c.validDomains) == 0 {
+		return &secrets
 	}
 
-	err = json.Unmarshal(body, &out)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(c.validDomains) > 0 {
-		for _, secret := range out.Value {
-			if slices.Contains(c.validDomains, secret.Address) {
-				ret = append(ret, secret)
-			}
-
+	// Filter secrets based on domain
+	var filteredSecrets []CyberArkSecret
+	for _, secret := range secrets {
+		if slices.Contains(c.validDomains, secret.Address) {
+			filteredSecrets = append(filteredSecrets, secret)
 		}
-	} else {
-		ret = out.Value
 	}
 
-	return &ret, nil
+	return &filteredSecrets
 }
 
 // GetPassword retrieves the password for a specific account ID from CyberArk.
@@ -313,45 +466,43 @@ func (c *CyberarkClient) GetSecrets() (*[]CyberarkSecret, error) {
 //
 // Returns:
 //   - string: The password if successful
-//   - error: Error if retrieval fails
-func (c *CyberarkClient) GetPassword(id string) (string, error) {
+//   - error: Error if retrieval fails or if not authenticated
+func (c *CyberArkClient) GetPassword(id string) (string, error) {
+	// Validate authentication state
+	if c.token == "" {
+		return "", fmt.Errorf("not authenticated: token is empty")
+	}
 
-	request := CyberarkPasswordRequest{
-		Reason: "ror-cli",
+	// Validate input
+	if id == "" {
+		return "", fmt.Errorf("empty account ID provided")
+	}
+
+	// Prepare request payload
+	request := CyberArkPasswordRequest{
+		Reason: defaultPasswordReason,
 	}
 
 	jsonData, err := json.Marshal(request)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to marshal password request: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", c.Url+"/PasswordVault/api/Accounts/"+id+"/Password/Retrieve", bytes.NewBuffer(jsonData))
+	// Create request using helper method
+	passwordPath := fmt.Sprintf(passwordRetrievePattern, id)
+	req, err := c.createRequest(http.MethodPost, passwordPath, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}
 
-	req.Header.Set("Authorization", c.token)
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-	res, err := c.client.Do(req)
+	// Execute the request
+	_, body, err := c.executeRequest(req)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to retrieve password: %w", err)
 	}
 
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-		return "", fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
-	}
+	// Process the response - trim surrounding quotes
+	password := strings.Trim(string(body), "\"")
 
-	defer res.Body.Close()
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return "", err
-	}
-
-	ret := string(body)
-	ret, _ = strings.CutPrefix(ret, "\"")
-	ret, _ = strings.CutSuffix(ret, "\"")
-
-	return ret, nil
+	return password, nil
 }
