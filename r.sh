@@ -55,4 +55,4 @@ if [ "$version" -lt 2 ]; then
     exit 1
 fi
 
-$compose_cmd --env-file $envfile up openldap dex init-dex-db vault mongodb rabbitmq mongo-express valkey ms-auth ms-kind $services
+$compose_cmd --env-file "$envfile" up openldap dex init-dex-db vault mongodb rabbitmq mongo-express valkey ms-auth ms-kind "$services"
