@@ -105,7 +105,7 @@ func (l *AdClient) Connect() error {
 				MinVersion: tls.VersionTLS12,
 			}
 
-			client, err = ldap.DialTLS("tcp", fmt.Sprintf("%s:%d", ldapserver.Host, ldapserver.Port), tlsConf)
+			client, err = ldap.DialURL(fmt.Sprintf("ldaps://%s:%d", ldapserver.Host, ldapserver.Port), ldap.DialWithTLSConfig(tlsConf))
 
 		} else {
 			client, err = ldap.DialURL(fmt.Sprintf("ldap://%s:%d", ldapserver.Host, ldapserver.Port))
