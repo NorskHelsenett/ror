@@ -69,6 +69,7 @@ func ParseResourceQuery(c *gin.Context) *rorresources.ResourceQuery {
 	}
 
 	// Parse Sort/Order
+	// The sort parameter can be a comma-separated list of fields with optional prefixes
 	if sort := c.Query("sort"); sort != "" {
 		fieldsList := strings.Split(sort, ",")
 		orders := make([]rorresources.ResourceQueryOrder, 0, len(fieldsList))
@@ -78,7 +79,7 @@ func ParseResourceQuery(c *gin.Context) *rorresources.ResourceQuery {
 				Index: i,
 			}
 
-			if strings.HasPrefix(field, "+") {
+			if strings.HasPrefix(field, " ") || strings.HasPrefix(field, "+") {
 				order.Field = field[1:]
 				order.Descending = false
 			} else if strings.HasPrefix(field, "-") {
