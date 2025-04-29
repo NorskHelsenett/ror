@@ -31,6 +31,7 @@ type RorClient struct {
 	metricsClientV1    v1metrics.MetricsInterface
 	resourcesClientV2  ResourceClient
 	streamClientV2     v2stream.StreamInterface
+	AclClient          AclClient
 }
 
 func NewRorClient(transport transports.RorTransport) *RorClient {
@@ -47,6 +48,7 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		metricsClientV1:    transport.Metrics(),
 		resourcesClientV2:  NewResourceClient(transport.ResourcesV2()),
 		streamClientV2:     transport.Streamv2(),
+		AclClient:          NewAclClient(transport.AclV1()),
 	}
 }
 

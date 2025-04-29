@@ -22,7 +22,7 @@ type ResourceVirtualMachineStatus struct {
 	LastUpdated     time.Time                                   `json:"lastUpdated"`
 	Location        string                                      `json:"location"`
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
-	Tags            []ResourceVirtualMachineTag                 `json:"tags"`
+	Tags            map[string]ResourceVirtualMachineTag        `json:"tags"`
 	State           ResourceVirtualMachineState                 `json:"state"`
 	Disks           []ResourceVirtualMachineDiskStatus          `json:"disks"`
 	Memory          ResourceVirtualMachineMemoryStatus          `json:"memory"`
