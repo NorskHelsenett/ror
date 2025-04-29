@@ -36,7 +36,6 @@ type Resource struct {
 	TanzuKubernetesClusterResource     *rortypes.ResourceTanzuKubernetesCluster     `json:"tanzukubernetescluster,omitempty" bson:"tanzukubernetescluster,omitempty"`
 	TanzuKubernetesReleaseResource     *rortypes.ResourceTanzuKubernetesRelease     `json:"tanzukubernetesrelease,omitempty" bson:"tanzukubernetesrelease,omitempty"`
 	VirtualMachineClassResource        *rortypes.ResourceVirtualMachineClass        `json:"virtualmachineclass,omitempty" bson:"virtualmachineclass,omitempty"`
-	VirtualMachineClassBindingResource *rortypes.ResourceVirtualMachineClassBinding `json:"virtualmachineclassbinding,omitempty" bson:"virtualmachineclassbinding,omitempty"`
 	KubernetesClusterResource          *rortypes.ResourceKubernetesCluster          `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
 	ClusterOrderResource               *rortypes.ResourceClusterOrder               `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
 	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty" bson:"project,omitempty"`
@@ -163,10 +162,6 @@ func (r *Resource) SetTanzuKubernetesRelease(res *rortypes.ResourceTanzuKubernet
 
 func (r *Resource) SetVirtualMachineClass(res *rortypes.ResourceVirtualMachineClass) {
 	r.VirtualMachineClassResource = res
-}
-
-func (r *Resource) SetVirtualMachineClassBinding(res *rortypes.ResourceVirtualMachineClassBinding) {
-	r.VirtualMachineClassBindingResource = res
 }
 
 func (r *Resource) SetKubernetesCluster(res *rortypes.ResourceKubernetesCluster) {
@@ -338,11 +333,6 @@ func (r *Resource) TanzuKubernetesRelease() rortypes.TanzuKubernetesReleaseinter
 // VirtualMachineClass is a wrapper for the underlying resource, it provides a VirtualMachineClassinterface to work with virtualmachineclasses
 func (r *Resource) VirtualMachineClass() rortypes.VirtualMachineClassinterface {
 	return r.VirtualMachineClassResource
-}
-
-// VirtualMachineClassBinding is a wrapper for the underlying resource, it provides a VirtualMachineClassBindinginterface to work with virtualmachineclassbindings
-func (r *Resource) VirtualMachineClassBinding() rortypes.VirtualMachineClassBindinginterface {
-	return r.VirtualMachineClassBindingResource
 }
 
 // KubernetesCluster is a wrapper for the underlying resource, it provides a KubernetesClusterinterface to work with kubernetesclusters

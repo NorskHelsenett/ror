@@ -503,14 +503,6 @@ export interface ResourceKubernetesCluster {
   spec: ResourceKubernetesClusterSpec;
   status: ResourceKubernetesClusterStatus;
 }
-export interface ResourceVirtualMachineClassBindingClassRef {
-  apiVersion: string;
-  kind: string;
-  name: string;
-}
-export interface ResourceVirtualMachineClassBinding {
-  classRef: ResourceVirtualMachineClassBindingClassRef;
-}
 export interface ResourceVirtualMachineClassSpecHardwareInstanceStorage {
   storageClass: string;
 }
@@ -1187,7 +1179,6 @@ export interface Resource {
   tanzukubernetescluster?: ResourceTanzuKubernetesCluster;
   tanzukubernetesrelease?: ResourceTanzuKubernetesRelease;
   virtualmachineclass?: ResourceVirtualMachineClass;
-  virtualmachineclassbinding?: ResourceVirtualMachineClassBinding;
   kubernetescluster?: ResourceKubernetesCluster;
   clusterorder?: ResourceClusterOrder;
   project?: ResourceProject;
