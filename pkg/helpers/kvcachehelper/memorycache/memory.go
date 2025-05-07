@@ -112,6 +112,17 @@ func (c *KvCache) Get(ctx context.Context, key string) (string, bool) {
 	return "", false
 }
 
+// Keys returns all keys in the cache.
+func (c *KvCache) Keys(ctx context.Context) []string {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+	keys := make([]string, 0, len(c.values))
+	for k := range c.values {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
 // Remove removes a key-value pair from the cache.
 func (c *KvCache) Remove(ctx context.Context, key string) bool {
 	c.lock.Lock()
