@@ -2,6 +2,7 @@ package rabbitmqhandler
 
 import (
 	"context"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rabbitmqclient"
 
@@ -62,6 +63,20 @@ func New(config RabbitMQListnerConfig, handler RabbitMQMessageHandler) RabbitMQL
 	}
 }
 
+// ListenWithTTL Convience method for setting up channel with TTL on messages
+func (r RabbitMQListner) ListenWithTTL(hangup chan *amqp.Error, TTL time.Duration) {
+	// create new args if listener is declared without args, otherwise override ttl
+	if r.queueArgs == nil {
+		r.queueArgs = amqp.Table{
+			amqp.QueueMessageTTLArg: TTL.Milliseconds(),
+		}
+	} else {
+		r.queueArgs[amqp.QueueMessageTTLArg] = TTL.Milliseconds()
+	}
+
+	r.Listen(hangup)
+}
+
 func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 
 	queue, err := r.Client.GetChannel().QueueDeclare(
@@ -70,7 +85,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 		r.queueAutoDelete, // delete when unused
 		r.queueExclusive,  // exclusive
 		r.queueNoWait,     // no-wait
-		nil,               // arguments
+		r.queueArgs,       // arguments
 	)
 	if err != nil {
 		rlog.Fatal("failed to declare a queue", err, rlog.String("queue", r.queueName))
@@ -82,7 +97,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 			r.excahngeRoutingKey, // routing key
 			r.exchange,           // exchange
 			r.queueNoWait,
-			nil,
+			r.queueArgs,
 		)
 		if err != nil {
 			rlog.Fatal("failed to bind queue to exchange", err, rlog.String("queue", r.queueName), rlog.String("exchange", r.exchange))
