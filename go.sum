@@ -53,8 +53,8 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/rVNCu3HqELle0jiPLLBs70cWOduZpkS1E78=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f/go.mod h1:cuUVRXasLTGF7a8hSLbxyZXjz+1KgoB3wDUb6vlszIc=
-github.com/dotse/go-health v0.3.0 h1:ffY9U6YPJlgT28jXreGhkBfgnZHdpQ8KcSWu5h5SNRU=
-github.com/dotse/go-health v0.3.0/go.mod h1:YXsklqAn05eMzcTUl1Zs+ZuS5EaA5lYEzV9pBAzmF3A=
+github.com/dotse/go-health v1.0.0 h1:4IILZNQEkv5CdvDk4fCZkrOdGCDV8cljVW8X55tf4DM=
+github.com/dotse/go-health v1.0.0/go.mod h1:YXsklqAn05eMzcTUl1Zs+ZuS5EaA5lYEzV9pBAzmF3A=
 github.com/dotse/slug v0.1.1 h1:DtEGhxp0Cj/aDBXGaUAnnw4lqB8GL1crjh1zaAeDHaM=
 github.com/dotse/slug v0.1.1/go.mod h1:wrGRx1myZ6YECyP4DzKeHC8Upe/XRy4AzkzZlTsrhrA=
 github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=

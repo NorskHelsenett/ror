@@ -1,10 +1,10 @@
 module github.com/NorskHelsenett/ror
 
-go 1.24.0
+go 1.24.2
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.2
-	github.com/dotse/go-health v0.3.0
+	github.com/dotse/go-health v1.0.0
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-co-op/gocron v1.37.0
