@@ -14,8 +14,6 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-var rabbitmq rabbitmqcon
-
 type RabbitMQListnerInterface interface {
 	Listen(chan *amqp.Error)
 }
@@ -81,10 +79,6 @@ func (rc *rabbitmqcon) RegisterHandler(listner RabbitMQListnerInterface) error {
 	return nil
 }
 
-func Ping() bool {
-	return rabbitmq.Ping()
-}
-
 func (rc rabbitmqcon) GetChannel() *amqp.Channel {
 	if !rc.Connected {
 		rc.connect()
@@ -93,9 +87,9 @@ func (rc rabbitmqcon) GetChannel() *amqp.Channel {
 }
 
 // CheckHealth checks the health of the rabbitmq connection and returns a health check
-func (rc rabbitmqcon) CheckHealth() []health.Check {
+func (rc *rabbitmqcon) CheckHealth() []health.Check {
 	c := health.Check{}
-	if !Ping() {
+	if !rc.Ping() {
 		c.Status = health.StatusFail
 		c.Output = "Could not ping rabbitmq"
 	}
@@ -135,7 +129,7 @@ func (rc *rabbitmqcon) connect() {
 	failOnError(err, "Failed to open a channel")
 	rc.RabbitMqChannel = channel
 	rc.Connected = true
-	rlog.Info("connected to RabbitMQ")
+	rlog.Info("connected to RabbitMQ", rlog.Any("Conected", rc.Connected))
 
 	for _, listner := range rc.Listeners {
 		go listner.Listen(c)
