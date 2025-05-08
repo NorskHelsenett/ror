@@ -8,7 +8,7 @@ import (
 type CacheInterface interface {
 	Set(ctx context.Context, key string, value string)
 	Get(ctx context.Context, key string) (string, bool)
-	Keys(ctx context.Context) []string
+	Keys(ctx context.Context) ([]string, error)
 	Remove(ctx context.Context, key string) bool
 }
 

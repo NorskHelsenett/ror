@@ -113,14 +113,14 @@ func (c *KvCache) Get(ctx context.Context, key string) (string, bool) {
 }
 
 // Keys returns all keys in the cache.
-func (c *KvCache) Keys(ctx context.Context) []string {
+func (c *KvCache) Keys(ctx context.Context) ([]string, error) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	keys := make([]string, 0, len(c.values))
 	for k := range c.values {
 		keys = append(keys, k)
 	}
-	return keys
+	return keys, nil
 }
 
 // Remove removes a key-value pair from the cache.
