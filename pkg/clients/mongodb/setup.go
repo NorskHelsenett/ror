@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/dotse/go-health"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
 	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
@@ -45,7 +47,7 @@ func GetMongoClient() *mongo.Client {
 // Initializes the mongodb client
 func Init(cp DatabaseCredentialHelper, host string, port string, database string) {
 	mongodb.init(cp, host, port, database)
-	health.Register("mongodb", mongodb)
+	rorhealth.Register("mongodb", mongodb)
 }
 
 func GetMongodbConnection() *MongodbCon {
