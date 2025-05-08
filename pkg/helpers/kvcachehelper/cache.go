@@ -8,7 +8,9 @@ import (
 type CacheInterface interface {
 	Set(ctx context.Context, key string, value string)
 	Get(ctx context.Context, key string) (string, bool)
-	Keys(ctx context.Context) []string
+	// Keys retrieves all keys currently stored in the cache. 
+	// It returns an error if the operation fails, such as due to a connection issue or an internal error.
+	Keys(ctx context.Context) ([]string, error)
 	Remove(ctx context.Context, key string) bool
 }
 
