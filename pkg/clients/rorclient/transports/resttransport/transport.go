@@ -7,6 +7,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
 	restv1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/datacenter"
 	restv1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/info"
@@ -18,6 +19,7 @@ import (
 	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
 	restv2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/v2stream"
+	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
 	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
 	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
@@ -42,6 +44,7 @@ type RorHttpTransport struct {
 	resourcesClientV1  v1resources.ResourceInterface
 	metricsClientV1    v1metrics.MetricsInterface
 	resourcesClientV2  v2resources.ResourcesInterface
+	aclClientV1        v1Acl.AclInterface
 	selfClientV2       v2self.SelfInterface
 	streamClientV2     v2stream.StreamInterface
 }
@@ -63,6 +66,7 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 		resourcesClientV1:  restv1resources.NewV1Client(client),
 		metricsClientV1:    restv1metrics.NewV1Client(client),
 		resourcesClientV2:  restv2resources.NewV2Client(client),
+		aclClientV1:        acl.NewV1Client(client),
 		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
 	}
 	return t
@@ -121,6 +125,10 @@ func (t *RorHttpTransport) Resources() v1resources.ResourceInterface {
 
 func (t *RorHttpTransport) ResourcesV2() v2resources.ResourcesInterface {
 	return t.resourcesClientV2
+}
+
+func (t *RorHttpTransport) AclV1() v1Acl.AclInterface {
+	return t.aclClientV1
 }
 
 func (t *RorHttpTransport) Streamv2() v2stream.StreamInterface {
