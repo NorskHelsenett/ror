@@ -365,7 +365,7 @@ func (r *Resource) Workspace() rortypes.Workspaceinterface {
 	return r.WorkspaceResource
 }
 
-// KubernetesMachineClass is a wrapper for the underlying resource, it provides a KubernetesMachineClassinterface to work with kubernetesmachineclasses
+// KubernetesMachineClass is a wrapper for the underlying resource, it provides a KubernetesMachineClassinterface to work with Kubernetesmachineclasses
 func (r *Resource) KubernetesMachineClass() rortypes.KubernetesMachineClassinterface {
 	return r.KubernetesMachineClassResource
 }

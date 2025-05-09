@@ -18,7 +18,7 @@ type ResourceWorkspaceStatus struct {
 	KubernetesClusters      []ResourceKubernetesCluster     `json:"kubernetesClusters"`
 	AvailableMachineClasses []ResourceWorkspaceMachineClass `json:"availableMachineClasses"`
 	DefaultMachineClass     ResourceWorkspaceMachineClass   `json:"defaultMachineClass"`
-	AvailableStorageClasses []ResourceWorkspaceMachineClass `json:"availableStorageClasses"`
+	AvailableStorageClasses []ResourceWorkspaceStorageClass `json:"availableStorageClasses"`
 	DefaultStorageClass     ResourceWorkspaceStorageClass   `json:"defaultStorageClass"`
 }
 

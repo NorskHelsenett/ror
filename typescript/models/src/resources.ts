@@ -453,6 +453,22 @@ export interface ResourceClusterOrder {
     spec: ResourceClusterOrderSpec;
     status: ResourceClusterOrderStatus;
 }
+export interface ResourceKubernetesMachineClassStatus {
+    name: string;
+    cpu: string;
+    memory: string;
+    gpu: boolean;
+}
+export interface ResourceKubernetesMachineClassSpec {
+    name: string;
+    cpu: string;
+    memory: string;
+    gpu: boolean;
+}
+export interface ResourceKubernetesMachineClass {
+    spec: ResourceKubernetesMachineClassSpec;
+    status: ResourceKubernetesMachineClassStatus;
+}
 export interface ResourceWorkspaceStatus {
     datacenterId?: string;
     kubernetesClusters: ResourceKubernetesCluster[];
@@ -1274,6 +1290,7 @@ export interface Resource {
     kubernetescluster?: ResourceKubernetesCluster;
     provider?: ResourceProvider;
     workspace?: ResourceWorkspace;
+    kubernetesmachineclass?: ResourceKubernetesMachineClass;
     clusterorder?: ResourceClusterOrder;
     project?: ResourceProject;
     configuration?: ResourceConfiguration;
