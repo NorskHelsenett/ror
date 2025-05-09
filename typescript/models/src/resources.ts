@@ -474,7 +474,7 @@ export interface ResourceWorkspaceStatus {
     kubernetesClusters: ResourceKubernetesCluster[];
     availableMachineClasses: ResourceWorkspaceMachineClass[];
     defaultMachineClass: ResourceWorkspaceMachineClass;
-    availableStorageClasses: ResourceWorkspaceMachineClass[];
+    availableStorageClasses: ResourceWorkspaceStorageClass[];
     defaultStorageClass: ResourceWorkspaceStorageClass;
 }
 export interface ResourceWorkspaceStorageClass {
@@ -487,7 +487,7 @@ export interface ResourceWorkspaceSpec {
     kubernetesClusters: ResourceKubernetesCluster[];
     availableMachineClasses: ResourceWorkspaceMachineClass[];
     defaultMachineClass: ResourceWorkspaceMachineClass;
-    availableStorageClasses: ResourceWorkspaceMachineClass[];
+    availableStorageClasses: ResourceWorkspaceStorageClass[];
     defaultStorageClass: ResourceWorkspaceStorageClass;
 }
 export interface ResourceWorkspace {
