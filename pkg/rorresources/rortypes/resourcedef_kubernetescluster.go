@@ -85,7 +85,7 @@ type KubernetesClusterStatus struct {
 type ClusterStatus struct {
 	Cluster       ClusterDetails `json:"cluster"`
 	Versions      []Version      `json:"versions"`
-	EgressIP      string         `json:"egress-ip"`
+	EgressIP      string         `json:"egressIp"`
 	LastUpdated   time.Time      `json:"lastUpdated"`
 	LastUpdatedBy string         `json:"lastUpdatedBy"`
 	Created       time.Time      `json:"created"`
