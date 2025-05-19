@@ -60,6 +60,13 @@ type NodePool struct {
 	Replicas     int             `json:"replicas"`
 	Autoscaling  Autoscaling     `json:"autoscaling"`
 	Metadata     MetadataDetails `json:"metadata"`
+	Taint        []Taint         `json:"taint"`
+}
+
+type Taint struct {
+	Key    string `json:"key"`
+	Value  string `json:"value"`
+	Effect string `json:"effect"`
 }
 
 type Autoscaling struct {

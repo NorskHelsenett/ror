@@ -548,6 +548,11 @@ export interface KubernetesClusterStatus {
     phase: string;
     conditions: Condition[];
 }
+export interface Taint {
+    key: string;
+    value: string;
+    effect: string;
+}
 export interface Autoscaling {
     enabled: boolean;
     minReplicas: number;
@@ -561,6 +566,7 @@ export interface NodePool {
     replicas: number;
     autoscaling: Autoscaling;
     metadata: MetadataDetails;
+    taint: Taint[];
 }
 export interface Workers {
     nodePools: NodePool[];
