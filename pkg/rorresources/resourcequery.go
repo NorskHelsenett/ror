@@ -43,7 +43,7 @@ type ResourceQueryOrder struct {
 }
 
 type ResourceQuery struct {
-	VersionKind      schema.GroupVersionKind                      `json:"versionkind,omitempty"`      // memory
+	VersionKind      schema.GroupVersionKind                      `json:"versionkind,omitempty"`      // memory getparam: apiversion, kind
 	Uids             []string                                     `json:"uids,omitempty"`             // memory
 	OwnerRefs        []rorresourceowner.RorResourceOwnerReference `json:"ownerrefs,omitempty"`        // memory
 	Fields           []string                                     `json:"fields,omitempty"`           // post or db
@@ -54,6 +54,66 @@ type ResourceQuery struct {
 	RelatedResources []ResourceQuery                              `json:"relatedresources,omitempty"` // memory or db
 }
 
+// func ParseResourceQuery(c *gin.Context) (*ResourceQuery, error) {
+//     rq := NewResourceQuery()
+
+//     // Parse apiversion and kind
+//     rq.VersionKind.Group = schema.GroupVersion{Group: "", Version: c.Query("apiversion")} // Wrong
+//     rq.VersionKind.Kind = c.Query("kind")
+
+//     // Parse UIDs
+//     if uids := c.Query("uids"); uids != "" {
+//         rq.Uids = strings.Split(uids, ",")
+//     }
+
+//     // Parse Fields
+//     if fields := c.Query("fields"); fields != "" {
+//         rq.Fields = strings.Split(fields, ",")
+//     }
+
+//     // Parse Order
+//     if order := c.Query("order"); order != "" {
+//         var orders []ResourceQueryOrder
+//         if err := json.Unmarshal([]byte(order), &orders); err != nil {
+//             return nil, fmt.Errorf("invalid order parameter: %v", err)
+//         }
+//         rq.Order = orders
+//     }
+
+//     // Parse Filters
+//     if filters := c.Query("filters"); filters != "" {
+//         var filterList []ResourceQueryFilter
+//         if err := json.Unmarshal([]byte(filters), &filterList); err != nil {
+//             return nil, fmt.Errorf("invalid filters parameter: %v", err)
+//         }
+//         rq.Filters = filterList
+//     }
+
+//     // Parse Offset
+//     if offset := c.Query("offset"); offset != "" {
+//         if off, err := strconv.Atoi(offset); err == nil {
+//             rq.Offset = off
+//         }
+//     }
+
+//     // Parse Limit
+//     if limit := c.Query("limit"); limit != "" {
+//         if lim, err := strconv.Atoi(limit); err == nil {
+//             rq.Limit = lim
+//         }
+//     }
+
+//     // Parse RelatedResources
+//     if relatedResources := c.Query("relatedresources"); relatedResources != "" {
+//         var related []ResourceQuery
+//         if err := json.Unmarshal([]byte(relatedResources), &related); err != nil {
+//             return nil, fmt.Errorf("invalid relatedresources parameter: %v", err)
+//         }
+//         rq.RelatedResources = related
+//     }
+
+//	    return rq, nil
+//	}
 func NewResourceQuery() *ResourceQuery {
 	return &ResourceQuery{
 		Fields:           make([]string, 0),

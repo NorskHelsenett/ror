@@ -77,9 +77,9 @@ type Autoscaling struct {
 }
 
 type KubernetesClusterStatus struct {
-	Status     ClusterStatus `json:"status"`
-	Phase      string        `json:"phase"`
-	Conditions []Condition   `json:"conditions"`
+	State      ClusterState `json:"state"`
+	Phase      string       `json:"phase"` // Provisioning, Running, Deleting, Failed, Updating
+	Conditions []Condition  `json:"conditions"`
 }
 
 type ClusterStatus struct {

@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/spf13/viper"
 
@@ -45,7 +46,7 @@ func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultC
 		return nil, err
 	}
 
-	health.Register("vault", vaultClient)
+	rorhealth.Register("vault", vaultClient)
 	return &vaultClient, nil
 }
 

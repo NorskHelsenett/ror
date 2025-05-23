@@ -10,6 +10,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/activedirectory"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	newhealth "github.com/dotse/go-health"
 )
@@ -65,7 +66,7 @@ func (d DomainResolvers) RegisterHealthChecks() {
 	if len(d.resolvers) != 0 && d.resolvers != nil {
 		for key, resolver := range d.resolvers {
 			checkname := fmt.Sprintf("domainresolvers-%s", key)
-			newhealth.Register(checkname, resolver)
+			rorhealth.Register(checkname, resolver)
 		}
 	}
 }
