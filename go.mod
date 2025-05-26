@@ -27,7 +27,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/tkrajina/typescriptify-golang-structs v0.2.0
 	go.mongodb.org/mongo-driver v1.17.3
-	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.60.0
+	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.61.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.35.0
