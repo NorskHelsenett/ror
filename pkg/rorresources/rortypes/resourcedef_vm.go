@@ -2,11 +2,14 @@ package rortypes
 
 import "time"
 
+type VmId string
+
 type ResourceVirtualMachine struct {
-	Id       string                       `json:"id"`
-	Spec     ResourceVirtualMachineSpec   `json:"spec"`
-	Status   ResourceVirtualMachineStatus `json:"status"`
-	Provider string                       `json:"provider"`
+	// This is the ID of the vm in the hypervisor layer
+	ExternalId VmId                         `json:"externalId"`
+	Spec       ResourceVirtualMachineSpec   `json:"spec"`
+	Status     ResourceVirtualMachineStatus `json:"status"`
+	Provider   string                       `json:"provider"`
 }
 
 // things we can change
