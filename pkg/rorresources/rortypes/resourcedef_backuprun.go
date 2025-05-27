@@ -13,6 +13,7 @@ type ResourceBackupRun struct {
 // Once instance of a run from a backup job
 type ResourceBackupRunStatus struct {
 	Id                 string                         `json:"id"`
+	BackupJobId        string                         `json:"backupJobId"`
 	BackupTargets      []ResourceBackupTarget         `json:"backupTargets"`
 	BackupDestinations []ResourceBackupRunDestination `json:"backupDestinations"`
 

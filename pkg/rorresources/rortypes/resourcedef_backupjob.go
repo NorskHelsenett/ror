@@ -37,10 +37,13 @@ type ResourceBackupJobSpec struct {
 
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
-	ResourceBackupJobSpec
-	Location    string    `json:"location"`
-	LastUpdated time.Time `json:"lastUpdated"`
-	PolicyName  string    `json:"policyName"`
+	ResourceBackupJobSpec `json:"resourceBackupJobSpec"`
+	Location              string    `json:"location"`
+	LastUpdated           time.Time `json:"lastUpdated"`
+	PolicyName            string    `json:"policyName"`
+
+	// Any runs connected to this backup job
+	BackupRunIds []string `json:"backupRunIds"`
 }
 
 // Defines a singular backup target, this could be a VM, a storage object, etc.
