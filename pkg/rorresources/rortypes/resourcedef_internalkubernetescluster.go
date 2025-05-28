@@ -79,7 +79,7 @@ type ClusterState struct {
 	Cluster              ClusterDetails `json:"cluster"`
 	Versions             []Version      `json:"versions"`
 	ControlplaneEndpoint string         `json:"controlplaneendpoint"`
-	EgressIP             string         `json:"egress-ip"`
+	EgressIP             string         `json:"egressIP"`
 	LastUpdated          time.Time      `json:"lastUpdated"`
 	LastUpdatedBy        string         `json:"lastUpdatedBy"`
 	Created              time.Time      `json:"created"`
