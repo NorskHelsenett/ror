@@ -266,7 +266,7 @@ export interface ResourceVirtualMachineStatus {
   lastUpdated: Time;
   location: string;
   cpu: ResourceVirtualMachineCpuStatus;
-  tags: ResourceVirtualMachineTag[];
+  tags: { [key: string]: ResourceVirtualMachineTag };
   state: ResourceVirtualMachineState;
   disks: ResourceVirtualMachineDiskStatus[];
   memory: ResourceVirtualMachineMemoryStatus;
@@ -293,7 +293,7 @@ export interface ResourceVirtualMachineSpec {
   memory: ResourceVirtualMachineMemorySpec;
 }
 export interface ResourceVirtualMachine {
-  id: string;
+  externalId: string;
   spec: ResourceVirtualMachineSpec;
   status: ResourceVirtualMachineStatus;
   provider: string;
@@ -352,7 +352,6 @@ export interface ResourceClusterVulnerabilityReportReportOwner {
   namespace: string;
   ownerReferences: OwnerReference[];
 }
-export interface Time {}
 export interface ResourceClusterVulnerabilityReportReport {
   severity: string;
   score: number;
@@ -404,10 +403,17 @@ export interface ResourceProjectSpec {
 export interface ResourceProject {
   spec: ResourceProjectSpec;
 }
+export interface ResourceKubernetesClusterOrderStatusCondition {
+  type: string;
+  status: string;
+  lastTransitionTime: string;
+  reason: string;
+  message: string;
+}
 export interface ResourceClusterOrderStatus {
   status: string;
   phase: string;
-  conditions: ResourceKubernetesClusterStatusCondition[];
+  conditions: ResourceKubernetesClusterOrderStatusCondition[];
   createdTime: string;
   updatedTime: string;
   lastObservedTime: string;
@@ -435,73 +441,112 @@ export interface ResourceClusterOrder {
   spec: ResourceClusterOrderSpec;
   status: ResourceClusterOrderStatus;
 }
-export interface ResourceKubernetesClusterStatusCondition {
+export interface Condition {
   type: string;
   status: string;
   lastTransitionTime: string;
   reason: string;
   message: string;
 }
-export interface ResourceKubernetesClusterStatus {
+export interface Time {}
+export interface Version {
+  name: string;
+  version: string;
+  branch: string;
+}
+export interface NodePoolStatus {
+  name: string;
   status: string;
+  message: string;
+}
+export interface WorkerStatus {
+  nodepools: NodePoolStatus[];
+}
+export interface ControlPlaneStatus {
+  status: string;
+  message: string;
+}
+export interface Resource {
+  name: string;
+  allocated: string;
+  usage: string;
+}
+export interface ClusterDetails {
+  externalId: string;
+  resources: Resource[];
+  controlplane: ControlPlaneStatus;
+  workers: WorkerStatus;
+}
+export interface ClusterState {
+  cluster: ClusterDetails;
+  versions: Version[];
+  controlplaneendpoint: string;
+  egressIP: string;
+  lastUpdated: Time;
+  lastUpdatedBy: string;
+  created: Time;
+}
+export interface KubernetesClusterStatus {
+  state: ClusterState;
   phase: string;
-  conditions: ResourceKubernetesClusterStatusCondition[];
-  kubernetesVersion: string;
-  providerStatus: { [key: string]: any };
-  createdTime: string;
-  updatedTime: string;
-  lastObservedTime: string;
+  conditions: Condition[];
 }
-export interface ResourceKubernetesClusterSpecEndpoint {
-  type: string;
-  address: string;
+export interface Autoscaling {
+  enabled: boolean;
+  minReplicas: number;
+  maxReplicas: number;
+  scalingRules: string[];
 }
-export interface ResourceKubernetesClusterSpecTopologyWorkers {
+export interface NodePool {
+  machineClass: string;
+  provider: string;
   name: string;
   replicas: number;
-  version: string;
-  machineClass: string;
+  autoscaling: Autoscaling;
+  metadata: MetadataDetails;
 }
-export interface ResourceKubernetesClusterSpecTopologyControlPlane {
+export interface Workers {
+  nodePools: NodePool[];
+}
+export interface Storage {
+  class: string;
+  path: string;
+  size: string;
+}
+export interface MetadataDetails {
+  labels: { [key: string]: string };
+  annotations: { [key: string]: string };
+}
+export interface ControlPlane {
   replicas: number;
-  version: string;
-  machineClass: string;
-}
-export interface ResourceKubernetesClusterSpecTopology {
-  controlPlane: ResourceKubernetesClusterSpecTopologyControlPlane;
-  workers: ResourceKubernetesClusterSpecTopologyWorkers[];
-}
-export interface ResourceKubernetesClusterSpecProviderSpecAzureSpec {
-  subscriptionId: string;
-  resourceGroup: string;
-}
-export interface ResourceKubernetesClusterSpecProviderSpecTanzuSpec {
-  supervisorClusterName: string;
-  namespace: string;
-}
-export interface ResourceKubernetesClusterSpecProviderSpec {
-  tanzuSpec: ResourceKubernetesClusterSpecProviderSpecTanzuSpec;
-  azureSpec: ResourceKubernetesClusterSpecProviderSpecAzureSpec;
-}
-export interface ResourceKubernetesClusterSpecToolingConfig {
-  splunkIndex: string;
-}
-export interface ResourceKubernetesClusterSpec {
-  clusterId: string;
-  clusterName: string;
-  description: string;
-  project: string;
   provider: string;
-  createdBy: string;
-  toolingConfig: ResourceKubernetesClusterSpecToolingConfig;
+  machineClass: string;
+  metadata: MetadataDetails;
+  storage: Storage[];
+}
+export interface KubernetesClusterSpecTopology {
+  version: string;
+  controlplane: ControlPlane;
+  workers: Workers;
+}
+export interface KubernetesClusterSpecData {
+  clusterId: string;
+  provider: string;
+  datacenter: string;
+  region: string;
+  zone: string;
+  project: string;
+  workspace: string;
+  workorder: string;
   environment: string;
-  providerSpec: ResourceKubernetesClusterSpecProviderSpec;
-  topology: ResourceKubernetesClusterSpecTopology;
-  endpoints: ResourceKubernetesClusterSpecEndpoint[];
+}
+export interface KubernetesClusterSpec {
+  data?: KubernetesClusterSpecData;
+  topology?: KubernetesClusterSpecTopology;
 }
 export interface ResourceKubernetesCluster {
-  spec: ResourceKubernetesClusterSpec;
-  status: ResourceKubernetesClusterStatus;
+  spec: KubernetesClusterSpec;
+  status?: KubernetesClusterStatus;
 }
 export interface ResourceVirtualMachineClassSpecHardwareInstanceStorage {
   storageClass: string;
