@@ -275,7 +275,7 @@ export interface ResourceVirtualMachineStatus {
   lastUpdated: Time;
   location: string;
   cpu: ResourceVirtualMachineCpuStatus;
-  tags: ResourceVirtualMachineTag[];
+  tags: { [key: string]: ResourceVirtualMachineTag };
   state: ResourceVirtualMachineState;
   disks: ResourceVirtualMachineDiskStatus[];
   memory: ResourceVirtualMachineMemoryStatus;
@@ -302,7 +302,7 @@ export interface ResourceVirtualMachineSpec {
   memory: ResourceVirtualMachineMemorySpec;
 }
 export interface ResourceVirtualMachine {
-  id: string;
+  externalId: string;
   spec: ResourceVirtualMachineSpec;
   status: ResourceVirtualMachineStatus;
   provider: string;
@@ -450,6 +450,7 @@ export interface ResourceClusterOrder {
   spec: ResourceClusterOrderSpec;
   status: ResourceClusterOrderStatus;
 }
+  name: string;
 export interface ResourceKubernetesMachineClassStatus {
   name: string;
   cpu: string;
