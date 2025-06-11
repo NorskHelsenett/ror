@@ -1,6 +1,8 @@
 package rortypes
 
-import "time"
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 type ResourceKubernetesCluster struct {
 	Spec   KubernetesClusterSpec   `json:"spec"`
@@ -80,9 +82,9 @@ type ClusterState struct {
 	Versions             []Version      `json:"versions"`
 	ControlplaneEndpoint string         `json:"controlplaneendpoint"`
 	EgressIP             string         `json:"egressIP"`
-	LastUpdated          time.Time      `json:"lastUpdated"`
+	LastUpdated          metav1.Time    `json:"lastUpdated"`
 	LastUpdatedBy        string         `json:"lastUpdatedBy"`
-	Created              time.Time      `json:"created"`
+	Created              metav1.Time    `json:"created"`
 }
 
 type ClusterDetails struct {
