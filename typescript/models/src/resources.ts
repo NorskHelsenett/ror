@@ -352,6 +352,7 @@ export interface ResourceClusterVulnerabilityReportReportOwner {
   namespace: string;
   ownerReferences: OwnerReference[];
 }
+export interface Time {}
 export interface ResourceClusterVulnerabilityReportReport {
   severity: string;
   score: number;
@@ -448,7 +449,6 @@ export interface Condition {
   reason: string;
   message: string;
 }
-export interface Time {}
 export interface Version {
   name: string;
   version: string;
@@ -482,9 +482,9 @@ export interface ClusterState {
   versions: Version[];
   controlplaneendpoint: string;
   egressIP: string;
-  lastUpdated: Time;
+  lastUpdated: string;
   lastUpdatedBy: string;
-  created: Time;
+  created: string;
 }
 export interface KubernetesClusterStatus {
   state: ClusterState;

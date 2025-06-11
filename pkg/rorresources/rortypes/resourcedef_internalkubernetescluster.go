@@ -1,7 +1,5 @@
 package rortypes
 
-import "time"
-
 type ResourceKubernetesCluster struct {
 	Spec   KubernetesClusterSpec   `json:"spec"`
 	Status KubernetesClusterStatus `json:"status,omitempty"`
@@ -80,9 +78,9 @@ type ClusterState struct {
 	Versions             []Version      `json:"versions"`
 	ControlplaneEndpoint string         `json:"controlplaneendpoint"`
 	EgressIP             string         `json:"egressIP"`
-	LastUpdated          time.Time      `json:"lastUpdated"`
+	LastUpdated          string         `json:"lastUpdated"`
 	LastUpdatedBy        string         `json:"lastUpdatedBy"`
-	Created              time.Time      `json:"created"`
+	Created              string         `json:"created"`
 }
 
 type ClusterDetails struct {
