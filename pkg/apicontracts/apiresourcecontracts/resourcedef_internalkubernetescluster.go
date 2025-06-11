@@ -19,7 +19,7 @@ type ResourceKubernetesClusterSpec struct {
 	Environment   string                                     `json:"environment"`
 	ProviderSpec  ResourceKubernetesClusterSpecProviderSpec  `json:"providerSpec"`
 	Topology      ResourceKubernetesClusterSpecTopology      `json:"topology"`
-	Endpoints     []ResourceKubernetesClusterSpecEndpoint    `json:"endpoints"`
+	Endpoints     []ResourceKubernetesClusterSpecEndpoint    `json:"endpoints"` // TODO: remove this field, use ResourceKubernetesClusterStatus instead
 }
 
 type ResourceKubernetesClusterSpecProviderSpec struct {
@@ -42,8 +42,8 @@ type ResourceKubernetesClusterSpecToolingConfig struct {
 }
 
 type ResourceKubernetesClusterSpecEndpoint struct {
-	Type    string `json:"type"`
-	Address string `json:"address"`
+	Type    string `json:"type"`    // Type of the endpoint, e.g., "kubernetesApi", "grafana", "argocd",etc.
+	Address string `json:"address"` // Address of the endpoint, e.g., "https://api.example.com", "https://grafana.example.com", etc.
 }
 type ResourceKubernetesClusterSpecTopology struct {
 	ControlPlane ResourceKubernetesClusterSpecTopologyControlPlane `json:"controlPlane"`
@@ -63,20 +63,43 @@ type ResourceKubernetesClusterSpecTopologyWorkers struct {
 }
 
 type ResourceKubernetesClusterStatus struct {
-	Status            string                                     `json:"status"`
-	Phase             string                                     `json:"phase"`
-	Conditions        []ResourceKubernetesClusterStatusCondition `json:"conditions"`
-	KubernetesVersion string                                     `json:"kubernetesVersion"`
-	ProviderStatus    map[string]interface{}                     `json:"providerStatus"`
-	CreatedTime       string                                     `json:"createdTime"`
-	UpdatedTime       string                                     `json:"updatedTime"`
-	LastObservedTime  string                                     `json:"lastObservedTime"`
+	Status            string                                       `json:"status"`
+	Endpoints         []ResourceKubernetesClusterSpecEndpoint      `json:"endpoints"`
+	Phase             string                                       `json:"phase"`
+	Conditions        []ResourceKubernetesClusterStatusCondition   `json:"conditions"`
+	KubernetesVersion string                                       `json:"kubernetesVersion"`
+	ProviderStatus    map[string]interface{}                       `json:"providerStatus"`
+	CreatedTime       string                                       `json:"createdTime"`
+	UpdatedTime       string                                       `json:"updatedTime"`
+	LastObservedTime  string                                       `json:"lastObservedTime"`
+	ClusterStatus     ResourceKubernetesClusterStatusClusterStatus `json:"clusterStatus"`
 }
 
 type ResourceKubernetesClusterStatusCondition struct {
-	Type               string `json:"type"`
-	Status             string `json:"status"`
-	LastTransitionTime string `json:"lastTransitionTime"`
-	Reason             string `json:"reason"`
-	Message            string `json:"message"`
+	Type               string `json:"type" example:"ClusterReady"`                                   // Type is the type of the condition. For example, "ready", "available", etc.
+	Status             string `json:"status"  example:"ok" enums:"ok,warning,error,working,unknown"` // Status is the status of the condition. Valid vales are: ok, warning, error, working, unknown.
+	LastTransitionTime string `json:"lastTransitionTime"`                                            // LastTransitionTime is the last time the condition transitioned from one status to another.
+	Reason             string `json:"reason"`                                                        // Reason is a brief reason for the condition's last transition.
+	Message            string `json:"message"`                                                       // Message is a human-readable message indicating details about the condition.
+}
+
+type ResourceKubernetesClusterStatusClusterStatus struct {
+	Price     ResourceKubernetesClusterStatusClusterStatusPrice    `json:"price"`     // Price is the price of the cluster, e.g., "1000 NOK/month"
+	NodePools int                                                  `json:"nodePools"` // NodePools is the number of node pools in the cluster.
+	Nodes     int                                                  `json:"nodes"`     // Nodes is the number of nodes in the cluster.
+	CPU       ResourceKubernetesClusterStatusClusterStatusResource `json:"cpu"`       // CPU is the total CPU capacity of the cluster, if not specified in millicores, e.g., "16 cores", "8000 millicores"
+	Memory    ResourceKubernetesClusterStatusClusterStatusResource `json:"memory"`    // Memory is the total memory capacity of the cluster, if not specified in bytes, e.g., "64 GB", "128000 MB", "25600000000 bytes"
+	GPU       ResourceKubernetesClusterStatusClusterStatusResource `json:"gpu"`       // GPU is the total GPU capacity of the cluster, if not specified in number of GPUs"
+	Disk      ResourceKubernetesClusterStatusClusterStatusResource `json:"disk"`      // Disk is the total disk capacity of the cluster, if not specified in bytes"
+}
+
+type ResourceKubernetesClusterStatusClusterStatusResource struct {
+	Capacity  string `json:"capacity"`   // Capacity is the total capacity of the resource, e.g., "16", "64Gi", "900m"
+	Used      string `json:"used"`       // Used is the amount of the resource that is currently used, e.g., "16", "64Gi", "900m"
+	Percetage int    `json:"percentage"` // Percentage is the percentage of the resource that is currently used, e.g., "50"
+}
+
+type ResourceKubernetesClusterStatusClusterStatusPrice struct {
+	Monthly int `json:"monthly"` // Monthly is the monthly price of the cluster in your currency, e.g., "1000"
+	Yearly  int `json:"yearly"`  // Yearly is the yearly price of the cluster, e.g., "12000"
 }
