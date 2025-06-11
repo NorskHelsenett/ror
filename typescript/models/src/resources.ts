@@ -482,9 +482,9 @@ export interface ClusterState {
   versions: Version[];
   controlplaneendpoint: string;
   egressIP: string;
-  lastUpdated: string;
+  lastUpdated: Time;
   lastUpdatedBy: string;
-  created: string;
+  created: Time;
 }
 export interface KubernetesClusterStatus {
   state: ClusterState;
