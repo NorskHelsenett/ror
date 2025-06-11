@@ -1,6 +1,6 @@
 package rortypes
 
-import "time"
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 type ResourceBackupJob struct {
 	Id       string                  `json:"id"`
@@ -39,7 +39,7 @@ type ResourceBackupJobSpec struct {
 type ResourceBackupJobStatus struct {
 	ResourceBackupJobSpec
 	Location    string              `json:"location"`
-	LastUpdated time.Time           `json:"lastUpdated"`
+	LastUpdated metav1.Time         `json:"lastUpdated"`
 	PolicyName  string              `json:"policyName"`
 	Runs        []ResourceBackupRun `json:"runs"`
 }
@@ -51,13 +51,13 @@ type ResourceBackupRun struct {
 	BackupDestinations []ResourceBackupRunDestination `json:"backupDestinations"`
 
 	// When the run was started
-	StartTime time.Time `json:"startTime"`
+	StartTime metav1.Time `json:"startTime"`
 
 	// When the run was finished
-	EndTime time.Time `json:"endTime"`
+	EndTime metav1.Time `json:"endTime"`
 
 	// When the run will expire and be deleted
-	ExpiryTime    time.Time             `json:"expiryTime"`
+	ExpiryTime    metav1.Time           `json:"expiryTime"`
 	BackupStorage ResourceBackupStorage `json:"backupStorage"`
 }
 
@@ -112,8 +112,8 @@ type ResourceBackupRunDestination struct {
 	Type string `json:"type"`
 
 	// Status spesific to the destination - remote being unavailable
-	Status     string    `json:"status"`
-	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
+	Status     string      `json:"status"`
+	ExpiryTime metav1.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
 type ResourceBackupStorage struct {

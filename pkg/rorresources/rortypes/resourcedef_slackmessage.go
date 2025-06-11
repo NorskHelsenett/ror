@@ -1,6 +1,6 @@
 package rortypes
 
-import "time"
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 type ResourceSlackMessage struct {
 	Spec   ResourceSlackMessageSpec     `json:"spec"`
@@ -14,7 +14,7 @@ type ResourceSlackMessageSpec struct {
 
 type ResourceSlackMessageStatus struct {
 	Result    ResourceSlackMessageResult `json:"result"`
-	Timestamp time.Time                  `json:"timestamp"`
+	Timestamp metav1.Time                `json:"timestamp"`
 	Error     any                        `json:"error"`
 }
 
