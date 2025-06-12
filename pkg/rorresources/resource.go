@@ -13,43 +13,43 @@ import (
 type Resource struct {
 	rortypes.CommonResource `json:",inline" bson:",inline"`
 
-	ApplicationResource                *rortypes.ResourceApplication                `json:"application,omitempty" bson:"application,omitempty"`
-	AppProjectResource                 *rortypes.ResourceAppProject                 `json:"appproject,omitempty" bson:"appproject,omitempty"`
-	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
-	CertificateResource                *rortypes.ResourceCertificate                `json:"certificate,omitempty" bson:"certificate,omitempty"`
-	ClusterComplianceReportResource    *rortypes.ResourceClusterComplianceReport    `json:"clustercompliancereport,omitempty" bson:"clustercompliancereport,omitempty"`
-	ClusterOrderResource               *rortypes.ResourceClusterOrder               `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
-	ClusterVulnerabilityReportResource *rortypes.ResourceClusterVulnerabilityReport `json:"clustervulnerabilityreport,omitempty" bson:"clustervulnerabilityreport,omitempty"`
-	ConfigAuditReportResource          *rortypes.ResourceConfigAuditReport          `json:"configauditreport,omitempty" bson:"configauditreport,omitempty"`
-	ConfigurationResource              *rortypes.ResourceConfiguration              `json:"configuration,omitempty" bson:"configuration,omitempty"`
-	DaemonSetResource                  *rortypes.ResourceDaemonSet                  `json:"daemonset,omitempty" bson:"daemonset,omitempty"`
-	DatacenterResource                 *rortypes.ResourceDatacenter                 `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
-	DeploymentResource                 *rortypes.ResourceDeployment                 `json:"deployment,omitempty" bson:"deployment,omitempty"`
-	EndpointsResource                  *rortypes.ResourceEndpoints                  `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
-	ExposedSecretReportResource        *rortypes.ResourceExposedSecretReport        `json:"exposedsecretreport,omitempty" bson:"exposedsecretreport,omitempty"`
-	IngressClassResource               *rortypes.ResourceIngressClass               `json:"ingressclass,omitempty" bson:"ingressclass,omitempty"`
-	IngressResource                    *rortypes.ResourceIngress                    `json:"ingress,omitempty" bson:"ingress,omitempty"`
-	KubernetesClusterResource          *rortypes.ResourceKubernetesCluster          `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
 	NamespaceResource                  *rortypes.ResourceNamespace                  `json:"namespace,omitempty" bson:"namespace,omitempty"`
-	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
 	NodeResource                       *rortypes.ResourceNode                       `json:"node,omitempty" bson:"node,omitempty"`
 	PersistentVolumeClaimResource      *rortypes.ResourcePersistentVolumeClaim      `json:"persistentvolumeclaim,omitempty" bson:"persistentvolumeclaim,omitempty"`
-	PodResource                        *rortypes.ResourcePod                        `json:"pod,omitempty" bson:"pod,omitempty"`
-	PolicyReportResource               *rortypes.ResourcePolicyReport               `json:"policyreport,omitempty" bson:"policyreport,omitempty"`
-	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty" bson:"project,omitempty"`
-	RbacAssessmentReportResource       *rortypes.ResourceRbacAssessmentReport       `json:"rbacassessmentreport,omitempty" bson:"rbacassessmentreport,omitempty"`
-	ReplicaSetResource                 *rortypes.ResourceReplicaSet                 `json:"replicaset,omitempty" bson:"replicaset,omitempty"`
-	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty" bson:"route,omitempty"`
-	ServiceResource                    *rortypes.ResourceService                    `json:"service,omitempty" bson:"service,omitempty"`
-	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
-	StatefulSetResource                *rortypes.ResourceStatefulSet                `json:"statefulset,omitempty" bson:"statefulset,omitempty"`
+	DeploymentResource                 *rortypes.ResourceDeployment                 `json:"deployment,omitempty" bson:"deployment,omitempty"`
 	StorageClassResource               *rortypes.ResourceStorageClass               `json:"storageclass,omitempty" bson:"storageclass,omitempty"`
+	PolicyReportResource               *rortypes.ResourcePolicyReport               `json:"policyreport,omitempty" bson:"policyreport,omitempty"`
+	ApplicationResource                *rortypes.ResourceApplication                `json:"application,omitempty" bson:"application,omitempty"`
+	AppProjectResource                 *rortypes.ResourceAppProject                 `json:"appproject,omitempty" bson:"appproject,omitempty"`
+	CertificateResource                *rortypes.ResourceCertificate                `json:"certificate,omitempty" bson:"certificate,omitempty"`
+	ServiceResource                    *rortypes.ResourceService                    `json:"service,omitempty" bson:"service,omitempty"`
+	PodResource                        *rortypes.ResourcePod                        `json:"pod,omitempty" bson:"pod,omitempty"`
+	ReplicaSetResource                 *rortypes.ResourceReplicaSet                 `json:"replicaset,omitempty" bson:"replicaset,omitempty"`
+	StatefulSetResource                *rortypes.ResourceStatefulSet                `json:"statefulset,omitempty" bson:"statefulset,omitempty"`
+	DaemonSetResource                  *rortypes.ResourceDaemonSet                  `json:"daemonset,omitempty" bson:"daemonset,omitempty"`
+	IngressResource                    *rortypes.ResourceIngress                    `json:"ingress,omitempty" bson:"ingress,omitempty"`
+	IngressClassResource               *rortypes.ResourceIngressClass               `json:"ingressclass,omitempty" bson:"ingressclass,omitempty"`
+	VulnerabilityReportResource        *rortypes.ResourceVulnerabilityReport        `json:"vulnerabilityreport,omitempty" bson:"vulnerabilityreport,omitempty"`
+	ExposedSecretReportResource        *rortypes.ResourceExposedSecretReport        `json:"exposedsecretreport,omitempty" bson:"exposedsecretreport,omitempty"`
+	ConfigAuditReportResource          *rortypes.ResourceConfigAuditReport          `json:"configauditreport,omitempty" bson:"configauditreport,omitempty"`
+	RbacAssessmentReportResource       *rortypes.ResourceRbacAssessmentReport       `json:"rbacassessmentreport,omitempty" bson:"rbacassessmentreport,omitempty"`
 	TanzuKubernetesClusterResource     *rortypes.ResourceTanzuKubernetesCluster     `json:"tanzukubernetescluster,omitempty" bson:"tanzukubernetescluster,omitempty"`
 	TanzuKubernetesReleaseResource     *rortypes.ResourceTanzuKubernetesRelease     `json:"tanzukubernetesrelease,omitempty" bson:"tanzukubernetesrelease,omitempty"`
 	VirtualMachineClassResource        *rortypes.ResourceVirtualMachineClass        `json:"virtualmachineclass,omitempty" bson:"virtualmachineclass,omitempty"`
-	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
+	KubernetesClusterResource          *rortypes.ResourceKubernetesCluster          `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
+	ClusterOrderResource               *rortypes.ResourceClusterOrder               `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
+	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty" bson:"project,omitempty"`
+	ConfigurationResource              *rortypes.ResourceConfiguration              `json:"configuration,omitempty" bson:"configuration,omitempty"`
+	ClusterComplianceReportResource    *rortypes.ResourceClusterComplianceReport    `json:"clustercompliancereport,omitempty" bson:"clustercompliancereport,omitempty"`
+	ClusterVulnerabilityReportResource *rortypes.ResourceClusterVulnerabilityReport `json:"clustervulnerabilityreport,omitempty" bson:"clustervulnerabilityreport,omitempty"`
+	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty" bson:"route,omitempty"`
+	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
 	VulnerabilityEventResource         *rortypes.ResourceVulnerabilityEvent         `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
-	VulnerabilityReportResource        *rortypes.ResourceVulnerabilityReport        `json:"vulnerabilityreport,omitempty" bson:"vulnerabilityreport,omitempty"`
+	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
+	EndpointsResource                  *rortypes.ResourceEndpoints                  `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
+	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
+	DatacenterResource                 *rortypes.ResourceDatacenter                 `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
+	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
