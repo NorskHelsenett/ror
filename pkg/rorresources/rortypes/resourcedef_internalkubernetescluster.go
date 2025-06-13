@@ -71,7 +71,7 @@ type KubernetesClusterAutoscalingConfig struct {
 }
 type KubernetesClusterAutoscalingSpec struct {
 	KubernetesClusterAutoscalingConfig `json:",inline"`
-	ScalingRules []string `json:"scalingRules"`
+	ScalingRules                       []string `json:"scalingRules"`
 }
 
 // KubernetesClusterStatus represents the status of a Kubernetes cluster.
