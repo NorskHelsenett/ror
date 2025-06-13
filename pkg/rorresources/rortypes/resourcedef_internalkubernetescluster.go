@@ -70,7 +70,7 @@ type KubernetesClusterAutoscalingConfig struct {
 	MaxReplicas int  `json:"maxReplicas"`
 }
 type KubernetesClusterAutoscalingSpec struct {
-	KubernetesClusterAutoscalingConfig
+	KubernetesClusterAutoscalingConfig `json:",inline"`
 	ScalingRules []string `json:"scalingRules"`
 }
 
