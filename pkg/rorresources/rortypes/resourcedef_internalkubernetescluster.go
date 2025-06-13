@@ -10,8 +10,8 @@ type ResourceKubernetesCluster struct {
 }
 
 type KubernetesClusterSpec struct {
-	Cluster  KubernetesClusterSpecData     `json:"data,omitempty"`
-	Topology KubernetesClusterSpecTopology `json:"topology,omitempty"`
+	Cluster  KubernetesClusterSpecData     `json:"data,omitzero"`
+	Topology KubernetesClusterSpecTopology `json:"topology,omitzero"`
 }
 
 type KubernetesClusterSpecData struct {
@@ -27,13 +27,14 @@ type KubernetesClusterSpecData struct {
 }
 
 type KubernetesClusterSpecTopology struct {
-	Version      string                            `json:"version"`
-	ControlPlane KubernetesClusterSpecControlPlane `json:"controlplane"`
-	Workers      KubernetesClusterWorkers          `json:"workers"`
+	Version      string                            `json:"version"`      // Kubernetes version, e.g., "1.23.0"
+	ControlPlane KubernetesClusterSpecControlPlane `json:"controlplane"` // ControlPlane contains the control plane configuration.
+	Workers      KubernetesClusterWorkers          `json:"workers"`      // Workers contains the worker nodes configuration.
 }
 
 type KubernetesClusterSpecControlPlane struct {
 	Replicas     int                                  `json:"replicas"`
+	Version      string                               `json:"version"` // Kubernetes version, e.g., "1.23.0"
 	Provider     string                               `json:"provider"`
 	MachineClass string                               `json:"machineClass"`
 	Metadata     KubernetesClusterSpecMetadataDetails `json:"metadata"`
@@ -58,6 +59,7 @@ type KubernetesClusterWorkers struct {
 type KubernetesClusterNodePool struct {
 	MachineClass string                               `json:"machineClass"`
 	Provider     string                               `json:"provider"`
+	Version      string                               `json:"version"` // Kubernetes version, e.g., "1.23.0"
 	Name         string                               `json:"name"`
 	Replicas     int                                  `json:"replicas"`
 	Autoscaling  KubernetesClusterAutoscalingSpec     `json:"autoscaling"`
@@ -83,13 +85,18 @@ type KubernetesClusterStatus struct {
 }
 
 type KubernetesClusterClusterState struct {
-	Cluster              KubernetesClusterClusterDetails `json:"cluster"`
-	Versions             []KubernetesClusterVersion      `json:"versions"`
-	ControlplaneEndpoint string                          `json:"controlplaneendpoint"`
-	EgressIP             string                          `json:"egressIP"`
-	LastUpdated          metav1.Time                     `json:"lastUpdated"`
-	LastUpdatedBy        string                          `json:"lastUpdatedBy"`
-	Created              metav1.Time                     `json:"created"`
+	Cluster       KubernetesClusterClusterDetails `json:"cluster"`
+	Versions      []KubernetesClusterVersion      `json:"versions"`
+	Endpoints     []KubernetesClusterEndpoint     `json:"endpoints"`
+	EgressIP      string                          `json:"egressIP"`
+	LastUpdated   metav1.Time                     `json:"lastUpdated"`
+	LastUpdatedBy string                          `json:"lastUpdatedBy"`
+	Created       metav1.Time                     `json:"created"`
+}
+
+type KubernetesClusterEndpoint struct {
+	Name    string `json:"name"`    // Name is the name of the endpoint, e.g., "controllplane", "kubernetes", "api", "dashboard, grafana, argocd", "datacenter"
+	Address string `json:"address"` // Address is the address of the endpoint, e.g., "https://api.example.com", "http://dashboard.example.com"
 }
 
 type KubernetesClusterStatusCondition struct {
@@ -114,10 +121,10 @@ type KubernetesClusterClusterDetails struct {
 }
 
 type KubernetesClusterStatusClusterStatusResources struct {
-	CPU    KubernetesClusterStatusClusterStatusResource `json:"cpu"`    // CPU is the total CPU capacity of the cluster, if not specified in millicores, e.g., "16 cores", "8000 millicores"
-	Memory KubernetesClusterStatusClusterStatusResource `json:"memory"` // Memory is the total memory capacity of the cluster, if not specified in bytes, e.g., "64 GB", "128000 MB", "25600000000 bytes"
-	GPU    KubernetesClusterStatusClusterStatusResource `json:"gpu"`    // GPU is the total GPU capacity of the cluster, if not specified in number of GPUs"
-	Disk   KubernetesClusterStatusClusterStatusResource `json:"disk"`   // Disk is the total disk capacity of the cluster, if not specified in bytes"
+	CPU    KubernetesClusterStatusClusterStatusResource `json:"cpu,omitzero"`    // CPU is the total CPU capacity of the cluster, if not specified in millicores, e.g., "16 cores", "8000 millicores"
+	Memory KubernetesClusterStatusClusterStatusResource `json:"memory,omitzero"` // Memory is the total memory capacity of the cluster, if not specified in bytes, e.g., "64 GB", "128000 MB", "25600000000 bytes"
+	GPU    KubernetesClusterStatusClusterStatusResource `json:"gpu,omitzero"`    // GPU is the total GPU capacity of the cluster, if not specified in number of GPUs"
+	Disk   KubernetesClusterStatusClusterStatusResource `json:"disk,omitzero"`   // Disk is the total disk capacity of the cluster, if not specified in bytes"
 }
 
 type KubernetesClusterStatusClusterStatusResource struct {
