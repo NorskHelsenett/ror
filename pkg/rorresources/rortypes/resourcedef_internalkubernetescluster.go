@@ -70,8 +70,8 @@ type KubernetesClusterAutoscalingConfig struct {
 	MaxReplicas int  `json:"maxReplicas"`
 }
 type KubernetesClusterAutoscalingSpec struct {
-	KubernetesClusterAutoscalingConfig
-	ScalingRules []string `json:"scalingRules"`
+	KubernetesClusterAutoscalingConfig `json:",inline"`
+	ScalingRules                       []string `json:"scalingRules"`
 }
 
 // KubernetesClusterStatus represents the status of a Kubernetes cluster.

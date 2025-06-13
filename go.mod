@@ -3,7 +3,7 @@ module github.com/NorskHelsenett/ror
 go 1.24.4
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.10.0
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.10.1
 	github.com/dotse/go-health v1.0.1
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/gin-gonic/gin v1.10.1
@@ -14,7 +14,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
-	github.com/microsoftgraph/msgraph-sdk-go v1.73.0
+	github.com/microsoftgraph/msgraph-sdk-go v1.74.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/pkg/errors v0.9.1
@@ -116,7 +116,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/microsoft/kiota-abstractions-go v1.9.2 // indirect
 	github.com/microsoft/kiota-authentication-azure-go v1.3.0 // indirect
-	github.com/microsoft/kiota-http-go v1.5.3 // indirect
+	github.com/microsoft/kiota-http-go v1.5.4 // indirect
 	github.com/microsoft/kiota-serialization-form-go v1.1.2 // indirect
 	github.com/microsoft/kiota-serialization-json-go v1.1.2 // indirect
 	github.com/microsoft/kiota-serialization-multipart-go v1.1.2 // indirect
@@ -145,7 +145,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
-	github.com/shirou/gopsutil/v4 v4.25.4 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.5 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
