@@ -1,6 +1,6 @@
 package rortypes
 
-import "time"
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 type VmId string
 
@@ -22,7 +22,7 @@ type ResourceVirtualMachineSpec struct {
 
 // things we can't change
 type ResourceVirtualMachineStatus struct {
-	LastUpdated     time.Time                                   `json:"lastUpdated"`
+	LastUpdated     metav1.Time                                 `json:"lastUpdated"`
 	Location        string                                      `json:"location"`
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
 	Tags            map[string]ResourceVirtualMachineTag        `json:"tags"`

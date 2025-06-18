@@ -1,5 +1,6 @@
 package apiresourcecontracts
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpoints struct {
 	ApiVersion string                        `json:"apiVersion"`
 	Kind       string                        `json:"kind"`
@@ -7,12 +8,14 @@ type ResourceEndpoints struct {
 	Subsets    []ResourceEndpointSpecSubsets `json:"subsets,omitempty"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpointSpecSubsets struct {
 	Addresses         []ResourceEndpointSpecSubsetsAddresses         `json:"addresses,omitempty"`
 	NotReadyAddresses []ResourceEndpointSpecSubsetsNotReadyAddresses `json:"notReadyAddresses,omitempty"`
 	Ports             []ResourceEndpointSpecSubsetsPorts             `json:"ports,omitempty"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpointSpecSubsetsAddresses struct {
 	Hostname  string                                        `json:"hostname,omitempty"`
 	Ip        string                                        `json:"ip,omitempty"`
@@ -20,6 +23,7 @@ type ResourceEndpointSpecSubsetsAddresses struct {
 	TargetRef ResourceEndpointSpecSubsetsAddressesTargetRef `json:"targetRef,omitempty"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpointSpecSubsetsAddressesTargetRef struct {
 	ApiVersion      string `json:"apiVersion,omitempty"`
 	FieldPath       string `json:"fieldPath,omitempty"`
@@ -30,6 +34,7 @@ type ResourceEndpointSpecSubsetsAddressesTargetRef struct {
 	Uid             string `json:"uid,omitempty"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpointSpecSubsetsNotReadyAddresses struct {
 	Hostname  string                                                `json:"hostname,omitempty"`
 	Ip        string                                                `json:"ip,omitempty"`
@@ -37,6 +42,7 @@ type ResourceEndpointSpecSubsetsNotReadyAddresses struct {
 	TargetRef ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef `json:"targetRef,omitempty"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef struct {
 	ApiVersion      string `json:"apiVersion,omitempty"`
 	FieldPath       string `json:"fieldPath,omitempty"`
@@ -47,6 +53,7 @@ type ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef struct {
 	Uid             string `json:"uid,omitempty"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceEndpointSpecSubsetsPorts struct {
 	AppProtocol string `json:"appProtocol,omitempty"`
 	Name        string `json:"name,omitempty"`

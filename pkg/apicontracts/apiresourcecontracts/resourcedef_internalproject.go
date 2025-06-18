@@ -1,5 +1,6 @@
 package apiresourcecontracts
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceProject struct {
 	ApiVersion string              `json:"apiVersion"`
 	Kind       string              `json:"kind"`
@@ -7,6 +8,7 @@ type ResourceProject struct {
 	Spec       ResourceProjectSpec `json:"spec"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceProjectSpec struct {
 	ProjectName string                    `json:"projectName"`
 	Description string                    `json:"description"`
@@ -19,6 +21,7 @@ type ResourceProjectSpec struct {
 	Tags        []string                  `json:"tags"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceProjectSpecRole struct {
 	Upn   string `json:"upn"`
 	Name  string `json:"name"`

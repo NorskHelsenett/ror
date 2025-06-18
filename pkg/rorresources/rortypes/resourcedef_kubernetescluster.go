@@ -1,6 +1,8 @@
 package rortypes
 
-import "time"
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 type ResourceKubernetesCluster struct {
 	Spec   KubernetesClusterSpec   `json:"spec"`
@@ -8,8 +10,8 @@ type ResourceKubernetesCluster struct {
 }
 
 type KubernetesClusterSpec struct {
-	Data     KubernetesClusterSpecData     `json:"data,omitempty"`
-	Topology KubernetesClusterSpecTopology `json:"topology,omitempty"`
+	Cluster  KubernetesClusterSpecData     `json:"data,omitzero"`
+	Topology KubernetesClusterSpecTopology `json:"topology,omitzero"`
 }
 
 type KubernetesClusterSpecData struct {
@@ -25,110 +27,147 @@ type KubernetesClusterSpecData struct {
 }
 
 type KubernetesClusterSpecTopology struct {
-	Version      string       `json:"version"`
-	ControlPlane ControlPlane `json:"controlplane"`
-	Workers      Workers      `json:"workers"`
+	Version      string                            `json:"version"`      // Kubernetes version, e.g., "1.23.0"
+	ControlPlane KubernetesClusterSpecControlPlane `json:"controlplane"` // ControlPlane contains the control plane configuration.
+	Workers      KubernetesClusterWorkers          `json:"workers"`      // Workers contains the worker nodes configuration.
 }
 
-type ControlPlane struct {
-	Replicas     int             `json:"replicas"`
-	Provider     string          `json:"provider"`
-	MachineClass string          `json:"machineClass"`
-	Metadata     MetadataDetails `json:"metadata"`
-	Storage      []Storage       `json:"storage"`
+type KubernetesClusterSpecControlPlane struct {
+	Replicas     int                                  `json:"replicas"`
+	Version      string                               `json:"version"` // Kubernetes version, e.g., "1.23.0"
+	Provider     string                               `json:"provider"`
+	MachineClass string                               `json:"machineClass"`
+	Metadata     KubernetesClusterSpecMetadataDetails `json:"metadata"`
+	Storage      []KubernetesClusterStorage           `json:"storage"`
 }
 
-type MetadataDetails struct {
+type KubernetesClusterSpecMetadataDetails struct {
 	Labels      map[string]string `json:"labels"`
 	Annotations map[string]string `json:"annotations"`
 }
 
-type Storage struct {
+type KubernetesClusterStorage struct {
 	Class string `json:"class"`
 	Path  string `json:"path"`
 	Size  string `json:"size"`
 }
 
-type Workers struct {
-	NodePools []NodePool `json:"nodePools"`
+type KubernetesClusterWorkers struct {
+	NodePools []KubernetesClusterNodePool `json:"nodePools"`
 }
 
-type NodePool struct {
-	MachineClass string          `json:"machineClass"`
-	Provider     string          `json:"provider"`
-	Name         string          `json:"name"`
-	Replicas     int             `json:"replicas"`
-	Autoscaling  Autoscaling     `json:"autoscaling"`
-	Metadata     MetadataDetails `json:"metadata"`
-	Taint        []Taint         `json:"taint"`
+type KubernetesClusterNodePool struct {
+	MachineClass string                               `json:"machineClass"`
+	Provider     string                               `json:"provider"`
+	Version      string                               `json:"version"` // Kubernetes version, e.g., "1.23.0"
+	Name         string                               `json:"name"`
+	Replicas     int                                  `json:"replicas"`
+	Autoscaling  KubernetesClusterAutoscalingSpec     `json:"autoscaling"`
+	Metadata     KubernetesClusterSpecMetadataDetails `json:"metadata"`
+	Taint        []KubernetesClusterTaint             `json:"taint"`
 }
 
-type Taint struct {
+type KubernetesClusterTaint struct {
 	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Effect string `json:"effect"`
 }
 
-type Autoscaling struct {
-	Enabled      bool     `json:"enabled"`
-	MinReplicas  int      `json:"minReplicas"`
-	MaxReplicas  int      `json:"maxReplicas"`
-	ScalingRules []string `json:"scalingRules"`
+type KubernetesClusterAutoscalingConfig struct {
+	Enabled     bool `json:"enabled"`
+	MinReplicas int  `json:"minReplicas"`
+	MaxReplicas int  `json:"maxReplicas"`
+}
+type KubernetesClusterAutoscalingSpec struct {
+	KubernetesClusterAutoscalingConfig `json:",inline"`
+	ScalingRules                       []string `json:"scalingRules"`
 }
 
+// KubernetesClusterStatus represents the status of a Kubernetes cluster.
+// It contains the current state, phase, and conditions of the cluster.
 type KubernetesClusterStatus struct {
-	State      ClusterStatus `json:"status"`
-	Phase      string        `json:"phase"` // Provisioning, Running, Deleting, Failed, Updating
-	Conditions []Condition   `json:"conditions"`
+	State      KubernetesClusterClusterState `json:"state"`
+	Phase      string                        `json:"phase"` // Provisioning, Running, Deleting, Failed, Updating
+	Conditions []KubernetesClusterCondition  `json:"conditions"`
 }
 
-type ClusterStatus struct {
-	Cluster       ClusterDetails `json:"cluster"`
-	Versions      []Version      `json:"versions"`
-	EgressIP      string         `json:"egressIp"`
-	LastUpdated   time.Time      `json:"lastUpdated"`
-	LastUpdatedBy string         `json:"lastUpdatedBy"`
-	Created       time.Time      `json:"created"`
+type KubernetesClusterClusterState struct {
+	Cluster       KubernetesClusterClusterDetails `json:"cluster"`
+	Versions      []KubernetesClusterVersion      `json:"versions"`
+	Endpoints     []KubernetesClusterEndpoint     `json:"endpoints"`
+	EgressIP      string                          `json:"egressIP"`
+	LastUpdated   metav1.Time                     `json:"lastUpdated"`
+	LastUpdatedBy string                          `json:"lastUpdatedBy"`
+	Created       metav1.Time                     `json:"created"`
 }
 
-type ClusterDetails struct {
-	ExternalId         string             `json:"externalId"`
-	Resources          []Resource         `json:"resources"`
-	ControlPlaneStatus ControlPlaneStatus `json:"controlplane"`
-	Workers            WorkerStatus       `json:"workers"`
+type KubernetesClusterEndpoint struct {
+	Name    string `json:"name"`    // Name is the name of the endpoint, e.g., "controllplane", "kubernetes", "api", "dashboard, grafana, argocd", "datacenter"
+	Address string `json:"address"` // Address is the address of the endpoint, e.g., "https://api.example.com", "http://dashboard.example.com"
 }
 
-type Resource struct {
-	Name      string `json:"name"`
-	Allocated string `json:"allocated"`
-	Usage     string `json:"usage"`
+type KubernetesClusterStatusCondition struct {
+	Type               string `json:"type" example:"ClusterReady"`                                   // Type is the type of the condition. For example, "ready", "available", etc.
+	Status             string `json:"status"  example:"ok" enums:"ok,warning,error,working,unknown"` // Status is the status of the condition. Valid vales are: ok, warning, error, working, unknown.
+	LastTransitionTime string `json:"lastTransitionTime"`                                            // LastTransitionTime is the last time the condition transitioned from one status to another.
+	Reason             string `json:"reason"`                                                        // Reason is a brief reason for the condition's last transition.
+	Message            string `json:"message"`                                                       // Message is a human-readable message indicating details about the condition.
 }
 
-type ControlPlaneStatus struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
+type KubernetesClusterStatusPrice struct {
+	Monthly int `json:"monthly"` // Monthly is the monthly price of the cluster in your currency, e.g., "1000"
+	Yearly  int `json:"yearly"`  // Yearly is the yearly price of the cluster, e.g., "12000"
 }
 
-type WorkerStatus struct {
-	NodePools []NodePoolStatus `json:"nodepools"`
+type KubernetesClusterClusterDetails struct {
+	ExternalId         string                                        `json:"externalId"`
+	Resources          KubernetesClusterStatusClusterStatusResources `json:"resources"`
+	Price              KubernetesClusterStatusPrice                  `json:"price"` // Price is the price of the cluster, e.g., "1000 NOK/month"
+	ControlPlaneStatus KubernetesClusterControlPlaneStatus           `json:"controlplane"`
+	NodePools          []KubernetesClusterNodePoolStatus             `json:"nodepools"` // TODO
 }
 
-type NodePoolStatus struct {
-	Name    string `json:"name"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
+type KubernetesClusterStatusClusterStatusResources struct {
+	CPU    KubernetesClusterStatusClusterStatusResource `json:"cpu,omitzero"`    // CPU is the total CPU capacity of the cluster, if not specified in millicores, e.g., "16 cores", "8000 millicores"
+	Memory KubernetesClusterStatusClusterStatusResource `json:"memory,omitzero"` // Memory is the total memory capacity of the cluster, if not specified in bytes, e.g., "64 GB", "128000 MB", "25600000000 bytes"
+	GPU    KubernetesClusterStatusClusterStatusResource `json:"gpu,omitzero"`    // GPU is the total GPU capacity of the cluster, if not specified in number of GPUs"
+	Disk   KubernetesClusterStatusClusterStatusResource `json:"disk,omitzero"`   // Disk is the total disk capacity of the cluster, if not specified in bytes"
 }
 
-type Version struct {
+type KubernetesClusterStatusClusterStatusResource struct {
+	Capacity  Quantity `json:"capacity"`   // Capacity is the total capacity of the resource."
+	Used      Quantity `json:"used"`       // Used is the amount of the resource that is currently used."
+	Percetage int      `json:"percentage"` // Percentage is the percentage of the resource that is currently used as an int.
+}
+
+type KubernetesClusterControlPlaneStatus struct {
+	Status       string                                        `json:"status"`
+	Message      string                                        `json:"message"`
+	Scale        int                                           `json:"scale"`        // Scale is the number of replicas of the control plane.
+	MachineClass string                                        `json:"machineClass"` // MachineClass is the machine class of the control plane, e.g., "c5.large", "m5.xlarge"
+	Resources    KubernetesClusterStatusClusterStatusResources `json:"resources"`    // Resources is the resources of the control plane, e.g., CPU, Memory, Disk, GPU
+}
+
+type KubernetesClusterNodePoolStatus struct {
+	Name         string                                        `json:"name"`
+	Status       string                                        `json:"status"`
+	Message      string                                        `json:"message"`
+	Scale        int                                           `json:"scale"`        // Scale is the number of replicas of the control plane.
+	MachineClass string                                        `json:"machineClass"` // MachineClass is the machine class of the control plane, e.g., "c5.large", "m5.xlarge"
+	Autoscaling  KubernetesClusterAutoscalingConfig            `json:"autoscaling"`  // Autoscaling is the autoscaling configuration of the node pool.
+	Resources    KubernetesClusterStatusClusterStatusResources `json:"resources"`    // Resources is the resources of the node pool, e.g., CPU, Memory, Disk, GPU
+}
+
+type KubernetesClusterVersion struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
 	Branch  string `json:"branch"`
 }
 
-type Condition struct {
-	Type               string `json:"type"`
-	Status             string `json:"status"`
-	LastTransitionTime string `json:"lastTransitionTime"`
-	Reason             string `json:"reason"`
-	Message            string `json:"message"`
+type KubernetesClusterCondition struct {
+	Type               string `json:"type" example:"ClusterReady"`                                   // Type is the type of the condition. For example, "ready", "available", etc.
+	Status             string `json:"status"  example:"ok" enums:"ok,warning,error,working,unknown"` // Status is the status of the condition. Valid vales are: ok, warning, error, working, unknown.
+	LastTransitionTime string `json:"lastTransitionTime"`                                            // LastTransitionTime is the last time the condition transitioned from one status to another.
+	Reason             string `json:"reason"`                                                        // Reason is a brief reason for the condition's last transition.
+	Message            string `json:"message"`                                                       // Message is a human-readable message indicating details about the condition.
 }
