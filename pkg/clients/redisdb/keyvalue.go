@@ -24,6 +24,14 @@ func (rc rediscon) Set(ctx context.Context, key string, value interface{}, expir
 	return nil
 }
 
+func (rc rediscon) Keys(ctx context.Context) ([]string, error) {
+	keys, err := rc.Client.Keys(ctx, "*").Result()
+	if err != nil {
+		return nil, err
+	}
+	return keys, nil
+}
+
 func (rc rediscon) Delete(ctx context.Context, key string) error {
 	err := rc.Client.Del(ctx, key).Err()
 	if err != nil {

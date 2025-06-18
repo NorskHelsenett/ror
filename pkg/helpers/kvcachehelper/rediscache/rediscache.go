@@ -32,7 +32,6 @@ func NewRedisCache(redisDb redisdb.RedisDB, opts ...kvcachehelper.CacheOptions) 
 			if opt.Prefix != "" {
 				rc.prefix = opt.Prefix
 			}
-
 		}
 	}
 
@@ -76,6 +75,24 @@ func (c *RedisCache) Get(ctx context.Context, key string) (string, bool) {
 	}
 
 	return cacheValue, true
+}
+
+func (c *RedisCache) Keys(ctx context.Context) ([]string, error) {
+	if c.redisDb == nil {
+		rlog.Error("RedisDB is nil", nil)
+		return nil, fmt.Errorf("RedisDB is nil")
+	}
+	keys, err := c.redisDb.Keys(ctx)
+	if err != nil {
+		rlog.Debugc(ctx, fmt.Sprintf("Error getting keys from redis cache: %s", err))
+		return nil, err
+	}
+
+	for i := range keys {
+		keys[i] = keys[i][len(c.prefix):]
+	}
+
+	return keys, nil
 }
 
 func (c *RedisCache) Remove(ctx context.Context, key string) bool {

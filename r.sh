@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ ! -d ./.vscode ]; then
   mkdir -p ./.vscode;
 fi
@@ -14,6 +15,8 @@ envfile=".env"
 while getopts "e:" arg; do
   case $arg in
     e) envfile=$OPTARG;;
+    *) echo "error: Invalid option"
+       exit 1 ;;
   esac
 done
 

@@ -2,13 +2,24 @@ package telemetry
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 )
 
-// add resource information to logs, metrics and traces
+// newResource creates an OpenTelemetry resource with service information and attributes.
+//
+// This resource contains identifying information about the service such as its name,
+// version, and environment, which will be attached to all telemetry data (traces, metrics, logs).
+//
+// Parameters:
+//   - ctx: The context for resource creation operations
+//   - opts: Configuration options that may contain service information
+//
+// Returns:
+//   - *resource.Resource: A configured OpenTelemetry resource with service attributes
 func newResource(ctx context.Context, opts ...Option) *resource.Resource {
 	attributes := []attribute.KeyValue{}
 	attributes = append(attributes,

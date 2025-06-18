@@ -199,6 +199,10 @@ func handleResponse(res *http.Response, out any) error {
 		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
 
+	if out == nil {
+		return nil
+	}
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err

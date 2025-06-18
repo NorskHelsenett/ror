@@ -7,6 +7,18 @@ import (
 	"go.uber.org/zap"
 )
 
+// LogMiddleware is a Gin middleware function for logging HTTP requests.
+// It logs detailed information about any requests that result in error status codes (3xx, 4xx, 5xx),
+// including method, status code, path, latency, user agent, client IP, forwarded address,
+// response size, and any errors that occurred during request processing.
+//
+// Usage:
+//
+//	router := gin.New()
+//	router.Use(rlog.LogMiddleware())
+//
+// Returns:
+//   - A Gin HandlerFunc that can be used in middleware chains
 func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path

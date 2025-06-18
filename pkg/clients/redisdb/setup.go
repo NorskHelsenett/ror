@@ -17,6 +17,7 @@ import (
 
 type RedisDB interface {
 	Get(ctx context.Context, key string, output *string) error
+	Keys(ctx context.Context) ([]string, error)
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Delete(ctx context.Context, key string) error
 	GetJSON(context.Context, string, string, interface{}) error

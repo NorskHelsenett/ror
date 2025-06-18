@@ -2,6 +2,7 @@ package apiresourcecontracts
 
 import "time"
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupJob struct {
 	ApiVersion string                  `json:"apiVersion"`
 	Kind       string                  `json:"kind"`
@@ -10,7 +11,7 @@ type ResourceBackupJob struct {
 	Spec       ResourceBackupJobSpec   `json:"spec"`
 }
 
-// The requested parameters about a job
+// The requested parameters about a job// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupJobSpec struct {
 
 	// The name of the job
@@ -42,12 +43,12 @@ type ResourceBackupJobSpec struct {
 	ExpiryTime time.Time `json:"expiryTime"`
 }
 
-// The observed parameters about a job
+// The observed parameters about a job// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupJobStatus struct {
 	ResourceBackupJobSpec
 }
 
-// Once instance of a run from a backup job
+// Once instance of a run from a backup job// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupRun struct {
 	BackupTarget      []ResourceDirectBackupTarget `json:"backupTarget"`
 	BackupDestination []ResourceBackupDestination  `json:"backupDestination"`
@@ -57,7 +58,7 @@ type ResourceBackupRun struct {
 	BackupStorage     ResourceBackupStorage        `json:"backupStorage"`
 }
 
-// Defines a singular direct backup target, this could be a VM, a storage object, etc.
+// Defines a singular direct backup target, this could be a VM, a storage object, etc.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceDirectBackupTarget struct {
 	BackupTargets []ResourceBackupTarget `json:"backupTargets"`
 
@@ -69,7 +70,7 @@ type ResourceDirectBackupTarget struct {
 	BackupStorage     ResourceBackupStorage       `json:"backupStorage"`
 }
 
-// Defines a singular backup target, this could be a VM, a storage object, etc.
+// Defines a singular backup target, this could be a VM, a storage object, etc.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupTarget struct {
 	Name        string            `json:"name"`        // Defines the object's name
 	Id          string            `json:"id"`          // Defines the object's id
@@ -78,13 +79,14 @@ type ResourceBackupTarget struct {
 
 // Defines a indrect backup target, which can result into multiple objects (For example a tag or multiple tags should result into being in a backup job)
 // One instance indicates all should match
-// Multiple instances would indicate different matching groups
+// Multiple instances would indicate different matching groups// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceIndirectBackupTarget struct {
 	Type      string              `json:"type"`      // The type of indrect target, some allow tags and/or other types of criteria
 	Ids       []string            `json:"ids"`       // For where the ids are referenced
 	KeyValues map[string][]string `json:"keyValues"` // For key values pairs, some allow the same key with different values
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupDestination struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
@@ -97,6 +99,7 @@ type ResourceBackupDestination struct {
 	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceBackupStorage struct {
 	Unit         string `json:"unit"`
 	SourceSize   int    `json:"sourceSize"`   // Total changed data in the run, incremental will have changes since last time, full runs will have the entire VM - not including unusued space

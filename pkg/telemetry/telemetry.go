@@ -8,6 +8,19 @@ import (
 	"go.opentelemetry.io/otel/log/global"
 )
 
+// SetupOTel initializes OpenTelemetry with the provided options.
+//
+// It sets up the tracer provider and meter provider with the given context and options.
+// Returns a shutdown function that can be used to cleanly terminate all telemetry resources,
+// and an error if any part of the setup failed.
+//
+// Parameters:
+//   - ctx: The context used for setting up and potentially canceling telemetry operations
+//   - opts: Optional configuration parameters for OpenTelemetry setup
+//
+// Returns:
+//   - shutdown: A function that properly closes all telemetry resources when called
+//   - err: An error if any part of the OpenTelemetry setup failed
 func SetupOTel(ctx context.Context, opts ...Option) (shutdown func(context.Context) error, err error) {
 	var shutdownFunctions []func(context.Context) error
 

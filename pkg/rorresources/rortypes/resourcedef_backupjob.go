@@ -1,6 +1,10 @@
 package rortypes
 
-import "time"
+import (
+	"time"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 type ResourceBackupJob struct {
 	Id       string                  `json:"id"`
@@ -97,8 +101,8 @@ type ResourceBackupRunDestination struct {
 	Type string `json:"type"`
 
 	// Status spesific to the destination - remote being unavailable
-	Status     string    `json:"status"`
-	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
+	Status     string      `json:"status"`
+	ExpiryTime metav1.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
 type ResourceBackupSchedule struct {
