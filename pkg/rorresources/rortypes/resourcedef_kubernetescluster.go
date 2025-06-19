@@ -64,6 +64,13 @@ type KubernetesClusterNodePool struct {
 	Replicas     int                                  `json:"replicas"`
 	Autoscaling  KubernetesClusterAutoscalingSpec     `json:"autoscaling"`
 	Metadata     KubernetesClusterSpecMetadataDetails `json:"metadata"`
+	Taint        []KubernetesClusterTaint             `json:"taint"`
+}
+
+type KubernetesClusterTaint struct {
+	Key    string `json:"key"`
+	Value  string `json:"value"`
+	Effect string `json:"effect"`
 }
 
 type KubernetesClusterAutoscalingConfig struct {

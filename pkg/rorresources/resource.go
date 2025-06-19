@@ -37,6 +37,9 @@ type Resource struct {
 	TanzuKubernetesReleaseResource     *rortypes.ResourceTanzuKubernetesRelease     `json:"tanzukubernetesrelease,omitempty" bson:"tanzukubernetesrelease,omitempty"`
 	VirtualMachineClassResource        *rortypes.ResourceVirtualMachineClass        `json:"virtualmachineclass,omitempty" bson:"virtualmachineclass,omitempty"`
 	KubernetesClusterResource          *rortypes.ResourceKubernetesCluster          `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
+	ProviderResource                   *rortypes.ResourceProvider                   `json:"provider,omitempty" bson:"provider,omitempty"`
+	WorkspaceResource                  *rortypes.ResourceWorkspace                  `json:"workspace,omitempty" bson:"workspace,omitempty"`
+	KubernetesMachineClassResource     *rortypes.ResourceKubernetesMachineClass     `json:"kubernetesmachineclass,omitempty" bson:"kubernetesmachineclass,omitempty"`
 	ClusterOrderResource               *rortypes.ResourceClusterOrder               `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
 	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty" bson:"project,omitempty"`
 	ConfigurationResource              *rortypes.ResourceConfiguration              `json:"configuration,omitempty" bson:"configuration,omitempty"`
@@ -166,6 +169,18 @@ func (r *Resource) SetVirtualMachineClass(res *rortypes.ResourceVirtualMachineCl
 
 func (r *Resource) SetKubernetesCluster(res *rortypes.ResourceKubernetesCluster) {
 	r.KubernetesClusterResource = res
+}
+
+func (r *Resource) SetProvider(res *rortypes.ResourceProvider) {
+	r.ProviderResource = res
+}
+
+func (r *Resource) SetWorkspace(res *rortypes.ResourceWorkspace) {
+	r.WorkspaceResource = res
+}
+
+func (r *Resource) SetKubernetesMachineClass(res *rortypes.ResourceKubernetesMachineClass) {
+	r.KubernetesMachineClassResource = res
 }
 
 func (r *Resource) SetClusterOrder(res *rortypes.ResourceClusterOrder) {
@@ -338,6 +353,21 @@ func (r *Resource) VirtualMachineClass() rortypes.VirtualMachineClassinterface {
 // KubernetesCluster is a wrapper for the underlying resource, it provides a KubernetesClusterinterface to work with kubernetesclusters
 func (r *Resource) KubernetesCluster() rortypes.KubernetesClusterinterface {
 	return r.KubernetesClusterResource
+}
+
+// Provider is a wrapper for the underlying resource, it provides a Providerinterface to work with providers
+func (r *Resource) Provider() rortypes.Providerinterface {
+	return r.ProviderResource
+}
+
+// Workspace is a wrapper for the underlying resource, it provides a Workspaceinterface to work with workspaces
+func (r *Resource) Workspace() rortypes.Workspaceinterface {
+	return r.WorkspaceResource
+}
+
+// KubernetesMachineClass is a wrapper for the underlying resource, it provides a KubernetesMachineClassinterface to work with Kubernetesmachineclasses
+func (r *Resource) KubernetesMachineClass() rortypes.KubernetesMachineClassinterface {
+	return r.KubernetesMachineClassResource
 }
 
 // ClusterOrder is a wrapper for the underlying resource, it provides a ClusterOrderinterface to work with clusterorders
