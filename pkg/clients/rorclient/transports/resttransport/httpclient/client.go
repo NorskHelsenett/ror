@@ -268,6 +268,22 @@ func (t *HttpTransportClient) getRetryAfterHeader(res *http.Response) time.Time 
 	return time.Now().Add(time.Duration(seconds) * time.Second)
 }
 
+// HandleNonOk processes HTTP responses with non-successful status codes and returns appropriate errors.
+// It handles different HTTP error status codes with specific behavior:
+//
+// - For 503 (Service Unavailable) and 429 (Too Many Requests): Sets retry-after time from response headers
+// - For 401 (Unauthorized): Sets default retry timeout and returns authentication error message
+// - For 403 (Forbidden): Sets default retry timeout and returns permission error message
+// - For other 4xx/5xx errors: Returns generic HTTP error
+//
+// The function updates the client's Status.RetryAfter field for rate limiting and throttling scenarios.
+// Returns nil if the response status code indicates success (200-399).
+//
+// Parameters:
+//   - res: HTTP response to process
+//
+// Returns:
+//   - error: Formatted error message for non-successful responses, nil for successful responses
 func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 	if res.StatusCode > 399 || res.StatusCode < 200 {
 
@@ -378,4 +394,14 @@ func (t *HttpTransportClient) ParseParams(req *http.Request, params ...HttpTrans
 	if !noAuth {
 		t.AddAuthHeaders(req)
 	}
+}
+
+func (t *HttpTransportClientStatus) IsEstablished() bool {
+	return t.Established
+}
+func (t *HttpTransportClientStatus) GetApiVersion() string {
+	return t.ApiVersion
+}
+func (t *HttpTransportClientStatus) GetLibVersion() string {
+	return t.LibVersion
 }
