@@ -2,6 +2,7 @@ package rorclient
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
+	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
 	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
 	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
@@ -31,7 +32,7 @@ type RorClient struct {
 	metricsClientV1    v1metrics.MetricsInterface
 	resourcesClientV2  ResourceClient
 	streamClientV2     v2stream.StreamInterface
-	AclClient          AclClient
+	AclClient          v1acl.AclInterface
 }
 
 func NewRorClient(transport transports.RorTransport) *RorClient {
@@ -48,7 +49,7 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		metricsClientV1:    transport.Metrics(),
 		resourcesClientV2:  NewResourceClient(transport.ResourcesV2()),
 		streamClientV2:     transport.Streamv2(),
-		AclClient:          NewAclClient(transport.AclV1()),
+		AclClient:          transport.AclV1(),
 	}
 }
 
