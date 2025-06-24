@@ -13,4 +13,7 @@ type ResourcesInterface interface {
 	Delete(ctx context.Context, uid string) (*rorresources.ResourceUpdateResults, error)
 	Exists(ctx context.Context, uid string) (bool, error)
 	GetOwnHashes(ctx context.Context, clusterId string) (*apicontractsv2resources.HashList, error)
+
+	GetByUid(ctx context.Context, uid string) (*rorresources.ResourceSet, error)
+	UpdateOne(ctx context.Context, resource *rorresources.Resource) (*rorresources.ResourceUpdateResults, error)
 }

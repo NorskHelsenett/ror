@@ -99,3 +99,16 @@ func (c *V2Client) GetOwnHashes(ctx context.Context, clusterId string) (*apicont
 
 	return &hashList, nil
 }
+
+func (c *V2Client) GetByUid(ctx context.Context, uid string) (*rorresources.ResourceSet, error) {
+	query := rorresources.NewResourceQuery().WithUID(uid)
+
+	return c.Get(ctx, *query)
+}
+
+func (c *V2Client) UpdateOne(ctx context.Context, resource *rorresources.Resource) (*rorresources.ResourceUpdateResults, error) {
+	set := rorresources.NewResourceSet()
+	set.Add(resource)
+
+	return c.Update(ctx, set)
+}

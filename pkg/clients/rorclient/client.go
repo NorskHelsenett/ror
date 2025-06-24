@@ -11,6 +11,7 @@ import (
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
@@ -30,7 +31,7 @@ type RorClient struct {
 	projectsClientV1   v1projects.ProjectsInterface
 	resourceClientV1   v1resources.ResourceInterface
 	metricsClientV1    v1metrics.MetricsInterface
-	resourcesClientV2  ResourceClient
+	resourcesClientV2  v2resources.ResourcesInterface
 	streamClientV2     v2stream.StreamInterface
 	AclClient          v1acl.AclInterface
 }
@@ -47,7 +48,7 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		selfClientV2:       transport.Self(),
 		resourceClientV1:   transport.Resources(),
 		metricsClientV1:    transport.Metrics(),
-		resourcesClientV2:  NewResourceClient(transport.ResourcesV2()),
+		resourcesClientV2:  transport.ResourcesV2(),
 		streamClientV2:     transport.Streamv2(),
 		AclClient:          transport.AclV1(),
 	}
@@ -90,9 +91,10 @@ func (c *RorClient) Ping() error {
 	return c.Transport.Ping()
 }
 
-func (c *RorClient) ResourceV2() *ResourceClient {
-	return &c.resourcesClientV2
+func (c *RorClient) ResourceV2() v2resources.ResourcesInterface {
+	return c.resourcesClientV2
 }
+
 func (c *RorClient) StreamV2() v2stream.StreamInterface {
 	return c.streamClientV2
 }
