@@ -21,69 +21,34 @@ func NewResourceClient(transport v2resources.ResourcesInterface) ResourceClient 
 }
 
 func (r *ResourceClient) Get(ctx context.Context, query rorresources.ResourceQuery) (*rorresources.ResourceSet, error) {
-	set, err := r.Transport.Get(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-
-	return &set, nil
+	return r.Transport.Get(ctx, query)
 }
 
 func (r *ResourceClient) GetByUid(ctx context.Context, uid string) (*rorresources.ResourceSet, error) {
 	query := rorresources.NewResourceQuery().WithUID(uid)
 
-	set, err := r.Get(ctx, *query)
-	if err != nil {
-		return nil, err
-	}
-
-	return set, nil
+	return r.Get(ctx, *query)
 }
 
-func (r *ResourceClient) Update(ctx context.Context, set rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
-	res, err := r.Transport.Update(ctx, &set)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+func (r *ResourceClient) Update(ctx context.Context, set *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
+	return r.Transport.Update(ctx, set)
 }
 
-func (r *ResourceClient) UpdateOne(ctx context.Context, resource rorresources.Resource) (*rorresources.ResourceUpdateResults, error) {
+func (r *ResourceClient) UpdateOne(ctx context.Context, resource *rorresources.Resource) (*rorresources.ResourceUpdateResults, error) {
 	set := rorresources.NewResourceSet()
-	set.Add(&resource)
+	set.Add(resource)
 
-	res, err := r.Update(ctx, *set)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+	return r.Update(ctx, set)
 }
 
 func (r *ResourceClient) Delete(ctx context.Context, uid string) (*rorresources.ResourceUpdateResults, error) {
-	res, err := r.Transport.Delete(ctx, uid)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+	return r.Transport.Delete(ctx, uid)
 }
 
 func (r *ResourceClient) Exists(ctx context.Context, uid string) (bool, error) {
-	res, err := r.Transport.Exists(ctx, uid)
-	if err != nil {
-		return false, err
-	}
-
-	return res, nil
+	return r.Transport.Exists(ctx, uid)
 }
 
 func (r *ResourceClient) GetOwnHashes(ctx context.Context, clusterId string) (*apicontractsv2resources.HashList, error) {
-	res, err := r.Transport.GetOwnHashes(ctx, clusterId)
-	if err != nil {
-		return nil, err
-	}
-
-	return &res, nil
+	return r.Transport.GetOwnHashes(ctx, clusterId)
 }

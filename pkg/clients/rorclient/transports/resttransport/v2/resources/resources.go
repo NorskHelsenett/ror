@@ -28,15 +28,15 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	}
 }
 
-func (c *V2Client) Get(ctx context.Context, query rorresources.ResourceQuery) (rorresources.ResourceSet, error) {
+func (c *V2Client) Get(ctx context.Context, query rorresources.ResourceQuery) (*rorresources.ResourceSet, error) {
 	var res rorresources.ResourceSet
 	jsonQuery, err := json.Marshal(&query)
 	if err != nil {
-		return res, err
+		return &res, err
 	}
 	queryString := base64.StdEncoding.EncodeToString(jsonQuery)
 	err = c.Client.GetJSONWithContext(ctx, c.basePath+"?query="+queryString, &res)
-	return res, err
+	return &res, err
 }
 
 func (c *V2Client) Update(ctx context.Context, res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
@@ -83,7 +83,7 @@ func (c *V2Client) Exists(ctx context.Context, uid string) (bool, error) {
 	return false, nil
 }
 
-func (c *V2Client) GetOwnHashes(ctx context.Context, clusterId string) (apicontractsv2resources.HashList, error) {
+func (c *V2Client) GetOwnHashes(ctx context.Context, clusterId string) (*apicontractsv2resources.HashList, error) {
 	var hashList apicontractsv2resources.HashList
 	params := httpclient.HttpTransportClientParams{
 		Key: httpclient.HttpTransportClientOptsQuery,
@@ -94,8 +94,8 @@ func (c *V2Client) GetOwnHashes(ctx context.Context, clusterId string) (apicontr
 	}
 	err := c.Client.GetJSONWithContext(ctx, c.basePath+"/hashes", &hashList, params)
 	if err != nil {
-		return hashList, err
+		return &hashList, err
 	}
 
-	return hashList, nil
+	return &hashList, nil
 }
