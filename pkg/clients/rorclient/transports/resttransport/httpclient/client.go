@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
-	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 var (
@@ -294,16 +293,11 @@ func (t *HttpTransportClient) postflightCheck(res *http.Response) error {
 	if err := t.HandleNonOk(res); err != nil {
 		return err
 	}
+
 	t.Status.ApiVersion = res.Header.Get("x-ror-version")
-	if t.Status.ApiVersion == "" {
-		rlog.Warn("no x-ror-version header found in response")
-	}
 	t.Status.LibVersion = res.Header.Get("x-ror-libver")
-	if t.Status.LibVersion == "" {
-		rlog.Warn("no x-ror-libver header found in response")
-	}
 	// If the response is successful, reset the retry after status
-	t.Status.RetryAfter = time.Time{} // Reset retry after if the request was successful
+	t.Status.RetryAfter = time.Time{}
 	t.Status.Established = true
 
 	return nil
