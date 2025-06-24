@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 var (
@@ -27,7 +28,8 @@ type HttpTransportClientOpts string
 
 type HttpTransportClientStatus struct {
 	Established bool      `json:"established"`
-	Version     string    `json:"version"`
+	ApiVersion  string    `json:"api_version"`
+	LibVersion  string    `json:"lib_version"`
 	RetryAfter  time.Time `json:"retry_after"`
 }
 
@@ -269,6 +271,7 @@ func (t *HttpTransportClient) getRetryAfterHeader(res *http.Response) time.Time 
 
 func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 	if res.StatusCode > 399 || res.StatusCode < 200 {
+
 		if res.StatusCode == http.StatusServiceUnavailable || res.StatusCode == http.StatusTooManyRequests {
 			t.Status.RetryAfter = t.getRetryAfterHeader(res)
 			return fmt.Errorf("http error: %s from %s (retry after: %s)", res.Status, res.Request.URL, t.Status.RetryAfter.Format(time.RFC3339))
@@ -286,9 +289,33 @@ func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 	return nil
 }
 
+// postflightCheck is a placeholder for any postflight checks that might be needed after a request.
+func (t *HttpTransportClient) postflightCheck(res *http.Response) error {
+	if err := t.HandleNonOk(res); err != nil {
+		return err
+	}
+	t.Status.ApiVersion = res.Header.Get("x-ror-version")
+	if t.Status.ApiVersion == "" {
+		rlog.Warn("no x-ror-version header found in response")
+	}
+	t.Status.LibVersion = res.Header.Get("x-ror-libver")
+	if t.Status.LibVersion == "" {
+		rlog.Warn("no x-ror-libver header found in response")
+	}
+	// If the response is successful, reset the retry after status
+	t.Status.RetryAfter = time.Time{} // Reset retry after if the request was successful
+	t.Status.Established = true
+
+	return nil
+}
+
+// handleResponse processes the HTTP response, checking for errors and unmarshalling the body into the provided output variable.
+// It handles both JSON and plain text responses, ensuring the output variable is a pointer.
+// If the response is successful (2xx status code), it reads the body and unmarshals it into the provided output variable.
+// If the response is not successful, it checks for errors and returns an appropriate error message.
 func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error {
 
-	if err := t.HandleNonOk(res); err != nil {
+	if err := t.postflightCheck(res); err != nil {
 		return err
 	}
 
