@@ -218,7 +218,8 @@ func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, 
 	}
 	defer res.Body.Close()
 
-	if err := t.HandleNonOk(res); err != nil {
+	err = t.handleResponse(res, nil)
+	if err != nil {
 		return nil, -1, err
 	}
 
