@@ -32,6 +32,15 @@ type HttpTransportClientStatus struct {
 	RetryAfter  time.Time `json:"retry_after"`
 }
 
+func NewHttpTransportClientStatus() *HttpTransportClientStatus {
+	return &HttpTransportClientStatus{
+		Established: false,
+		ApiVersion:  "unknown",
+		LibVersion:  "unknown",
+		RetryAfter:  time.Time{},
+	}
+}
+
 const (
 	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"
 	HttpTransportClientOptsHeaders HttpTransportClientOpts = "HEADERS"
@@ -229,6 +238,9 @@ func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, 
 
 // PreflightCheck by checking if retry-after is set client.Status.RetryAfter
 func (t *HttpTransportClient) PreflightCheck() error {
+	// if t.Status == nil {
+	// 	t.Status = NewHttpTransportClientStatus()
+	// }
 	if !t.Status.RetryAfter.IsZero() {
 		if t.Status.RetryAfter.After(time.Now()) {
 			return fmt.Errorf("preflight failed, retry after is set and not expired: %s", t.Status.RetryAfter.Format(time.RFC3339))
