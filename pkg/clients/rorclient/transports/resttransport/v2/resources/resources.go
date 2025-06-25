@@ -28,26 +28,18 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	}
 }
 
-func (c *V2Client) Get(query rorresources.ResourceQuery) (rorresources.ResourceSet, error) {
-	return c.GetWithContext(context.TODO(), query)
-}
-
-func (c *V2Client) GetWithContext(ctx context.Context, query rorresources.ResourceQuery) (rorresources.ResourceSet, error) {
+func (c *V2Client) Get(ctx context.Context, query rorresources.ResourceQuery) (*rorresources.ResourceSet, error) {
 	var res rorresources.ResourceSet
 	jsonQuery, err := json.Marshal(&query)
 	if err != nil {
-		return res, err
+		return &res, err
 	}
 	queryString := base64.StdEncoding.EncodeToString(jsonQuery)
 	err = c.Client.GetJSONWithContext(ctx, c.basePath+"?query="+queryString, &res)
-	return res, err
+	return &res, err
 }
 
-func (c *V2Client) Update(res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
-	return c.UpdateWithContext(context.TODO(), res)
-}
-
-func (c *V2Client) UpdateWithContext(ctx context.Context, res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
+func (c *V2Client) Update(ctx context.Context, res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
 	var ret *rorresources.ResourceUpdateResults
 	err := c.Client.PostJSONWithContext(ctx, c.basePath, res, &ret, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsHeaders, Value: map[string]string{"X-Resources-Count": strconv.Itoa(res.Len())}})
 	if err != nil {
@@ -57,11 +49,7 @@ func (c *V2Client) UpdateWithContext(ctx context.Context, res *rorresources.Reso
 	return ret, nil
 }
 
-func (c *V2Client) Delete(uid string) (*rorresources.ResourceUpdateResults, error) {
-	return c.DeleteWithContext(context.TODO(), uid)
-}
-
-func (c *V2Client) DeleteWithContext(ctx context.Context, uid string) (*rorresources.ResourceUpdateResults, error) {
+func (c *V2Client) Delete(ctx context.Context, uid string) (*rorresources.ResourceUpdateResults, error) {
 	var out rorresources.ResourceUpdateResults
 
 	uri, err := url.JoinPath(c.basePath, "uid", uid)
@@ -77,11 +65,7 @@ func (c *V2Client) DeleteWithContext(ctx context.Context, uid string) (*rorresou
 	return &out, nil
 }
 
-func (c *V2Client) Exists(uid string) (bool, error) {
-	return c.ExistsWithContext(context.TODO(), uid)
-}
-
-func (c *V2Client) ExistsWithContext(ctx context.Context, uid string) (bool, error) {
+func (c *V2Client) Exists(ctx context.Context, uid string) (bool, error) {
 	uri, err := url.JoinPath(c.basePath, "uid", uid)
 	if err != nil {
 		return false, fmt.Errorf("could not create url: %w", err)
@@ -99,11 +83,7 @@ func (c *V2Client) ExistsWithContext(ctx context.Context, uid string) (bool, err
 	return false, nil
 }
 
-func (c *V2Client) GetOwnHashes(clusterId string) (apicontractsv2resources.HashList, error) {
-	return c.GetOwnHashesWithContext(context.TODO(), clusterId)
-}
-
-func (c *V2Client) GetOwnHashesWithContext(ctx context.Context, clusterId string) (apicontractsv2resources.HashList, error) {
+func (c *V2Client) GetOwnHashes(ctx context.Context, clusterId string) (*apicontractsv2resources.HashList, error) {
 	var hashList apicontractsv2resources.HashList
 	params := httpclient.HttpTransportClientParams{
 		Key: httpclient.HttpTransportClientOptsQuery,
@@ -114,8 +94,21 @@ func (c *V2Client) GetOwnHashesWithContext(ctx context.Context, clusterId string
 	}
 	err := c.Client.GetJSONWithContext(ctx, c.basePath+"/hashes", &hashList, params)
 	if err != nil {
-		return hashList, err
+		return &hashList, err
 	}
 
-	return hashList, nil
+	return &hashList, nil
+}
+
+func (c *V2Client) GetByUid(ctx context.Context, uid string) (*rorresources.ResourceSet, error) {
+	query := rorresources.NewResourceQuery().WithUID(uid)
+
+	return c.Get(ctx, *query)
+}
+
+func (c *V2Client) UpdateOne(ctx context.Context, resource *rorresources.Resource) (*rorresources.ResourceUpdateResults, error) {
+	set := rorresources.NewResourceSet()
+	set.Add(resource)
+
+	return c.Update(ctx, set)
 }
