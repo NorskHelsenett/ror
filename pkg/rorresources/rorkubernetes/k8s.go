@@ -31,6 +31,10 @@ func NewCommonResourceFromDynamicClient(input *unstructured.Unstructured) rortyp
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Common", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	rjson = nil
+
 	return r
 
 }
@@ -263,6 +267,10 @@ func newNamespaceFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Namespace", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -279,6 +287,10 @@ func newNodeFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resource
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Node", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -295,6 +307,10 @@ func newPersistentVolumeClaimFromDynamicClient(obj *unstructured.Unstructured) *
 	if err != nil {
 		rlog.Error("Could not unmarshal json to PersistentVolumeClaim", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -311,6 +327,10 @@ func newDeploymentFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Re
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Deployment", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -327,6 +347,10 @@ func newStorageClassFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	if err != nil {
 		rlog.Error("Could not unmarshal json to StorageClass", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -343,6 +367,10 @@ func newPolicyReportFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	if err != nil {
 		rlog.Error("Could not unmarshal json to PolicyReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -359,6 +387,10 @@ func newApplicationFromDynamicClient(obj *unstructured.Unstructured) *rortypes.R
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Application", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -375,6 +407,10 @@ func newAppProjectFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Re
 	if err != nil {
 		rlog.Error("Could not unmarshal json to AppProject", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -391,6 +427,10 @@ func newCertificateFromDynamicClient(obj *unstructured.Unstructured) *rortypes.R
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Certificate", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -407,6 +447,10 @@ func newServiceFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resou
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Service", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -423,6 +467,10 @@ func newPodFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceP
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Pod", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -439,6 +487,10 @@ func newReplicaSetFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Re
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ReplicaSet", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -455,6 +507,10 @@ func newStatefulSetFromDynamicClient(obj *unstructured.Unstructured) *rortypes.R
 	if err != nil {
 		rlog.Error("Could not unmarshal json to StatefulSet", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -471,6 +527,10 @@ func newDaemonSetFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to DaemonSet", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -487,6 +547,10 @@ func newIngressFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resou
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Ingress", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -503,6 +567,10 @@ func newIngressClassFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	if err != nil {
 		rlog.Error("Could not unmarshal json to IngressClass", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -519,6 +587,10 @@ func newVulnerabilityReportFromDynamicClient(obj *unstructured.Unstructured) *ro
 	if err != nil {
 		rlog.Error("Could not unmarshal json to VulnerabilityReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -535,6 +607,10 @@ func newExposedSecretReportFromDynamicClient(obj *unstructured.Unstructured) *ro
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ExposedSecretReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -551,6 +627,10 @@ func newConfigAuditReportFromDynamicClient(obj *unstructured.Unstructured) *rort
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ConfigAuditReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -567,6 +647,10 @@ func newRbacAssessmentReportFromDynamicClient(obj *unstructured.Unstructured) *r
 	if err != nil {
 		rlog.Error("Could not unmarshal json to RbacAssessmentReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -583,6 +667,10 @@ func newTanzuKubernetesClusterFromDynamicClient(obj *unstructured.Unstructured) 
 	if err != nil {
 		rlog.Error("Could not unmarshal json to TanzuKubernetesCluster", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -599,6 +687,10 @@ func newTanzuKubernetesReleaseFromDynamicClient(obj *unstructured.Unstructured) 
 	if err != nil {
 		rlog.Error("Could not unmarshal json to TanzuKubernetesRelease", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -615,6 +707,10 @@ func newVirtualMachineClassFromDynamicClient(obj *unstructured.Unstructured) *ro
 	if err != nil {
 		rlog.Error("Could not unmarshal json to VirtualMachineClass", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -631,6 +727,10 @@ func newKubernetesClusterFromDynamicClient(obj *unstructured.Unstructured) *rort
 	if err != nil {
 		rlog.Error("Could not unmarshal json to KubernetesCluster", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -647,6 +747,10 @@ func newProviderFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Reso
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Provider", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -663,6 +767,10 @@ func newWorkspaceFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Workspace", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -679,6 +787,10 @@ func newKubernetesMachineClassFromDynamicClient(obj *unstructured.Unstructured) 
 	if err != nil {
 		rlog.Error("Could not unmarshal json to KubernetesMachineClass", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -695,6 +807,10 @@ func newClusterOrderFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ClusterOrder", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -711,6 +827,10 @@ func newProjectFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resou
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Project", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -727,6 +847,10 @@ func newConfigurationFromDynamicClient(obj *unstructured.Unstructured) *rortypes
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Configuration", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -743,6 +867,10 @@ func newClusterComplianceReportFromDynamicClient(obj *unstructured.Unstructured)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ClusterComplianceReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -759,6 +887,10 @@ func newClusterVulnerabilityReportFromDynamicClient(obj *unstructured.Unstructur
 	if err != nil {
 		rlog.Error("Could not unmarshal json to ClusterVulnerabilityReport", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -775,6 +907,10 @@ func newRouteFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resourc
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Route", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -791,6 +927,10 @@ func newSlackMessageFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	if err != nil {
 		rlog.Error("Could not unmarshal json to SlackMessage", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -807,6 +947,10 @@ func newVulnerabilityEventFromDynamicClient(obj *unstructured.Unstructured) *ror
 	if err != nil {
 		rlog.Error("Could not unmarshal json to VulnerabilityEvent", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -823,6 +967,10 @@ func newVirtualMachineFromDynamicClient(obj *unstructured.Unstructured) *rortype
 	if err != nil {
 		rlog.Error("Could not unmarshal json to VirtualMachine", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -839,6 +987,10 @@ func newEndpointsFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Endpoints", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -855,6 +1007,10 @@ func newNetworkPolicyFromDynamicClient(obj *unstructured.Unstructured) *rortypes
 	if err != nil {
 		rlog.Error("Could not unmarshal json to NetworkPolicy", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -871,6 +1027,10 @@ func newDatacenterFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Re
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Datacenter", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
 
@@ -887,5 +1047,9 @@ func newBackupJobFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to BackupJob", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
