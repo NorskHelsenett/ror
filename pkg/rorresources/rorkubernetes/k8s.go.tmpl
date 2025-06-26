@@ -31,6 +31,10 @@ func NewCommonResourceFromDynamicClient(input *unstructured.Unstructured) rortyp
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Common", err)
 	}
+	
+	// Explicitly free the JSON bytes to help garbage collection
+	rjson = nil
+	
 	return r
 
 }
@@ -70,6 +74,10 @@ func new{{.Kind}}FromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to {{.Kind}}", err)
 	}
+	
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+	
 	return &nr
 }
 
