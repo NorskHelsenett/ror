@@ -5,7 +5,6 @@ package rorkubernetes
 
 import (
 	"encoding/json"
-
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
