@@ -36,6 +36,7 @@ export interface ResourceBackupRunStatus {
   endTime: Time;
   expiryTime: Time;
   backupStorage: ResourceBackupStorage;
+  lastUpdated: Time;
 }
 export interface ResourceBackupRun {
   id: string;
