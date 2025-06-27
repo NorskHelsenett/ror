@@ -339,7 +339,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BackupJob",
-			APIVersion: "backupjob.ror.internal/v1alpha1",
+			APIVersion: "backup.ror.internal/v1alpha1",
 		},
 		Plural:     "backupjobs",
 		Namespaced: false,
@@ -348,7 +348,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BackupRun",
-			APIVersion: "backuprun.ror.internal/v1alpha1",
+			APIVersion: "backup.ror.internal/v1alpha1",
 		},
 		Plural:     "backupruns",
 		Namespaced: false,

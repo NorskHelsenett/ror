@@ -182,11 +182,11 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetDatacenter(res.DatacenterResource)
 		r.SetCommonInterface(res.DatacenterResource)
 
-	case "backupjob.ror.internal/v1alpha1, Kind=BackupJob":
+	case "backup.ror.internal/v1alpha1, Kind=BackupJob":
 		r.SetBackupJob(res.BackupJobResource)
 		r.SetCommonInterface(res.BackupJobResource)
 
-	case "backuprun.ror.internal/v1alpha1, Kind=BackupRun":
+	case "backup.ror.internal/v1alpha1, Kind=BackupRun":
 		r.SetBackupRun(res.BackupRunResource)
 		r.SetCommonInterface(res.BackupRunResource)
 

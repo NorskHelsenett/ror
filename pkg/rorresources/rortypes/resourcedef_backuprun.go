@@ -26,6 +26,7 @@ type ResourceBackupRunStatus struct {
 	// When the run will expire and be deleted
 	ExpiryTime    time.Time             `json:"expiryTime"`
 	BackupStorage ResourceBackupStorage `json:"backupStorage"`
+	LastUpdated   time.Time             `json:"lastUpdated"`
 }
 
 // Storage used by an instance of a run

@@ -223,12 +223,12 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetDatacenter(res)
 		r.SetCommonInterface(res)
 
-	case "backupjob.ror.internal/v1alpha1, Kind=BackupJob":
+	case "backup.ror.internal/v1alpha1, Kind=BackupJob":
 		res := newBackupJobFromDynamicClient(input)
 		r.SetBackupJob(res)
 		r.SetCommonInterface(res)
 
-	case "backuprun.ror.internal/v1alpha1, Kind=BackupRun":
+	case "backup.ror.internal/v1alpha1, Kind=BackupRun":
 		res := newBackupRunFromDynamicClient(input)
 		r.SetBackupRun(res)
 		r.SetCommonInterface(res)
