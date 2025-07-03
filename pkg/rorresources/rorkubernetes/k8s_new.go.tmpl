@@ -26,7 +26,7 @@ func newCommonResourceFromMapInterface(input map[string]interface{}) v1.ObjectMe
 		rlog.Warn("could not convert input to metav1.ObjectMeta", rlog.Any("input", input))
 		return v1.ObjectMeta{}
 	}
-	rlog.Warn("could not convert input to metav1.ObjectMeta", rlog.Any("input", metadata))
+	
 	// Convert the metadata map to a v1.ObjectMeta struct
 	metadataConverted := &v1.ObjectMeta{}
 	err := convertUnstructuredToStruct(metadata, metadataConverted)
