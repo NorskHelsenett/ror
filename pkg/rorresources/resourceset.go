@@ -127,7 +127,9 @@ func (r *ResourceSet) DeleteByUid(search string) {
 			newResources = append(newResources, resource)
 		}
 	}
+
 	r.Resources = newResources
+	newResources = nil
 }
 
 // FilterByLabels returns a ResourceSet filtered by label.

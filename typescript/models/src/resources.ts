@@ -615,6 +615,7 @@ export interface KubernetesClusterSpecTopology {
   workers: KubernetesClusterWorkers;
 }
 export interface KubernetesClusterSpecData {
+  clusterUid: string;
   clusterId: string;
   provider: string;
   datacenter: string;
