@@ -1,0 +1,81 @@
+// THIS FILE IS GENERATED, DO NOT EDIT
+// ref: build/generator/main.go
+
+package rorkubernetes
+
+import (
+	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/rorresources"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+func NewResourceSetFromMapInterface(input map[string]interface{}) *rorresources.ResourceSet {
+	var rs rorresources.ResourceSet
+	r := NewResourceFromMapInterface(input)
+	rs.Add(r)
+	return &rs
+
+}
+
+
+func newCommonResourceFromMapInterface(input map[string]interface{}) v1.ObjectMeta {
+	metadata, ok := input["metadata"].(map[string]interface{})
+
+	if !ok {
+		rlog.Warn("could not convert input to metav1.ObjectMeta", rlog.Any("input", input))
+		return v1.ObjectMeta{}
+	}
+	rlog.Warn("could not convert input to metav1.ObjectMeta", rlog.Any("input", metadata))
+	// Convert the metadata map to a v1.ObjectMeta struct
+	metadataConverted := &v1.ObjectMeta{}
+	err := convertUnstructuredToStruct(metadata, metadataConverted)
+	if err != nil {
+		rlog.Error("could not convert input to metav1.ObjectMeta", err)
+		return v1.ObjectMeta{}
+	}
+
+	return *metadataConverted
+}
+
+// NewResourceFromMapInterface creates a new resource from a map[string]interface{}
+// type provided by the kubernetes universal client.
+func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Resource {
+	r := rorresources.NewRorResource(input["kind"].(string), input["apiVersion"].(string))
+	r.SetMetadata(newCommonResourceFromMapInterface(input))
+
+	switch r.GroupVersionKind().String() {
+
+{{ range .}}
+
+	case "{{.GroupVersionKind.String }}":
+		res := new{{.Kind}}FromMapInterface(input)
+		r.Set{{.Kind}}(res)
+		r.SetCommonInterface(res)
+	{{end}}
+	default:
+		rlog.Warn("could not create ResourceSet")
+		return nil
+    }
+	return r
+}
+
+{{ range .}}
+// new{{.Kind}}FromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func new{{.Kind}}FromMapInterface(input map[string]interface{}) *rortypes.Resource{{.Kind}} {
+	result := rortypes.Resource{{.Kind}}{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to Resource{{.Kind}}", err)
+		return nil
+	}
+
+	return &result
+}
+
+
+
+
+{{end}}
