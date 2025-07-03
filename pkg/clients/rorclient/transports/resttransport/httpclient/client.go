@@ -321,7 +321,7 @@ func (t *HttpTransportClient) postflightCheck(res *http.Response) error {
 	if err := t.HandleNonOk(res); err != nil {
 		return err
 	}
-
+	//TODO: add constants for header names
 	t.Status.ApiVersion = res.Header.Get("x-ror-version")
 	t.Status.LibVersion = res.Header.Get("x-ror-libver")
 	// If the response is successful, reset the retry after status

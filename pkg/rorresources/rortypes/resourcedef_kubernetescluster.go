@@ -15,6 +15,7 @@ type KubernetesClusterSpec struct {
 }
 
 type KubernetesClusterSpecData struct {
+	ClusterUID  string `json:"clusterUid"` // ClusterUID is a unique identifier for the cluster, e.g., "12345678-1234-1234-1234-123456789012"
 	ClusterId   string `json:"clusterId"`
 	Provider    string `json:"provider"`
 	Datacenter  string `json:"datacenter"`
