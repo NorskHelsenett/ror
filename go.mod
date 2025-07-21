@@ -14,7 +14,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
-	github.com/microsoftgraph/msgraph-sdk-go v1.78.0
+	github.com/microsoftgraph/msgraph-sdk-go v1.79.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/pkg/errors v0.9.1
@@ -51,7 +51,7 @@ require (
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
