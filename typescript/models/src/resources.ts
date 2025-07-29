@@ -521,6 +521,7 @@ export interface KubernetesClusterNodePoolStatus {
   machineClass: string;
   autoscaling: KubernetesClusterAutoscalingConfig;
   resources: KubernetesClusterStatusClusterStatusResources;
+  nodes: string[];
 }
 export interface KubernetesClusterControlPlaneStatus {
   status: string;
@@ -528,6 +529,7 @@ export interface KubernetesClusterControlPlaneStatus {
   scale: number;
   machineClass: string;
   resources: KubernetesClusterStatusClusterStatusResources;
+  nodes: string[];
 }
 export interface KubernetesClusterStatusPrice {
   monthly: number;
