@@ -147,16 +147,18 @@ type KubernetesClusterControlPlaneStatus struct {
 	Scale        int                                           `json:"scale"`        // Scale is the number of replicas of the control plane.
 	MachineClass string                                        `json:"machineClass"` // MachineClass is the machine class of the control plane, e.g., "c5.large", "m5.xlarge"
 	Resources    KubernetesClusterStatusClusterStatusResources `json:"resources"`    // Resources is the resources of the control plane, e.g., CPU, Memory, Disk, GPU
+	Nodes        []string                                      `json:"nodes"`        // Nodes is the list of the uuids of the nodes in the control plane
 }
 
 type KubernetesClusterNodePoolStatus struct {
 	Name         string                                        `json:"name"`
 	Status       string                                        `json:"status"`
 	Message      string                                        `json:"message"`
-	Scale        int                                           `json:"scale"`        // Scale is the number of replicas of the control plane.
-	MachineClass string                                        `json:"machineClass"` // MachineClass is the machine class of the control plane, e.g., "c5.large", "m5.xlarge"
+	Scale        int                                           `json:"scale"`        // Scale is the number of replicas of the nodepool.
+	MachineClass string                                        `json:"machineClass"` // MachineClass is the machine class of the nodepool, e.g., "c5.large", "m5.xlarge"
 	Autoscaling  KubernetesClusterAutoscalingConfig            `json:"autoscaling"`  // Autoscaling is the autoscaling configuration of the node pool.
 	Resources    KubernetesClusterStatusClusterStatusResources `json:"resources"`    // Resources is the resources of the node pool, e.g., CPU, Memory, Disk, GPU
+	Nodes        []string                                      `json:"nodes"`        // Nodes is the list of the uuids of the nodes in the node pool
 }
 
 type KubernetesClusterVersion struct {
