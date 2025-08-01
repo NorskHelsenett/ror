@@ -1072,5 +1072,9 @@ func newBackupRunFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	if err != nil {
 		rlog.Error("Could not unmarshal json to BackupRun", err)
 	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
 	return &nr
 }
