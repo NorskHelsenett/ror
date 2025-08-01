@@ -6,6 +6,7 @@ import (
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
@@ -53,6 +54,7 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 	client := &httpclient.HttpTransportClient{
 		Client: &http.Client{},
 		Config: config,
+		Status: httpclient.NewHttpTransportClientStatus(),
 	}
 	t := &RorHttpTransport{
 		Client:             client,
@@ -76,6 +78,7 @@ func NewWithCustomHttpClient(config *httpclient.HttpTransportClientConfig, httpC
 	client := &httpclient.HttpTransportClient{
 		Client: httpClient,
 		Config: config,
+		Status: httpclient.NewHttpTransportClientStatus(),
 	}
 	t := &RorHttpTransport{
 		Client:             client,
@@ -92,6 +95,10 @@ func NewWithCustomHttpClient(config *httpclient.HttpTransportClientConfig, httpC
 		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
 	}
 	return t
+}
+
+func (t *RorHttpTransport) Status() transportstatus.RorTransportStatus {
+	return t.Client.Status
 }
 
 func (t *RorHttpTransport) Stream() v1stream.StreamInterface {

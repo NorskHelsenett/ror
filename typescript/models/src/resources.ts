@@ -109,11 +109,6 @@ export interface ResourceBackupJob {
   status: ResourceBackupJobStatus;
   spec: ResourceBackupJobSpec;
 }
-export interface DatacenterLocation {
-  id: string;
-  region: string;
-  country: string;
-}
 export interface Datacenter {
   id: string;
   name: string;
@@ -121,8 +116,22 @@ export interface Datacenter {
   location: DatacenterLocation;
   apiEndpoint: string;
 }
+export interface DatacenterLocation {
+  id: string;
+  region: string;
+  country: string;
+}
+export interface ResourceDatacenterStatus {
+  workspaces: ResourceWorkspace[];
+  location: DatacenterLocation;
+  apiEndpoint: string;
+}
+export interface ResourceDatacenterSpec {
+  workspaces: ResourceWorkspace[];
+}
 export interface ResourceDatacenter {
-  spec: ResourceDaemonSetStatus;
+  spec: ResourceDatacenterSpec;
+  status: ResourceDatacenterStatus;
   legacy: Datacenter;
 }
 export interface ResourceNetworkPolicyCondition {
@@ -451,6 +460,48 @@ export interface ResourceClusterOrder {
   spec: ResourceClusterOrderSpec;
   status: ResourceClusterOrderStatus;
 }
+export interface ResourceKubernetesMachineClassStatus {
+  name: string;
+  cpu: string;
+  memory: string;
+  gpu: boolean;
+}
+export interface ResourceKubernetesMachineClassSpec {
+  name: string;
+  cpu: string;
+  memory: string;
+  gpu: boolean;
+}
+export interface ResourceKubernetesMachineClass {
+  spec: ResourceKubernetesMachineClassSpec;
+  status: ResourceKubernetesMachineClassStatus;
+}
+export interface ResourceWorkspaceStatus {
+  datacenterId?: string;
+  kubernetesClusters: ResourceKubernetesCluster[];
+  availableMachineClasses: ResourceWorkspaceMachineClass[];
+  defaultMachineClass: ResourceWorkspaceMachineClass;
+  availableStorageClasses: ResourceWorkspaceStorageClass[];
+  defaultStorageClass: ResourceWorkspaceStorageClass;
+}
+export interface ResourceWorkspaceStorageClass {
+  name: string;
+}
+export interface ResourceWorkspaceMachineClass {
+  name: string;
+}
+export interface ResourceWorkspaceSpec {
+  kubernetesClusters: ResourceKubernetesCluster[];
+  availableMachineClasses: ResourceWorkspaceMachineClass[];
+  defaultMachineClass: ResourceWorkspaceMachineClass;
+  availableStorageClasses: ResourceWorkspaceStorageClass[];
+  defaultStorageClass: ResourceWorkspaceStorageClass;
+}
+export interface ResourceWorkspace {
+  spec: ResourceWorkspaceSpec;
+  status: ResourceWorkspaceStatus;
+}
+export interface ResourceProvider {}
 export interface KubernetesClusterCondition {
   type: string;
   status: string;
@@ -480,6 +531,7 @@ export interface KubernetesClusterNodePoolStatus {
   machineClass: string;
   autoscaling: KubernetesClusterAutoscalingConfig;
   resources: KubernetesClusterStatusClusterStatusResources;
+  nodes: string[];
 }
 export interface KubernetesClusterControlPlaneStatus {
   status: string;
@@ -487,6 +539,7 @@ export interface KubernetesClusterControlPlaneStatus {
   scale: number;
   machineClass: string;
   resources: KubernetesClusterStatusClusterStatusResources;
+  nodes: string[];
 }
 export interface KubernetesClusterStatusPrice {
   monthly: number;
@@ -527,6 +580,11 @@ export interface KubernetesClusterStatus {
   phase: string;
   conditions: KubernetesClusterCondition[];
 }
+export interface KubernetesClusterTaint {
+  key: string;
+  value: string;
+  effect: string;
+}
 export interface KubernetesClusterAutoscalingSpec {
   enabled: boolean;
   minReplicas: number;
@@ -541,6 +599,7 @@ export interface KubernetesClusterNodePool {
   replicas: number;
   autoscaling: KubernetesClusterAutoscalingSpec;
   metadata: KubernetesClusterSpecMetadataDetails;
+  taint: KubernetesClusterTaint[];
 }
 export interface KubernetesClusterWorkers {
   nodePools: KubernetesClusterNodePool[];
@@ -568,6 +627,7 @@ export interface KubernetesClusterSpecTopology {
   workers: KubernetesClusterWorkers;
 }
 export interface KubernetesClusterSpecData {
+  clusterUid: string;
   clusterId: string;
   provider: string;
   datacenter: string;
@@ -1263,6 +1323,9 @@ export interface Resource {
   tanzukubernetesrelease?: ResourceTanzuKubernetesRelease;
   virtualmachineclass?: ResourceVirtualMachineClass;
   kubernetescluster?: ResourceKubernetesCluster;
+  provider?: ResourceProvider;
+  workspace?: ResourceWorkspace;
+  kubernetesmachineclass?: ResourceKubernetesMachineClass;
   clusterorder?: ResourceClusterOrder;
   project?: ResourceProject;
   configuration?: ResourceConfiguration;

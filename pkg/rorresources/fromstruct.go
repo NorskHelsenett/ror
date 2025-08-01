@@ -134,6 +134,18 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetKubernetesCluster(res.KubernetesClusterResource)
 		r.SetCommonInterface(res.KubernetesClusterResource)
 
+	case "general.ror.internal/v1alpha1, Kind=Provider":
+		r.SetProvider(res.ProviderResource)
+		r.SetCommonInterface(res.ProviderResource)
+
+	case "general.ror.internal/v1alpha1, Kind=Workspace":
+		r.SetWorkspace(res.WorkspaceResource)
+		r.SetCommonInterface(res.WorkspaceResource)
+
+	case "general.ror.internal/v1alpha1, Kind=KubernetesMachineClass":
+		r.SetKubernetesMachineClass(res.KubernetesMachineClassResource)
+		r.SetCommonInterface(res.KubernetesMachineClassResource)
+
 	case "general.ror.internal/v1alpha1, Kind=ClusterOrder":
 		r.SetClusterOrder(res.ClusterOrderResource)
 		r.SetCommonInterface(res.ClusterOrderResource)

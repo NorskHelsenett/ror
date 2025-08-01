@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
+	metricsv1beta1 "k8s.io/metrics/pkg/client/clientset/versioned/typed/metrics/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
@@ -22,6 +23,7 @@ type K8sClientsets struct {
 	discoveryClient *discovery.DiscoveryClient
 	dynamicClient   dynamic.Interface
 	metricsClient   *metrics.Clientset
+	metricsV1Beta1  metricsv1beta1.MetricsV1beta1Interface
 }
 
 type K8SClientInterface interface {
@@ -129,6 +131,25 @@ func (c *K8sClientsets) GetMetricsClient() (*metrics.Clientset, error) {
 		}
 	}
 	return c.metricsClient, nil
+}
+
+// GetMetricsV1Beta1Client returns the metrics v1beta1 client for interacting with Kubernetes metrics.
+// If the metrics v1beta1 client has not been initialized, it creates a new client using the
+// provided Kubernetes configuration.
+//
+// Returns:
+// - (metricsv1beta1.MetricsV1beta1Interface): The metrics v1beta1 client.
+// - (error): An error if the metrics v1beta1 client creation fails.
+func (c *K8sClientsets) GetMetricsV1Beta1Client() (metricsv1beta1.MetricsV1beta1Interface, error) {
+	if c.metricsV1Beta1 == nil {
+		var err error
+		c.metricsV1Beta1, err = metricsv1beta1.NewForConfig(c.k8sConfig)
+		if err != nil {
+			rlog.Error("failed to get metrics v1beta1 client", err)
+			return c.metricsV1Beta1, err
+		}
+	}
+	return c.metricsV1Beta1, nil
 }
 
 // GetSecret retrieves a Kubernetes secret by its name and namespace using the provided clientsets.

@@ -153,6 +153,24 @@ type KubernetesClusterinterface interface {
 	Get() *ResourceKubernetesCluster
 }
 
+// Providerinterface represents the interface for resources of the type provider
+type Providerinterface interface {
+	CommonResourceInterface
+	Get() *ResourceProvider
+}
+
+// Workspaceinterface represents the interface for resources of the type workspace
+type Workspaceinterface interface {
+	CommonResourceInterface
+	Get() *ResourceWorkspace
+}
+
+// KubernetesMachineClassinterface represents the interface for resources of the type kubernetesmachineclass
+type KubernetesMachineClassinterface interface {
+	CommonResourceInterface
+	Get() *ResourceKubernetesMachineClass
+}
+
 // ClusterOrderinterface represents the interface for resources of the type clusterorder
 type ClusterOrderinterface interface {
 	CommonResourceInterface
