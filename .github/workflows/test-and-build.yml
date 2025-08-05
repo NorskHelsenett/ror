@@ -17,6 +17,16 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.24'
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: /tmp/go-build-cache
+        key: ${{ runner.os }}-go-${{ hashFiles('**/*.go') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    
+    - name: Build
+      run: go build ./...
     #TODO: Check if generator needs to be run, fail if the generator generates new files
     - name: run generator
       run: |
