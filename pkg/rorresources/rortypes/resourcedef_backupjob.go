@@ -61,6 +61,9 @@ type ResourceBackupTarget struct {
 
 	// Defines the source of this object to the backup system
 	Source *ResourceBackupSource `json:"source,omitempty"`
+
+	// Defines the size of the snapshots of the target
+	Size *ResourceBackupStorage `json:"size,omitempty"`
 }
 
 // The backup target's source, a vCenter, a NetApp system, etc.
@@ -89,18 +92,6 @@ type ResourceBackupDestination struct {
 
 	// Status spesific to the destination - remote being unavailable
 	Status string `json:"status"`
-}
-
-type ResourceBackupRunDestination struct {
-	Name string `json:"name"`
-	Id   string `json:"id"`
-
-	// Local, remote, archive, etc.
-	Type string `json:"type"`
-
-	// Status spesific to the destination - remote being unavailable
-	Status     string    `json:"status"`
-	ExpiryTime time.Time `json:"expiryTime"` // ExpiryTime is defined per destination
 }
 
 type ResourceBackupSchedule struct {
