@@ -12,10 +12,10 @@ type ResourceBackupRun struct {
 
 // Once instance of a run from a backup job
 type ResourceBackupRunStatus struct {
-	Id                 string                         `json:"id"`
-	BackupJobId        string                         `json:"backupJobId"`
-	BackupTargets      []ResourceBackupTarget         `json:"backupTargets"`
-	BackupDestinations []ResourceBackupRunDestination `json:"backupDestinations"`
+	Id                 string                      `json:"id"`
+	BackupJobId        string                      `json:"backupJobId"`
+	BackupTargets      []ResourceBackupTarget      `json:"backupTargets"`
+	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
 
 	// When the run was started
 	StartTime time.Time `json:"startTime"`
@@ -29,7 +29,7 @@ type ResourceBackupRunStatus struct {
 	LastUpdated   time.Time             `json:"lastUpdated"`
 }
 
-// Storage used by an instance of a run
+// Storage used by an instance of a run or a target
 type ResourceBackupStorage struct {
 	// What unit are the sizes in
 	Unit string `json:"unit"`
