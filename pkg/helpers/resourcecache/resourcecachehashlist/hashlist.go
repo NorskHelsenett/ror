@@ -1,4 +1,4 @@
-package hashlist
+package resourcecachehashlist
 
 import (
 	"fmt"

@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
-	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/hashlist"
+	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
@@ -83,8 +83,8 @@ func (c *V2Client) Exists(ctx context.Context, uid string) (bool, error) {
 	return false, nil
 }
 
-func (c *V2Client) GetOwnHashes(ctx context.Context, clientId rorresourceowner.RorResourceOwnerReference) (*hashlist.HashList, error) {
-	var hashList hashlist.HashList
+func (c *V2Client) GetOwnHashes(ctx context.Context, clientId rorresourceowner.RorResourceOwnerReference) (*resourcecachehashlist.HashList, error) {
+	var hashList resourcecachehashlist.HashList
 	params := httpclient.HttpTransportClientParams{
 		Key:   httpclient.HttpTransportClientOptsQuery,
 		Value: clientId.GetQueryParams(),

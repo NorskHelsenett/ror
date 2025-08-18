@@ -8,11 +8,14 @@ import (
 
 type RorClientInterface interface {
 	RorAPIClientInterface
+	RorOwnerrefInterface
 	RorKubernetesInterface
 }
 
 type RorAPIClientInterface interface {
 	GetRorClient() (rorclient.RorClientInterface, error)
+}
+type RorOwnerrefInterface interface {
 	GetOwnerref() rorresourceowner.RorResourceOwnerReference
 	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
 }

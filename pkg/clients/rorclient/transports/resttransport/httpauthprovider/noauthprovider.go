@@ -12,3 +12,8 @@ func NewNoAuthprovider() *NoAuthprovider {
 func (a NoAuthprovider) AddAuthHeaders(req *http.Request) {
 
 }
+
+func (a *NoAuthprovider) GetApiSecret() string {
+	return ""
+
+}

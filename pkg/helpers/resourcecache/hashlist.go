@@ -1,7 +1,7 @@
 package resourcecache
 
 import (
-	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/hashlist"
+	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 )
 
 // func InitHashList() (*hashlist.HashList, error) {
@@ -15,6 +15,6 @@ import (
 
 // }
 
-func NewEmptyHashList() *hashlist.HashList {
-	return &hashlist.HashList{Items: []hashlist.HashItem{}}
+func NewEmptyHashList() *resourcecachehashlist.HashList {
+	return &resourcecachehashlist.HashList{Items: []resourcecachehashlist.HashItem{}}
 }
