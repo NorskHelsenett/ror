@@ -43,7 +43,7 @@ require (
 	golang.org/x/text v0.27.0
 	google.golang.org/grpc v1.74.2
 	k8s.io/api v0.33.3
-	k8s.io/apimachinery v0.33.3
+	k8s.io/apimachinery v0.33.4
 	k8s.io/cli-runtime v0.33.3
 	k8s.io/client-go v0.33.3
 	k8s.io/metrics v0.33.3
