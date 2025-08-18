@@ -7,8 +7,6 @@ import (
 
 	"github.com/NorskHelsenett/ror-agent/v2/internal/clients"
 
-	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
-
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/go-co-op/gocron"
@@ -17,7 +15,7 @@ import (
 var ResourceCache resourcecache
 
 type resourcecache struct {
-	HashList       *apicontractsv2resources.HashList
+	HashList       *HashList
 	WorkQueue      ResourceCacheWorkQueue
 	cleanupRunning bool
 	scheduler      *gocron.Scheduler
@@ -25,7 +23,6 @@ type resourcecache struct {
 
 type ResourceCacheConfig struct {
 	WorkQueueInterval int
-
 }
 
 func NewResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
