@@ -1,4 +1,4 @@
-package resourcecache
+package workqueue
 
 import (
 	"fmt"
@@ -35,19 +35,16 @@ func (wq *ResourceCacheWorkQueue) AddResource(add *rorresources.Resource) {
 	wq.mu.Lock()
 	defer wq.mu.Unlock()
 	wq.Add(add)
-	ResourceCache.HashList.UpdateHash(add.GetUID(), add.GetRorHash())
 }
 
 func (wq *ResourceCacheWorkQueue) AddResourceSet(add *rorresources.ResourceSet) {
-	wq.mu.Lock()
-	defer wq.mu.Unlock()
 	for wq.Next() {
-		add.Add(wq.Get())
+		wq.AddResource(wq.Get())
 	}
 }
 
 // TODO use reQueueResource to add resources to the work queue
-func (wq *ResourceCacheWorkQueue) reQueue(wqadd *ResourceCacheWorkQueue) {
+func (wq *ResourceCacheWorkQueue) ReQueue(wqadd *ResourceCacheWorkQueue) {
 	faileduuids := ""
 	var failcount int
 	for wqadd.Next() {
@@ -72,7 +69,7 @@ func (wq *ResourceCacheWorkQueue) reQueue(wqadd *ResourceCacheWorkQueue) {
 
 }
 
-func (wq *ResourceCacheWorkQueue) reQueueResource(resource *rorresources.Resource, retrycount int) {
+func (wq *ResourceCacheWorkQueue) ReQueueResource(resource *rorresources.Resource, retrycount int) {
 	retrycount++
 	if retrycount > 10 {
 		rlog.Error("retry limit reached", fmt.Errorf("resource has been retried 10 times, giving up"), rlog.String("uuids", resource.GetUID()))
