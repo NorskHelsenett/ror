@@ -7,6 +7,7 @@ import (
 
 	"github.com/NorskHelsenett/ror-agent/v2/internal/clients"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/hashlist"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/go-co-op/gocron"
@@ -15,7 +16,7 @@ import (
 var ResourceCache resourcecache
 
 type resourcecache struct {
-	HashList       *HashList
+	HashList       *hashlist.HashList
 	WorkQueue      ResourceCacheWorkQueue
 	cleanupRunning bool
 	scheduler      *gocron.Scheduler

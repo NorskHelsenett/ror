@@ -9,9 +9,9 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/hashlist"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 )
@@ -83,14 +83,11 @@ func (c *V2Client) Exists(ctx context.Context, uid string) (bool, error) {
 	return false, nil
 }
 
-func (c *V2Client) GetOwnHashes(ctx context.Context, clusterId string) (*apicontractsv2resources.HashList, error) {
-	var hashList apicontractsv2resources.HashList
+func (c *V2Client) GetOwnHashes(ctx context.Context, clientId rorresourceowner.RorResourceOwnerReference) (*hashlist.HashList, error) {
+	var hashList hashlist.HashList
 	params := httpclient.HttpTransportClientParams{
-		Key: httpclient.HttpTransportClientOptsQuery,
-		Value: map[string]string{
-			"ownerScope":   string(aclmodels.Acl2ScopeCluster),
-			"ownerSubject": clusterId,
-		},
+		Key:   httpclient.HttpTransportClientOptsQuery,
+		Value: clientId.GetQueryParams(),
 	}
 	err := c.Client.GetJSONWithContext(ctx, c.basePath+"/hashes", &hashList, params)
 	if err != nil {
