@@ -8,6 +8,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/workqueue"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorclientconfig"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 
@@ -35,6 +36,8 @@ type ResourceCacheInterface interface {
 	AddResourceSet(resources *rorresources.ResourceSet)
 
 	CheckUpdateNeeded(uid string, hash string) bool
+
+	GetOwnerref() rorresourceowner.RorResourceOwnerReference
 }
 
 var ResourceCache *resourcecache
@@ -193,4 +196,8 @@ func (rc *resourcecache) AddResourceSet(resources *rorresources.ResourceSet) {
 
 func (rc *resourcecache) CheckUpdateNeeded(uid string, hash string) bool {
 	return rc.hashList.CheckUpdateNeeded(uid, hash)
+}
+
+func (rc *resourcecache) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
+	return rc.rorClient.GetOwnerref()
 }
