@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NorskHelsenett/ror-agent/v2/internal/clients"
-
+	"github.com/NorskHelsenett/ror/cmd/agentv2/clients"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/hashlist"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/workqueue"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -34,6 +33,8 @@ type ResourceCacheInterface interface {
 
 	// AddResourceSet adds multiple resources to the work queue
 	AddResourceSet(resources *rorresources.ResourceSet)
+
+	CheckUpdateNeeded(uid string, hash string) bool
 }
 
 var ResourceCache *resourcecache
@@ -50,6 +51,7 @@ type resourcecache struct {
 
 type ResourceCacheConfig struct {
 	WorkQueueInterval int
+	Hashlist          *hashlist.HashList
 }
 
 func NewResourceCache(rcConfig ResourceCacheConfig) (ResourceCacheInterface, error) {
@@ -59,8 +61,11 @@ func NewResourceCache(rcConfig ResourceCacheConfig) (ResourceCacheInterface, err
 func newResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
 	var err error
 	var rc resourcecache
-
-	rc.hashList, err = InitHashList()
+	if rcConfig.Hashlist != nil {
+		rc.hashList = rcConfig.Hashlist
+	} else {
+		rc.hashList = hashlist.NewEmptyHashList()
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -175,4 +180,8 @@ func (rc *resourcecache) AddResourceSet(resources *rorresources.ResourceSet) {
 	for resources.Next() {
 		rc.AddResource(resources.Get())
 	}
+}
+
+func (rc *resourcecache) CheckUpdateNeeded(uid string, hash string) bool {
+	return rc.hashList.CheckUpdateNeeded(uid, hash)
 }

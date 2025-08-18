@@ -3,12 +3,12 @@ package resttransport
 import (
 	"net/http"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
 	restv1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/datacenter"
 	restv1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/info"
@@ -34,6 +34,9 @@ import (
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
+// Compile-time check to ensure resourcecache implements ResourceCacheInterface
+var _ transports.RorTransport = (*RorHttpTransport)(nil)
+
 type RorHttpTransport struct {
 	Client             *httpclient.HttpTransportClient
 	streamClientV1     v1stream.StreamInterface
@@ -51,30 +54,16 @@ type RorHttpTransport struct {
 }
 
 func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpTransport {
-	client := &httpclient.HttpTransportClient{
-		Client: &http.Client{},
-		Config: config,
-		Status: httpclient.NewHttpTransportClientStatus(),
-	}
-	t := &RorHttpTransport{
-		Client:             client,
-		streamClientV1:     restv1stream.NewV1Client(v1sseclient.NewSSEClient(client)),
-		infoClientV1:       restv1info.NewV1Client(client),
-		datacenterClientV1: restv1datacenter.NewV1Client(client),
-		clustersClientV1:   restv1clusters.NewV1Client(client),
-		selfClientV2:       restclientv2self.NewV2Client(client),
-		workspacesClientV1: restv1workspaces.NewV1Client(client),
-		projectsClientV1:   restv1projects.NewV1Client(client),
-		resourcesClientV1:  restv1resources.NewV1Client(client),
-		metricsClientV1:    restv1metrics.NewV1Client(client),
-		resourcesClientV2:  restv2resources.NewV2Client(client),
-		aclClientV1:        acl.NewV1Client(client),
-		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
-	}
-	return t
+	httpClient := &http.Client{}
+	return newWithHttpClient(config, httpClient)
+
 }
 
 func NewWithCustomHttpClient(config *httpclient.HttpTransportClientConfig, httpClient *http.Client) *RorHttpTransport {
+	return newWithHttpClient(config, httpClient)
+}
+
+func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient *http.Client) *RorHttpTransport {
 	client := &httpclient.HttpTransportClient{
 		Client: httpClient,
 		Config: config,
@@ -149,4 +138,12 @@ func (t *RorHttpTransport) Self() v2self.SelfInterface {
 func (t *RorHttpTransport) Ping() error {
 	_, err := t.infoClientV1.GetVersion()
 	return err
+}
+
+func (t *RorHttpTransport) GetApiSecret() string {
+	return t.Client.Config.AuthProvider.GetApiSecret()
+}
+
+func (t *RorHttpTransport) GetRole() string {
+	return t.Client.Config.GetRole()
 }

@@ -63,12 +63,17 @@ type HttpTransportClientConfig struct {
 
 type HttpTransportAuthProvider interface {
 	AddAuthHeaders(req *http.Request)
+	GetApiSecret() string
 }
 
 type HttpTransportClient struct {
 	Client *http.Client
 	Config *HttpTransportClientConfig
 	Status *HttpTransportClientStatus
+}
+
+func (t *HttpTransportClientConfig) GetRole() string {
+	return t.Role
 }
 
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {

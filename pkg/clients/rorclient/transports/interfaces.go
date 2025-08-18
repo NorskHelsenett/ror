@@ -31,4 +31,6 @@ type RorTransport interface {
 	Streamv2() v2stream.StreamInterface
 	AclV1() v1Acl.AclInterface
 	Ping() error
+	GetApiSecret() string
+	GetRole() string
 }
