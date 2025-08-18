@@ -13,7 +13,7 @@ type RorClientInterface interface {
 }
 
 type RorAPIClientInterface interface {
-	GetRorClient() (rorclient.RorClientInterface, error)
+	GetRorClient() rorclient.RorClientInterface
 }
 type RorOwnerrefInterface interface {
 	GetOwnerref() rorresourceowner.RorResourceOwnerReference

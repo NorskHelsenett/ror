@@ -137,12 +137,7 @@ func (rc *resourcecache) finnishCleanup() {
 	if len(inactive) == 0 {
 		return
 	}
-	rorclient, err := rc.rorClient.GetRorClient()
-
-	if err != nil {
-		rlog.Error("error getting ror client", err)
-		return
-	}
+	rorclient := rc.rorClient.GetRorClient()
 
 	for _, uid := range inactive {
 		rlog.Info(fmt.Sprintf("Removing resource %s", uid))
@@ -165,11 +160,7 @@ func (rc *resourcecache) RunWorkQeue() {
 		return
 	}
 	cacheworkqueue := rc.workQueue.ConsumeWorkQeue()
-	rorclient, err := rc.rorClient.GetRorClient()
-	if err != nil {
-		rlog.Error("error getting ror client", err)
-		return
-	}
+	rorclient := rc.rorClient.GetRorClient()
 
 	status, err := rorclient.ResourceV2().Update(context.Background(), cacheworkqueue.ResourceSet)
 	if err != nil {
