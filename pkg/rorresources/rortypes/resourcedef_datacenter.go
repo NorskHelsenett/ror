@@ -1,6 +1,6 @@
 package rortypes
 
-import "github.com/NorskHelsenett/ror/pkg/models/providers"
+import "github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 
 // K8s deployment struct
 type ResourceDatacenter struct {
@@ -20,11 +20,11 @@ type ResourceDatacenterStatus struct {
 }
 
 type Datacenter struct {
-	ID          string                 `json:"id" bson:"_id,omitempty"`
-	Name        string                 `json:"name"`
-	Provider    providers.ProviderType `json:"provider"`
-	Location    DatacenterLocation     `json:"location"`
-	APIEndpoint string                 `json:"apiEndpoint"`
+	ID          string                      `json:"id" bson:"_id,omitempty"`
+	Name        string                      `json:"name"`
+	Provider    providermodels.ProviderType `json:"provider"`
+	Location    DatacenterLocation          `json:"location"`
+	APIEndpoint string                      `json:"apiEndpoint"`
 }
 
 type DatacenterLocation struct {

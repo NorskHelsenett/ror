@@ -1,8 +1,8 @@
 package clusterinterregator
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/unknown/unknownproviderinterregator"
-	"github.com/NorskHelsenett/ror/pkg/models/providers"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -11,19 +11,31 @@ type clusterinteregator struct {
 	providerinterregator ClusterProviderInterregator
 }
 
+// IsTypeOf(nodes []v1.Node) bool
+
 type ClusterProviderInterregator interface {
 	IsTypeOf([]v1.Node) bool
-	GetProvider([]v1.Node) providers.ProviderType
+	GetProvider([]v1.Node) providermodels.ProviderType
+	GetClusterId(nodes []v1.Node) string
 	GetClusterName([]v1.Node) string
-	GetWorkspace([]v1.Node) string
+	GetClusterWorkspace([]v1.Node) string
 	GetDatacenter([]v1.Node) string
+	GetAz(nodes []v1.Node) string
+	GetRegion(nodes []v1.Node) string
+	GetVMProvider(nodes []v1.Node) string
+	GetKubernetesProvider(nodes []v1.Node) string
 }
 
 type ClusterInterregator interface {
-	GetProvider() providers.ProviderType
+	GetProvider() providermodels.ProviderType
+	GetClusterId() string
 	GetClusterName() string
-	GetWorkspace() string
+	GetClusterWorkspace() string
 	GetDatacenter() string
+	GetAz() string
+	GetRegion() string
+	GetVMProvider() string
+	GetKubernetesProvider() string
 }
 
 func NewClusterInterregator(nodes []v1.Node) ClusterInterregator {
@@ -43,15 +55,30 @@ func NewClusterInterregator(nodes []v1.Node) ClusterInterregator {
 
 }
 
-func (c clusterinteregator) GetProvider() providers.ProviderType {
+func (c clusterinteregator) GetProvider() providermodels.ProviderType {
 	return c.providerinterregator.GetProvider(c.nodes)
+}
+func (c clusterinteregator) GetClusterId() string {
+	return c.providerinterregator.GetClusterId(c.nodes)
 }
 func (c clusterinteregator) GetClusterName() string {
 	return c.providerinterregator.GetClusterName(c.nodes)
 }
-func (c clusterinteregator) GetWorkspace() string {
-	return c.providerinterregator.GetWorkspace(c.nodes)
+func (c clusterinteregator) GetClusterWorkspace() string {
+	return c.providerinterregator.GetClusterWorkspace(c.nodes)
 }
 func (c clusterinteregator) GetDatacenter() string {
 	return c.providerinterregator.GetDatacenter(c.nodes)
+}
+func (c clusterinteregator) GetAz() string {
+	return c.providerinterregator.GetAz(c.nodes)
+}
+func (c clusterinteregator) GetRegion() string {
+	return c.providerinterregator.GetRegion(c.nodes)
+}
+func (c clusterinteregator) GetVMProvider() string {
+	return c.providerinterregator.GetVMProvider(c.nodes)
+}
+func (c clusterinteregator) GetKubernetesProvider() string {
+	return c.providerinterregator.GetKubernetesProvider(c.nodes)
 }
