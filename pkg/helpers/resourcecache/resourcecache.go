@@ -55,7 +55,6 @@ type resourcecache struct {
 
 type ResourceCacheConfig struct {
 	WorkQueueInterval int
-	Hashlist          *resourcecachehashlist.HashList
 	RorClient         rorclientconfig.RorClientInterface
 }
 
@@ -73,8 +72,13 @@ func newResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
 
 	rc.rorClient = rcConfig.RorClient
 
-	if rcConfig.Hashlist != nil {
-		rc.hashList = rcConfig.Hashlist
+	if rc.rorClient.GetRorClient().Ping() == nil {
+		hashes, err := rc.rorClient.GetRorClient().ResourceV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
+		if err != nil {
+			rc.hashList = NewEmptyHashList()
+			return nil, fmt.Errorf("failed to get own hashes: %w", err)
+		}
+		rc.hashList = hashes
 	} else {
 		rc.hashList = NewEmptyHashList()
 	}
