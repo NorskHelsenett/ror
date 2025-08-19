@@ -1,8 +1,6 @@
 package apiresourcecontracts
 
-import (
-	"github.com/NorskHelsenett/ror/pkg/models/providers"
-)
+import "github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceClusterOrder struct {
@@ -15,11 +13,11 @@ type ResourceClusterOrder struct {
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceClusterOrderSpec struct {
-	OrderType ResourceActionType     `json:"orderType" validate:"required,min=1,ne=' '"`
-	Provider  providers.ProviderType `json:"provider,omitempty"`
-	Cluster   string                 `json:"cluster" validate:"required,min=1,ne=' '"`
-	ProjectId string                 `json:"projectId,omitempty"`
-	OrderBy   string                 `json:"orderBy" validate:"required,min=1,ne=' '"`
+	OrderType ResourceActionType          `json:"orderType" validate:"required,min=1,ne=' '"`
+	Provider  providermodels.ProviderType `json:"provider,omitempty"`
+	Cluster   string                      `json:"cluster" validate:"required,min=1,ne=' '"`
+	ProjectId string                      `json:"projectId,omitempty"`
+	OrderBy   string                      `json:"orderBy" validate:"required,min=1,ne=' '"`
 
 	Environment      EnvironmentType                    `json:"environment,omitempty" validate:"min=1,max=4"`
 	Criticality      CriticalityLevel                   `json:"criticality,omitempty" validate:"min=1,max=4"`

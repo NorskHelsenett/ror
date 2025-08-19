@@ -4,20 +4,20 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/clusterinterregator"
-	"github.com/NorskHelsenett/ror/pkg/models/providers"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 
 	v1 "k8s.io/api/core/v1"
 )
 
 type InterregationReport struct {
 	Nodes       []v1.Node
-	Provider    providers.ProviderType
+	Provider    providermodels.ProviderType
 	ClusterName string
 	Workspace   string
 	Datacenter  string
 }
 
-func (c *InterregationReport) GetProvider() providers.ProviderType {
+func (c *InterregationReport) GetProvider() providermodels.ProviderType {
 	return c.Provider
 }
 
@@ -39,7 +39,7 @@ func NewInterregationReport(nodes []v1.Node) (*InterregationReport, error) {
 
 	report.Provider = interregator.GetProvider()
 	report.ClusterName = interregator.GetClusterName()
-	report.Workspace = interregator.GetWorkspace()
+	report.Workspace = interregator.GetClusterWorkspace()
 	report.Datacenter = interregator.GetDatacenter()
 
 	return &report, nil
