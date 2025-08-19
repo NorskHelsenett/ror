@@ -20,7 +20,32 @@ type RorConfig struct {
 	Host string
 }
 
+// Compile-time check to ensure RorClient implements RorClientInterface
+var _ RorClientInterface = (*RorClient)(nil)
+
+type RorClientInterface interface {
+	GetRole() string
+	GetApiSecret() string
+
+	Clusters() v1clusters.ClustersInterface
+	Datacenters() v1datacenter.DatacenterInterface
+	Info() v1info.InfoInterface
+	Metrics() v1metrics.MetricsInterface
+	Ping() error
+	Projects() v1projects.ProjectsInterface
+	ResourceV2() v2resources.ResourcesInterface
+	Resources() v1resources.ResourceInterface
+	Self() rorclientv2self.SelfInterface
+	SetTransport(transport transports.RorTransport)
+	Stream() v1stream.StreamInterface
+	StreamV2() v2stream.StreamInterface
+	Workspaces() v1workspaces.WorkspacesInterface
+}
+
 type RorClient struct {
+	role   string
+	apiKey string
+
 	Transport          transports.RorTransport
 	streamClientV1     v1stream.StreamInterface
 	infoClientV1       v1info.InfoInterface
@@ -97,4 +122,12 @@ func (c *RorClient) ResourceV2() v2resources.ResourcesInterface {
 
 func (c *RorClient) StreamV2() v2stream.StreamInterface {
 	return c.streamClientV2
+}
+
+func (c *RorClient) GetRole() string {
+	return c.Transport.GetRole()
+}
+
+func (c *RorClient) GetApiSecret() string {
+	return c.Transport.GetApiSecret()
 }

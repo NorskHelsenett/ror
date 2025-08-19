@@ -1,4 +1,4 @@
-package apicontractsv2resources
+package resourcecachehashlist
 
 import (
 	"fmt"
