@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/workqueue"
-	"github.com/NorskHelsenett/ror/pkg/helpers/rorclientconfig"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
@@ -47,7 +47,7 @@ var _ ResourceCacheInterface = (*resourcecache)(nil)
 
 type resourcecache struct {
 	hashList       *resourcecachehashlist.HashList
-	rorClient      rorclientconfig.RorClientInterface
+	rorClient      rorclient.RorClientInterface
 	workQueue      workqueue.ResourceCacheWorkQueue
 	cleanupRunning bool
 	scheduler      *gocron.Scheduler
@@ -55,7 +55,7 @@ type resourcecache struct {
 
 type ResourceCacheConfig struct {
 	WorkQueueInterval int
-	RorClient         rorclientconfig.RorClientInterface
+	RorClient         rorclient.RorClientInterface
 }
 
 func NewResourceCache(rcConfig ResourceCacheConfig) (ResourceCacheInterface, error) {
@@ -72,8 +72,8 @@ func newResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
 
 	rc.rorClient = rcConfig.RorClient
 
-	if rc.rorClient.GetRorClient().Ping() == nil {
-		hashes, err := rc.rorClient.GetRorClient().ResourceV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
+	if rc.rorClient.Ping() == nil {
+		hashes, err := rc.rorClient.ResourceV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
 		if err != nil {
 			rc.hashList = NewEmptyHashList()
 			return nil, fmt.Errorf("failed to get own hashes: %w", err)
@@ -144,7 +144,6 @@ func (rc *resourcecache) finnishCleanup() {
 	if len(inactive) == 0 {
 		return
 	}
-	rorclient := rc.rorClient.GetRorClient()
 
 	for _, uid := range inactive {
 		rlog.Info(fmt.Sprintf("Removing resource %s", uid))
@@ -152,7 +151,7 @@ func (rc *resourcecache) finnishCleanup() {
 			rlog.Warn("resource uid is empty")
 			continue
 		}
-		_, err := rorclient.ResourceV2().Delete(context.Background(), uid)
+		_, err := rc.rorClient.ResourceV2().Delete(context.Background(), uid)
 		if err != nil {
 			rlog.Error(fmt.Sprintf("Error removing resource %s", uid), err)
 		}
@@ -167,9 +166,8 @@ func (rc *resourcecache) RunWorkQeue() {
 		return
 	}
 	cacheworkqueue := rc.workQueue.ConsumeWorkQeue()
-	rorclient := rc.rorClient.GetRorClient()
 
-	status, err := rorclient.ResourceV2().Update(context.Background(), cacheworkqueue.ResourceSet)
+	status, err := rc.rorClient.ResourceV2().Update(context.Background(), cacheworkqueue.ResourceSet)
 	if err != nil {
 		rlog.Error("error sending resources update to ror, added to retryQeue", err)
 		rc.workQueue.ReQueue(cacheworkqueue)
