@@ -198,6 +198,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetBackupJob(res.BackupJobResource)
 		r.SetCommonInterface(res.BackupJobResource)
 
+	case "unknown.ror.internal/v1, Kind=Unknown":
+		r.SetUnknown(res.UnknownResource)
+		r.SetCommonInterface(res.UnknownResource)
+
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 		return nil

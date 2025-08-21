@@ -2,6 +2,7 @@ package resourcecachehashlist
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
@@ -80,4 +81,10 @@ func (hl *HashList) UpdateHash(uid string, hash string) {
 		active: true,
 	}
 	hl.Items = append(hl.Items, newItem)
+}
+
+func (hl *HashList) DeleteByUid(uid string) {
+	hl.Items = slices.DeleteFunc(hl.Items, func(item HashItem) bool {
+		return item.Uid == uid
+	})
 }

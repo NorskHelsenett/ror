@@ -14,6 +14,7 @@ export enum VulnerabilityDismissalReason {
 export enum ResourceTagProperties {
   color = 'color',
 }
+export interface ResourceUnknown {}
 export interface ResourceBackupJobSpec {
   name: string;
   status: string;
@@ -1329,6 +1330,7 @@ export interface Resource {
   networkpolicy?: ResourceNetworkPolicy;
   datacenter?: ResourceDatacenter;
   backupjob?: ResourceBackupJob;
+  unknown?: ResourceUnknown;
 }
 export interface ResourceSet {
   resources?: Resource[];

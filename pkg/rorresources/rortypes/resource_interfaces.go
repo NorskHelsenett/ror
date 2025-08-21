@@ -248,3 +248,9 @@ type BackupJobinterface interface {
 	CommonResourceInterface
 	Get() *ResourceBackupJob
 }
+
+// Unknowninterface represents the interface for resources of the type unknown
+type Unknowninterface interface {
+	CommonResourceInterface
+	Get() *ResourceUnknown
+}
