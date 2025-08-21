@@ -244,6 +244,11 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetBackupJob(res)
 		r.SetCommonInterface(res)
 
+	case "unknown.ror.internal/v1, Kind=Unknown":
+		res := newUnknownFromMapInterface(input)
+		r.SetUnknown(res)
+		r.SetCommonInterface(res)
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return nil
@@ -805,6 +810,20 @@ func newBackupJobFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceBackupJob", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newUnknownFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newUnknownFromMapInterface(input map[string]interface{}) *rortypes.ResourceUnknown {
+	result := rortypes.ResourceUnknown{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceUnknown", err)
 		return nil
 	}
 

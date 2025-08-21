@@ -11,8 +11,10 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 
 	"github.com/go-co-op/gocron"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 // ResourceCacheInterface defines the contract for resource cache operations
@@ -34,6 +36,8 @@ type ResourceCacheInterface interface {
 
 	// AddResourceSet adds multiple resources to the work queue
 	AddResourceSet(resources *rorresources.ResourceSet)
+
+	DeleteResourceByUID(uid string)
 
 	CheckUpdateNeeded(uid string, hash string) bool
 
@@ -141,21 +145,16 @@ func (rc *resourcecache) finnishCleanup() {
 	rc.cleanupRunning = false
 	_ = rc.scheduler.RemoveByTag("resourcescleanup")
 	inactive := rc.hashList.GetInactiveUid()
-	if len(inactive) == 0 {
-		return
+	if len(inactive) != 0 {
+		for _, uid := range inactive {
+			if uid == "" {
+				rlog.Warn("resource uid is empty")
+				continue
+			}
+			rc.DeleteResourceByUID(uid)
+		}
 	}
 
-	for _, uid := range inactive {
-		rlog.Info(fmt.Sprintf("Removing resource %s", uid))
-		if uid == "" {
-			rlog.Warn("resource uid is empty")
-			continue
-		}
-		_, err := rc.rorClient.ResourceV2().Delete(context.Background(), uid)
-		if err != nil {
-			rlog.Error(fmt.Sprintf("Error removing resource %s", uid), err)
-		}
-	}
 	rlog.Info(fmt.Sprintf("resource cleanup done, %d resources removed", len(inactive)))
 }
 
@@ -202,4 +201,19 @@ func (rc *resourcecache) CheckUpdateNeeded(uid string, hash string) bool {
 
 func (rc *resourcecache) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
 	return rc.rorClient.GetOwnerref()
+}
+
+func (rc *resourcecache) DeleteResourceByUID(uid string) {
+	if uid == "" {
+		return
+	}
+	resource := rorresources.NewRorResource("Unknown", "unknown.ror.internal/v1")
+	resource.Metadata.SetUID(types.UID(uid))
+	resource.SetRorMeta(rortypes.ResourceRorMeta{
+		Version:  "v2",
+		Ownerref: rc.rorClient.GetOwnerref(),
+		Action:   rortypes.K8sActionDelete,
+	})
+	rc.workQueue.AddResource(resource)
+	rc.hashList.DeleteByUid(uid)
 }

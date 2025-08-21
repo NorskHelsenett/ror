@@ -53,6 +53,7 @@ type Resource struct {
 	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
 	DatacenterResource                 *rortypes.ResourceDatacenter                 `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
 	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
+	UnknownResource                    *rortypes.ResourceUnknown                    `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -233,6 +234,10 @@ func (r *Resource) SetDatacenter(res *rortypes.ResourceDatacenter) {
 
 func (r *Resource) SetBackupJob(res *rortypes.ResourceBackupJob) {
 	r.BackupJobResource = res
+}
+
+func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
+	r.UnknownResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -433,6 +438,11 @@ func (r *Resource) Datacenter() rortypes.Datacenterinterface {
 // BackupJob is a wrapper for the underlying resource, it provides a BackupJobinterface to work with backupjobs
 func (r *Resource) BackupJob() rortypes.BackupJobinterface {
 	return r.BackupJobResource
+}
+
+// Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
+func (r *Resource) Unknown() rortypes.Unknowninterface {
+	return r.UnknownResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

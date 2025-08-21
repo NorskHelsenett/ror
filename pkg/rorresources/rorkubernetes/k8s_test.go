@@ -773,6 +773,25 @@ func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Unknown",
+			"apiVersion": "unknown.ror.internal/v1",
+			"metadata": map[string]interface{}{
+				"name": "test-unknown",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

@@ -374,5 +374,14 @@ var Resourcedefs = ApiResources{
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeBackupAgent},
 		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+	}, {
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Unknown",
+			APIVersion: "unknown.ror.internal/v1",
+		},
+		Plural:     "unknowns",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV2},
 	},
 }
