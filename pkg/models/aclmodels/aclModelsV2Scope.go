@@ -3,8 +3,8 @@ package aclmodels
 type Acl2Scope string
 
 const (
-	Acl2ScopeUnknown        Acl2Scope = ""    // unknown
-	Acl2ScopeRor            Acl2Scope = "ror" // ROR
+	Acl2ScopeUnknown        Acl2Scope = "UNKNOWN" // unknown
+	Acl2ScopeRor            Acl2Scope = "ror"     // ROR
 	Acl2ScopeCluster        Acl2Scope = "cluster"
 	Acl2ScopeProject        Acl2Scope = "project"
 	Acl2ScopeDatacenter     Acl2Scope = "datacenter"
@@ -24,6 +24,8 @@ func (s Acl2Scope) IsValid() bool {
 		return true
 	case Acl2ScopeVirtualMachine:
 		return true
+	case Acl2ScopeUnknown:
+		return false
 	default:
 		return false
 	}
