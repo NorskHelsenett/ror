@@ -14,6 +14,8 @@ import (
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
 
 type RorConfig struct {
@@ -26,6 +28,8 @@ var _ RorClientInterface = (*RorClient)(nil)
 type RorClientInterface interface {
 	GetRole() string
 	GetApiSecret() string
+	GetOwnerref() rorresourceowner.RorResourceOwnerReference
+	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
 
 	Clusters() v1clusters.ClustersInterface
 	Datacenters() v1datacenter.DatacenterInterface
@@ -43,8 +47,7 @@ type RorClientInterface interface {
 }
 
 type RorClient struct {
-	role   string
-	apiKey string
+	ownerRef *rorresourceowner.RorResourceOwnerReference
 
 	Transport          transports.RorTransport
 	streamClientV1     v1stream.StreamInterface
@@ -130,4 +133,15 @@ func (c *RorClient) GetRole() string {
 
 func (c *RorClient) GetApiSecret() string {
 	return c.Transport.GetApiSecret()
+}
+
+func (c *RorClient) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
+	if c.ownerRef == nil {
+		return rorresourceowner.RorResourceOwnerReference{Scope: aclmodels.Acl2ScopeUnknown, Subject: aclmodels.Acl2RorSubjecUnknown}
+	}
+	return *c.ownerRef
+}
+
+func (c *RorClient) SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference) {
+	c.ownerRef = &ownerref
 }
