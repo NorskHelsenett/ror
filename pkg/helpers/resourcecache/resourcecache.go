@@ -19,9 +19,6 @@ import (
 
 // ResourceCacheInterface defines the contract for resource cache operations
 type ResourceCacheInterface interface {
-	// Init initializes the resource cache (deprecated - use NewResourceCache instead)
-	Init() error
-
 	// CleanupRunning returns whether cleanup is currently running
 	CleanupRunning() bool
 
