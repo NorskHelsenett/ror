@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
+	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/otel/trace/noop"
@@ -48,18 +50,59 @@ type rabbitmqcon struct {
 }
 
 func NewRabbitMQConnection(cp RabbitMQCredentialProvider, host string, port string, broadcastName string) RabbitMQConnection {
-	rc := rabbitmqcon{
-		Credentials:   cp,
-		Host:          host,
-		Port:          port,
-		BroadcastName: broadcastName,
-		Connected:     false,
-		Context:       context.Background(),
-		TracerID:      "ror-unset-tracer-id",
-		SenderQueName: "ror",
+	rc := getDefaultRabbitMQConnectionConfig()
+	options := []RabbitMQConnectionOption{
+		CredentialsProvider(cp),
+		Host(host),
+		Port(port),
+		BroadcastName(broadcastName),
 	}
+	rc.applyOptions(options...)
 	rc.connect()
-	return &rc
+	return rc
+}
+
+func NewRabbitMQConnectionWithOptions(cfg ...RabbitMQConnectionOption) RabbitMQConnection {
+	rc := getDefaultRabbitMQConnectionConfig()
+	rc.applyOptions(cfg...)
+	rc.connect()
+	return rc
+}
+
+func NewRabbitMQConnectionWithDefaults(cfg ...RabbitMQConnectionOption) RabbitMQConnection {
+	rc := getDefaultRabbitMQConnectionConfig()
+	rc.loadDefaultConfig()
+	rc.applyOptions(cfg...)
+	rc.connect()
+	return rc
+}
+
+func getDefaultRabbitMQConnectionConfig() *rabbitmqcon {
+	rc := &rabbitmqcon{}
+	rc.applyDefaults()
+	return rc
+}
+
+func (rc *rabbitmqcon) applyDefaults() {
+	rc.Context = context.Background()
+	rc.TracerID = "ror-unset-tracer-id"
+	rc.SenderQueName = "ror"
+}
+func (rc *rabbitmqcon) loadDefaultConfig() {
+	if viper.GetString(configconsts.RABBITMQ_HOST) != "" {
+		rc.Host = viper.GetString(configconsts.RABBITMQ_HOST)
+	}
+	if viper.GetString(configconsts.RABBITMQ_PORT) != "" {
+		rc.Port = viper.GetString(configconsts.RABBITMQ_PORT)
+	}
+	if viper.GetString(configconsts.RABBITMQ_BROADCAST_NAME) != "" {
+		rc.BroadcastName = viper.GetString(configconsts.RABBITMQ_BROADCAST_NAME)
+	}
+}
+func (rc *rabbitmqcon) applyOptions(options ...RabbitMQConnectionOption) {
+	for _, opt := range options {
+		opt.apply(rc)
+	}
 }
 
 func (rc *rabbitmqcon) SetTracerID(tracerID string) {
@@ -116,8 +159,22 @@ func (rc rabbitmqcon) getConnectionstring() string {
 	username, password := rc.Credentials.GetCredentials()
 	return fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, rc.Host, rc.Port)
 }
+func (rc *rabbitmqcon) validateConfig() error {
+	if rc.Host == "" || rc.Port == "" {
+		return fmt.Errorf("invalid rabbitmq configuration: host=%q port=%q", rc.Host, rc.Port)
+	}
+	if rc.Credentials == nil {
+		return fmt.Errorf("invalid rabbitmq configuration: credentials are required")
+	}
+
+	return nil
+}
 
 func (rc *rabbitmqcon) connect() {
+	err := rc.validateConfig()
+	if err != nil {
+		rlog.Fatal("invalid rabbitmq configuration", err)
+	}
 	rlog.Debug("Connecting", rlog.String("rabbitmq", rc.getConnectionstring()))
 	c := make(chan *amqp.Error)
 	rc.CancelChannel = c
