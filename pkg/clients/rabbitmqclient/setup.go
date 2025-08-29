@@ -52,10 +52,10 @@ type rabbitmqcon struct {
 func NewRabbitMQConnection(cp RabbitMQCredentialProvider, host string, port string, broadcastName string) RabbitMQConnection {
 	rc := getDefaultRabbitMQConnectionConfig()
 	options := []RabbitMQConnectionOption{
-		CredentialsProvider(cp),
-		Host(host),
-		Port(port),
-		BroadcastName(broadcastName),
+		OptionCredentialsProvider(cp),
+		OptionHost(host),
+		OptionPort(port),
+		OptionBroadcastName(broadcastName),
 	}
 	rc.applyOptions(options...)
 	rc.connect()

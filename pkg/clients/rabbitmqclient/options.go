@@ -13,7 +13,7 @@ type optionFunc func(*rabbitmqcon)
 
 func (of optionFunc) apply(cfg *rabbitmqcon) { of(cfg) }
 
-func ServerString(serverstring string) RabbitMQConnectionOption {
+func OptionServerString(serverstring string) RabbitMQConnectionOption {
 	return optionFunc(func(cfg *rabbitmqcon) {
 		var err error
 		serverparts := strings.SplitN(serverstring, ":", 2)
@@ -31,24 +31,24 @@ func ServerString(serverstring string) RabbitMQConnectionOption {
 	})
 }
 
-func Host(host string) RabbitMQConnectionOption {
+func OptionHost(host string) RabbitMQConnectionOption {
 	return optionFunc(func(cfg *rabbitmqcon) {
 		cfg.Host = host
 	})
 }
 
-func Port(port string) RabbitMQConnectionOption {
+func OptionPort(port string) RabbitMQConnectionOption {
 	return optionFunc(func(cfg *rabbitmqcon) {
 		cfg.Port = port
 	})
 }
-func BroadcastName(broadcastname string) RabbitMQConnectionOption {
+func OptionBroadcastName(broadcastname string) RabbitMQConnectionOption {
 	return optionFunc(func(cfg *rabbitmqcon) {
 		cfg.BroadcastName = broadcastname
 	})
 }
 
-func CredentialsProvider(cp RabbitMQCredentialProvider) RabbitMQConnectionOption {
+func OptionCredentialsProvider(cp RabbitMQCredentialProvider) RabbitMQConnectionOption {
 	return optionFunc(func(cfg *rabbitmqcon) {
 		cfg.Credentials = cp
 	})
