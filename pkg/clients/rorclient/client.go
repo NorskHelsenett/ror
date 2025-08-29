@@ -16,6 +16,7 @@ import (
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
+	"github.com/dotse/go-health"
 )
 
 type RorConfig struct {
@@ -30,6 +31,7 @@ type RorClientInterface interface {
 	GetApiSecret() string
 	GetOwnerref() rorresourceowner.RorResourceOwnerReference
 	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
+	CheckHealth() []health.Check
 
 	Clusters() v1clusters.ClustersInterface
 	Datacenters() v1datacenter.DatacenterInterface
@@ -144,4 +146,16 @@ func (c *RorClient) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
 
 func (c *RorClient) SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference) {
 	c.ownerRef = &ownerref
+}
+
+func (c *RorClient) CheckHealth() []health.Check {
+	healthChecks := []health.Check{}
+	if err := c.Transport.Ping(); err != nil {
+		healthChecks = append(healthChecks, health.Check{
+			ComponentID: "Transport",
+			Status:      health.StatusFail,
+			Output:      err.Error(),
+		})
+	}
+	return healthChecks
 }
