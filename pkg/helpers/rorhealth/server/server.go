@@ -5,10 +5,14 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"os"
 	"strconv"
 	"sync"
 
+	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	newhealth "github.com/dotse/go-health"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -111,4 +115,34 @@ func Start(opts ...Option) error {
 	}
 
 	return nil
+}
+
+func MustStart(opts ...Option) {
+	if err := Start(opts...); err != nil {
+		if err != nil {
+			rlog.Error("Failed to start health server", err)
+			os.Exit(1)
+		}
+	}
+}
+func StartWithDefaults(opts ...Option) error {
+	opts = append(opts, ServerString(getHealthEndpoint()))
+	return Start(opts...)
+}
+
+func MustStartWithDefaults(opts ...Option) {
+	if err := StartWithDefaults(opts...); err != nil {
+		if err != nil {
+			rlog.Error("Failed to start health server with defaults", err)
+			os.Exit(1)
+		}
+	}
+}
+
+func getHealthEndpoint() string {
+	if viper.IsSet(configconsts.HEALTH_ENDPOINT) {
+		rlog.Info("Using deprecated HEALTH_ENDPOINT configuration. Please use HTTP_HEALTH_HOST and HTTP_HEALTH_PORT instead")
+		return viper.GetString(configconsts.HEALTH_ENDPOINT)
+	}
+	return fmt.Sprintf("%s:%s", viper.GetString(configconsts.HTTP_HEALTH_HOST), viper.GetString(configconsts.HTTP_HEALTH_PORT))
 }
