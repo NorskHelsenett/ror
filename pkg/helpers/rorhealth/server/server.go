@@ -119,10 +119,8 @@ func Start(opts ...Option) error {
 
 func MustStart(opts ...Option) {
 	if err := Start(opts...); err != nil {
-		if err != nil {
-			rlog.Error("Failed to start health server", err)
-			os.Exit(1)
-		}
+		rlog.Error("Failed to start health server", err)
+		os.Exit(1)
 	}
 }
 func StartWithDefaults(opts ...Option) error {
@@ -132,10 +130,8 @@ func StartWithDefaults(opts ...Option) error {
 
 func MustStartWithDefaults(opts ...Option) {
 	if err := StartWithDefaults(opts...); err != nil {
-		if err != nil {
-			rlog.Error("Failed to start health server with defaults", err)
-			os.Exit(1)
-		}
+		rlog.Error("Failed to start health server with defaults", err)
+		os.Exit(1)
 	}
 }
 
