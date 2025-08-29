@@ -14,4 +14,5 @@ type AclInterface interface {
 	CheckAccess(ctx context.Context, scope, subject, access string) bool
 	GetById(ctx context.Context, id string) (*aclmodels.AclV2ListItem, error)
 	GetByFilter(ctx context.Context, filter apicontracts.Filter) (*apicontracts.PaginatedResult[aclmodels.AclV2ListItem], error)
+	GetAll(ctx context.Context) (*[]aclmodels.AclV2ListItem, error)
 }

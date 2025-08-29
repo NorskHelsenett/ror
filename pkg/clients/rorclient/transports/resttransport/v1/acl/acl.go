@@ -57,6 +57,27 @@ func (c V1Client) GetByFilter(ctx context.Context, filter apicontracts.Filter) (
 	return &res, nil
 }
 
+func (c *V1Client) GetAll(ctx context.Context) (*[]aclmodels.AclV2ListItem, error) {
+	paginationLimit := 500
+	nextBatch := 0
+	var acls []aclmodels.AclV2ListItem
+
+	for {
+		batch, err := c.GetByFilter(ctx, apicontracts.Filter{
+			Limit: paginationLimit,
+			Skip:  nextBatch,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if batch == nil || len(batch.Data) == 0 {
+			return &acls, nil
+		}
+		acls = append(acls, batch.Data...)
+		nextBatch = nextBatch + paginationLimit
+	}
+}
+
 func (c V1Client) Create(ctx context.Context, item aclmodels.AclV2ListItem) error {
 	url, err := url.Parse(c.BasePath)
 	if err != nil {
