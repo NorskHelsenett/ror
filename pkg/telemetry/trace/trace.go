@@ -3,6 +3,7 @@ package trace
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -97,4 +98,13 @@ func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) 
 		}
 	}()
 	<-stop
+}
+
+func StartTracing(stop chan struct{}, cancelChan chan os.Signal, serviceName string, grpcEndpoint string) {
+	go func() {
+		ConnectTracer(stop, serviceName, grpcEndpoint)
+		sig := <-cancelChan
+		rlog.Info("Caught signal", rlog.Any("signal", sig))
+		stop <- struct{}{}
+	}()
 }
