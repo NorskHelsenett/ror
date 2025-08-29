@@ -135,9 +135,14 @@ func (t *RorHttpTransport) Self() v2self.SelfInterface {
 	return t.selfClientV2
 }
 
-func (t *RorHttpTransport) Ping() error {
+func (t *RorHttpTransport) CheckConnection() error {
 	_, err := t.infoClientV1.GetVersion()
 	return err
+}
+
+func (t *RorHttpTransport) Ping() bool {
+	_, err := t.infoClientV1.GetVersion()
+	return err == nil
 }
 
 func (t *RorHttpTransport) GetApiSecret() string {
@@ -146,4 +151,8 @@ func (t *RorHttpTransport) GetApiSecret() string {
 
 func (t *RorHttpTransport) GetRole() string {
 	return t.Client.Config.GetRole()
+}
+
+func (t *RorHttpTransport) GetTransportName() string {
+	return "HTTP Transport"
 }

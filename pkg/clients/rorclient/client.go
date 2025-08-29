@@ -1,6 +1,9 @@
 package rorclient
 
 import (
+	"fmt"
+
+	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
 	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
@@ -31,13 +34,12 @@ type RorClientInterface interface {
 	GetApiSecret() string
 	GetOwnerref() rorresourceowner.RorResourceOwnerReference
 	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
-	CheckHealth() []health.Check
+	CheckConnection() error
 
 	Clusters() v1clusters.ClustersInterface
 	Datacenters() v1datacenter.DatacenterInterface
 	Info() v1info.InfoInterface
 	Metrics() v1metrics.MetricsInterface
-	Ping() error
 	Projects() v1projects.ProjectsInterface
 	ResourceV2() v2resources.ResourcesInterface
 	Resources() v1resources.ResourceInterface
@@ -46,6 +48,8 @@ type RorClientInterface interface {
 	Stream() v1stream.StreamInterface
 	StreamV2() v2stream.StreamInterface
 	Workspaces() v1workspaces.WorkspacesInterface
+
+	clients.CommonClient
 }
 
 type RorClient struct {
@@ -117,7 +121,13 @@ func (c *RorClient) Resources() v1resources.ResourceInterface {
 	return c.resourceClientV1
 }
 
-func (c *RorClient) Ping() error {
+func (c *RorClient) CheckConnection() error {
+	return c.Transport.CheckConnection()
+}
+
+// Ping checks the connection to the transport.
+// Old version used error handling, use CheckConnection instead.
+func (c *RorClient) Ping() bool {
 	return c.Transport.Ping()
 }
 
@@ -150,11 +160,11 @@ func (c *RorClient) SetOwnerref(ownerref rorresourceowner.RorResourceOwnerRefere
 
 func (c *RorClient) CheckHealth() []health.Check {
 	healthChecks := []health.Check{}
-	if err := c.Transport.Ping(); err != nil {
+	if !c.Transport.Ping() {
 		healthChecks = append(healthChecks, health.Check{
 			ComponentID: "Transport",
 			Status:      health.StatusFail,
-			Output:      err.Error(),
+			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
 		})
 	}
 	return healthChecks
