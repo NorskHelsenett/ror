@@ -91,10 +91,6 @@ func (rc *rabbitmqcon) RegisterHandlerWithTTL(listener RabbitMQListnerInterface,
 	return nil
 }
 
-func Ping() bool {
-	return rabbitmq.Ping()
-}
-
 func (rc rabbitmqcon) GetChannel() *amqp.Channel {
 	if !rc.Connected {
 		rc.connect()
