@@ -397,7 +397,7 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "TanzuKubernetesCluster",
-			"apiVersion": "run.tanzu.vmware.com/v1alpha2",
+			"apiVersion": "run.tanzu.vmware.com/v1alpha3",
 			"metadata": map[string]interface{}{
 				"name": "test-tanzukubernetescluster",
 			},
@@ -416,7 +416,7 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesRelease(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "TanzuKubernetesRelease",
-			"apiVersion": "run.tanzu.vmware.com/v1alpha2",
+			"apiVersion": "run.tanzu.vmware.com/v1alpha3",
 			"metadata": map[string]interface{}{
 				"name": "test-tanzukubernetesrelease",
 			},
@@ -435,28 +435,9 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClass(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "VirtualMachineClass",
-			"apiVersion": "vmoperator.vmware.com/v1alpha1",
+			"apiVersion": "vmoperator.vmware.com/v1alpha2",
 			"metadata": map[string]interface{}{
 				"name": "test-virtualmachineclass",
-			},
-		},
-	}
-
-	expected := NewResourceFromDynamicClient(input)
-	result := NewResourceSetFromDynamicClient(input)
-
-	if !reflect.DeepEqual(result.Get(), expected) {
-		t.Errorf("Expected %v, but got %v", expected, result)
-	}
-}
-
-func TestNewResourceSetFromDynamicClientVirtualMachineClassBinding(t *testing.T) {
-	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"kind":       "VirtualMachineClassBinding",
-			"apiVersion": "vmoperator.vmware.com/v1alpha1",
-			"metadata": map[string]interface{}{
-				"name": "test-virtualmachineclassbinding",
 			},
 		},
 	}
@@ -476,6 +457,63 @@ func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 			"apiVersion": "general.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
 				"name": "test-kubernetescluster",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientProvider(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Provider",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-provider",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientWorkspace(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Workspace",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-workspace",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientKubernetesMachineClass(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "KubernetesMachineClass",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-kubernetesmachineclass",
 			},
 		},
 	}
@@ -723,6 +761,25 @@ func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
 			"apiVersion": "backupjob.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
 				"name": "test-backupjob",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Unknown",
+			"apiVersion": "unknown.ror.internal/v1",
+			"metadata": map[string]interface{}{
+				"name": "test-unknown",
 			},
 		},
 	}

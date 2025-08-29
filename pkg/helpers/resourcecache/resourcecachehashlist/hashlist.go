@@ -1,6 +1,11 @@
-package apicontractsv2resources
+package resourcecachehashlist
 
-import "github.com/NorskHelsenett/ror/pkg/rlog"
+import (
+	"fmt"
+	"slices"
+
+	"github.com/NorskHelsenett/ror/pkg/rlog"
+)
 
 type HashList struct {
 	Items []HashItem `json:"items"`
@@ -23,6 +28,9 @@ func (hl HashList) GetInactiveUid() []string {
 	for i := range hl.Items {
 		if !hl.Items[i].active {
 			ret = append(ret, hl.Items[i].Uid)
+			if hl.Items[i].Uid == "" {
+				rlog.Warn(fmt.Sprintf("resource %s has empty uid", hl.Items[i].Hash))
+			}
 		}
 	}
 	return ret
@@ -73,4 +81,10 @@ func (hl *HashList) UpdateHash(uid string, hash string) {
 		active: true,
 	}
 	hl.Items = append(hl.Items, newItem)
+}
+
+func (hl *HashList) DeleteByUid(uid string) {
+	hl.Items = slices.DeleteFunc(hl.Items, func(item HashItem) bool {
+		return item.Uid == uid
+	})
 }

@@ -147,16 +147,28 @@ type VirtualMachineClassinterface interface {
 	Get() *ResourceVirtualMachineClass
 }
 
-// VirtualMachineClassBindinginterface represents the interface for resources of the type virtualmachineclassbinding
-type VirtualMachineClassBindinginterface interface {
-	CommonResourceInterface
-	Get() *ResourceVirtualMachineClassBinding
-}
-
 // KubernetesClusterinterface represents the interface for resources of the type kubernetescluster
 type KubernetesClusterinterface interface {
 	CommonResourceInterface
 	Get() *ResourceKubernetesCluster
+}
+
+// Providerinterface represents the interface for resources of the type provider
+type Providerinterface interface {
+	CommonResourceInterface
+	Get() *ResourceProvider
+}
+
+// Workspaceinterface represents the interface for resources of the type workspace
+type Workspaceinterface interface {
+	CommonResourceInterface
+	Get() *ResourceWorkspace
+}
+
+// KubernetesMachineClassinterface represents the interface for resources of the type kubernetesmachineclass
+type KubernetesMachineClassinterface interface {
+	CommonResourceInterface
+	Get() *ResourceKubernetesMachineClass
 }
 
 // ClusterOrderinterface represents the interface for resources of the type clusterorder
@@ -235,4 +247,10 @@ type Datacenterinterface interface {
 type BackupJobinterface interface {
 	CommonResourceInterface
 	Get() *ResourceBackupJob
+}
+
+// Unknowninterface represents the interface for resources of the type unknown
+type Unknowninterface interface {
+	CommonResourceInterface
+	Get() *ResourceUnknown
 }

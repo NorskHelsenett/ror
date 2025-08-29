@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 )
@@ -20,4 +22,8 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 func (c *V1Client) CreatePVC(input apicontracts.PersistentVolumeClaimMetric) error {
 	var dummy interface{}
 	return c.Client.PostJSON(c.basePath+"/pvc", input, &dummy)
+}
+
+func (c *V1Client) PostReport(ctx context.Context, metricsReport apicontracts.MetricsReport) error {
+	return c.Client.PostJSONWithContext(ctx, c.basePath, metricsReport, nil)
 }

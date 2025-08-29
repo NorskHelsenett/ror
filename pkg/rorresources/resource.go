@@ -36,8 +36,10 @@ type Resource struct {
 	TanzuKubernetesClusterResource     *rortypes.ResourceTanzuKubernetesCluster     `json:"tanzukubernetescluster,omitempty" bson:"tanzukubernetescluster,omitempty"`
 	TanzuKubernetesReleaseResource     *rortypes.ResourceTanzuKubernetesRelease     `json:"tanzukubernetesrelease,omitempty" bson:"tanzukubernetesrelease,omitempty"`
 	VirtualMachineClassResource        *rortypes.ResourceVirtualMachineClass        `json:"virtualmachineclass,omitempty" bson:"virtualmachineclass,omitempty"`
-	VirtualMachineClassBindingResource *rortypes.ResourceVirtualMachineClassBinding `json:"virtualmachineclassbinding,omitempty" bson:"virtualmachineclassbinding,omitempty"`
 	KubernetesClusterResource          *rortypes.ResourceKubernetesCluster          `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
+	ProviderResource                   *rortypes.ResourceProvider                   `json:"provider,omitempty" bson:"provider,omitempty"`
+	WorkspaceResource                  *rortypes.ResourceWorkspace                  `json:"workspace,omitempty" bson:"workspace,omitempty"`
+	KubernetesMachineClassResource     *rortypes.ResourceKubernetesMachineClass     `json:"kubernetesmachineclass,omitempty" bson:"kubernetesmachineclass,omitempty"`
 	ClusterOrderResource               *rortypes.ResourceClusterOrder               `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
 	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty" bson:"project,omitempty"`
 	ConfigurationResource              *rortypes.ResourceConfiguration              `json:"configuration,omitempty" bson:"configuration,omitempty"`
@@ -51,6 +53,7 @@ type Resource struct {
 	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
 	DatacenterResource                 *rortypes.ResourceDatacenter                 `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
 	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
+	UnknownResource                    *rortypes.ResourceUnknown                    `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -165,12 +168,20 @@ func (r *Resource) SetVirtualMachineClass(res *rortypes.ResourceVirtualMachineCl
 	r.VirtualMachineClassResource = res
 }
 
-func (r *Resource) SetVirtualMachineClassBinding(res *rortypes.ResourceVirtualMachineClassBinding) {
-	r.VirtualMachineClassBindingResource = res
-}
-
 func (r *Resource) SetKubernetesCluster(res *rortypes.ResourceKubernetesCluster) {
 	r.KubernetesClusterResource = res
+}
+
+func (r *Resource) SetProvider(res *rortypes.ResourceProvider) {
+	r.ProviderResource = res
+}
+
+func (r *Resource) SetWorkspace(res *rortypes.ResourceWorkspace) {
+	r.WorkspaceResource = res
+}
+
+func (r *Resource) SetKubernetesMachineClass(res *rortypes.ResourceKubernetesMachineClass) {
+	r.KubernetesMachineClassResource = res
 }
 
 func (r *Resource) SetClusterOrder(res *rortypes.ResourceClusterOrder) {
@@ -223,6 +234,10 @@ func (r *Resource) SetDatacenter(res *rortypes.ResourceDatacenter) {
 
 func (r *Resource) SetBackupJob(res *rortypes.ResourceBackupJob) {
 	r.BackupJobResource = res
+}
+
+func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
+	r.UnknownResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -340,14 +355,24 @@ func (r *Resource) VirtualMachineClass() rortypes.VirtualMachineClassinterface {
 	return r.VirtualMachineClassResource
 }
 
-// VirtualMachineClassBinding is a wrapper for the underlying resource, it provides a VirtualMachineClassBindinginterface to work with virtualmachineclassbindings
-func (r *Resource) VirtualMachineClassBinding() rortypes.VirtualMachineClassBindinginterface {
-	return r.VirtualMachineClassBindingResource
-}
-
 // KubernetesCluster is a wrapper for the underlying resource, it provides a KubernetesClusterinterface to work with kubernetesclusters
 func (r *Resource) KubernetesCluster() rortypes.KubernetesClusterinterface {
 	return r.KubernetesClusterResource
+}
+
+// Provider is a wrapper for the underlying resource, it provides a Providerinterface to work with providers
+func (r *Resource) Provider() rortypes.Providerinterface {
+	return r.ProviderResource
+}
+
+// Workspace is a wrapper for the underlying resource, it provides a Workspaceinterface to work with workspaces
+func (r *Resource) Workspace() rortypes.Workspaceinterface {
+	return r.WorkspaceResource
+}
+
+// KubernetesMachineClass is a wrapper for the underlying resource, it provides a KubernetesMachineClassinterface to work with Kubernetesmachineclasses
+func (r *Resource) KubernetesMachineClass() rortypes.KubernetesMachineClassinterface {
+	return r.KubernetesMachineClassResource
 }
 
 // ClusterOrder is a wrapper for the underlying resource, it provides a ClusterOrderinterface to work with clusterorders
@@ -413,6 +438,11 @@ func (r *Resource) Datacenter() rortypes.Datacenterinterface {
 // BackupJob is a wrapper for the underlying resource, it provides a BackupJobinterface to work with backupjobs
 func (r *Resource) BackupJob() rortypes.BackupJobinterface {
 	return r.BackupJobResource
+}
+
+// Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
+func (r *Resource) Unknown() rortypes.Unknowninterface {
+	return r.UnknownResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

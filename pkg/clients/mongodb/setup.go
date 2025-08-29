@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/dotse/go-health"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
 	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
@@ -45,7 +47,7 @@ func GetMongoClient() *mongo.Client {
 // Initializes the mongodb client
 func Init(cp DatabaseCredentialHelper, host string, port string, database string) {
 	mongodb.init(cp, host, port, database)
-	health.Register("mongodb", mongodb)
+	rorhealth.Register("mongodb", mongodb)
 }
 
 func GetMongodbConnection() *MongodbCon {
@@ -97,7 +99,7 @@ func (mdb MongodbCon) ping() bool {
 
 func (mdb *MongodbCon) connect() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().SetMonitor(otelmongo.NewMonitor()).ApplyURI(mdb.getConnectionstring()).SetServerAPIOptions(serverAPI)
+	opts := options.Client().SetMonitor(otelmongo.NewMonitor()).ApplyURI(mdb.getConnectionstring()).SetServerAPIOptions(serverAPI).SetMaxPoolSize(100).SetMinPoolSize(10)
 
 	cli, err := mongo.Connect(mdb.Context, opts)
 	if err != nil {

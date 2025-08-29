@@ -5,7 +5,7 @@ package apiresourcecontracts
 
 // Resourcetypes allowed in the generic resource models.
 type Resourcetypes interface {
-	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceVirtualMachineClassBinding | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent | ResourceVirtualMachine | ResourceEndpoints | ResourceNetworkPolicy | ResourceBackupJob
+	ResourceNamespace | ResourceNode | ResourcePersistentVolumeClaim | ResourceDeployment | ResourceStorageClass | ResourcePolicyReport | ResourceApplication | ResourceAppProject | ResourceCertificate | ResourceService | ResourcePod | ResourceReplicaSet | ResourceStatefulSet | ResourceDaemonSet | ResourceIngress | ResourceIngressClass | ResourceVulnerabilityReport | ResourceExposedSecretReport | ResourceConfigAuditReport | ResourceRbacAssessmentReport | ResourceTanzuKubernetesCluster | ResourceTanzuKubernetesRelease | ResourceVirtualMachineClass | ResourceKubernetesCluster | ResourceClusterOrder | ResourceProject | ResourceConfiguration | ResourceClusterComplianceReport | ResourceClusterVulnerabilityReport | ResourceRoute | ResourceSlackMessage | ResourceVulnerabilityEvent | ResourceVirtualMachine | ResourceEndpoints | ResourceNetworkPolicy | ResourceBackupJob
 }
 
 // type for returning Namespace resources to internal functions
@@ -144,12 +144,6 @@ type ResourceListTanzukubernetesreleases struct {
 type ResourceListVirtualmachineclasses struct {
 	Owner                 ResourceOwnerReference        `json:"owner"`
 	Virtualmachineclasses []ResourceVirtualMachineClass `json:"virtualmachineclasses"`
-}
-
-// type for returning VirtualMachineClassBinding resources to internal functions
-type ResourceListVirtualmachineclassbindings struct {
-	Owner                       ResourceOwnerReference               `json:"owner"`
-	Virtualmachineclassbindings []ResourceVirtualMachineClassBinding `json:"virtualmachineclassbindings"`
 }
 
 // type for returning KubernetesCluster resources to internal functions

@@ -2,14 +2,20 @@ package httpclient
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
+)
+
+var (
+	DefaultTimeout = 60 * time.Second
 )
 
 type HttpTransportClientParams struct {
@@ -18,6 +24,22 @@ type HttpTransportClientParams struct {
 }
 
 type HttpTransportClientOpts string
+
+type HttpTransportClientStatus struct {
+	Established bool      `json:"established"`
+	ApiVersion  string    `json:"api_version"`
+	LibVersion  string    `json:"lib_version"`
+	RetryAfter  time.Time `json:"retry_after"`
+}
+
+func NewHttpTransportClientStatus() *HttpTransportClientStatus {
+	return &HttpTransportClientStatus{
+		Established: false,
+		ApiVersion:  "unknown",
+		LibVersion:  "unknown",
+		RetryAfter:  time.Time{},
+	}
+}
 
 const (
 	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"
@@ -41,15 +63,28 @@ type HttpTransportClientConfig struct {
 
 type HttpTransportAuthProvider interface {
 	AddAuthHeaders(req *http.Request)
+	GetApiSecret() string
 }
 
 type HttpTransportClient struct {
 	Client *http.Client
 	Config *HttpTransportClientConfig
+	Status *HttpTransportClientStatus
+}
+
+func (t *HttpTransportClientConfig) GetRole() string {
+	return t.Role
 }
 
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
-	req, err := http.NewRequest("GET", t.Config.BaseURL+path, nil)
+	return t.GetJSONWithContext(context.TODO(), path, out, params...)
+}
+
+func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	if err := t.PreflightCheck(); err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, "GET", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return err
 	}
@@ -67,7 +102,7 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 	}
 	defer res.Body.Close()
 
-	err = handleResponse(res, out)
+	err = t.handleResponse(res, out)
 	if err != nil {
 		return err
 	}
@@ -76,11 +111,19 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 }
 
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
+	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
+}
+
+func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	if err := t.PreflightCheck(); err != nil {
+		return err
+	}
+
 	jsonData, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(ctx, "POST", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -94,7 +137,7 @@ func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...H
 	}
 	defer res.Body.Close()
 
-	err = handleResponse(res, out)
+	err = t.handleResponse(res, out)
 	if err != nil {
 		return err
 	}
@@ -103,11 +146,18 @@ func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...H
 }
 
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
+	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
+}
+
+func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	if err := t.PreflightCheck(); err != nil {
+		return err
+	}
 	jsonData, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(ctx, "PUT", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -121,7 +171,7 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 	}
 	defer res.Body.Close()
 
-	err = handleResponse(res, out)
+	err = t.handleResponse(res, out)
 	if err != nil {
 		return err
 	}
@@ -130,7 +180,14 @@ func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...Ht
 }
 
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
-	req, err := http.NewRequest("DELETE", t.Config.BaseURL+path, nil)
+	return t.DeleteWithContext(context.TODO(), path, out, params...)
+}
+
+func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	if err := t.PreflightCheck(); err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, "DELETE", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return err
 	}
@@ -144,7 +201,7 @@ func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTranspo
 	}
 	defer res.Body.Close()
 
-	err = handleResponse(res, out)
+	err = t.handleResponse(res, out)
 	if err != nil {
 		return err
 	}
@@ -155,7 +212,14 @@ func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTranspo
 // Head makes a HEAD request with the given path and params.
 // It returns only the header and status code from the result, as it expects no body in return.
 func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
-	req, err := http.NewRequest("HEAD", t.Config.BaseURL+path, nil)
+	return t.HeadWithContext(context.TODO(), path, params...)
+}
+
+func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
+	if err := t.PreflightCheck(); err != nil {
+		return nil, -1, err
+	}
+	req, err := http.NewRequestWithContext(ctx, "HEAD", t.Config.BaseURL+path, nil)
 	if err != nil {
 		return nil, -1, err
 	}
@@ -169,13 +233,122 @@ func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientPar
 	}
 	defer res.Body.Close()
 
+	err = t.handleResponse(res, nil)
+	if err != nil {
+		return nil, -1, err
+	}
+
 	return res.Header, res.StatusCode, nil
 }
 
-func handleResponse(res *http.Response, out any) error {
+// PreflightCheck by checking if retry-after is set client.Status.RetryAfter
+func (t *HttpTransportClient) PreflightCheck() error {
+	// if t.Status == nil {
+	// 	t.Status = NewHttpTransportClientStatus()
+	// }
+	if !t.Status.RetryAfter.IsZero() {
+		if t.Status.RetryAfter.After(time.Now()) {
+			return fmt.Errorf("preflight failed, retry after is set and not expired: %s", t.Status.RetryAfter.Format(time.RFC3339))
+		}
+		t.Status.RetryAfter = time.Time{} // Reset retry after if it has expired
+	}
+	return nil
+}
 
+// getRetryAfterHeader retrieves the "Retry-After" header from the response.
+// It returns a time.Time value indicating when the client should retry the request.
+// The header can be in either RFC1123 format or as an integer representing seconds.
+// If the header is not present, it defaults to the variable DefaultTimeout (60 seconds from now).
+// This is useful for handling rate limiting or service unavailability scenarios.
+func (t *HttpTransportClient) getRetryAfterHeader(res *http.Response) time.Time {
+	retryAfter := res.Header.Get("Retry-After")
+
+	if retryAfter == "" {
+		// Return default offset of 60 seconds if no Retry-After header found
+		return time.Now().Add(DefaultTimeout)
+	}
+
+	// Try to parse as RFC1123 time format first
+	retryAfterTime, err := time.Parse(time.RFC1123, retryAfter)
+	if err == nil {
+		return retryAfterTime
+	}
+
+	// Try to parse as seconds (integer)
+	seconds, err := strconv.Atoi(retryAfter)
+	if err != nil {
+		// If both parsing attempts fail, return default offset
+		return time.Now().Add(DefaultTimeout)
+	}
+
+	// Convert seconds to time offset from now
+	return time.Now().Add(time.Duration(seconds) * time.Second)
+}
+
+// HandleNonOk processes HTTP responses with non-successful status codes and returns appropriate errors.
+// It handles different HTTP error status codes with specific behavior:
+//
+// - For 503 (Service Unavailable) and 429 (Too Many Requests): Sets retry-after time from response headers
+// - For 401 (Unauthorized): Sets default retry timeout and returns authentication error message
+// - For 403 (Forbidden): Sets default retry timeout and returns permission error message
+// - For other 4xx/5xx errors: Returns generic HTTP error
+//
+// The function updates the client's Status.RetryAfter field for rate limiting and throttling scenarios.
+// Returns nil if the response status code indicates success (200-399).
+//
+// Parameters:
+//   - res: HTTP response to process
+//
+// Returns:
+//   - error: Formatted error message for non-successful responses, nil for successful responses
+func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 	if res.StatusCode > 399 || res.StatusCode < 200 {
+
+		if res.StatusCode == http.StatusServiceUnavailable || res.StatusCode == http.StatusTooManyRequests {
+			t.Status.RetryAfter = t.getRetryAfterHeader(res)
+			return fmt.Errorf("http error: %s from %s (retry after: %s)", res.Status, res.Request.URL, t.Status.RetryAfter.Format(time.RFC3339))
+		}
+		if res.StatusCode == http.StatusUnauthorized {
+			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for unauthorized
+			return fmt.Errorf("http error: %s from %s (unauthorized, check your authentication) Connection throttled", res.Status, res.Request.URL)
+		}
+		if res.StatusCode == http.StatusForbidden {
+			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for forbidden
+			return fmt.Errorf("http error: %s from %s (forbidden, check your permissions) Connection throttled", res.Status, res.Request.URL)
+		}
 		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
+	}
+	return nil
+}
+
+// postflightCheck is a placeholder for any postflight checks that might be needed after a request.
+func (t *HttpTransportClient) postflightCheck(res *http.Response) error {
+	if err := t.HandleNonOk(res); err != nil {
+		return err
+	}
+	//TODO: add constants for header names
+	t.Status.ApiVersion = res.Header.Get("x-ror-version")
+	t.Status.LibVersion = res.Header.Get("x-ror-libver")
+	// If the response is successful, reset the retry after status
+	t.Status.RetryAfter = time.Time{}
+	t.Status.Established = true
+
+	return nil
+}
+
+// handleResponse processes the HTTP response, checking for errors and unmarshalling the body into the provided output variable.
+// It handles both JSON and plain text responses, ensuring the output variable is a pointer.
+// If the response is successful (2xx status code), it reads the body and unmarshals it into the provided output variable.
+// If the response is not successful, it checks for errors and returns an appropriate error message.
+func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error {
+
+	if err := t.postflightCheck(res); err != nil {
+		return err
+	}
+
+	// If no output is expected, return early
+	if out == nil && res.StatusCode == http.StatusNoContent {
+		return nil
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -188,6 +361,7 @@ func handleResponse(res *http.Response, out any) error {
 		if v.Kind() != reflect.Ptr || v.IsNil() {
 			return fmt.Errorf("out must be a pointer and not nil")
 		}
+		// this might panic
 		v.Elem().Set(reflect.ValueOf(string(body)))
 		return nil
 	}
@@ -237,4 +411,14 @@ func (t *HttpTransportClient) ParseParams(req *http.Request, params ...HttpTrans
 	if !noAuth {
 		t.AddAuthHeaders(req)
 	}
+}
+
+func (t *HttpTransportClientStatus) IsEstablished() bool {
+	return t.Established
+}
+func (t *HttpTransportClientStatus) GetApiVersion() string {
+	return t.ApiVersion
+}
+func (t *HttpTransportClientStatus) GetLibVersion() string {
+	return t.LibVersion
 }

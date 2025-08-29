@@ -8,6 +8,7 @@ import (
 type Acl2Subject string
 
 const (
+	Acl2RorSubjecUnknown         = "UNKNOWN"
 	Acl2RorSubjectCluster        = "cluster"
 	Acl2RorSubjectProject        = "project"
 	Acl2RorSubjectGlobal         = "globalscope" // for subject, not scope, TODO: new const

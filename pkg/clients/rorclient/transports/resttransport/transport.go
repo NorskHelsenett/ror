@@ -3,9 +3,11 @@ package resttransport
 import (
 	"net/http"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
 
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
 	restv1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/datacenter"
@@ -18,6 +20,7 @@ import (
 	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
 	restv2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/v2stream"
+	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
 	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
 	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
@@ -31,6 +34,9 @@ import (
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
+// Compile-time check to ensure resourcecache implements ResourceCacheInterface
+var _ transports.RorTransport = (*RorHttpTransport)(nil)
+
 type RorHttpTransport struct {
 	Client             *httpclient.HttpTransportClient
 	streamClientV1     v1stream.StreamInterface
@@ -42,14 +48,26 @@ type RorHttpTransport struct {
 	resourcesClientV1  v1resources.ResourceInterface
 	metricsClientV1    v1metrics.MetricsInterface
 	resourcesClientV2  v2resources.ResourcesInterface
+	aclClientV1        v1Acl.AclInterface
 	selfClientV2       v2self.SelfInterface
 	streamClientV2     v2stream.StreamInterface
 }
 
 func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpTransport {
+	httpClient := &http.Client{}
+	return newWithHttpClient(config, httpClient)
+
+}
+
+func NewWithCustomHttpClient(config *httpclient.HttpTransportClientConfig, httpClient *http.Client) *RorHttpTransport {
+	return newWithHttpClient(config, httpClient)
+}
+
+func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient *http.Client) *RorHttpTransport {
 	client := &httpclient.HttpTransportClient{
-		Client: &http.Client{},
+		Client: httpClient,
 		Config: config,
+		Status: httpclient.NewHttpTransportClientStatus(),
 	}
 	t := &RorHttpTransport{
 		Client:             client,
@@ -66,6 +84,10 @@ func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpT
 		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
 	}
 	return t
+}
+
+func (t *RorHttpTransport) Status() transportstatus.RorTransportStatus {
+	return t.Client.Status
 }
 
 func (t *RorHttpTransport) Stream() v1stream.StreamInterface {
@@ -101,6 +123,10 @@ func (t *RorHttpTransport) ResourcesV2() v2resources.ResourcesInterface {
 	return t.resourcesClientV2
 }
 
+func (t *RorHttpTransport) AclV1() v1Acl.AclInterface {
+	return t.aclClientV1
+}
+
 func (t *RorHttpTransport) Streamv2() v2stream.StreamInterface {
 	return t.streamClientV2
 }
@@ -112,4 +138,12 @@ func (t *RorHttpTransport) Self() v2self.SelfInterface {
 func (t *RorHttpTransport) Ping() error {
 	_, err := t.infoClientV1.GetVersion()
 	return err
+}
+
+func (t *RorHttpTransport) GetApiSecret() string {
+	return t.Client.Config.AuthProvider.GetApiSecret()
+}
+
+func (t *RorHttpTransport) GetRole() string {
+	return t.Client.Config.GetRole()
 }

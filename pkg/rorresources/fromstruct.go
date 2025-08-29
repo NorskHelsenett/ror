@@ -118,25 +118,33 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetRbacAssessmentReport(res.RbacAssessmentReportResource)
 		r.SetCommonInterface(res.RbacAssessmentReportResource)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesCluster":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesCluster":
 		r.SetTanzuKubernetesCluster(res.TanzuKubernetesClusterResource)
 		r.SetCommonInterface(res.TanzuKubernetesClusterResource)
 
-	case "run.tanzu.vmware.com/v1alpha2, Kind=TanzuKubernetesRelease":
+	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesRelease":
 		r.SetTanzuKubernetesRelease(res.TanzuKubernetesReleaseResource)
 		r.SetCommonInterface(res.TanzuKubernetesReleaseResource)
 
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClass":
+	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClass":
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
 		r.SetCommonInterface(res.VirtualMachineClassResource)
-
-	case "vmoperator.vmware.com/v1alpha1, Kind=VirtualMachineClassBinding":
-		r.SetVirtualMachineClassBinding(res.VirtualMachineClassBindingResource)
-		r.SetCommonInterface(res.VirtualMachineClassBindingResource)
 
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		r.SetKubernetesCluster(res.KubernetesClusterResource)
 		r.SetCommonInterface(res.KubernetesClusterResource)
+
+	case "general.ror.internal/v1alpha1, Kind=Provider":
+		r.SetProvider(res.ProviderResource)
+		r.SetCommonInterface(res.ProviderResource)
+
+	case "general.ror.internal/v1alpha1, Kind=Workspace":
+		r.SetWorkspace(res.WorkspaceResource)
+		r.SetCommonInterface(res.WorkspaceResource)
+
+	case "general.ror.internal/v1alpha1, Kind=KubernetesMachineClass":
+		r.SetKubernetesMachineClass(res.KubernetesMachineClassResource)
+		r.SetCommonInterface(res.KubernetesMachineClassResource)
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterOrder":
 		r.SetClusterOrder(res.ClusterOrderResource)
@@ -189,6 +197,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 	case "backupjob.ror.internal/v1alpha1, Kind=BackupJob":
 		r.SetBackupJob(res.BackupJobResource)
 		r.SetCommonInterface(res.BackupJobResource)
+
+	case "unknown.ror.internal/v1, Kind=Unknown":
+		r.SetUnknown(res.UnknownResource)
+		r.SetCommonInterface(res.UnknownResource)
 
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))

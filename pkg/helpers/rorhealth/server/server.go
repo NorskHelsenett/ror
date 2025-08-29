@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"sync"
 
-	healthserver "github.com/dotse/go-health/server"
+	newhealth "github.com/dotse/go-health"
 )
 
 const (
@@ -101,7 +101,7 @@ func Start(opts ...Option) error {
 
 		httpServer = &http.Server{
 			Addr:              cfg.ipPort.String(),
-			Handler:           http.HandlerFunc(healthserver.Handle),
+			Handler:           http.HandlerFunc(newhealth.HandleHTTP),
 			ReadHeaderTimeout: 0,
 		}
 

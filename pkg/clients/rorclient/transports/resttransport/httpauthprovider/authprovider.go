@@ -34,3 +34,8 @@ func (a *AuthProvider) AddAuthHeaders(req *http.Request) {
 		req.Header.Add("Flow", "device")
 	}
 }
+
+func (a *AuthProvider) GetApiSecret() string {
+	return a.Secret
+
+}

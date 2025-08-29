@@ -1,4 +1,5 @@
-// package delivers apicontracts for resources
+// package delivers apicontracts for resources in the V1 API
+// Deprecated: This package is deprecated. Use rortypes instead.
 package apiresourcecontracts
 
 import (
@@ -7,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Allowed actions from the kubernetes dynamic client
+// Allowed actions from the kubernetes dynamic client// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceAction string
 
 const (
@@ -16,6 +17,7 @@ const (
 	K8sActionUpdate ResourceAction = "Update"
 )
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVersion string
 
 const (
@@ -25,7 +27,7 @@ const (
 
 // Deprecated: Use rorresourceowner.RorResourceOwnerReference instead
 // The ResourceOwnerReference or ownereref references the owner og a resource.
-// Its used to chek acl and select resources for valid Scopes.
+// Its used to chek acl and select resources for valid Scopes.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceOwnerReference struct {
 	Scope   aclmodels.Acl2Scope `json:"scope"`   // cluster, workspace,...
 	Subject string              `json:"subject"` // ror id eg clusterId or workspaceName
@@ -60,7 +62,7 @@ func (m ResourceOwnerReference) GetQueryParams() map[string]string {
 	return response
 }
 
-// Resource query used in the web facing resource services/repos
+// Resource query used in the web facing resource services/repos// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceQuery struct {
 	Owner      ResourceOwnerReference `json:"owner"`
 	ApiVersion string                 `json:"apiVersion"`
@@ -70,7 +72,7 @@ type ResourceQuery struct {
 	Global     bool
 }
 
-// Resource update model to exchange resources. The value MUST  be casted to its explicit value before its saved to mongodb.
+// Resource update model to exchange resources. The value MUST  be casted to its explicit value before its saved to mongodb.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceUpdateModel struct {
 	Owner      ResourceOwnerReference `json:"owner"`
 	ApiVersion string                 `json:"apiVersion"`
@@ -82,7 +84,7 @@ type ResourceUpdateModel struct {
 	Resource   any                    `json:"resource"`
 }
 
-// Generic resourcemodels for single resource.
+// Generic resourcemodels for single resource.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceModel[T Resourcetypes] struct {
 	Owner      ResourceOwnerReference `json:"owner"`
 	ApiVersion string                 `json:"apiVersion"`
@@ -94,7 +96,7 @@ type ResourceModel[T Resourcetypes] struct {
 	Resource   T                      `json:"resource"`
 }
 
-// Generic resourcemodels for multiple resources.
+// Generic resourcemodels for multiple resources.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceModels[T Resourcetypes] struct {
 	Owner      ResourceOwnerReference `json:"owner"`
 	ApiVersion string                 `json:"apiVersion"`
@@ -102,7 +104,7 @@ type ResourceModels[T Resourcetypes] struct {
 	Resources  []T                    `json:"resources"`
 }
 
-// K8s metadata struct
+// K8s metadata struct// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceMetadata struct {
 	Name              string                           `json:"name"`
 	ResourceVersion   string                           `json:"resourceVersion"`
@@ -115,7 +117,7 @@ type ResourceMetadata struct {
 	OwnerReferences   []ResourceMetadataOwnerReference `json:"ownerReferences,omitempty"`
 }
 
-// K8s metadata.OwnerReferences struct
+// K8s metadata.OwnerReferences struct// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceMetadataOwnerReference struct {
 	ApiVersion string `json:"apiVersion"`
 	Kind       string `json:"kind"`
@@ -124,13 +126,13 @@ type ResourceMetadataOwnerReference struct {
 }
 
 // Hashlist for use in agent communication
-// NB This struct has a counterpart in the agent.
+// NB This struct has a counterpart in the agent.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type HashList struct {
 	Items []HashItem `json:"items"`
 }
 
 // Item for use in the hashlist
-// NB This struct has a counterpart in the agent.
+// NB This struct has a counterpart in the agent.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type HashItem struct {
 	Uid  string `json:"uid"`
 	Hash string `json:"hash"`

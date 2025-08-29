@@ -1,12 +1,15 @@
 package rortypes
 
-import "time"
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+type VmId string
 
 type ResourceVirtualMachine struct {
-	Id       string                       `json:"id"`
-	Spec     ResourceVirtualMachineSpec   `json:"spec"`
-	Status   ResourceVirtualMachineStatus `json:"status"`
-	Provider string                       `json:"provider"`
+	// This is the ID of the vm in the hypervisor layer
+	ExternalId VmId                         `json:"externalId"`
+	Spec       ResourceVirtualMachineSpec   `json:"spec"`
+	Status     ResourceVirtualMachineStatus `json:"status"`
+	Provider   string                       `json:"provider"`
 }
 
 // things we can change
@@ -19,10 +22,10 @@ type ResourceVirtualMachineSpec struct {
 
 // things we can't change
 type ResourceVirtualMachineStatus struct {
-	LastUpdated     time.Time                                   `json:"lastUpdated"`
+	LastUpdated     metav1.Time                                 `json:"lastUpdated"`
 	Location        string                                      `json:"location"`
 	Cpu             ResourceVirtualMachineCpuStatus             `json:"cpu"`
-	Tags            []ResourceVirtualMachineTag                 `json:"tags"`
+	Tags            map[string]ResourceVirtualMachineTag        `json:"tags"`
 	State           ResourceVirtualMachineState                 `json:"state"`
 	Disks           []ResourceVirtualMachineDiskStatus          `json:"disks"`
 	Memory          ResourceVirtualMachineMemoryStatus          `json:"memory"`

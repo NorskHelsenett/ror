@@ -2,7 +2,7 @@ package apiresourcecontracts
 
 // ResourceTanzuKubernetesCluster
 // K8s node struct
-// Tanzu kubernetes release struct
+// Tanzu kubernetes release struct// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClass struct {
 	ApiVersion string                              `json:"apiVersion"`
 	Kind       string                              `json:"kind"`
@@ -11,6 +11,7 @@ type ResourceVirtualMachineClass struct {
 	Status     map[string]string                   `json:"status"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClassMetadata struct {
 	Annotations map[string]string `json:"annotations"`
 	ClusterName string            `json:"clusterName"`
@@ -30,6 +31,7 @@ type ResourceVirtualMachineClassMetadata struct {
 	Uid      string `json:"uid"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClassMetadataManagedField struct {
 	ApiVersion string `json:"apiVersion"`
 	FieldsType string `json:"fieldsType"`
@@ -40,6 +42,7 @@ type ResourceVirtualMachineClassMetadataManagedField struct {
 	Time        string `json:"time"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClassMetadataOwnerReference struct {
 	ApiVersion         string `json:"apiVersion"`
 	BlockOwnerDeletion bool   `json:"blockOwnerDeletion"`
@@ -49,12 +52,14 @@ type ResourceVirtualMachineClassMetadataOwnerReference struct {
 	Uid                string `json:"uid"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClassSpec struct {
 	Description string                                  `json:"description"`
 	Hardware    ResourceVirtualMachineClassSpecHardware `json:"hardware"`
 	//Policies ResourceVirtualMachineClassSpecPolicies `json:"policies"`
 }
 
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClassSpecHardware struct {
 	Cpus int `json:"cpus"`
 	//Devices ResourceVirtualMachineClassSpecHardwareDevice `json:"devices"`
@@ -63,7 +68,7 @@ type ResourceVirtualMachineClassSpecHardware struct {
 
 // type ResourceVirtualMachineClassSpecHardwareDevice struct {
 // }
-
+// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceVirtualMachineClassSpecHardwareInstanceStorage struct {
 	StorageClass string `json:"storageClass"`
 	//Volumes 	[]ResourceVirtualMachineClassSpecHardwareInstanceStorageVolumes `json:"volumes"`

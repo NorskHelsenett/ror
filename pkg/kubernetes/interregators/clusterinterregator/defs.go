@@ -7,11 +7,13 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindproviderinterregator"
 	talosproviderinterregator "github.com/NorskHelsenett/ror/pkg/kubernetes/providers/talos"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/tanzu/tanzuproviderinterregator"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/vitistack/vitistackinterregator"
 )
 
 // GetProviderInterregators returns a list of all the provider interregators implemented
 // TODO: move to a config provider?
 var interregators = []ClusterProviderInterregator{
+	vitistackinterregator.NewInterregator(),
 	tanzuproviderinterregator.NewInterregator(),
 	azureproviderinterregator.NewInterregator(),
 	k3dproviderinterregator.NewInterregator(),

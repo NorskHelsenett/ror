@@ -58,7 +58,7 @@ services:
       - '8081:8081'
 
   dex:
-    image: ${DOCKER_MIRROR}bitnami/dex:2.41.1
+    image: ${DOCKER_MIRROR}bitnami/dex:2.42.1
     restart: always
     volumes:
       - ../data/dex/configs:/configs
@@ -90,7 +90,7 @@ services:
     restart: 'no'
 
   vault:
-    image: ${DOCKER_MIRROR}hashicorp/vault:1.18
+    image: ${DOCKER_MIRROR}hashicorp/vault:1.19
     cap_add:
       - IPC_LOCK
     environment:
