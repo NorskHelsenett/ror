@@ -3,6 +3,7 @@ package rabbitmqclient
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -16,11 +17,13 @@ import (
 
 type RabbitMQListnerInterface interface {
 	Listen(chan *amqp.Error)
+	ListenWithTTL(chan *amqp.Error, time.Duration)
 }
 
 type RabbitMQConnection interface {
 	GetChannel() *amqp.Channel
 	RegisterHandler(RabbitMQListnerInterface) error
+	RegisterHandlerWithTTL(RabbitMQListnerInterface, time.Duration) error
 	SendMessage(ctx context.Context, message any, routing string, extraheaders map[string]interface{}) error
 	clients.CommonClient
 }
@@ -75,6 +78,15 @@ func (rc *rabbitmqcon) RegisterHandler(listner RabbitMQListnerInterface) error {
 	rc.Listeners = append(rc.Listeners, listner)
 	if rc.Connected {
 		go listner.Listen(rc.CancelChannel)
+	}
+	return nil
+}
+
+// RegisterHandlerWithTTL Convience method for registering a handler with a defined message TTL
+func (rc *rabbitmqcon) RegisterHandlerWithTTL(listener RabbitMQListnerInterface, TTL time.Duration) error {
+	rc.Listeners = append(rc.Listeners, listener)
+	if rc.Connected {
+		go listener.ListenWithTTL(rc.CancelChannel, TTL)
 	}
 	return nil
 }
