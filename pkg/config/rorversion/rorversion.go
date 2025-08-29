@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+const (
+	DefaultVersion = "0.0.0-dev"
+	DefaultCommit  = "FFFFFF"
+	DefaultLibVer  = "N/A"
+)
+
 var (
 	Version string
 	Commit  string
@@ -18,18 +24,32 @@ type RorVersion struct {
 }
 
 func NewRorVersion(version string, commit string) RorVersion {
-	if Version != "" {
-		version = Version
+	if Version == "" {
+		Version = version
 	}
-	if Commit != "" {
-		commit = Commit
+	if Commit == "" {
+		Commit = commit
 	}
 	if LibVer == "" {
 		LibVer = "N/A"
 	}
+	return GetRorVersion()
+
+}
+
+func GetRorVersion() RorVersion {
+	if Version == "" {
+		Version = DefaultVersion
+	}
+	if Commit == "" {
+		Commit = DefaultCommit
+	}
+	if LibVer == "" {
+		LibVer = DefaultLibVer
+	}
 	return RorVersion{
-		Version: version,
-		Commit:  commit,
+		Version: Version,
+		Commit:  Commit,
 		LibVer:  LibVer,
 	}
 }
