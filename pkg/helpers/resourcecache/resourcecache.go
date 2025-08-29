@@ -73,7 +73,7 @@ func newResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
 
 	rc.rorClient = rcConfig.RorClient
 
-	if rc.rorClient.Ping() == nil {
+	if rc.rorClient.CheckConnection() == nil {
 		hashes, err := rc.rorClient.ResourceV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
 		if err != nil {
 			rc.hashList = NewEmptyHashList()

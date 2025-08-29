@@ -30,7 +30,9 @@ type RorTransport interface {
 	ResourcesV2() v2resources.ResourcesInterface
 	Streamv2() v2stream.StreamInterface
 	AclV1() v1Acl.AclInterface
-	Ping() error
+	CheckConnection() error
+	Ping() bool
 	GetApiSecret() string
 	GetRole() string
+	GetTransportName() string
 }
