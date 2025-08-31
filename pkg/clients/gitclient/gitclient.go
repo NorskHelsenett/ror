@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/dotse/go-health"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -54,9 +55,10 @@ func NewGitClient(repoURL, branch, token string) *GitClient {
 //	commitMsg:  Commit message for the change
 //
 // Returns an error if any git operation fails.
-func (c *GitClient) UpdateFile(filePath string, newContent []byte, commitMsg string) error {
+func (c *GitClient) UploadFile(filePath string, newContent []byte, commitMsg string) error {
 	// Use in-memory filesystem
 	fs := memfs.New()
+
 	repo, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
 		URL:           c.RepoURL,
 		ReferenceName: plumbing.NewBranchReferenceName(c.Branch),
@@ -108,4 +110,77 @@ func (c *GitClient) UpdateFile(filePath string, newContent []byte, commitMsg str
 		return fmt.Errorf("failed to push: %w", err)
 	}
 	return nil
+}
+
+// GetFile clones the repo into an in-memory filesystem and returns the contents of the specified file as []byte.
+// If the file does not exist, it returns nil and no error.
+func (c *GitClient) GetFile(filePath string) ([]byte, error) {
+	fs := memfs.New()
+
+	_, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+		URL:           c.RepoURL,
+		ReferenceName: plumbing.NewBranchReferenceName(c.Branch),
+		SingleBranch:  true,
+		Auth: &http.BasicAuth{
+			Username: "token",
+			Password: c.Token,
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to clone repo: %w", err)
+	}
+
+	absPath := filepath.Join("/", filePath)
+	f, err := fs.Open(absPath)
+	if err != nil {
+		// File does not exist
+		return nil, nil
+	}
+	defer f.Close()
+
+	content := make([]byte, 0)
+	buf := make([]byte, 4096)
+	for {
+		n, err := f.Read(buf)
+		if n > 0 {
+			content = append(content, buf[:n]...)
+		}
+		if err != nil {
+			if err.Error() == "EOF" {
+				break
+			}
+			return nil, fmt.Errorf("failed to read file: %w", err)
+		}
+	}
+	return content, nil
+}
+
+// CheckConnection attempts to clone the repository to verify access and authentication.
+// Returns nil if successful, or an error if the connection/auth fails.
+func (c *GitClient) CheckConnection() error {
+	fs := memfs.New()
+	_, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
+		URL:           c.RepoURL,
+		ReferenceName: plumbing.NewBranchReferenceName(c.Branch),
+		SingleBranch:  true,
+		Auth: &http.BasicAuth{
+			Username: "token",
+			Password: c.Token,
+		},
+		Depth: 1, // shallow clone for speed
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CheckHealth checks the health of the git connection and returns a health check
+func (c *GitClient) CheckHealth() []health.Check {
+	check := health.Check{}
+	if err := c.CheckConnection(); err != nil {
+		check.Status = health.StatusFail
+		check.Output = fmt.Sprintf("Could not connect to git: %v", err)
+	}
+	return []health.Check{check}
 }
