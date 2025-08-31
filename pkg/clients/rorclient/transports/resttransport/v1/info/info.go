@@ -2,6 +2,7 @@ package info
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
+	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
 
 type V1Client struct {
@@ -17,14 +18,12 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 }
 
 func (c *V1Client) GetVersion() (string, error) {
-	var versiondata struct {
-		Version string `json:"version"`
-	}
+	var versiondata rorversion.RorVersion
 
 	err := c.Client.GetJSON(c.basePath+"/version", &versiondata, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsNoAuth})
 	if err != nil {
 		return "", err
 	}
 
-	return versiondata.Version, nil
+	return versiondata.GetVersionWithCommit(), nil
 }
