@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 var (
@@ -358,10 +359,13 @@ func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error 
 
 	if res.Header.Get("Content-Type") == "text/plain" {
 		v := reflect.ValueOf(out)
-		if v.Kind() != reflect.Ptr || v.IsNil() {
+		if v.Kind() != reflect.Pointer || v.IsNil() {
 			return fmt.Errorf("out must be a pointer and not nil")
 		}
-		// this might panic
+		if v.Elem().Kind() != reflect.String {
+			rlog.Infof("something went wrong, server returned text/plain (%s) but we expected a %s", string(body), v.Elem().Kind().String())
+			return fmt.Errorf("out must be a pointer to a string as the content type is text/plain")
+		}
 		v.Elem().Set(reflect.ValueOf(string(body)))
 		return nil
 	}
