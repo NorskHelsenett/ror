@@ -2,7 +2,7 @@ package transports
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
-	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
+	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
 	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
 	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
@@ -29,7 +29,7 @@ type RorTransport interface {
 	Metrics() v1metrics.MetricsInterface
 	ResourcesV2() v2resources.ResourcesInterface
 	Streamv2() v2stream.StreamInterface
-	AclV1() v1Acl.AclInterface
+	Acl() v1acl.AclInterface
 	CheckConnection() error
 	Ping() bool
 	GetApiSecret() string

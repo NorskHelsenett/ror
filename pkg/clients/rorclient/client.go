@@ -36,6 +36,7 @@ type RorClientInterface interface {
 	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
 	CheckConnection() error
 
+	Acl() v1acl.AclInterface
 	Clusters() v1clusters.ClustersInterface
 	Datacenters() v1datacenter.DatacenterInterface
 	Info() v1info.InfoInterface
@@ -67,12 +68,13 @@ type RorClient struct {
 	metricsClientV1    v1metrics.MetricsInterface
 	resourcesClientV2  v2resources.ResourcesInterface
 	streamClientV2     v2stream.StreamInterface
-	AclClient          v1acl.AclInterface
+	aclClientV1        v1acl.AclInterface
 }
 
 func NewRorClient(transport transports.RorTransport) *RorClient {
 	return &RorClient{
 		Transport:          transport,
+		aclClientV1:        transport.Acl(),
 		streamClientV1:     transport.Stream(),
 		infoClientV1:       transport.Info(),
 		datacenterClientV1: transport.Datacenters(),
@@ -84,7 +86,6 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		metricsClientV1:    transport.Metrics(),
 		resourcesClientV2:  transport.ResourcesV2(),
 		streamClientV2:     transport.Streamv2(),
-		AclClient:          transport.AclV1(),
 	}
 }
 
@@ -94,6 +95,11 @@ func (c *RorClient) SetTransport(transport transports.RorTransport) {
 func (c *RorClient) Stream() v1stream.StreamInterface {
 	return c.streamClientV1
 }
+
+func (c *RorClient) Acl() v1acl.AclInterface {
+	return c.aclClientV1
+}
+
 func (c *RorClient) Info() v1info.InfoInterface {
 	return c.infoClientV1
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
 
+	restv1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
 	restv1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/datacenter"
 	restv1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/info"
@@ -82,6 +83,7 @@ func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient 
 		metricsClientV1:    restv1metrics.NewV1Client(client),
 		resourcesClientV2:  restv2resources.NewV2Client(client),
 		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
+		aclClientV1:        restv1Acl.NewV1Client(client),
 	}
 	return t
 }
@@ -96,6 +98,10 @@ func (t *RorHttpTransport) Stream() v1stream.StreamInterface {
 
 func (t *RorHttpTransport) Info() v1info.InfoInterface {
 	return t.infoClientV1
+}
+
+func (t *RorHttpTransport) Acl() v1Acl.AclInterface {
+	return t.aclClientV1
 }
 
 func (t *RorHttpTransport) Datacenters() v1datacenter.DatacenterInterface {
