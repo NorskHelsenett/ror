@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/dotse/go-health"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
@@ -38,15 +39,19 @@ type GitClient struct {
 	Branch  string
 	Token   string
 	Author  object.Signature
+	Depth   int
 }
 
-func NewGitClient(repoURL, branch, token string, author object.Signature) *GitClient {
-	return &GitClient{
+func NewGitClient(repoURL, token string, opts ...GitConnectionOption) *GitClient {
+	gitClient := &GitClient{
 		RepoURL: repoURL,
-		Branch:  branch,
+		Branch:  "main",
 		Token:   token,
-		Author:  author,
 	}
+	for _, opt := range opts {
+		opt.apply(gitClient)
+	}
+	return gitClient
 }
 
 // UpdateFile clones the repo into an in-memory filesystem, updates a file, commits, and pushes the change.
@@ -59,9 +64,12 @@ func NewGitClient(repoURL, branch, token string, author object.Signature) *GitCl
 //	commitMsg:  Commit message for the change
 //
 // Returns an error if any git operation fails.
-func (c *GitClient) UploadFile(filePath string, newContent []byte, commitMsg string) error {
+func (c GitClient) UploadFile(filePath string, newContent []byte, commitMsg string, opts ...GitUploadOption) error {
 	// Use in-memory filesystem
 	fs := memfs.New()
+	for _, opt := range opts {
+		opt.apply(&c)
+	}
 
 	repo, err := git.Clone(memory.NewStorage(), fs, &git.CloneOptions{
 		URL:           c.RepoURL,
@@ -71,6 +79,7 @@ func (c *GitClient) UploadFile(filePath string, newContent []byte, commitMsg str
 			Username: "token",
 			Password: c.Token,
 		},
+		Depth: c.Depth,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to clone repo: %w", err)
@@ -95,6 +104,16 @@ func (c *GitClient) UploadFile(filePath string, newContent []byte, commitMsg str
 	_, err = wt.Add(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to add file: %w", err)
+	}
+
+	test, err := wt.Status()
+	if err != nil {
+		return fmt.Errorf("failed to get status: %w", err)
+	}
+
+	if test.IsClean() {
+		rlog.Info("working tree is clean, nothing to commit")
+		return nil
 	}
 
 	// Commit
