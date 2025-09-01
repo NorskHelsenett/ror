@@ -79,6 +79,7 @@ func (c GitClient) UploadFile(filePath string, newContent []byte, commitMsg stri
 			Username: "token",
 			Password: c.Token,
 		},
+		Depth: c.Depth,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to clone repo: %w", err)
