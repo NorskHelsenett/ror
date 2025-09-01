@@ -22,11 +22,13 @@ package gitclient
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 
 	"github.com/dotse/go-health"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/storage/memory"
 )
@@ -35,13 +37,15 @@ type GitClient struct {
 	RepoURL string
 	Branch  string
 	Token   string
+	Author  object.Signature
 }
 
-func NewGitClient(repoURL, branch, token string) *GitClient {
+func NewGitClient(repoURL, branch, token string, author object.Signature) *GitClient {
 	return &GitClient{
 		RepoURL: repoURL,
 		Branch:  branch,
 		Token:   token,
+		Author:  author,
 	}
 }
 
@@ -94,7 +98,13 @@ func (c *GitClient) UploadFile(filePath string, newContent []byte, commitMsg str
 	}
 
 	// Commit
-	_, err = wt.Commit(commitMsg, &git.CommitOptions{})
+	_, err = wt.Commit(commitMsg, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  c.Author.Name,
+			Email: c.Author.Email,
+			When:  time.Now(),
+		},
+	})
 	if err != nil {
 		return fmt.Errorf("failed to commit: %w", err)
 	}
