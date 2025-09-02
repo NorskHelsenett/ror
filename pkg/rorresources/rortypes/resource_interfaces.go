@@ -249,6 +249,12 @@ type BackupJobinterface interface {
 	Get() *ResourceBackupJob
 }
 
+// BackupRuninterface represents the interface for resources of the type backuprun
+type BackupRuninterface interface {
+	CommonResourceInterface
+	Get() *ResourceBackupRun
+}
+
 // Unknowninterface represents the interface for resources of the type unknown
 type Unknowninterface interface {
 	CommonResourceInterface

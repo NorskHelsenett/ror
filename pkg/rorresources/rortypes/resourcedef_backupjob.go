@@ -1,6 +1,8 @@
 package rortypes
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	"time"
+)
 
 type ResourceBackupJob struct {
 	Id       string                  `json:"id"`
@@ -37,28 +39,13 @@ type ResourceBackupJobSpec struct {
 
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
-	ResourceBackupJobSpec
-	Location    string              `json:"location"`
-	LastUpdated metav1.Time         `json:"lastUpdated"`
-	PolicyName  string              `json:"policyName"`
-	Runs        []ResourceBackupRun `json:"runs"`
-}
+	ResourceBackupJobSpec `json:"resourceBackupJobSpec"`
+	Location              string    `json:"location"`
+	LastUpdated           time.Time `json:"lastUpdated"`
+	PolicyName            string    `json:"policyName"`
 
-// Once instance of a run from a backup job
-type ResourceBackupRun struct {
-	Id                 string                         `json:"id"`
-	BackupTargets      []ResourceBackupTarget         `json:"backupTargets"`
-	BackupDestinations []ResourceBackupRunDestination `json:"backupDestinations"`
-
-	// When the run was started
-	StartTime metav1.Time `json:"startTime"`
-
-	// When the run was finished
-	EndTime metav1.Time `json:"endTime"`
-
-	// When the run will expire and be deleted
-	ExpiryTime    metav1.Time           `json:"expiryTime"`
-	BackupStorage ResourceBackupStorage `json:"backupStorage"`
+	// Any runs connected to this backup job
+	BackupRunIds []string `json:"backupRunIds"`
 }
 
 // Defines a singular backup target, this could be a VM, a storage object, etc.
@@ -74,6 +61,9 @@ type ResourceBackupTarget struct {
 
 	// Defines the source of this object to the backup system
 	Source *ResourceBackupSource `json:"source,omitempty"`
+
+	// Defines the size of the snapshots of the target
+	Size *ResourceBackupStorage `json:"size,omitempty"`
 }
 
 // The backup target's source, a vCenter, a NetApp system, etc.
@@ -104,32 +94,6 @@ type ResourceBackupDestination struct {
 	Status string `json:"status"`
 }
 
-type ResourceBackupRunDestination struct {
-	Name string `json:"name"`
-	Id   string `json:"id"`
-
-	// Local, remote, archive, etc.
-	Type string `json:"type"`
-
-	// Status spesific to the destination - remote being unavailable
-	Status     string      `json:"status"`
-	ExpiryTime metav1.Time `json:"expiryTime"` // ExpiryTime is defined per destination
-}
-
-type ResourceBackupStorage struct {
-	// What unit are the sizes in
-	Unit string `json:"unit"`
-
-	// Total changed data in the run, incremental will have changes since last time, full runs will have the entire VM - not including unusued space
-	SourceSize int `json:"sourceSize"`
-
-	// The total logical size of the VM
-	LogicalSize int `json:"logicalSize"`
-
-	// Physical data written to the backup system
-	PhysicalSize int `json:"physicalSize"`
-}
-
 type ResourceBackupSchedule struct {
 
 	// When will the job start
@@ -147,6 +111,5 @@ type ResourceBackupSchedule struct {
 }
 
 type ResourceBackupRetention struct {
-	Unit     string `json:"unit"`
-	Duration int    `json:"duration"`
+	Unit string `json:"unit"`
 }

@@ -53,6 +53,7 @@ type Resource struct {
 	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
 	DatacenterResource                 *rortypes.ResourceDatacenter                 `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
 	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
+	BackupRunResource                  *rortypes.ResourceBackupRun                  `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	UnknownResource                    *rortypes.ResourceUnknown                    `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
@@ -234,6 +235,10 @@ func (r *Resource) SetDatacenter(res *rortypes.ResourceDatacenter) {
 
 func (r *Resource) SetBackupJob(res *rortypes.ResourceBackupJob) {
 	r.BackupJobResource = res
+}
+
+func (r *Resource) SetBackupRun(res *rortypes.ResourceBackupRun) {
+	r.BackupRunResource = res
 }
 
 func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
@@ -438,6 +443,11 @@ func (r *Resource) Datacenter() rortypes.Datacenterinterface {
 // BackupJob is a wrapper for the underlying resource, it provides a BackupJobinterface to work with backupjobs
 func (r *Resource) BackupJob() rortypes.BackupJobinterface {
 	return r.BackupJobResource
+}
+
+// BackupRun is a wrapper for the underlying resource, it provides a BackupRuninterface to work with backupruns
+func (r *Resource) BackupRun() rortypes.BackupRuninterface {
+	return r.BackupRunResource
 }
 
 // Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
