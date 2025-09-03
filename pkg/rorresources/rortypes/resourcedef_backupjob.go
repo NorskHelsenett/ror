@@ -106,10 +106,11 @@ type ResourceBackupSchedule struct {
 	Frequency int `json:"frequency"`
 
 	// What unit of time is this schedule going to run in
-	Unit      string                  `json:"unit"`
-	Retention ResourceBackupRetention `json:"retention"`
+	Unit      string                          `json:"unit"`
+	Retention ResourceBackupScheduleRetention `json:"retention"`
 }
 
-type ResourceBackupRetention struct {
-	Unit string `json:"unit"`
+type ResourceBackupScheduleRetention struct {
+	Duration int    `json:"duration"`
+	Unit     string `json:"unit"`
 }
