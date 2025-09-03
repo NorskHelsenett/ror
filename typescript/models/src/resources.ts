@@ -42,7 +42,6 @@ export interface ResourceBackupJobSpec {
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   backupDestinations: ResourceBackupDestination[];
 }
-export interface Time {}
 export interface ResourceBackupDestination {
   name: string;
   id: string;

@@ -1,7 +1,7 @@
 package rortypes
 
 import (
-	"time"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type ResourceBackupJob struct {
@@ -40,9 +40,9 @@ type ResourceBackupJobSpec struct {
 // The observed parameters about a job
 type ResourceBackupJobStatus struct {
 	ResourceBackupJobSpec `json:"resourceBackupJobSpec"`
-	Location              string    `json:"location"`
-	LastUpdated           time.Time `json:"lastUpdated"`
-	PolicyName            string    `json:"policyName"`
+	Location              string      `json:"location"`
+	LastUpdated           metav1.Time `json:"lastUpdated"`
+	PolicyName            string      `json:"policyName"`
 
 	// Any runs connected to this backup job
 	BackupRunIds []string `json:"backupRunIds"`

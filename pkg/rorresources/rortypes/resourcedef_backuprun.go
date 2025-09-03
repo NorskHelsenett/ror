@@ -1,6 +1,6 @@
 package rortypes
 
-import "time"
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 type ResourceBackupRun struct {
 	Id       string                  `json:"id"`
@@ -18,15 +18,15 @@ type ResourceBackupRunStatus struct {
 	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
 
 	// When the run was started
-	StartTime time.Time `json:"startTime"`
+	StartTime metav1.Time `json:"startTime"`
 
 	// When the run was finished
-	EndTime time.Time `json:"endTime"`
+	EndTime metav1.Time `json:"endTime"`
 
 	// When the run will expire and be deleted
-	ExpiryTime    time.Time             `json:"expiryTime"`
+	ExpiryTime    metav1.Time           `json:"expiryTime"`
 	BackupStorage ResourceBackupStorage `json:"backupStorage"`
-	LastUpdated   time.Time             `json:"lastUpdated"`
+	LastUpdated   metav1.Time           `json:"lastUpdated"`
 }
 
 // Storage used by an instance of a run or a target
