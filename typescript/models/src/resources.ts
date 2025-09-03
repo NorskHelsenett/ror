@@ -15,6 +15,24 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceUnknown {}
+export interface ResourceBackupRunStatus {
+  id: string;
+  backupJobId: string;
+  backupTargets: ResourceBackupTarget[];
+  backupDestinations: ResourceBackupDestination[];
+  startTime: Time;
+  endTime: Time;
+  expiryTime: Time;
+  backupStorage: ResourceBackupStorage;
+  lastUpdated: Time;
+}
+export interface ResourceBackupRun {
+  id: string;
+  provider: string;
+  source: string;
+  status: ResourceBackupRunStatus;
+  spec: ResourceBackupJobSpec;
+}
 export interface ResourceBackupJobSpec {
   name: string;
   status: string;
@@ -55,7 +73,8 @@ export interface ResourceBackupTarget {
   source?: ResourceBackupSource;
   size?: ResourceBackupStorage;
 }
-export interface ResourceBackupRetention {
+export interface ResourceBackupScheduleRetention {
+  duration: number;
   unit: string;
 }
 export interface ResourceBackupSchedule {
@@ -63,7 +82,7 @@ export interface ResourceBackupSchedule {
   endTime: string;
   frequency: number;
   unit: string;
-  retention: ResourceBackupRetention;
+  retention: ResourceBackupScheduleRetention;
 }
 export interface ResourceBackupJobStatus {
   name: string;
@@ -1315,6 +1334,7 @@ export interface Resource {
   networkpolicy?: ResourceNetworkPolicy;
   datacenter?: ResourceDatacenter;
   backupjob?: ResourceBackupJob;
+  backuprun?: ResourceBackupRun;
   unknown?: ResourceUnknown;
 }
 export interface ResourceSet {
