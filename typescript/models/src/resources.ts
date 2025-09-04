@@ -15,6 +15,24 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceUnknown {}
+export interface ResourceBackupRunStatus {
+  id: string;
+  backupJobId: string;
+  backupTargets: ResourceBackupTarget[];
+  backupDestinations: ResourceBackupDestination[];
+  startTime: Time;
+  endTime: Time;
+  expiryTime: Time;
+  backupStorage: ResourceBackupStorage;
+  lastUpdated: Time;
+}
+export interface ResourceBackupRun {
+  id: string;
+  provider: string;
+  source: string;
+  status: ResourceBackupRunStatus;
+  spec: ResourceBackupJobSpec;
+}
 export interface ResourceBackupJobSpec {
   name: string;
   status: string;
@@ -23,28 +41,6 @@ export interface ResourceBackupJobSpec {
   activeTargets: ResourceBackupTarget[];
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   backupDestinations: ResourceBackupDestination[];
-}
-export interface ResourceBackupStorage {
-  unit: string;
-  sourceSize: number;
-  logicalSize: number;
-  physicalSize: number;
-}
-export interface ResourceBackupRunDestination {
-  name: string;
-  id: string;
-  type: string;
-  status: string;
-  expiryTime: Time;
-}
-export interface ResourceBackupRun {
-  id: string;
-  backupTargets: ResourceBackupTarget[];
-  backupDestinations: ResourceBackupRunDestination[];
-  startTime: Time;
-  endTime: Time;
-  expiryTime: Time;
-  backupStorage: ResourceBackupStorage;
 }
 export interface ResourceBackupDestination {
   name: string;
@@ -57,6 +53,12 @@ export interface ResourceIndirectBackupTarget {
   ids: string[];
   keyValues: { [key: string]: string[] };
 }
+export interface ResourceBackupStorage {
+  unit: string;
+  sourceSize: number;
+  logicalSize: number;
+  physicalSize: number;
+}
 export interface ResourceBackupSource {
   name: string;
   id: string;
@@ -68,17 +70,18 @@ export interface ResourceBackupTarget {
   id: string;
   externalId: string;
   source?: ResourceBackupSource;
+  size?: ResourceBackupStorage;
 }
-export interface ResourceBackupRetention {
-  unit: string;
+export interface ResourceBackupScheduleRetention {
   duration: number;
+  unit: string;
 }
 export interface ResourceBackupSchedule {
   startTime: string;
   endTime: string;
   frequency: number;
   unit: string;
-  retention: ResourceBackupRetention;
+  retention: ResourceBackupScheduleRetention;
 }
 export interface ResourceBackupJobStatus {
   name: string;
@@ -91,7 +94,7 @@ export interface ResourceBackupJobStatus {
   location: string;
   lastUpdated: Time;
   policyName: string;
-  runs: ResourceBackupRun[];
+  backupRunIds: string[];
 }
 export interface ResourceBackupJob {
   id: string;
@@ -1330,6 +1333,7 @@ export interface Resource {
   networkpolicy?: ResourceNetworkPolicy;
   datacenter?: ResourceDatacenter;
   backupjob?: ResourceBackupJob;
+  backuprun?: ResourceBackupRun;
   unknown?: ResourceUnknown;
 }
 export interface ResourceSet {

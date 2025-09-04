@@ -758,9 +758,28 @@ func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "BackupJob",
-			"apiVersion": "backupjob.ror.internal/v1alpha1",
+			"apiVersion": "backup.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
 				"name": "test-backupjob",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientBackupRun(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "BackupRun",
+			"apiVersion": "backup.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-backuprun",
 			},
 		},
 	}
