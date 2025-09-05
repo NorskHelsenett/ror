@@ -116,21 +116,14 @@ func Start(opts ...Option) error {
 			Handler:           http.HandlerFunc(newhealth.HandleHTTP),
 			ReadHeaderTimeout: 0,
 		}
-		errCh := make(chan error)
 		go func() {
 			rlog.Info("Starting health server", rlog.Any("endpoint", cfg.ipPort.String()))
 			err := httpServer.Serve(listener)
 			if err != nil {
-				errCh <- err
+				rlog.Error("Failed to start health server", err)
 			}
-			errCh <- nil
 		}()
-		err = <-errCh
-		if err != nil {
-			return err
-		}
 	}
-
 	return nil
 }
 
