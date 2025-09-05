@@ -7,17 +7,17 @@ import (
 	"net/netip"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	newhealth "github.com/dotse/go-health"
-	"github.com/spf13/viper"
 )
 
 const (
-	// Port is the default port for checking health over HTTP.
-	Port = 9_999
+	defaultPort = "9999"
+	defaultIp   = "0.0.0.0"
 )
 
 //nolint:gochecknoglobals
@@ -33,45 +33,53 @@ type ServerParams struct {
 func ServerString(serverstring string) Option {
 	return optionFunc(func(cfg *config) {
 		var err error
+		serverstring = parseServerString(serverstring)
 		cfg.ipPort, err = netip.ParseAddrPort(serverstring)
 		if err != nil {
-			// handle strings with only port or ip
-			var serverIp netip.Addr
-			var serverPort uint16
-			server, port, err := net.SplitHostPort(serverstring)
-			if err != nil {
-				// check if serverstring is an ip address
-				serverIp, _ = netip.ParseAddr(serverstring)
-				if serverIp.IsValid() {
-					server = serverstring
-				} else {
-					// check if serverstring is a port
-					_, err := strconv.ParseUint(serverstring, 10, 16)
-					if err == nil {
-						port = serverstring
-					}
-				}
-			}
-			if server == "" {
-				serverIp = netip.IPv4Unspecified()
-			}
-
-			if port == "" {
-				serverPort = Port
-			} else {
-				port64, err := strconv.ParseUint(port, 10, 16)
-				if err != nil {
-					fmt.Println("Error parsing port string: ", err)
-				}
-				serverPort = uint16(port64)
-
-			}
-			cfg.ipPort = netip.AddrPortFrom(serverIp, serverPort)
-			if !cfg.ipPort.IsValid() {
-				fmt.Println("Error parsing server string: ", err)
-			}
+			rlog.Error("error parsing server string", err, rlog.String("serverstring", serverstring))
 		}
 	})
+}
+
+func parseServerString(serverstring string) string {
+	if serverstring == "" {
+		return fmt.Sprintf("%s:%s", defaultIp, defaultPort)
+	}
+	splits := strings.Split(serverstring, ":")
+	if len(splits) == 2 {
+		if splits[0] == "" {
+			// only port
+			splits[0] = defaultIp
+		}
+		if splits[1] == "" {
+			// only ip
+			splits[1] = defaultPort
+		}
+		// ip and port
+		return strings.Join(splits, ":")
+	}
+	if len(splits) == 1 {
+		_, err := strconv.ParseUint(splits[0], 10, 16)
+		if err == nil {
+			// only port
+			return fmt.Sprintf("%s:%s", defaultIp, splits[0])
+		}
+		// only ip
+		return fmt.Sprintf("%s:%s", splits[0], defaultPort)
+	}
+	// invalid
+	rlog.Error("Invalid server string format", nil, rlog.String("serverstring", serverstring))
+
+	return getDefaultServerString()
+}
+
+func getDefaultServerString() string {
+	return fmt.Sprintf("%s:%s", defaultIp, defaultPort)
+}
+
+func getDefaultAddrPort() netip.AddrPort {
+	addrPort, _ := netip.ParseAddrPort(getDefaultServerString())
+	return addrPort
 }
 
 type Option interface {
@@ -90,7 +98,7 @@ func Start(opts ...Option) error {
 	initMtx.Lock()
 	defer initMtx.Unlock()
 	cfg := &config{
-		ipPort: netip.AddrPortFrom(netip.IPv4Unspecified(), Port),
+		ipPort: getDefaultAddrPort(),
 	}
 
 	for _, o := range opts {
@@ -108,10 +116,19 @@ func Start(opts ...Option) error {
 			Handler:           http.HandlerFunc(newhealth.HandleHTTP),
 			ReadHeaderTimeout: 0,
 		}
-
+		errCh := make(chan error)
 		go func() {
-			_ = httpServer.Serve(listener)
+			rlog.Info("Starting health server", rlog.Any("endpoint", cfg.ipPort.String()))
+			err := httpServer.Serve(listener)
+			if err != nil {
+				errCh <- err
+			}
+			errCh <- nil
 		}()
+		err = <-errCh
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -136,9 +153,9 @@ func MustStartWithDefaults(opts ...Option) {
 }
 
 func getHealthEndpoint() string {
-	if viper.IsSet(configconsts.HEALTH_ENDPOINT) {
+	if os.Getenv(configconsts.HEALTH_ENDPOINT) != "" {
 		rlog.Info("Using deprecated HEALTH_ENDPOINT configuration. Please use HTTP_HEALTH_HOST and HTTP_HEALTH_PORT instead")
-		return viper.GetString(configconsts.HEALTH_ENDPOINT)
+		return os.Getenv(configconsts.HEALTH_ENDPOINT)
 	}
-	return fmt.Sprintf("%s:%s", viper.GetString(configconsts.HTTP_HEALTH_HOST), viper.GetString(configconsts.HTTP_HEALTH_PORT))
+	return fmt.Sprintf("%s:%s", os.Getenv(configconsts.HTTP_HEALTH_HOST), os.Getenv(configconsts.HTTP_HEALTH_PORT))
 }
