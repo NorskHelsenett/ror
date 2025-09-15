@@ -34,7 +34,7 @@ require (
 	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.37.0
 	go.opentelemetry.io/otel/exporters/prometheus v0.60.0
-	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.13.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.14.0
 	go.opentelemetry.io/otel/log v0.14.0
 	go.opentelemetry.io/otel/sdk v1.38.0
 	go.opentelemetry.io/otel/sdk/log v0.14.0
