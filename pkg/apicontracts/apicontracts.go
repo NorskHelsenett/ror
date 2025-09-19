@@ -156,6 +156,7 @@ type ClusterMetadata struct {
 	Sensitivity SensitivityLevel  `json:"sensitivity"`
 	Description string            `json:"description" validate:"omitempty,min=1,rortext"`
 	ServiceTags map[string]string `json:"serviceTags"`
+	ServiceId   string            `json:"serviceId,omitempty" bson:"serviceid,omitempty"`
 	Billing     Billing           `json:"billing"`
 	Roles       []ProjectRole     `json:"roles"`
 }
