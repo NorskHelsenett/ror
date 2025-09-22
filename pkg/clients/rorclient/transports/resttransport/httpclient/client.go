@@ -1,3 +1,9 @@
+// Package httpclient provides an HTTP transport implementation for interacting with ROR APIs.
+// It offers various HTTP methods (GET, POST, PUT, DELETE, HEAD) with JSON serialization/deserialization,
+// authentication handling, retry mechanisms, and common HTTP client features.
+//
+// The client handles authentication through an injected AuthProvider interface, manages request
+// timeouts, and implements rate limiting through Retry-After response headers.
 package httpclient
 
 import (
@@ -15,72 +21,92 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
-var (
-	DefaultTimeout = 60 * time.Second
-)
+// DefaultTimeout defines the default HTTP request timeout duration
+var DefaultTimeout = 60 * time.Second
 
+// HttpTransportClientParams encapsulates parameters for HTTP client requests
+// with a key-value structure to enable flexible configuration options.
 type HttpTransportClientParams struct {
 	Key   HttpTransportClientOpts
 	Value any
 }
 
+// HttpTransportClientOpts represents option types for HTTP client configuration.
 type HttpTransportClientOpts string
 
+// HttpTransportClientStatus tracks the connection state and version information
+// for the HTTP transport client, including retry timing information.
 type HttpTransportClientStatus struct {
-	Established bool      `json:"established"`
-	ApiVersion  string    `json:"api_version"`
-	LibVersion  string    `json:"lib_version"`
-	RetryAfter  time.Time `json:"retry_after"`
+	Established bool      `json:"established"` // Whether a connection has been established
+	ApiVersion  string    `json:"api_version"` // Version of the remote API
+	LibVersion  string    `json:"lib_version"` // Version of the client library
+	RetryAfter  time.Time `json:"retry_after"` // Time after which to retry if rate limited
 }
 
+// Available client configuration options
+const (
+	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"  // Skip authentication for this request
+	HttpTransportClientOptsHeaders HttpTransportClientOpts = "HEADERS" // Add custom headers
+	HttpTransportClientOptsQuery   HttpTransportClientOpts = "QUERY"   // Add query parameters
+	HttpTransportClientTimeout     HttpTransportClientOpts = "TIMEOUT" // Set request timeout
+)
+
+// HttpTransportClientConfig defines the configuration for the HTTP transport client.
+type HttpTransportClientConfig struct {
+	// BaseURL is the base URL for the API, e.g., "https://api.example.com"
+	BaseURL string
+
+	// AuthProvider handles request authentication
+	AuthProvider HttpTransportAuthProvider
+
+	// Role identifies the client's purpose or role
+	Role string
+
+	// Version identifies the client version
+	Version rorversion.RorVersion
+}
+
+// HttpTransportAuthProvider is an interface that authentication providers must implement.
+type HttpTransportAuthProvider interface {
+	// AddAuthHeaders adds authentication headers to the request
+	AddAuthHeaders(req *http.Request)
+
+	// GetApiSecret returns the API secret for authentication
+	GetApiSecret() string
+}
+
+// HttpTransportClient implements an HTTP client with authentication, status tracking,
+// and standardized request/response handling.
+type HttpTransportClient struct {
+	Client *http.Client               // Underlying HTTP client
+	Config *HttpTransportClientConfig // Client configuration
+	Status *HttpTransportClientStatus // Client connection status
+}
+
+// NewHttpTransportClientStatus creates a new client status object with default values.
+// The client starts as not established with unknown versions and no retry restrictions.
 func NewHttpTransportClientStatus() *HttpTransportClientStatus {
 	return &HttpTransportClientStatus{
 		Established: false,
-		ApiVersion:  "unknown",
-		LibVersion:  "unknown",
+		ApiVersion:  "",
+		LibVersion:  "",
 		RetryAfter:  time.Time{},
 	}
 }
 
-const (
-	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"
-	HttpTransportClientOptsHeaders HttpTransportClientOpts = "HEADERS"
-	HttpTransportClientOptsQuery   HttpTransportClientOpts = "QUERY"
-	HttpTransportClientTimeout     HttpTransportClientOpts = "TIMEOUT"
-)
-
-// HttpTransportClientConfig is the configuration for the HTTP transport client
-type HttpTransportClientConfig struct {
-	// BaseURL is the base URL for the API
-	// Example: https://api.example.com
-	BaseURL string
-	// AuthProvider is the provider for the authentication
-	AuthProvider HttpTransportAuthProvider
-	// Role is the role of the client
-	Role string
-	// Version is the version of the client
-	Version rorversion.RorVersion
-}
-
-type HttpTransportAuthProvider interface {
-	AddAuthHeaders(req *http.Request)
-	GetApiSecret() string
-}
-
-type HttpTransportClient struct {
-	Client *http.Client
-	Config *HttpTransportClientConfig
-	Status *HttpTransportClientStatus
-}
-
+// GetRole returns the configured role of the client.
 func (t *HttpTransportClientConfig) GetRole() string {
 	return t.Role
 }
 
+// GetJSON performs a GET request and unmarshals the JSON response into the out parameter.
+// This is a convenience wrapper around GetJSONWithContext using the background context.
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
 	return t.GetJSONWithContext(context.TODO(), path, out, params...)
 }
 
+// GetJSONWithContext performs a GET request with the provided context and unmarshals
+// the JSON response into the out parameter.
 func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -111,10 +137,14 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 	return nil
 }
 
+// PostJSON performs a POST request with the provided input and unmarshals the JSON response into the out parameter.
+// This is a convenience wrapper around PostJSONWithContext using the background context.
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
+// PostJSONWithContext performs a POST request with the provided context and input,
+// then unmarshals the JSON response into the out parameter.
 func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -146,10 +176,14 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 	return nil
 }
 
+// PutJSON performs a PUT request with the provided input and unmarshals the JSON response into the out parameter.
+// This is a convenience wrapper around PutJSONWithContext using the background context.
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
+// PutJSONWithContext performs a PUT request with the provided context and input,
+// then unmarshals the JSON response into the out parameter.
 func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -180,10 +214,14 @@ func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path strin
 	return nil
 }
 
+// Delete performs a DELETE request and unmarshals the JSON response into the out parameter.
+// This is a convenience wrapper around DeleteWithContext using the background context.
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
 	return t.DeleteWithContext(context.TODO(), path, out, params...)
 }
 
+// DeleteWithContext performs a DELETE request with the provided context and
+// unmarshals the JSON response into the out parameter.
 func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -211,11 +249,14 @@ func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string
 }
 
 // Head makes a HEAD request with the given path and params.
-// It returns only the header and status code from the result, as it expects no body in return.
+// It returns only the header and status code from the result, as HEAD requests have no response body.
+// This is a convenience wrapper around HeadWithContext using the background context.
 func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
 	return t.HeadWithContext(context.TODO(), path, params...)
 }
 
+// HeadWithContext performs a HEAD request with the provided context and returns
+// the response headers and status code.
 func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
 	if err := t.PreflightCheck(); err != nil {
 		return nil, -1, err
@@ -242,7 +283,8 @@ func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, 
 	return res.Header, res.StatusCode, nil
 }
 
-// PreflightCheck by checking if retry-after is set client.Status.RetryAfter
+// PreflightCheck verifies if the client is ready to make a request by checking
+// if rate limiting is in effect via the RetryAfter timestamp.
 func (t *HttpTransportClient) PreflightCheck() error {
 	// if t.Status == nil {
 	// 	t.Status = NewHttpTransportClientStatus()
@@ -426,3 +468,24 @@ func (t *HttpTransportClientStatus) GetApiVersion() string {
 func (t *HttpTransportClientStatus) GetLibVersion() string {
 	return t.LibVersion
 }
+
+// Example of creating and using the HTTP transport client:
+//
+// config := &httpclient.HttpTransportClientConfig{
+//     BaseURL:      "https://api.example.com",
+//     AuthProvider: myAuthProvider,
+//     Role:         "api-client",
+//     Version:      myRorVersion,
+// }
+//
+// client := &httpclient.HttpTransportClient{
+//     Client: &http.Client{Timeout: httpclient.DefaultTimeout},
+//     Config: config,
+//     Status: httpclient.NewHttpTransportClientStatus(),
+// }
+//
+// var response MyResponseType
+// err := client.GetJSON("/endpoint", &response, httpclient.HttpTransportClientParams{
+//     Key:   httpclient.HttpTransportClientOptsHeaders,
+//     Value: map[string]string{"X-Custom-Header": "value"},
+//
