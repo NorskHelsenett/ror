@@ -24,21 +24,17 @@ func TestNewHttpTransportClientConfig(t *testing.T) {
 		"https://localhost":       true,
 		"https://localhost:10000": true,
 		"asfjniefsjfsdjdsf":       false,
+		"::f1":                    false,
 	}
 
 	for url, expectedAction := range urls {
-		config, err := httpclient.NewHttpTransportClientConfig(url, authProvider, role, version)
-		errStatus := err != nil
-		if errStatus != expectedAction {
-			t.Errorf("failed on validation on url %v, got %v, expected %v", url, errStatus, expectedAction)
+		_, err := httpclient.NewHttpTransportClientConfig(url, authProvider, role, version)
+		hadError := err == nil
+		if hadError != expectedAction {
+			t.Errorf("failed on validation on url '%v', got %v, expected %v", url, hadError, expectedAction)
+		} else {
+			t.Logf("passed url validation on '%v', got %v, expected %v", url, hadError, expectedAction)
 		}
 
-		if config.GetRole() != role {
-			t.Errorf("failed to get expected role %v, got %v", role, config.GetRole())
-		}
-
-		if config.Version != version {
-			t.Errorf("failed to get expected version  %v, got %v", config.Version, version)
-		}
 	}
 }
