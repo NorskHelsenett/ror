@@ -58,12 +58,12 @@ services:
       - '8081:8081'
 
   dex:
-    image: ${DOCKER_MIRROR}bitnami/dex:2.42.1
+    image: ${DOCKER_MIRROR}docker pull dexidp/dex:latest-alpine
     restart: always
     volumes:
       - ../data/dex/configs:/configs
       - ../data/dex/dbs:/dbs
-    command: serve /configs/dex-config-default.yaml
+    command: dex serve /configs/dex-config-default.yaml
     depends_on:
       openldap:
         condition: service_started
