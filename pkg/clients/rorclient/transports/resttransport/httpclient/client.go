@@ -84,7 +84,7 @@ func NewHttpTransportClientConfig(baseUrl string, authProvider HttpTransportAuth
 
 	err := config.ValidateUrl()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to validate provided url. %v", err)
 	}
 
 	return &config, nil
