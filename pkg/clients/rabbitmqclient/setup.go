@@ -159,6 +159,12 @@ func (rc rabbitmqcon) getConnectionstring() string {
 	username, password := rc.Credentials.GetCredentials()
 	return fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, rc.Host, rc.Port)
 }
+
+func (rc rabbitmqcon) getConnectionstringLog() string {
+	username, _ := rc.Credentials.GetCredentials()
+	return fmt.Sprintf("amqp://%s:%s@%s:%s", username, "******", rc.Host, rc.Port)
+}
+
 func (rc *rabbitmqcon) validateConfig() error {
 	if rc.Host == "" || rc.Port == "" {
 		return fmt.Errorf("invalid rabbitmq configuration: host=%q port=%q", rc.Host, rc.Port)
@@ -175,7 +181,7 @@ func (rc *rabbitmqcon) connect() {
 	if err != nil {
 		rlog.Fatal("invalid rabbitmq configuration", err)
 	}
-	rlog.Debug("Connecting", rlog.String("rabbitmq", rc.getConnectionstring()))
+	rlog.Debug("Connecting", rlog.String("rabbitmq", rc.getConnectionstringLog()))
 	c := make(chan *amqp.Error)
 	rc.CancelChannel = c
 	go func(rc *rabbitmqcon) {
