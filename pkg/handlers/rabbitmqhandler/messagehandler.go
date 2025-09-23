@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rabbitmqclient"
+	"github.com/NorskHelsenett/ror/pkg/messagebuscontracts"
 
 	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
 
@@ -18,7 +19,9 @@ type RabbitMQMessageHandler interface {
 }
 
 type RabbitMQListner struct {
-	Client             rabbitmqclient.RabbitMQConnection
+	Client rabbitmqclient.RabbitMQConnection
+
+	isInitialized      bool
 	queueName          string
 	queueConsumer      string
 	queueAutoAck       bool
@@ -29,7 +32,10 @@ type RabbitMQListner struct {
 	queueArgs          amqp.Table
 	Handler            RabbitMQMessageHandler
 	exchange           string
+	excahngeKind       string
 	excahngeRoutingKey string
+	exchangeAutoDelete bool
+	excahngeDurable    bool
 }
 
 type RabbitMQListnerConfig struct {
@@ -43,7 +49,10 @@ type RabbitMQListnerConfig struct {
 	NoWait             bool
 	Args               amqp.Table
 	Exchange           string
+	ExcahngeKind       string
+	ExcahngeDurable    bool
 	ExcahngeRoutingKey string
+	ExchangeAutoDelete bool
 }
 
 func New(config RabbitMQListnerConfig, handler RabbitMQMessageHandler) RabbitMQListner {
@@ -59,7 +68,10 @@ func New(config RabbitMQListnerConfig, handler RabbitMQMessageHandler) RabbitMQL
 		queueArgs:          config.Args,
 		Handler:            handler,
 		exchange:           config.Exchange,
+		excahngeKind:       config.ExcahngeKind,
 		excahngeRoutingKey: config.ExcahngeRoutingKey,
+		exchangeAutoDelete: config.ExchangeAutoDelete,
+		excahngeDurable:    config.ExcahngeDurable,
 	}
 }
 
@@ -78,6 +90,32 @@ func (r RabbitMQListner) ListenWithTTL(hangup chan *amqp.Error, TTL time.Duratio
 }
 
 func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
+	if (r.exchangeAutoDelete && r.exchange != "") || (!r.isInitialized && r.exchange != "") {
+		// (re)Declare exchange if it is not declared or if it is set to auto delete{
+		err := r.Client.GetChannel().ExchangeDeclare(
+			r.exchange,           // name
+			r.excahngeKind,       // kind
+			r.excahngeDurable,    // durable
+			r.exchangeAutoDelete, // autoDelete -> delete when unused
+			false,                // internal
+			false,                // no-wait
+			nil,                  // arguments
+		)
+		if err != nil {
+			rlog.Fatal("Could not declare excahnge", err)
+		}
+
+		err = r.Client.GetChannel().ExchangeBind(
+			r.exchange,                      //destination
+			r.excahngeRoutingKey,            // key
+			messagebuscontracts.ExchangeRor, // source
+			false,                           // noWait
+			nil,                             // arguments
+		)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	queue, err := r.Client.GetChannel().QueueDeclare(
 		r.queueName,       // name
@@ -116,6 +154,9 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 	if err != nil {
 		rlog.Fatal("failed to register a consumer on queue", err, rlog.String("queue", r.queueName))
 	}
+
+	// set as initialized
+	r.isInitialized = true
 
 	rlog.Info("listening on RabbitMQ queue", rlog.String("queue", r.queueName))
 
