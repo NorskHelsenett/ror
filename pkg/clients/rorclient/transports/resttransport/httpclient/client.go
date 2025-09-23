@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strconv"
 	"time"
@@ -92,6 +93,50 @@ func NewHttpTransportClientStatus() *HttpTransportClientStatus {
 		LibVersion:  "",
 		RetryAfter:  time.Time{},
 	}
+}
+
+
+// NewHttpTransportClientConfig creates a new configuration object for the HTTP transport client
+// The constructor allows for validation of parameters like BaseURL to stop some of the faulty configuration possibilities.
+//
+// # BaseURL is the base URL for the API
+// Example: https://api.example.com
+//
+// # AuthProvider is the provider for the authentication
+//
+// # Role is the role of the client
+//
+// # Version is the version of the client.
+func NewHttpTransportClientConfig(baseUrl string, authProvider HttpTransportAuthProvider, role string, version rorversion.RorVersion) (*HttpTransportClientConfig, error) {
+
+	config := HttpTransportClientConfig{
+		BaseURL:      baseUrl,
+		AuthProvider: authProvider,
+		Role:         role,
+		Version:      version,
+	}
+
+	err := config.ValidateUrl()
+	if err != nil {
+		return nil, fmt.Errorf("failed to validate provided url. %v", err)
+	}
+
+	return &config, nil
+}
+
+// validateUrl valides that BaseUrl provided passes at minimum a valid URL.
+func (h *HttpTransportClientConfig) ValidateUrl() error {
+	return validateUrl(h.BaseURL)
+}
+
+func NewHttpTransportClient(client *http.Client, config *HttpTransportClientConfig, status *HttpTransportClientStatus) *HttpTransportClient {
+	hClient := HttpTransportClient{
+		Client: client,
+		Config: config,
+		Status: status,
+	}
+
+	return &hClient
 }
 
 // GetRole returns the configured role of the client.
@@ -467,6 +512,11 @@ func (t *HttpTransportClientStatus) GetApiVersion() string {
 }
 func (t *HttpTransportClientStatus) GetLibVersion() string {
 	return t.LibVersion
+}
+
+func validateUrl(baseUrl string) error {
+	_, err := url.ParseRequestURI(baseUrl)
+	return err
 }
 
 // Example of creating and using the HTTP transport client:
