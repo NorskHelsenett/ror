@@ -95,6 +95,7 @@ func NewHttpTransportClientStatus() *HttpTransportClientStatus {
 	}
 }
 
+
 // NewHttpTransportClientConfig creates a new configuration object for the HTTP transport client
 // The constructor allows for validation of parameters like BaseURL to stop some of the faulty configuration possibilities.
 //
