@@ -1,3 +1,0 @@
-services:
-  web:
-    image: ${ROR_REPO}ror-web:${ROR_BUILD_TAG}

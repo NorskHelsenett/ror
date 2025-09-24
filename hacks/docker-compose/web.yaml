@@ -1,15 +1,14 @@
 services:
   web:
-    build:
-      context: ../../web/admin/
-      dockerfile: Dockerfile.compose
-      args:
-        DEX_PORT: 5556
-        API_PORT: 10000
+    image: ghcr.io/norskhelsenett/ror-webapp:latest
     ports:
-      - "11000:8090"
+      - "11000:11000"
     platform: linux/amd64
     volumes:
       - type: bind
-        source: ../../web/admin/nginx/http_compose.conf
+        source: ../data/web/config.json
+        target: /app/assets/config/config.json
+      - type: bind
+        source: ../data/web/admin/nginx/http_compose.conf
         target: /etc/nginx/conf.d/default.conf
+
