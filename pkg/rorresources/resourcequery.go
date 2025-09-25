@@ -26,7 +26,7 @@ const (
 	FilterOperatorNe FilterOperator = "ne"
 
 	// FilterOperatorRegexp is the regex operator.
-	// It which searched with regex based on the value.
+	// It searches with regex based search with the Value parameter in the Field parameter.
 	FilterOperatorRegexp FilterOperator = "regexp"
 
 	// FilterOperatorGt is the greater than operator.
@@ -54,7 +54,7 @@ type FilterOperator string
 
 // ResourceQueryFilter is a definition of a filter.
 //
-// For an truncated example resource:
+// For a truncated example resource:
 //
 //	{
 //	    _id: ObjectId('68d3daefc30906fc9314d1d5'),
@@ -84,7 +84,7 @@ type FilterOperator string
 //	    }
 //	}
 //
-// Exmaple to query based on a field within the object:
+// Exmaple of a query based on a field within the object:
 //
 //	filter := rorresources.ResourceQueryFilter{
 //	        Field:    "backupjob.status.id",
@@ -93,7 +93,7 @@ type FilterOperator string
 //	        Operator: rorresources.FilterOperatorEq,
 //	}
 //
-// Exmaple to query based on a field within the metadata:
+// Exmaple of a query based on a field within the metadata:
 //
 //	filter := rorresources.ResourceQueryFilter{
 //	        Field:    "metadata.uid",
