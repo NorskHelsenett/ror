@@ -21,7 +21,7 @@ const (
 	// It looks for an exact value.
 	FilterOperatorEq FilterOperator = "eq"
 
-	// FilterOperatorEq is the not equal operator.
+	// FilterOperatorNe is the not equal operator.
 	// It looks for not exact value.
 	FilterOperatorNe FilterOperator = "ne"
 
