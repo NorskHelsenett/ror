@@ -44,7 +44,7 @@ type ViewField struct {
 	Writeable        bool            `json:"writeable,omitempty"`
 	Type             ViewFieldType   `json:"type,omitempty"`
 	PossibleValues   []string        `json:"possibleValues,omitempty"`
-	ResourceType     metav1.TypeMeta `json:"resourceType,omitempty"`
+	ResourceType     metav1.TypeMeta `json:"resourceType,omitzero"`
 	ResourceFieldRef string          `json:"resourceFieldRef,omitempty"` //"spec.clusterdata.clustername"
 }
 
