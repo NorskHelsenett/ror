@@ -10,27 +10,105 @@ import (
 )
 
 const (
-	FilterTypeString     FilterType     = "string"
-	FilterTypeInt        FilterType     = "int"
-	FilterTupeIntString  FilterType     = "intstring"
-	FilterTypeBool       FilterType     = "bool"
-	FilterTypeTime       FilterType     = "time"
-	FilterTypeTimeString FilterType     = "timestring"
-	FilterOperatorEq     FilterOperator = "eq"
-	FilterOperatorNe     FilterOperator = "ne"
+	FilterTypeString     FilterType = "string"
+	FilterTypeInt        FilterType = "int"
+	FilterTupeIntString  FilterType = "intstring"
+	FilterTypeBool       FilterType = "bool"
+	FilterTypeTime       FilterType = "time"
+	FilterTypeTimeString FilterType = "timestring"
+
+	// FilterOperatorEq is the equal operator.
+	// It looks for an exact value.
+	FilterOperatorEq FilterOperator = "eq"
+
+	// FilterOperatorNe is the not equal operator.
+	// It looks for not exact value.
+	FilterOperatorNe FilterOperator = "ne"
+
+	// FilterOperatorRegexp is the regex operator.
+	// It searches with regex based search with the Value parameter in the Field parameter.
 	FilterOperatorRegexp FilterOperator = "regexp"
-	FilterOperatorGt     FilterOperator = "gt"
-	FilterOperatorLt     FilterOperator = "lt"
-	FilterOperatorGe     FilterOperator = "ge"
-	FilterOperatorLe     FilterOperator = "le"
+
+	// FilterOperatorGt is the greater than operator.
+	// It searches for the value in the Field paramter that is greater than the Value parameter.
+	FilterOperatorGt FilterOperator = "gt"
+
+	// FilterOperatorLt is the less than operator.
+	// It searches for the value in the Field paramter that is less than the Value parameter.
+	FilterOperatorLt FilterOperator = "lt"
+
+	// FilterOperatorGe is the greater or equal operator.
+	// It searches for the value in the Field paramter that is greater or equal to the Value parameter.
+	FilterOperatorGe FilterOperator = "ge"
+
+	// FilterOperatorLe is the less or equal operator.
+	// It searches for the value in the Field paramter that is less or equal to the Value parameter.
+	FilterOperatorLe FilterOperator = "le"
 )
 
+// FilterType is the type of the value you're looking for.
 type FilterType string
 
+// FilterOperator is the operator in how the search is done.
 type FilterOperator string
 
+// ResourceQueryFilter is a definition of a filter.
+//
+// For a truncated example resource:
+//
+//	{
+//	    _id: ObjectId('68d3daefc30906fc9314d1d5'),
+//	    uid: '6035f8f2-eb39-56c0-a5dc-0bc1c3d3ff07',
+//	    backuprun: {
+//	        id: '16835:1758207900971270',
+//	        status: {
+//	            backupjobid: '4923908281402464:1614676439887:16835',
+//	            backuptargets: [
+//	                {
+//	                    name: 'something-name',
+//	                    id: '706',
+//	                    externalid: '503f1b69-7998-b7bb-5cc2-56297656e04d',
+//	                }
+//	            ]
+//	        },
+//	    },
+//	    metadata: {
+//	        uid: '6035f8f2-eb39-56c0-a5dc-0bc1c3d3ff07',
+//	        creationtimestamp: {
+//	            time: ISODate('0001-01-01T00:00:00.000Z')
+//	        },
+//	    },
+//	    typemeta: {
+//	        kind: 'BackupRun',
+//	        apiversion: 'backup.ror.internal/v1alpha1'
+//	    }
+//	}
+//
+// Exmaple of a query based on a field within the object:
+//
+//	filter := rorresources.ResourceQueryFilter{
+//	        Field:    "backupjob.status.id",
+//	        Value:    "16835:1758207900971270",
+//	        Type:     rorresources.FilterTypeString,
+//	        Operator: rorresources.FilterOperatorEq,
+//	}
+//
+// Exmaple of a query based on a field within the metadata:
+//
+//	filter := rorresources.ResourceQueryFilter{
+//	        Field:    "metadata.uid",
+//	        Value:    "6035f8f2-eb39-56c0-a5dc-0bc1c3d3ff07",
+//	        Type:     rorresources.FilterTypeString,
+//	        Operator: rorresources.FilterOperatorEq,
+//	}.
 type ResourceQueryFilter struct {
-	Field    string         `json:"field,omitempty"`
+
+	// Field parameter starts based on the base of the object from the database view.
+	// This parameter is case sensitive.
+	Field string `json:"field,omitempty"`
+
+	// Value parameter is the value you're searching with based on which Operator you use.
+	// This parameter is case sensitive.
 	Value    string         `json:"value,omitempty"`
 	Type     FilterType     `json:"type,omitempty"`
 	Operator FilterOperator `json:"operator,omitempty"`
@@ -54,66 +132,6 @@ type ResourceQuery struct {
 	RelatedResources []ResourceQuery                              `json:"relatedresources,omitempty"` // memory or db
 }
 
-// func ParseResourceQuery(c *gin.Context) (*ResourceQuery, error) {
-//     rq := NewResourceQuery()
-
-//     // Parse apiversion and kind
-//     rq.VersionKind.Group = schema.GroupVersion{Group: "", Version: c.Query("apiversion")} // Wrong
-//     rq.VersionKind.Kind = c.Query("kind")
-
-//     // Parse UIDs
-//     if uids := c.Query("uids"); uids != "" {
-//         rq.Uids = strings.Split(uids, ",")
-//     }
-
-//     // Parse Fields
-//     if fields := c.Query("fields"); fields != "" {
-//         rq.Fields = strings.Split(fields, ",")
-//     }
-
-//     // Parse Order
-//     if order := c.Query("order"); order != "" {
-//         var orders []ResourceQueryOrder
-//         if err := json.Unmarshal([]byte(order), &orders); err != nil {
-//             return nil, fmt.Errorf("invalid order parameter: %v", err)
-//         }
-//         rq.Order = orders
-//     }
-
-//     // Parse Filters
-//     if filters := c.Query("filters"); filters != "" {
-//         var filterList []ResourceQueryFilter
-//         if err := json.Unmarshal([]byte(filters), &filterList); err != nil {
-//             return nil, fmt.Errorf("invalid filters parameter: %v", err)
-//         }
-//         rq.Filters = filterList
-//     }
-
-//     // Parse Offset
-//     if offset := c.Query("offset"); offset != "" {
-//         if off, err := strconv.Atoi(offset); err == nil {
-//             rq.Offset = off
-//         }
-//     }
-
-//     // Parse Limit
-//     if limit := c.Query("limit"); limit != "" {
-//         if lim, err := strconv.Atoi(limit); err == nil {
-//             rq.Limit = lim
-//         }
-//     }
-
-//     // Parse RelatedResources
-//     if relatedResources := c.Query("relatedresources"); relatedResources != "" {
-//         var related []ResourceQuery
-//         if err := json.Unmarshal([]byte(relatedResources), &related); err != nil {
-//             return nil, fmt.Errorf("invalid relatedresources parameter: %v", err)
-//         }
-//         rq.RelatedResources = related
-//     }
-
-//	    return rq, nil
-//	}
 func NewResourceQuery() *ResourceQuery {
 	return &ResourceQuery{
 		Fields:           make([]string, 0),
