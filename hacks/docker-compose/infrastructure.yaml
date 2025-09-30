@@ -58,7 +58,7 @@ services:
       - '8081:8081'
 
   dex:
-    image: ${DOCKER_MIRROR}dexidp/dex:latest-alpine
+    image: ${DOCKER_MIRROR}dexidp/dex:v2.42.1-alpine # breaking changes on v2.43.0
     restart: always
     volumes:
       - ../data/dex/configs:/configs
