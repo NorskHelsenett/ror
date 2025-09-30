@@ -53,3 +53,9 @@ func OptionCredentialsProvider(cp RabbitMQCredentialProvider) RabbitMQConnection
 		cfg.Credentials = cp
 	})
 }
+
+func OptionEnableTracing() RabbitMQConnectionOption {
+	return optionFunc(func(cfg *rabbitmqcon) {
+		cfg.TracerID = "ror-rabbitmq"
+	})
+}
