@@ -764,3 +764,21 @@ func (r *ResourceUnknown) GetRorHash() string {
 func (r *ResourceUnknown) Get() *ResourceUnknown {
 	return r
 }
+
+// (r *ResourceApplicationInstance) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceApplicationInstance) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceApplicationInstance) Get returns a pointer to the resource of type ResourceApplicationInstance
+func (r *ResourceApplicationInstance) Get() *ResourceApplicationInstance {
+	return r
+}

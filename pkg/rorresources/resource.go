@@ -55,6 +55,7 @@ type Resource struct {
 	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 	BackupRunResource                  *rortypes.ResourceBackupRun                  `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	UnknownResource                    *rortypes.ResourceUnknown                    `json:"unknown,omitempty" bson:"unknown,omitempty"`
+	ApplicationInstanceResource        *rortypes.ResourceApplicationInstance        `json:"applicationinstance,omitempty" bson:"applicationinstance,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -243,6 +244,10 @@ func (r *Resource) SetBackupRun(res *rortypes.ResourceBackupRun) {
 
 func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
 	r.UnknownResource = res
+}
+
+func (r *Resource) SetApplicationInstance(res *rortypes.ResourceApplicationInstance) {
+	r.ApplicationInstanceResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -453,6 +458,11 @@ func (r *Resource) BackupRun() rortypes.BackupRuninterface {
 // Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
 func (r *Resource) Unknown() rortypes.Unknowninterface {
 	return r.UnknownResource
+}
+
+// ApplicationInstance is a wrapper for the underlying resource, it provides a ApplicationInstanceinterface to work with applicationInstances
+func (r *Resource) ApplicationInstance() rortypes.ApplicationInstanceinterface {
+	return r.ApplicationInstanceResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

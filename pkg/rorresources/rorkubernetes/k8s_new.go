@@ -254,6 +254,11 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetUnknown(res)
 		r.SetCommonInterface(res)
 
+	case "general.ror.internal/v1alpha1, Kind=ApplicationInstance":
+		res := newApplicationInstanceFromMapInterface(input)
+		r.SetApplicationInstance(res)
+		r.SetCommonInterface(res)
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return nil
@@ -843,6 +848,20 @@ func newUnknownFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceUnknown", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newApplicationInstanceFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newApplicationInstanceFromMapInterface(input map[string]interface{}) *rortypes.ResourceApplicationInstance {
+	result := rortypes.ResourceApplicationInstance{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceApplicationInstance", err)
 		return nil
 	}
 

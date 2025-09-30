@@ -14,6 +14,15 @@ export enum VulnerabilityDismissalReason {
 export enum ResourceTagProperties {
   color = 'color',
 }
+export interface ResourceApplicationInstanceStatus {}
+export interface ResourceApplicationInstanceSpec {
+  application: string;
+  config?: { [key: string]: string };
+}
+export interface ResourceApplicationInstance {
+  spec: ResourceApplicationInstanceSpec;
+  status: ResourceApplicationInstanceStatus;
+}
 export interface ResourceUnknown {}
 export interface ResourceBackupRunStatus {
   id: string;
@@ -1335,6 +1344,7 @@ export interface Resource {
   backupjob?: ResourceBackupJob;
   backuprun?: ResourceBackupRun;
   unknown?: ResourceUnknown;
+  applicationinstance?: ResourceApplicationInstance;
 }
 export interface ResourceSet {
   resources?: Resource[];

@@ -260,3 +260,9 @@ type Unknowninterface interface {
 	CommonResourceInterface
 	Get() *ResourceUnknown
 }
+
+// ApplicationInstanceinterface represents the interface for resources of the type applicationinstance
+type ApplicationInstanceinterface interface {
+	CommonResourceInterface
+	Get() *ResourceApplicationInstance
+}

@@ -206,6 +206,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetUnknown(res.UnknownResource)
 		r.SetCommonInterface(res.UnknownResource)
 
+	case "general.ror.internal/v1alpha1, Kind=ApplicationInstance":
+		r.SetApplicationInstance(res.ApplicationInstanceResource)
+		r.SetCommonInterface(res.ApplicationInstanceResource)
+
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 		return nil

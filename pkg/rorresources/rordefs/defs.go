@@ -393,4 +393,14 @@ var Resourcedefs = ApiResources{
 		Types:      []ApiResourceType{ApiResourceTypeInternal},
 		Versions:   []ApiVersions{ApiVersionV2},
 	},
+	{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ApplicationInstance",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "applicationInstances",
+		Namespaced: true,
+		Types:      []ApiResourceType{ApiResourceTypeInternal},
+		Versions:   []ApiVersions{ApiVersionV2},
+	},
 }
