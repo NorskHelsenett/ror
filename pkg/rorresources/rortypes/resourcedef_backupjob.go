@@ -94,7 +94,16 @@ type ResourceBackupDestination struct {
 	Status string `json:"status"`
 }
 
+type BackupScheduleType string
+
+const (
+	BackupScheduleTypeLocal   = "local"
+	BackupScheduleTypeReplica = "replica"
+	BackupScheduleTypeArchive = "archive"
+)
+
 type ResourceBackupSchedule struct {
+	Type BackupScheduleType `json:"type"`
 
 	// When will the job start
 	StartTime string `json:"startTime"`

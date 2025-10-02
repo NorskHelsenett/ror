@@ -77,6 +77,7 @@ export interface ResourceBackupScheduleRetention {
   unit: string;
 }
 export interface ResourceBackupSchedule {
+  type: string;
   startTime: string;
   endTime: string;
   frequency: number;
