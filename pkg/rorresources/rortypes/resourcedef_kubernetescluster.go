@@ -15,16 +15,15 @@ type KubernetesClusterSpec struct {
 }
 
 type KubernetesClusterSpecData struct {
-	ClusterUID  string `json:"clusterUid"` // ClusterUID is a unique identifier for the cluster, e.g., "12345678-1234-1234-1234-123456789012"
-	ClusterId   string `json:"clusterId"`
-	Provider    string `json:"provider"`
-	Datacenter  string `json:"datacenter"`
-	Region      string `json:"region"`
-	Zone        string `json:"zone"`
-	Project     string `json:"project"`
-	Workspace   string `json:"workspace"`
-	Workorder   string `json:"workorder"`
-	Environment string `json:"environment"`
+	ClusterUID       string               `json:"clusterUid"` // ClusterUID is a unique identifier for the cluster, e.g., "12345678-1234-1234-1234-123456789012"
+	ClusterId        string               `json:"clusterId"`
+	Provider         RorResourceReference `json:"provider"` // Provider is the infrastructure provider for the cluster, e.g., "aws", "azure", "gcp", "onprem"
+	Region           RorResourceReference `json:"region"`
+	AvailabilityZone RorResourceReference `json:"az"`
+	Project          RorResourceReference `json:"project"`
+	Workspace        RorResourceReference `json:"workspace"`
+	Workorder        RorResourceReference `json:"workorder"`
+	Environment      RorResourceReference `json:"environment"`
 }
 
 type KubernetesClusterSpecTopology struct {
@@ -35,11 +34,11 @@ type KubernetesClusterSpecTopology struct {
 
 type KubernetesClusterSpecControlPlane struct {
 	Replicas     int                                  `json:"replicas"`
-	Version      string                               `json:"version"` // Kubernetes version, e.g., "1.23.0"
-	Provider     string                               `json:"provider"`
-	MachineClass string                               `json:"machineClass"`
+	Version      string                               `json:"version"`      // Kubernetes version, e.g., "1.23.0"
+	Provider     string                               `json:"provider"`     // Provider is the infrastructure provider for the control plane, e.g., "aws", "azure", "gcp", "onprem"
+	MachineClass string                               `json:"machineClass"` // MachineClass is the machine class for the control plane nodes, e.g., "c5.large", "m5.xlarge"
 	Metadata     KubernetesClusterSpecMetadataDetails `json:"metadata"`
-	Storage      []KubernetesClusterStorage           `json:"storage"`
+	Storage      []KubernetesClusterStorage           `json:"storage"` // Storage contains the storage configuration for the control plane nodes. The provider must support empty or wrong storage configuration.
 }
 
 type KubernetesClusterSpecMetadataDetails struct {
