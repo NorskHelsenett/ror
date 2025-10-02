@@ -66,7 +66,7 @@ type ResourceBackupTarget struct {
 	Size *ResourceBackupStorage `json:"size,omitempty"`
 }
 
-// The backup target's source, a vCenter, a NetApp system, etc.
+// ResourceBackupSource defines the  backup target's source, a vCenter, a NetApp system, etc.
 type ResourceBackupSource struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
@@ -74,9 +74,10 @@ type ResourceBackupSource struct {
 	Type string `json:"type"`
 }
 
-// Defines a indirect backup target, which can result into multiple objects (For example a tag or multiple tags should result into being in a backup job)
-// One instance indicates all should match
-// Multiple instances would indicate different matching groups
+// ResourceIndirectBackupTarget defines a indirect backup target,
+// which can result into multiple objects (For example a tag or multiple tags should result into being in a backup job).
+// - One instance indicates all should match
+// - Multiple instances would indicate different matching groups.
 type ResourceIndirectBackupTarget struct {
 	Type      string              `json:"type"`      // The type of indrect target, some allow tags and/or other types of criteria
 	Ids       []string            `json:"ids"`       // For where the ids are referenced
@@ -90,7 +91,7 @@ type ResourceBackupDestination struct {
 	// Local, remote, archive, etc.
 	Type string `json:"type"`
 
-	// Status spesific to the destination - remote being unavailable
+	// Status spesific to the destination - remote being unavailable.
 	Status string `json:"status"`
 }
 
@@ -105,18 +106,21 @@ const (
 type ResourceBackupSchedule struct {
 	Type BackupScheduleType `json:"type"`
 
-	// When will the job start
+	// When will the job start.
 	StartTime string `json:"startTime"`
 
-	// When will the job be forcibly stopped, if empty it will continue indefinitely
+	// When will the job be forcibly stopped, if empty it will continue indefinitely.
 	EndTime string `json:"endTime"`
 
-	//  How many time per unit will this backup run
+	//  How many time per unit will this backup run.
 	Frequency int `json:"frequency"`
 
-	// What unit of time is this schedule going to run in
+	// What unit of time is this schedule going to run in.
 	Unit      string                          `json:"unit"`
 	Retention ResourceBackupScheduleRetention `json:"retention"`
+
+	//  Which destination does this apply to.
+	Destination ResourceBackupDestination `json:"destination"`
 }
 
 type ResourceBackupScheduleRetention struct {

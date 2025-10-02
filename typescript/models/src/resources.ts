@@ -42,12 +42,6 @@ export interface ResourceBackupJobSpec {
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   backupDestinations: ResourceBackupDestination[];
 }
-export interface ResourceBackupDestination {
-  name: string;
-  id: string;
-  type: string;
-  status: string;
-}
 export interface ResourceIndirectBackupTarget {
   type: string;
   ids: string[];
@@ -72,6 +66,12 @@ export interface ResourceBackupTarget {
   source?: ResourceBackupSource;
   size?: ResourceBackupStorage;
 }
+export interface ResourceBackupDestination {
+  name: string;
+  id: string;
+  type: string;
+  status: string;
+}
 export interface ResourceBackupScheduleRetention {
   duration: number;
   unit: string;
@@ -83,6 +83,7 @@ export interface ResourceBackupSchedule {
   frequency: number;
   unit: string;
   retention: ResourceBackupScheduleRetention;
+  destination: ResourceBackupDestination;
 }
 export interface ResourceBackupJobStatus {
   name: string;
