@@ -9,59 +9,74 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
+	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
-	sleepTime    = time.Minute
-	GrpcEndpoint = "localhost:4317"
+	tracerProvider *sdktrace.TracerProvider
+	sleepTime      = time.Minute
+	GrpcEndpoint   = "localhost:4317"
 )
 
-func initTracerProvider(ctx context.Context, serviceName string, grpcEndpoint string) (func(context.Context) error, error) {
+func newTracerProvider(traceExporter sdktrace.SpanExporter, serviceName string) *sdktrace.TracerProvider {
+
+	res, err := resource.Merge(
+		resource.Default(),
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(serviceName),
+		),
+	)
+
+	if err != nil {
+		return nil
+	}
+
+	return sdktrace.NewTracerProvider(
+		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(1))),
+		sdktrace.WithResource(res),
+		sdktrace.WithBatcher(traceExporter),
+	)
+}
+
+func newExporter(ctx context.Context, grpcEndpoint string) (*otlptrace.Exporter, error) {
+
 	if grpcEndpoint != "" {
 		GrpcEndpoint = grpcEndpoint
 	}
 
-	res, err := resource.New(ctx,
-		resource.WithAttributes(
-			semconv.ServiceNameKey.String(serviceName),
-		),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create resource: %w", err)
-	}
-
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-	conn, err := grpc.DialContext(
-		ctx,
+	conn, err := grpc.NewClient(
 		GrpcEndpoint,
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
-		grpc.WithBlock(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gRPC connection to collector: %w", err)
 	}
 
-	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+	return otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+}
+
+func initTracerProvider(ctx context.Context, serviceName string, grpcEndpoint string) (func(context.Context) error, error) {
+
+	traceExporter, err := newExporter(ctx, grpcEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create trace exporter: %w", err)
 	}
 
-	bsp := sdktrace.NewBatchSpanProcessor(traceExporter)
-	tracerProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(1))),
-		sdktrace.WithResource(res),
-		sdktrace.WithSpanProcessor(bsp),
-	)
+	tracerProvider = newTracerProvider(traceExporter, serviceName)
+	if tracerProvider == nil {
+		return nil, fmt.Errorf("failed to create trace provider")
+	}
 
 	otel.SetTracerProvider(tracerProvider)
 
@@ -98,6 +113,14 @@ func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) 
 		}
 	}()
 	<-stop
+}
+
+func Tracer(serviceName string) oteltrace.Tracer {
+	if tracerProvider == nil {
+		rlog.Warn("TracerProvider is not initialized. Returning a no-op tracer.")
+		return otel.Tracer("noop")
+	}
+	return tracerProvider.Tracer(serviceName)
 }
 
 func StartTracing(stop chan struct{}, cancelChan chan os.Signal, serviceName string, grpcEndpoint string) {
