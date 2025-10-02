@@ -32,9 +32,6 @@ type ResourceBackupJobSpec struct {
 
 	// Indirect targets for this backup job
 	IndirectBackupTargets []ResourceIndirectBackupTarget `json:"indirectBackupTargets"`
-
-	// Any destination defined by this backup job
-	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
 }
 
 // The observed parameters about a job
