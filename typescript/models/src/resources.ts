@@ -40,7 +40,6 @@ export interface ResourceBackupJobSpec {
   schedules: ResourceBackupSchedule[];
   activeTargets: ResourceBackupTarget[];
   indirectBackupTargets: ResourceIndirectBackupTarget[];
-  backupDestinations: ResourceBackupDestination[];
 }
 export interface ResourceIndirectBackupTarget {
   type: string;
@@ -92,7 +91,6 @@ export interface ResourceBackupJobStatus {
   schedules: ResourceBackupSchedule[];
   activeTargets: ResourceBackupTarget[];
   indirectBackupTargets: ResourceIndirectBackupTarget[];
-  backupDestinations: ResourceBackupDestination[];
   location: string;
   lastUpdated: Time;
   policyName: string;
