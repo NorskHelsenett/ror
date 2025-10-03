@@ -81,12 +81,28 @@ type ResourceIndirectBackupTarget struct {
 	KeyValues map[string][]string `json:"keyValues"` // For key values pairs, some allow the same key with different values
 }
 
+type BackupDestinationType string
+
+const (
+	// BackupDestinationTypeLocal is a local destination for this job, with in the same general region as the backup system.
+	BackupDestinationTypeLocal = "local"
+
+	// BackupDestinationTypeReplica is a replica destination, means this receives a copy based on another type based on certain criteria.
+	BackupDestinationTypeReplica = "replica"
+
+	// BackupDestinationTypeArchive is a archive destination, means this is used for long-term storage.
+	BackupDestinationTypeArchive = "archive"
+
+	// BackupDestinationTypeRemote is a remote destination,
+	BackupDestinationTypeRemote = "remote"
+)
+
 type ResourceBackupDestination struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 
 	// Local, remote, archive, etc.
-	Type string `json:"type"`
+	Type BackupDestinationType `json:"type"`
 
 	// Status spesific to the destination - remote being unavailable.
 	Status string `json:"status"`
