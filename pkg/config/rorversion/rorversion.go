@@ -77,6 +77,9 @@ func (v RorVersion) GetPatchVersion() string {
 	split := strings.Split(v.Version, ".")
 	return split[2]
 }
+
+// GetVersionWithCommit returns version-commit
+// in the format 1.0.0-abcdefg
 func (v RorVersion) GetVersionWithCommit() string {
 	return fmt.Sprintf("%s-%s", v.Version, v.Commit)
 }
