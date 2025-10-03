@@ -16,7 +16,9 @@ export enum ResourceTagProperties {
 }
 export interface ResourceApplicationInstanceStatus {}
 export interface ResourceApplicationInstanceSpec {
+  appProject: string;
   application: string;
+  repo: string;
   config?: { [key: string]: string };
 }
 export interface ResourceApplicationInstance {

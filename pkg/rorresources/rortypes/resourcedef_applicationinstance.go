@@ -6,8 +6,10 @@ type ResourceApplicationInstance struct {
 }
 
 type ResourceApplicationInstanceSpec struct {
-	application string            `json:"application"`
-	config      map[string]string `json:"config,omitempty"`
+	AppProject  string            `json:"appProject"`
+	Application string            `json:"application"`
+	RepoUrl     string            `json:"repo"`
+	Config      map[string]string `json:"config,omitempty"`
 }
 
 type ResourceApplicationInstanceStatus struct {
