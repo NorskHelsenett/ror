@@ -7,8 +7,8 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
+	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/otel/trace/noop"
@@ -89,14 +89,14 @@ func (rc *rabbitmqcon) applyDefaults() {
 	rc.SenderQueName = "ror"
 }
 func (rc *rabbitmqcon) loadDefaultConfig() {
-	if viper.GetString(configconsts.RABBITMQ_HOST) != "" {
-		rc.Host = viper.GetString(configconsts.RABBITMQ_HOST)
+	if rorconfig.GetString(configconsts.RABBITMQ_HOST) != "" {
+		rc.Host = rorconfig.GetString(configconsts.RABBITMQ_HOST)
 	}
-	if viper.GetString(configconsts.RABBITMQ_PORT) != "" {
-		rc.Port = viper.GetString(configconsts.RABBITMQ_PORT)
+	if rorconfig.GetString(configconsts.RABBITMQ_PORT) != "" {
+		rc.Port = rorconfig.GetString(configconsts.RABBITMQ_PORT)
 	}
-	if viper.GetString(configconsts.RABBITMQ_BROADCAST_NAME) != "" {
-		rc.BroadcastName = viper.GetString(configconsts.RABBITMQ_BROADCAST_NAME)
+	if rorconfig.GetString(configconsts.RABBITMQ_BROADCAST_NAME) != "" {
+		rc.BroadcastName = rorconfig.GetString(configconsts.RABBITMQ_BROADCAST_NAME)
 	}
 }
 func (rc *rabbitmqcon) applyOptions(options ...RabbitMQConnectionOption) {
