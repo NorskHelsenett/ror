@@ -29,7 +29,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -440,10 +439,7 @@ func getLogLevelFromConfig() zapcore.Level {
 	//since the api does not use viper yet we do this check to preserve
 	//backwards compatibility, when the API uses viper for config we can remove
 	//this
-	logLevelConfig, present := os.LookupEnv("LOG_LEVEL")
-	if !present {
-		logLevelConfig = viper.GetString(LOG_LEVEL)
-	}
+	logLevelConfig := os.Getenv("LOG_LEVEL")
 	if len(logLevelConfig) != 0 {
 		switch strings.ToLower(logLevelConfig) {
 		case "debug":
@@ -479,10 +475,7 @@ func getOutputsFromConfig() []string {
 	//since the api does not use viper yet we do this check to preserve
 	//backwards compatibility, when the API uses viper for config we can remove
 	//this
-	outputsString, present := os.LookupEnv("LOG_OUTPUT")
-	if !present {
-		outputsString = viper.GetString(LOG_OUTPUT)
-	}
+	outputsString := os.Getenv("LOG_OUTPUT")
 
 	// if LOG_OUTPUT is not set, we default to stderr
 	if len(outputsString) == 0 {
@@ -505,10 +498,7 @@ func getErrorOutputsFromConfig() []string {
 	//since the api does not use viper yet we do this check to preserve
 	//backwards compatibility, when the API uses viper for config we can remove
 	//this
-	outputsString, present := os.LookupEnv("LOG_OUTPUT_ERROR")
-	if !present {
-		outputsString = viper.GetString(LOG_OUTPUT_ERROR)
-	}
+	outputsString := os.Getenv("LOG_OUTPUT_ERROR")
 
 	// if LOG_OUTPUT_ERROR is not set, we want to get outputs from LOG_OUTPUT
 	// instad
@@ -528,14 +518,7 @@ func getErrorOutputsFromConfig() []string {
 // Returns:
 //   - true if development mode is enabled, false otherwise
 func getIsDevelop() bool {
-	isdevelop, present := os.LookupEnv("LOG_DEVELOP")
-	if !present {
-		isdevelop = viper.GetString(LOG_DEVELOP)
-	}
+	isdevelop := os.Getenv("LOG_DEVELOP")
 
-	if strings.ToLower(isdevelop) == "true" {
-		return true
-	}
-
-	return false
+	return strings.ToLower(isdevelop) == "true"
 }

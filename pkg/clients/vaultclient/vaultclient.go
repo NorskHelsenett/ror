@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/spf13/viper"
 
 	"github.com/dotse/go-health"
 
@@ -104,7 +104,7 @@ func NewVaultClient(role string, url string) *VaultClient {
 		credsHelper = NewKubernetesVaultCredsHelper(role, 3600)
 
 	} else {
-		envtoken := viper.GetString("VAULT_TOKEN")
+		envtoken := rorconfig.GetString("VAULT_TOKEN")
 		if envtoken == "" {
 			credsHelper = NewStaticVaultCredsHelper("S3cret!")
 		} else {
