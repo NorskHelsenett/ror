@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
+	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 	healthserver "github.com/NorskHelsenett/ror/pkg/helpers/rorhealth/server"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -40,7 +40,7 @@ func MustInit() rorserviceinterface.RorService {
 }
 
 func (c *RorServiceConfig) loadRole() {
-	role := os.Getenv(configconsts.ROLE)
+	role := rorconfig.GetString(rorconfig.ROLE)
 	if role == "" {
 		role = "default"
 	}
@@ -48,9 +48,9 @@ func (c *RorServiceConfig) loadRole() {
 }
 
 func (c *RorServiceConfig) enableTracing() {
-	if os.Getenv(configconsts.ENABLE_TRACING) == "true" {
+	if rorconfig.GetString(rorconfig.ENABLE_TRACING) == "true" {
 
-		otpendpoint := os.Getenv(configconsts.OPENTELEMETRY_COLLECTOR_ENDPOINT)
+		otpendpoint := rorconfig.GetString(rorconfig.OPENTELEMETRY_COLLECTOR_ENDPOINT)
 		if otpendpoint == "" {
 			rlog.Fatal("OpenTelemetry collector endpoint is not set and tracing is enabled", errors.New("OpenTelemetry collector endpoint is not set in env"))
 		}
