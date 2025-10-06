@@ -32,9 +32,6 @@ type ResourceBackupJobSpec struct {
 
 	// Indirect targets for this backup job
 	IndirectBackupTargets []ResourceIndirectBackupTarget `json:"indirectBackupTargets"`
-
-	// Any destination defined by this backup job
-	BackupDestinations []ResourceBackupDestination `json:"backupDestinations"`
 }
 
 // The observed parameters about a job
@@ -66,7 +63,7 @@ type ResourceBackupTarget struct {
 	Size *ResourceBackupStorage `json:"size,omitempty"`
 }
 
-// The backup target's source, a vCenter, a NetApp system, etc.
+// ResourceBackupSource defines the  backup target's source, a vCenter, a NetApp system, etc.
 type ResourceBackupSource struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
@@ -74,40 +71,60 @@ type ResourceBackupSource struct {
 	Type string `json:"type"`
 }
 
-// Defines a indirect backup target, which can result into multiple objects (For example a tag or multiple tags should result into being in a backup job)
-// One instance indicates all should match
-// Multiple instances would indicate different matching groups
+// ResourceIndirectBackupTarget defines a indirect backup target,
+// which can result into multiple objects (For example a tag or multiple tags should result into being in a backup job).
+// - One instance indicates all should match
+// - Multiple instances would indicate different matching groups.
 type ResourceIndirectBackupTarget struct {
 	Type      string              `json:"type"`      // The type of indrect target, some allow tags and/or other types of criteria
 	Ids       []string            `json:"ids"`       // For where the ids are referenced
 	KeyValues map[string][]string `json:"keyValues"` // For key values pairs, some allow the same key with different values
 }
 
+type BackupDestinationType string
+
+const (
+	// BackupDestinationTypeLocal is a local destination for this job, with in the same general region as the backup system.
+	BackupDestinationTypeLocal = "local"
+
+	// BackupDestinationTypeReplica is a replica destination, means this receives a copy based on another type based on certain criteria.
+	BackupDestinationTypeReplica = "replica"
+
+	// BackupDestinationTypeArchive is a archive destination, means this is used for long-term storage.
+	BackupDestinationTypeArchive = "archive"
+
+	// BackupDestinationTypeRemote is a remote destination,
+	BackupDestinationTypeRemote = "remote"
+)
+
 type ResourceBackupDestination struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 
 	// Local, remote, archive, etc.
-	Type string `json:"type"`
+	Type BackupDestinationType `json:"type"`
 
-	// Status spesific to the destination - remote being unavailable
+	// Status spesific to the destination - remote being unavailable.
 	Status string `json:"status"`
 }
 
 type ResourceBackupSchedule struct {
 
-	// When will the job start
+	// When will the job start.
 	StartTime string `json:"startTime"`
 
-	// When will the job be forcibly stopped, if empty it will continue indefinitely
+	// When will the job be forcibly stopped, if empty it will continue indefinitely.
 	EndTime string `json:"endTime"`
 
-	//  How many time per unit will this backup run
+	//  How many time per unit will this backup run.
 	Frequency int `json:"frequency"`
 
-	// What unit of time is this schedule going to run in
+	// What unit of time is this schedule going to run in.
 	Unit      string                          `json:"unit"`
 	Retention ResourceBackupScheduleRetention `json:"retention"`
+
+	//  Which destination does this apply to.
+	Destination ResourceBackupDestination `json:"destination"`
 }
 
 type ResourceBackupScheduleRetention struct {
