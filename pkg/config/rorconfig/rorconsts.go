@@ -1,5 +1,7 @@
 package rorconfig
 
+import "github.com/NorskHelsenett/ror/pkg/rlog"
+
 type ConfigConst string
 
 const (
@@ -123,8 +125,10 @@ type ConfigConstData struct {
 	description string
 }
 
+type ConfigconstsMap map[ConfigConst]ConfigConstData
+
 // ...existing code...
-var ConfigConstsMap = map[ConfigConst]ConfigConstData{
+var ConfigConsts = ConfigconstsMap{
 	ConfigConst("ROLE"):                             {value: "ROLE", deprecated: false, description: ""},
 	ConfigConst("HTTP_HOST"):                        {value: "HTTP_HOST", deprecated: false, description: ""},
 	ConfigConst("HTTP_PORT"):                        {value: "HTTP_PORT", deprecated: false, description: ""},
@@ -213,4 +217,41 @@ var ConfigConstsMap = map[ConfigConst]ConfigConstData{
 	ConfigConst("MS_HTTP_BIND_PORT"):                {value: "HTTP_BIND_PORT", deprecated: false, description: ""},
 	ConfigConst("LOCAL_KUBERNETES_ROR_BASE_URL"):    {value: "LOCAL_KUBERNETES_ROR_BASE_URL", deprecated: false, description: ""},
 	ConfigConst("ENABLE_PPROF"):                     {value: "ENABLE_PPROF", deprecated: false, description: ""},
+}
+
+func (cc *ConfigconstsMap) IsSet(key ConfigConst) bool {
+	_, exists := (*cc)[key]
+	return exists
+}
+func (cc *ConfigconstsMap) Add(key ConfigConst, data ConfigConstData) {
+	if !cc.IsSet(key) {
+		(*cc)[key] = data
+	}
+}
+
+func (cc *ConfigconstsMap) ensureKeyExists(key ConfigConst) {
+	if !cc.IsSet(key) {
+		cc.Add(
+			key,
+			ConfigConstData{
+				value:       string(key),
+				deprecated:  false,
+				description: "Local env variable not in central list",
+			},
+		)
+		rlog.Warn("ConfigConst " + string(key) + " not in central list. Added as local only.")
+	}
+}
+
+func (cc *ConfigconstsMap) GetEnvVariable(key ConfigConst) string {
+	cc.ensureKeyExists(key)
+	return (*cc)[key].value
+}
+func (cc *ConfigconstsMap) IsDeprecated(key ConfigConst) bool {
+	cc.ensureKeyExists(key)
+	return (*cc)[key].deprecated
+}
+func (cc *ConfigconstsMap) GetDescription(key ConfigConst) string {
+	cc.ensureKeyExists(key)
+	return (*cc)[key].description
 }
