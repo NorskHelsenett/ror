@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/NorskHelsenett/ror/pkg/config/configconsts"
+	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	newhealth "github.com/dotse/go-health"
 )
@@ -146,9 +146,9 @@ func MustStartWithDefaults(opts ...Option) {
 }
 
 func getHealthEndpoint() string {
-	if os.Getenv(configconsts.HEALTH_ENDPOINT) != "" {
+	if rorconfig.GetString(rorconfig.HEALTH_ENDPOINT) != "" {
 		rlog.Info("Using deprecated HEALTH_ENDPOINT configuration. Please use HTTP_HEALTH_HOST and HTTP_HEALTH_PORT instead")
-		return os.Getenv(configconsts.HEALTH_ENDPOINT)
+		return rorconfig.GetString(rorconfig.HEALTH_ENDPOINT)
 	}
-	return fmt.Sprintf("%s:%s", os.Getenv(configconsts.HTTP_HEALTH_HOST), os.Getenv(configconsts.HTTP_HEALTH_PORT))
+	return fmt.Sprintf("%s:%s", rorconfig.GetString(rorconfig.HTTP_HEALTH_HOST), rorconfig.GetString(rorconfig.HTTP_HEALTH_PORT))
 }
