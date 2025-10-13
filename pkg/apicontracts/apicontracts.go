@@ -120,6 +120,7 @@ type Cluster struct {
 	SplunkIndex   string            `json:"splunkIndex"`
 	Config        ClusterConfig     `json:"config"`
 	Metadata      ClusterMetadata   `json:"metadata"`
+	KubeApi       ClusterKubeApi    `json:"kubeApi"`
 	Status        ClusterStatus     `json:"status"`
 }
 
@@ -129,7 +130,6 @@ type ClusterInfo struct {
 	ClusterName string          `json:"clusterName"`
 	Metadata    ClusterMetadata `json:"metadata"`
 	Environment string          `json:"environment"`
-	KubeApi     ClusterKubeApi  `json:"kubeApi"`
 }
 
 type ClusterKubeApi struct {
