@@ -12,7 +12,7 @@ require (
 	github.com/go-git/go-git/v5 v5.16.3
 	github.com/go-ldap/ldap/v3 v3.4.12
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/gomodule/redigo v1.9.2
+	github.com/gomodule/redigo v1.9.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
