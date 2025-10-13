@@ -1,210 +1,117 @@
+// Package rorconfig provides a centralized configuration management system for ROR applications.
+// It supports loading configuration values from environment variables, default values,
+// and custom secret providers.
 package rorconfig
 
-import (
-	"fmt"
-	"os"
-	"strings"
-
-	kubernetesclient "github.com/NorskHelsenett/ror/pkg/clients/kubernetes"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient"
-	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/joho/godotenv"
-)
-
+// SecretProvider is an interface for custom secret retrieval mechanisms.
+// Implementations can provide secrets from various sources like Vault, Kubernetes secrets, etc.
 type SecretProvider interface {
+	// GetSecret retrieves a secret value from the provider
 	GetSecret() string
 }
 
-var Config = rorConfigSet{
+// configsMap is an internal type that maps configuration constants to their data
+type configsMap map[ConfigConst]ConfigData
+
+// config is the global configuration instance used by all package functions
+var config = rorConfigSet{
 	configs: make(configsMap),
 }
 
-type rorConfigSet struct {
-	clients  rorClients
-	autoload bool
-	configs  configsMap
-}
-
-type rorClients struct {
-	rorclient *rorclient.RorClient
-	k8sclient *kubernetesclient.K8sClientsets
-}
-
-type configsMap map[ConfigConst]ConfigData
-
+// InitConfig initializes the configuration system by automatically loading
+// all recognized environment variables. This should be called once at application startup.
 func InitConfig() {
-	Config.AutoLoadAllEnv()
+	config.AutoLoadAllEnv()
 }
 
-func (rc *rorConfigSet) LoadEnv(key ConfigConst) {
-	if ConfigConstsMap[key].deprecated {
-		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", ConfigConstsMap[key].value, ConfigConstsMap[key].description))
-	}
-	rc.configs[key] = ConfigData(os.Getenv(ConfigConstsMap[ConfigConst(key)].value))
-}
-
-func loadDotEnv() {
-	enfilevar := strings.Split(os.Getenv("ENV_FILE"), ",")
-	if len(enfilevar) == 1 && enfilevar[0] == "" {
-		enfilevar = []string{".env"}
-	}
-	godotenv.Load(enfilevar...)
-}
-
-func (rc *rorConfigSet) AutoLoadAllEnv() {
-
-	loadDotEnv()
-	for key, value := range ConfigConstsMap {
-		_, exists := os.LookupEnv(value.value)
-		if exists {
-			rc.LoadEnv(ConfigConst(key))
-		}
-	}
-}
-
-func (rc *rorConfigSet) SetDefault(key ConfigConst, defaultValue any) {
-	if rc.autoload {
-		rc.LoadEnv(key)
-	}
-	if _, exists := rc.configs[key]; !exists || rc.configs[key] == "" {
-		rc.configs[key] = ConfigData(AnyToString(defaultValue))
-	}
-}
-
-func (rc *rorConfigSet) SetWithProvider(key ConfigConst, provider SecretProvider) {
-	proveidervalue := provider.GetSecret()
-	rc.configs[key] = ConfigData(proveidervalue)
-}
-
-func (rc *rorConfigSet) Set(key ConfigConst, value any) {
-
-	rc.configs[key] = ConfigData(AnyToString(value))
-}
-
-func AnyToString(value any) string {
-	switch v := value.(type) {
-	case string:
-		return v
-	case int:
-		return fmt.Sprintf("%d", v)
-	case int64:
-		return fmt.Sprintf("%d", v)
-	case float64:
-		return fmt.Sprintf("%f", v)
-	case float32:
-		return fmt.Sprintf("%f", v)
-	case uint:
-		return fmt.Sprintf("%d", v)
-	case uint64:
-		return fmt.Sprintf("%d", v)
-	case uint32:
-		return fmt.Sprintf("%d", v)
-	case bool:
-		return fmt.Sprintf("%t", v)
-	default:
-		rlog.Error("Unsupported type for config value", fmt.Errorf("type %T not supported", v))
-		return ""
-	}
-}
-
-func (rc *rorConfigSet) IsSet(key ConfigConst) bool {
-	_, exists := rc.configs[key]
-	return exists
-}
-
-func (rc *rorConfigSet) AutoLoadEnv() {
-	rc.autoload = true
-	for key := range rc.configs {
-		rc.LoadEnv(key)
-	}
-}
-
+// IsSet checks if a configuration key has been set (either from environment variable,
+// default value, or explicitly set value).
+// Returns true if the key exists and has a value, false otherwise.
 func IsSet(key ConfigConst) bool {
-	return Config.IsSet(key)
+	return config.IsSet(key)
 }
 
+// Set explicitly sets a configuration value for the given key.
+// This will override any environment variable or default value.
 func Set(key ConfigConst, value any) {
-	Config.Set(key, value)
+	config.Set(key, value)
 }
 
+// SetDefault sets a default value for a configuration key.
+// The default value will only be used if no environment variable or explicit value is set.
 func SetDefault(key ConfigConst, defaultValue any) {
-	Config.SetDefault(key, defaultValue)
+	config.SetDefault(key, defaultValue)
 }
 
+// GetConfigs returns a copy of all currently loaded configuration values.
+// This is primarily used for debugging and testing purposes.
 func GetConfigs() configsMap {
-	return Config.configs
+	return config.configs
 }
 
+// AutomaticEnv loads configuration values from environment variables for all registered keys.
+// This is called internally by InitConfig and typically doesn't need to be called directly.
 func AutomaticEnv() {
-	Config.AutoLoadEnv()
+	config.AutoLoadEnv()
 }
 
-///GetString, GetBool, GetInt, GetInt64, GetFloat64, GetFloat32, GetUint, GetUint64, GetUint32 are helper functions to get config values in different types.
+// SetWithProvider sets a configuration value using a custom SecretProvider.
+// The provider's GetSecret() method will be called to retrieve the actual value.
+// This is useful for integrating with external secret management systems.
+func SetWithProvider(key ConfigConst, provider SecretProvider) {
+	config.SetWithProvider(key, provider)
+}
 
+// GetString retrieves a configuration value as a string.
+// Returns the string value of the configuration key, or empty string if not set.
 func GetString(key ConfigConst) string {
-	return Config.GetString(key)
+	return config.GetString(key)
 }
+
+// GetBool retrieves a configuration value as a boolean.
+// Returns true if the value is "true" (case-insensitive), false otherwise.
 func GetBool(key ConfigConst) bool {
-	return Config.GetBool(key)
+	return config.GetBool(key)
 }
+
+// GetInt retrieves a configuration value as an integer.
+// Returns the integer value, or 0 if the value cannot be parsed as an integer.
 func GetInt(key ConfigConst) int {
-	return Config.GetInt(key)
+	return config.GetInt(key)
 }
+
+// GetInt64 retrieves a configuration value as a 64-bit integer.
+// Returns the int64 value, or 0 if the value cannot be parsed as an int64.
 func GetInt64(key ConfigConst) int64 {
-	return Config.GetInt64(key)
+	return config.GetInt64(key)
 }
+
+// GetFloat64 retrieves a configuration value as a 64-bit floating point number.
+// Returns the float64 value, or 0.0 if the value cannot be parsed as a float64.
 func GetFloat64(key ConfigConst) float64 {
-	return Config.GetFloat64(key)
+	return config.GetFloat64(key)
 }
+
+// GetFloat32 retrieves a configuration value as a 32-bit floating point number.
+// Returns the float32 value, or 0.0 if the value cannot be parsed as a float32.
 func GetFloat32(key ConfigConst) float32 {
-	return Config.GetFloat32(key)
+	return config.GetFloat32(key)
 }
+
+// GetUint retrieves a configuration value as an unsigned integer.
+// Returns the uint value, or 0 if the value cannot be parsed as a uint.
 func GetUint(key ConfigConst) uint {
-	return Config.GetUint(key)
+	return config.GetUint(key)
 }
+
+// GetUint64 retrieves a configuration value as a 64-bit unsigned integer.
+// Returns the uint64 value, or 0 if the value cannot be parsed as a uint64.
 func GetUint64(key ConfigConst) uint64 {
-	return Config.GetUint64(key)
+	return config.GetUint64(key)
 }
+
+// GetUint32 retrieves a configuration value as a 32-bit unsigned integer.
+// Returns the uint32 value, or 0 if the value cannot be parsed as a uint32.
 func GetUint32(key ConfigConst) uint32 {
-	return Config.GetUint32(key)
-}
-
-// GetString, GetBool, GetInt, GetInt64, GetFloat64, GetFloat32, GetUint, GetUint64, GetUint32 are helper functions to get config values in different types.
-
-func (rc *rorConfigSet) GetString(key ConfigConst) string {
-	return rc.configs[key].String()
-}
-func (rc *rorConfigSet) GetBool(key ConfigConst) bool {
-	return rc.configs[key].Bool()
-}
-func (rc *rorConfigSet) GetInt(key ConfigConst) int {
-	return rc.configs[key].Int()
-}
-func (rc *rorConfigSet) GetInt64(key ConfigConst) int64 {
-	return rc.configs[key].Int64()
-}
-func (rc *rorConfigSet) GetFloat64(key ConfigConst) float64 {
-	return rc.configs[key].Float64()
-}
-func (rc *rorConfigSet) GetFloat32(key ConfigConst) float32 {
-	return rc.configs[key].Float32()
-}
-func (rc *rorConfigSet) GetUint(key ConfigConst) uint {
-	return rc.configs[key].Uint()
-}
-func (rc *rorConfigSet) GetUint64(key ConfigConst) uint64 {
-	return rc.configs[key].Uint64()
-}
-func (rc *rorConfigSet) GetUint32(key ConfigConst) uint32 {
-	return rc.configs[key].Uint32()
-}
-
-// GetK8sClient returns the Kubernetes client from the RorConfig.
-func (rc *rorConfigSet) GetK8sClient() *kubernetesclient.K8sClientsets {
-	return rc.clients.k8sclient
-}
-
-// GetRorClient returns the ROR client from the RorConfig.
-func (rc *rorConfigSet) GetRorClient() *rorclient.RorClient {
-	return rc.clients.rorclient
+	return config.GetUint32(key)
 }

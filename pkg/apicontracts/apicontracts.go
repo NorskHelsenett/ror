@@ -129,6 +129,12 @@ type ClusterInfo struct {
 	ClusterName string          `json:"clusterName"`
 	Metadata    ClusterMetadata `json:"metadata"`
 	Environment string          `json:"environment"`
+	KubeApi     ClusterKubeApi  `json:"kubeApi"`
+}
+
+type ClusterKubeApi struct {
+	EndpointAddress string `json:"endpointAddress"`
+	Certificate     string `json:"certificate"`
 }
 
 type ClusterStatus struct {
