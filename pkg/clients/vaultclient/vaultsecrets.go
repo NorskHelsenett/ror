@@ -85,6 +85,21 @@ func (vc VaultClient) GetSecret(secretPath string) (map[string]interface{}, erro
 	return nil, nil
 }
 
+type vaultSecret struct {
+	client *VaultClient
+	path   string
+	key    string
+}
+
+func (vs vaultSecret) GetSecret() string {
+	secretvalue, _ := vs.client.GetSecretValue(vs.path, vs.key)
+	return secretvalue
+}
+
+func (vc *VaultClient) GetSecretProvider(secretPath string, key string) *vaultSecret {
+	return &vaultSecret{client: vc, path: secretPath, key: key}
+}
+
 func (vc VaultClient) GetSecretValue(secretPath string, key string) (string, error) {
 	if secretPath == "" {
 		return "", errors.New("secret path is nil or empty")
