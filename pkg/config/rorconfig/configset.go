@@ -61,30 +61,39 @@ func (rc *rorConfigSet) AutoLoadEnv() {
 	}
 }
 
+func (rc *rorConfigSet) getValue(key ConfigConst) ConfigData {
+	value := rc.configs[key]
+	if value == "" && rc.autoload {
+		rc.LoadEnv(key)
+		value = rc.configs[key]
+	}
+	return value
+}
+
 func (rc *rorConfigSet) GetString(key ConfigConst) string {
-	return rc.configs[key].String()
+	return rc.getValue(key).String()
 }
 func (rc *rorConfigSet) GetBool(key ConfigConst) bool {
-	return rc.configs[key].Bool()
+	return rc.getValue(key).Bool()
 }
 func (rc *rorConfigSet) GetInt(key ConfigConst) int {
-	return rc.configs[key].Int()
+	return rc.getValue(key).Int()
 }
 func (rc *rorConfigSet) GetInt64(key ConfigConst) int64 {
-	return rc.configs[key].Int64()
+	return rc.getValue(key).Int64()
 }
 func (rc *rorConfigSet) GetFloat64(key ConfigConst) float64 {
-	return rc.configs[key].Float64()
+	return rc.getValue(key).Float64()
 }
 func (rc *rorConfigSet) GetFloat32(key ConfigConst) float32 {
-	return rc.configs[key].Float32()
+	return rc.getValue(key).Float32()
 }
 func (rc *rorConfigSet) GetUint(key ConfigConst) uint {
-	return rc.configs[key].Uint()
+	return rc.getValue(key).Uint()
 }
 func (rc *rorConfigSet) GetUint64(key ConfigConst) uint64 {
-	return rc.configs[key].Uint64()
+	return rc.getValue(key).Uint64()
 }
 func (rc *rorConfigSet) GetUint32(key ConfigConst) uint32 {
-	return rc.configs[key].Uint32()
+	return rc.getValue(key).Uint32()
 }
