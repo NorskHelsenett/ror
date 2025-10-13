@@ -13,16 +13,16 @@ type rorConfigSet struct {
 }
 
 func (rc *rorConfigSet) LoadEnv(key ConfigConst) {
-	if ConfigConstsMap[key].deprecated {
-		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", ConfigConstsMap[key].value, ConfigConstsMap[key].description))
+	if ConfigConsts.IsDeprecated(key) {
+		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", ConfigConsts[key].value, ConfigConsts[key].description))
 	}
-	rc.configs[key] = ConfigData(os.Getenv(ConfigConstsMap[ConfigConst(key)].value))
+	rc.configs[key] = ConfigData(os.Getenv(ConfigConsts.GetEnvVariable(key)))
 }
 
 func (rc *rorConfigSet) AutoLoadAllEnv() {
 
 	loadDotEnv()
-	for key, value := range ConfigConstsMap {
+	for key, value := range ConfigConsts {
 		_, exists := os.LookupEnv(value.value)
 		if exists {
 			rc.LoadEnv(ConfigConst(key))
