@@ -10,14 +10,24 @@ import (
 )
 
 type InterregationReport struct {
-	Nodes       []v1.Node
-	Provider    providermodels.ProviderType
-	ClusterName string
-	Workspace   string
-	Datacenter  string
+	Nodes              []v1.Node
+	Interregator       providermodels.ProviderType
+	Provider           providermodels.ProviderType
+	KubernetesProvider providermodels.ProviderType
+	VMProvider         providermodels.ProviderType
+	ClusterName        string
+	Workspace          string
+	Datacenter         string
 }
 
 func (c *InterregationReport) GetProvider() providermodels.ProviderType {
+	return c.Provider
+}
+func (c *InterregationReport) GetVMProvider() providermodels.ProviderType {
+	return c.Provider
+
+}
+func (c *InterregationReport) GetKubernetesProvider() providermodels.ProviderType {
 	return c.Provider
 }
 
@@ -37,7 +47,10 @@ func NewInterregationReport(nodes []v1.Node) (*InterregationReport, error) {
 	report.Nodes = nodes
 	interregator := clusterinterregator.NewClusterInterregator(nodes)
 
-	report.Provider = interregator.GetProvider()
+	report.Interregator = interregator.GetProvider()
+	report.Provider = providermodels.ProviderType(interregator.GetKubernetesProvider())
+	report.VMProvider = providermodels.ProviderType(interregator.GetVMProvider())
+	report.KubernetesProvider = providermodels.ProviderType(interregator.GetKubernetesProvider())
 	report.ClusterName = interregator.GetClusterName()
 	report.Workspace = interregator.GetClusterWorkspace()
 	report.Datacenter = interregator.GetDatacenter()

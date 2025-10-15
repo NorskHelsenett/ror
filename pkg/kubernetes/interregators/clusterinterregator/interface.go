@@ -46,6 +46,7 @@ func NewClusterInterregator(nodes []v1.Node) ClusterInterregator {
 	for _, inter := range interregators {
 		if inter.IsTypeOf(nodes) {
 			clusterinterregator.providerinterregator = inter
+			break
 		}
 	}
 	if clusterinterregator.providerinterregator == nil {
