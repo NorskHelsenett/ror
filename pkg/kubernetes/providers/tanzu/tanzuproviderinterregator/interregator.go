@@ -49,5 +49,5 @@ func (t TanzuProviderinterregator) GetVMProvider(nodes []v1.Node) string {
 }
 
 func (t TanzuProviderinterregator) GetKubernetesProvider(nodes []v1.Node) string {
-	return "VMware Tanzu"
+	return providermodels.ProviderTypeTanzu.String()
 }
