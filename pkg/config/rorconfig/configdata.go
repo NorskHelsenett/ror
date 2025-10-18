@@ -1,6 +1,9 @@
 package rorconfig
 
-import "strconv"
+import (
+	"math"
+	"strconv"
+)
 
 type ConfigData string
 
@@ -22,10 +25,16 @@ func (cd ConfigData) Int64() int64 {
 }
 func (cd ConfigData) Float64() float64 {
 	f, _ := strconv.ParseFloat(cd.String(), 64)
+	if math.IsInf(f, 0) || math.IsNaN(f) {
+		return 0
+	}
 	return f
 }
 func (cd ConfigData) Float32() float32 {
 	f, _ := strconv.ParseFloat(cd.String(), 32)
+	if math.IsInf(f, 0) || math.IsNaN(f) {
+		return 0
+	}
 	return float32(f)
 }
 func (cd ConfigData) Uint() uint {

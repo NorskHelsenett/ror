@@ -219,6 +219,15 @@ var ConfigConsts = ConfigconstsMap{
 	ConfigConst("ENABLE_PPROF"):                     {value: "ENABLE_PPROF", deprecated: false, description: ""},
 }
 
+func (cc *ConfigconstsMap) GetConfigConstByName(key string) ConfigConst {
+	for configConst, Key := range *cc {
+		if Key.value == key {
+			return configConst
+		}
+	}
+	return ConfigConst(key)
+}
+
 func (cc *ConfigconstsMap) IsSet(key ConfigConst) bool {
 	_, exists := (*cc)[key]
 	return exists
