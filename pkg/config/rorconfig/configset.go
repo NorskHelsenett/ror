@@ -16,12 +16,14 @@ func (rc *rorConfigSet) LoadEnv(key ConfigConst) {
 	if ConfigConsts.IsDeprecated(key) {
 		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", ConfigConsts[key].value, ConfigConsts[key].description))
 	}
-	rc.configs[key] = ConfigData(os.Getenv(ConfigConsts.GetEnvVariable(key)))
+	data := os.Getenv(ConfigConsts.GetEnvVariable(key))
+	rc.configs[key] = ConfigData(data)
 }
 
 func (rc *rorConfigSet) AutoLoadAllEnv() {
-
-	loadDotEnv()
+	for key, value := range readDotEnv() {
+		os.Setenv(key, value)
+	}
 	for key, value := range ConfigConsts {
 		_, exists := os.LookupEnv(value.value)
 		if exists {
