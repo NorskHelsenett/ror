@@ -56,6 +56,9 @@ const (
 	REDIS_HOST ConfigConst = "REDIS_HOST"
 	REDIS_PORT ConfigConst = "REDIS_PORT"
 
+	KV_HOST ConfigConst = "KV_HOST"
+	KV_PORT ConfigConst = "KV_PORT"
+
 	TRACER_ID                        ConfigConst = "TRACER_ID"
 	ENABLE_TRACING                   ConfigConst = "ENABLE_TRACING"
 	OPENTELEMETRY_COLLECTOR_ENDPOINT ConfigConst = "OPENTELEMETRY_COLLECTOR_ENDPOINT"
@@ -168,8 +171,10 @@ var ConfigConsts = ConfigconstsMap{
 	ConfigConst("RABBITMQ_PORT"):                    {value: "RABBITMQ_PORT", deprecated: false, description: ""},
 	ConfigConst("RABBITMQ_BROADCAST_NAME"):          {value: "RABBITMQ_BROADCAST_NAME", deprecated: false, description: ""},
 	ConfigConst("RABBITMQ_CONNECTIONSTRING"):        {value: "RABBITMQ_CONNECTIONSTRING", deprecated: false, description: ""},
-	ConfigConst("REDIS_HOST"):                       {value: "REDIS_HOST", deprecated: false, description: ""},
-	ConfigConst("REDIS_PORT"):                       {value: "REDIS_PORT", deprecated: false, description: ""},
+	ConfigConst("REDIS_HOST"):                       {value: "REDIS_HOST", deprecated: true, description: "Redis configuration is deprecated, use KV_HOST instead"},
+	ConfigConst("REDIS_PORT"):                       {value: "REDIS_PORT", deprecated: true, description: "Redis configuration is deprecated, use KV_PORT instead"},
+	ConfigConst("KV_HOST"):                          {value: "KV_HOST", deprecated: false, description: ""},
+	ConfigConst("KV_PORT"):                          {value: "KV_PORT", deprecated: false, description: ""},
 	ConfigConst("TRACER_ID"):                        {value: "TRACER_ID", deprecated: false, description: ""},
 	ConfigConst("ENABLE_TRACING"):                   {value: "ENABLE_TRACING", deprecated: false, description: ""},
 	ConfigConst("OPENTELEMETRY_COLLECTOR_ENDPOINT"): {value: "OPENTELEMETRY_COLLECTOR_ENDPOINT", deprecated: false, description: ""},
@@ -219,6 +224,20 @@ var ConfigConsts = ConfigconstsMap{
 	ConfigConst("ENABLE_PPROF"):                     {value: "ENABLE_PPROF", deprecated: false, description: ""},
 }
 
+func (cc *ConfigconstsMap) GetConfigConstByName(key string) ConfigConst {
+	for configConst, Key := range *cc {
+		if Key.value == key {
+			return configConst
+		}
+	}
+	return ConfigConst(key)
+}
+
+func (cc *ConfigconstsMap) GetConfigConstByKey(key ConfigConst) ConfigConst {
+	return cc.GetConfigConstByName(string(key))
+
+}
+
 func (cc *ConfigconstsMap) IsSet(key ConfigConst) bool {
 	_, exists := (*cc)[key]
 	return exists
@@ -239,19 +258,22 @@ func (cc *ConfigconstsMap) ensureKeyExists(key ConfigConst) {
 				description: "Local env variable not in central list",
 			},
 		)
-		rlog.Warn("ConfigConst " + string(key) + " not in central list. Added as local only.")
+		rlog.Info("ConfigConst " + string(key) + " not in central list. Added as local only.")
 	}
 }
 
 func (cc *ConfigconstsMap) GetEnvVariable(key ConfigConst) string {
+	key = ConfigConsts.GetConfigConstByName(string(key))
 	cc.ensureKeyExists(key)
 	return (*cc)[key].value
 }
 func (cc *ConfigconstsMap) IsDeprecated(key ConfigConst) bool {
+	key = ConfigConsts.GetConfigConstByName(string(key))
 	cc.ensureKeyExists(key)
 	return (*cc)[key].deprecated
 }
 func (cc *ConfigconstsMap) GetDescription(key ConfigConst) string {
+	key = ConfigConsts.GetConfigConstByName(string(key))
 	cc.ensureKeyExists(key)
 	return (*cc)[key].description
 }
