@@ -46,7 +46,7 @@ func SetDefault(key ConfigConst, defaultValue any) {
 // GetConfigs returns a copy of all currently loaded configuration values.
 // This is primarily used for debugging and testing purposes.
 func GetConfigs() configsMap {
-	return config.configs
+	return config.configs.GetAll()
 }
 
 // AutomaticEnv loads configuration values from environment variables for all registered keys.
