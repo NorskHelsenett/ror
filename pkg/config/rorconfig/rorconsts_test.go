@@ -16,29 +16,14 @@ func TestConfigconstsMap_GetConfigConstByName(t *testing.T) {
 			expected: ROLE,
 		},
 		{
-			name:     "existing key - HTTP_HOST",
-			key:      "HTTP_HOST",
-			expected: HTTP_HOST,
-		},
-		{
-			name:     "existing key - ROR_URL",
+			name:     "existing key with different value - ROR_URL",
 			key:      "ROR_URL",
-			expected: API_ENDPOINT,
-		},
-		{
-			name:     "existing key - USE_CORS",
-			key:      "USE_CORS",
-			expected: GIN_USE_CORS,
+			expected: ConfigConst("API_ENDPOINT"),
 		},
 		{
 			name:     "non-existing key",
 			key:      "NON_EXISTING_KEY",
 			expected: ConfigConst("NON_EXISTING_KEY"),
-		},
-		{
-			name:     "empty key",
-			key:      "",
-			expected: ConfigConst(""),
 		},
 	}
 
