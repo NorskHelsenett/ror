@@ -7,6 +7,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
+	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -29,15 +30,11 @@ type RabbitMQConnection interface {
 	clients.CommonClient
 }
 
-type RabbitMQCredentialProvider interface {
-	GetCredentials() (string, string)
-}
-
 type rabbitmqcon struct {
 	Context            context.Context
 	RabbitMqConnection *amqp.Connection
 	RabbitMqChannel    *amqp.Channel
-	Credentials        RabbitMQCredentialProvider
+	Credentials        credshelper.CredHelper
 	Host               string
 	Port               string
 	BroadcastName      string
@@ -48,7 +45,7 @@ type rabbitmqcon struct {
 	SenderQueName      string
 }
 
-func NewRabbitMQConnection(cp RabbitMQCredentialProvider, host string, port string, broadcastName string) RabbitMQConnection {
+func NewRabbitMQConnection(cp credshelper.CredHelper, host string, port string, broadcastName string) RabbitMQConnection {
 	rc := getDefaultRabbitMQConnectionConfig()
 	options := []RabbitMQConnectionOption{
 		OptionCredentialsProvider(cp),

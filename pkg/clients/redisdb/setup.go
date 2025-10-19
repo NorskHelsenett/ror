@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient/databasecredhelper"
+	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -31,12 +31,12 @@ var redisdb rediscon
 
 type rediscon struct {
 	Client      *goredis.Client
-	Credentials *databasecredhelper.VaultDBCredentials
+	Credentials credshelper.CredHelper
 	Host        string
 	Port        string
 }
 
-func New(dbc *databasecredhelper.VaultDBCredentials, host string, port string) *rediscon {
+func New(dbc credshelper.CredHelper, host string, port string) *rediscon {
 	rc := rediscon{
 		Credentials: dbc,
 		Host:        host,
