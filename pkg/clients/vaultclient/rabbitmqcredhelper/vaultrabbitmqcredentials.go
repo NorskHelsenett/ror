@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient"
+	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/hashicorp/vault-client-go"
@@ -21,7 +22,7 @@ type VaultRMQCredentials struct {
 
 // NewVaultRMQCredentials creates a new VaultRMQCredentialhelper
 // If vaultpath is empty, the role will be used as path
-func NewVaultRMQCredentials(vcli *vaultclient.VaultClient, vaultpath string) *VaultRMQCredentials {
+func NewVaultRMQCredentials(vcli *vaultclient.VaultClient, vaultpath string) *credshelper.SimpleWrapper {
 	if vaultpath == "" {
 		rlog.Error("NewVaultRMQCredentials failed", fmt.Errorf("empty vault path is not allowed"))
 	}
@@ -30,7 +31,7 @@ func NewVaultRMQCredentials(vcli *vaultclient.VaultClient, vaultpath string) *Va
 		VaultPath:   vaultpath,
 		Exp:         0,
 	}
-	return &vc
+	return credshelper.WrapSimpleCredsHelper(&vc)
 }
 
 func (rmc *VaultRMQCredentials) GetCredentials() (string, string) {

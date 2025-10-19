@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient"
+	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	"github.com/hashicorp/vault-client-go"
@@ -26,7 +27,7 @@ type VaultDBCredentials struct {
 // vcli is the vault client
 // vaultRole is the role to request credentials for
 // mountpath is the path to the database mount in vault
-func NewVaultDBCredentials(vcli *vaultclient.VaultClient, vaultRole string, mountpath string) *VaultDBCredentials {
+func NewVaultDBCredentials(vcli *vaultclient.VaultClient, vaultRole string, mountpath string) *credshelper.SimpleWrapperWithRenew {
 
 	vc := VaultDBCredentials{
 		VaultClient: vcli,
@@ -38,10 +39,9 @@ func NewVaultDBCredentials(vcli *vaultclient.VaultClient, vaultRole string, moun
 	} else {
 		vc.MountPath = "database"
 	}
-
-	return &vc
+	return credshelper.WrapSimpleCredsHelperWithRenew(&vc)
 }
-func (dbc *VaultDBCredentials) IsExpired() bool {
+func (dbc *VaultDBCredentials) isExpired() bool {
 	dbc.lock.RLock()
 	defer dbc.lock.RUnlock()
 
@@ -49,7 +49,7 @@ func (dbc *VaultDBCredentials) IsExpired() bool {
 }
 
 func (dbc *VaultDBCredentials) CheckAndRenew() bool {
-	if dbc.IsExpired() {
+	if dbc.isExpired() {
 		dbc.lock.Lock()
 		defer dbc.lock.Unlock()
 
@@ -59,11 +59,6 @@ func (dbc *VaultDBCredentials) CheckAndRenew() bool {
 		return true
 	}
 	return false
-}
-
-// Deprecated: Use GetCredentials instead
-func (dbc *VaultDBCredentials) GetUsernamePassword() (string, string) {
-	return dbc.GetCredentials()
 }
 
 func (dbc *VaultDBCredentials) GetCredentials() (string, string) {
