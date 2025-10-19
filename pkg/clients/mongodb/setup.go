@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
@@ -16,16 +17,11 @@ import (
 
 var mongodb MongodbCon
 
-type DatabaseCredentialHelper interface {
-	GetCredentials() (string, string)
-	CheckAndRenew() bool
-}
-
 // This type implements the mongodb connection in ror
 type MongodbCon struct {
 	Client      *mongo.Client
 	Context     context.Context
-	Credentials DatabaseCredentialHelper
+	Credentials credshelper.CredHelperWithRenew
 	Host        string
 	Port        string
 	Database    string
@@ -45,7 +41,7 @@ func GetMongoClient() *mongo.Client {
 }
 
 // Initializes the mongodb client
-func Init(cp DatabaseCredentialHelper, host string, port string, database string) {
+func Init(cp credshelper.CredHelperWithRenew, host string, port string, database string) {
 	mongodb.init(cp, host, port, database)
 	rorhealth.Register("mongodb", mongodb)
 }
@@ -79,7 +75,7 @@ func (mdb MongodbCon) getConnectionstring() string {
 	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", username, password, mdb.Host, mdb.Port, mdb.Database)
 }
 
-func (mdb *MongodbCon) init(cp DatabaseCredentialHelper, host string, port string, database string) {
+func (mdb *MongodbCon) init(cp credshelper.CredHelperWithRenew, host string, port string, database string) {
 	mdb.Context = context.Background()
 	mdb.Host = host
 	mdb.Port = port

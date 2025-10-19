@@ -3,6 +3,8 @@ package rabbitmqclient
 import (
 	"fmt"
 	"strings"
+
+	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 )
 
 type RabbitMQConnectionOption interface {
@@ -48,7 +50,7 @@ func OptionBroadcastName(broadcastname string) RabbitMQConnectionOption {
 	})
 }
 
-func OptionCredentialsProvider(cp RabbitMQCredentialProvider) RabbitMQConnectionOption {
+func OptionCredentialsProvider(cp credshelper.CredHelper) RabbitMQConnectionOption {
 	return optionFunc(func(cfg *rabbitmqcon) {
 		cfg.Credentials = cp
 	})
