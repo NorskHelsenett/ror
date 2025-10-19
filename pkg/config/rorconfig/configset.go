@@ -2,6 +2,7 @@ package rorconfig
 
 import (
 	"fmt"
+	"maps"
 	"os"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -12,12 +13,41 @@ type rorConfigSet struct {
 	configs  configsMap
 }
 
+func (cm *configsMap) IsSet(key ConfigConst) bool {
+	_, exists := (*cm)[key]
+	return exists
+}
+
+func (cm *configsMap) IsEmpty(key ConfigConst) bool {
+	value, exists := (*cm)[key]
+	return !exists || value == ""
+}
+
+func (cm *configsMap) Set(key ConfigConst, data any) {
+
+	(*cm)[key] = ConfigData(anyToString(data))
+}
+
+func (cm *configsMap) Unset(key ConfigConst) {
+	delete(*cm, key)
+}
+
+func (cm *configsMap) Get(key ConfigConst) ConfigData {
+	return (*cm)[key]
+}
+
+func (cm *configsMap) GetAll() configsMap {
+	copyMap := make(configsMap)
+	maps.Copy(copyMap, *cm)
+	return copyMap
+}
+
 func (rc *rorConfigSet) LoadEnv(key ConfigConst) {
 	if ConfigConsts.IsDeprecated(key) {
 		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", ConfigConsts[key].value, ConfigConsts[key].description))
 	}
 	data := os.Getenv(ConfigConsts.GetEnvVariable(key))
-	rc.configs[key] = ConfigData(data)
+	rc.configs.Set(key, data)
 }
 
 func (rc *rorConfigSet) AutoLoadAllEnv() {
@@ -36,24 +66,22 @@ func (rc *rorConfigSet) SetDefault(key ConfigConst, defaultValue any) {
 	if rc.autoload {
 		rc.LoadEnv(key)
 	}
-	if _, exists := rc.configs[key]; !exists || rc.configs[key] == "" {
-		rc.configs[key] = ConfigData(anyToString(defaultValue))
+	if rc.configs.IsEmpty(key) {
+		rc.configs.Set(key, defaultValue)
 	}
 }
 
 func (rc *rorConfigSet) SetWithProvider(key ConfigConst, provider SecretProvider) {
 	proveidervalue := provider.GetSecret()
-	rc.configs[key] = ConfigData(proveidervalue)
+	rc.configs.Set(key, proveidervalue)
 }
 
 func (rc *rorConfigSet) Set(key ConfigConst, value any) {
-
-	rc.configs[key] = ConfigData(anyToString(value))
+	rc.configs.Set(key, value)
 }
 
 func (rc *rorConfigSet) IsSet(key ConfigConst) bool {
-	_, exists := rc.configs[key]
-	return exists
+	return rc.configs.IsSet(key)
 }
 
 func (rc *rorConfigSet) AutoLoadEnv() {
@@ -64,10 +92,10 @@ func (rc *rorConfigSet) AutoLoadEnv() {
 }
 
 func (rc *rorConfigSet) getValue(key ConfigConst) ConfigData {
-	value := rc.configs[key]
-	if value == "" && rc.autoload {
+	value := rc.configs.Get(key)
+	if rc.configs.IsEmpty(key) && rc.autoload {
 		rc.LoadEnv(key)
-		value = rc.configs[key]
+		value = rc.configs.Get(key)
 	}
 	return value
 }
