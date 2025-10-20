@@ -16,10 +16,12 @@ import (
 	restv1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/metrics"
 	restv1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/projects"
 	restv1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/resources"
+	restv1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/token"
 	restv1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/v1stream"
 	restv1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/workspaces"
 	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
+	restv2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/token"
 	restv2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/v2stream"
 	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
@@ -29,9 +31,11 @@ import (
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
+	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
+	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
@@ -52,6 +56,8 @@ type RorHttpTransport struct {
 	aclClientV1        v1Acl.AclInterface
 	selfClientV2       v2self.SelfInterface
 	streamClientV2     v2stream.StreamInterface
+	tokenClientV1      v1token.TokenInterface
+	tokenClientV2      v2token.TokenInterface
 }
 
 func NewRorHttpTransport(config *httpclient.HttpTransportClientConfig) *RorHttpTransport {
@@ -84,6 +90,8 @@ func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient 
 		resourcesClientV2:  restv2resources.NewV2Client(client),
 		streamClientV2:     restv2stream.NewV2Client(v2sseclient.NewSSEClient(client)),
 		aclClientV1:        restv1Acl.NewV1Client(client),
+		tokenClientV1:      restv1token.NewV1Client(client),
+		tokenClientV2:      restv2token.NewV2Client(client),
 	}
 	return t
 }
@@ -131,6 +139,14 @@ func (t *RorHttpTransport) ResourcesV2() v2resources.ResourcesInterface {
 
 func (t *RorHttpTransport) AclV1() v1Acl.AclInterface {
 	return t.aclClientV1
+}
+
+func (t *RorHttpTransport) Token() v1token.TokenInterface {
+	return t.tokenClientV1
+}
+
+func (t *RorHttpTransport) TokenV2() v2token.TokenInterface {
+	return t.tokenClientV2
 }
 
 func (t *RorHttpTransport) Streamv2() v2stream.StreamInterface {
