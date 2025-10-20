@@ -43,12 +43,14 @@ func (cm *configsMap) GetAll() configsMap {
 }
 
 func (rc *rorConfigSet) LoadEnv(key ConfigConst) {
-	confKey := ConfigConsts.GetConfigConstByName(string(key))
-	if ConfigConsts.IsDeprecated(confKey) {
-		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", ConfigConsts[confKey].value, ConfigConsts[confKey].description))
+	envVar := ConfigConsts.GetEnvVariable(key)
+	constData := ConfigConsts[key]
+
+	if constData.deprecated {
+		rlog.Warn(fmt.Sprintf("Config %s is deprecated %s", constData.value, constData.description))
 	}
 
-	data := os.Getenv(string(key))
+	data := os.Getenv(envVar)
 	rc.configs.Set(ConfigConst(key), data)
 }
 
