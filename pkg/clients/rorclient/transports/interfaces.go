@@ -10,9 +10,11 @@ import (
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
+	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
+	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
@@ -35,4 +37,6 @@ type RorTransport interface {
 	GetApiSecret() string
 	GetRole() string
 	GetTransportName() string
+	Token() v1token.TokenInterface
+	TokenV2() v2token.TokenInterface
 }

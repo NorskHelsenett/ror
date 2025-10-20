@@ -13,9 +13,11 @@ import (
 	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
+	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
+	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
@@ -49,6 +51,8 @@ type RorClientInterface interface {
 	Stream() v1stream.StreamInterface
 	StreamV2() v2stream.StreamInterface
 	Workspaces() v1workspaces.WorkspacesInterface
+	Token() v1token.TokenInterface
+	TokenV2() v2token.TokenInterface
 
 	clients.CommonClient
 }
@@ -69,6 +73,8 @@ type RorClient struct {
 	resourcesClientV2  v2resources.ResourcesInterface
 	streamClientV2     v2stream.StreamInterface
 	aclClientV1        v1acl.AclInterface
+	tokenClientV1      v1token.TokenInterface
+	tokenClientV2      v2token.TokenInterface
 }
 
 func NewRorClient(transport transports.RorTransport) *RorClient {
@@ -86,6 +92,8 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 		metricsClientV1:    transport.Metrics(),
 		resourcesClientV2:  transport.ResourcesV2(),
 		streamClientV2:     transport.Streamv2(),
+		tokenClientV1:      transport.Token(),
+		tokenClientV2:      transport.TokenV2(),
 	}
 }
 
@@ -125,6 +133,14 @@ func (c *RorClient) Metrics() v1metrics.MetricsInterface {
 
 func (c *RorClient) Resources() v1resources.ResourceInterface {
 	return c.resourceClientV1
+}
+
+func (c *RorClient) Token() v1token.TokenInterface {
+	return c.tokenClientV1
+}
+
+func (c *RorClient) TokenV2() v2token.TokenInterface {
+	return c.tokenClientV2
 }
 
 func (c *RorClient) CheckConnection() error {
