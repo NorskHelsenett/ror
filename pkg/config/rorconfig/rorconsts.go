@@ -263,17 +263,14 @@ func (cc *ConfigconstsMap) ensureKeyExists(key ConfigConst) {
 }
 
 func (cc *ConfigconstsMap) GetEnvVariable(key ConfigConst) string {
-	key = ConfigConsts.GetConfigConstByName(string(key))
 	cc.ensureKeyExists(key)
 	return (*cc)[key].value
 }
 func (cc *ConfigconstsMap) IsDeprecated(key ConfigConst) bool {
-	key = ConfigConsts.GetConfigConstByName(string(key))
 	cc.ensureKeyExists(key)
 	return (*cc)[key].deprecated
 }
 func (cc *ConfigconstsMap) GetDescription(key ConfigConst) string {
-	key = ConfigConsts.GetConfigConstByName(string(key))
 	cc.ensureKeyExists(key)
 	return (*cc)[key].description
 }
