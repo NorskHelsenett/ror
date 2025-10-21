@@ -146,9 +146,5 @@ func MustStartWithDefaults(opts ...Option) {
 }
 
 func getHealthEndpoint() string {
-	if rorconfig.GetString(rorconfig.HEALTH_ENDPOINT) != "" {
-		rlog.Info("Using deprecated HEALTH_ENDPOINT configuration. Please use HTTP_HEALTH_HOST and HTTP_HEALTH_PORT instead")
-		return rorconfig.GetString(rorconfig.HEALTH_ENDPOINT)
-	}
 	return fmt.Sprintf("%s:%s", rorconfig.GetString(rorconfig.HTTP_HEALTH_HOST), rorconfig.GetString(rorconfig.HTTP_HEALTH_PORT))
 }
