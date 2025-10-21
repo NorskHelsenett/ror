@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/redisdb/redisdblogadapter"
 	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
@@ -37,13 +38,14 @@ type rediscon struct {
 }
 
 func New(dbc credshelper.CredHelper, host string, port string) *rediscon {
+
+	goredis.SetLogger(redisdblogadapter.NewRlogAdapter())
 	rc := rediscon{
 		Credentials: dbc,
 		Host:        host,
 		Port:        port,
 	}
 	rc.connect()
-
 	return &rc
 }
 
