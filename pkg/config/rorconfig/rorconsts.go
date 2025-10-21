@@ -1,60 +1,57 @@
 package rorconfig
 
-import "github.com/NorskHelsenett/ror/pkg/rlog"
+import (
+	"slices"
+)
 
 type ConfigConst string
 
 const (
-	ROLE             ConfigConst = "ROLE"
-	HTTP_HOST        ConfigConst = "HTTP_HOST"
-	HTTP_PORT        ConfigConst = "HTTP_PORT"
-	HTTP_HEALTH_HOST ConfigConst = "HTTP_HEALTH_HOST"
-	HTTP_HEALTH_PORT ConfigConst = "HTTP_HEALTH_PORT"
-	HTTP_TIMEOUT     ConfigConst = "HTTP_TIMEOUT"
-	// Deprecated: use HTTP_HEALTH_HOST / HTTP_HEALTH_PORT instead
-	HEALTH_ENDPOINT      ConfigConst = "HEALTH_ENDPOINT"
-	API_KEY_SALT         ConfigConst = "API_KEY_SALT"
-	API_KEY              ConfigConst = "API_KEY"
-	API_KEY_SECRET       ConfigConst = "API_KEY_SECRET"
-	API_ENDPOINT         ConfigConst = "ROR_URL"
-	DEVELOPMENT          ConfigConst = "DEVELOPMENT"
-	PORT                 ConfigConst = "PORT"
-	POD_NAMESPACE        ConfigConst = "POD_NAMESPACE"
-	CLUSTER_ID           ConfigConst = "CLUSTER_ID"
-	ERROR_COUNT          ConfigConst = "ERROR_COUNT"
-	HELSEGITLAB_BASE_URL ConfigConst = "HELSEGITLAB_BASE_URL"
-	ENVIRONMENT          ConfigConst = "ENVIRONMENT"
-	LDAP_CONFIGS         ConfigConst = "LDAP_CONFIGS"
+	ROLE               ConfigConst = "ROLE"
+	HTTP_HOST          ConfigConst = "HTTP_HOST"
+	HTTP_PORT          ConfigConst = "HTTP_PORT"
+	HTTP_HEALTH_HOST   ConfigConst = "HTTP_HEALTH_HOST"
+	HTTP_HEALTH_PORT   ConfigConst = "HTTP_HEALTH_PORT"
+	HTTP_TIMEOUT       ConfigConst = "HTTP_TIMEOUT"
+	HTTP_USE_CORS      ConfigConst = "HTTP_USE_CORS"
+	HTTP_ALLOW_ORIGINS ConfigConst = "HTTP_ALLOW_ORIGINS"
+	ROR_API_KEY_SALT   ConfigConst = "API_KEY_SALT"
+	ROR_API_KEY        ConfigConst = "ROR_API_KEY"
+	ROR_API_KEY_SECRET ConfigConst = "ROR_API_KEY_SECRET"
+	ROR_API_ENDPOINT   ConfigConst = "ROR_API_ENDPOINT"
+	DEVELOPMENT        ConfigConst = "DEVELOPMENT"
+	ENVIRONMENT        ConfigConst = "ENVIRONMENT"
+
+	ERROR_COUNT ConfigConst = "ERROR_COUNT"
+
+	POD_NAMESPACE ConfigConst = "POD_NAMESPACE"
+	CLUSTER_ID    ConfigConst = "CLUSTER_ID"
 
 	GIT_REPO_URL ConfigConst = "GIT_REPO_URL"
 	GIT_BRANCH   ConfigConst = "GIT_BRANCH"
 	GIT_TOKEN    ConfigConst = "GIT_TOKEN"
 	GIT_PATH     ConfigConst = "GIT_PATH"
 
-	ROR_OPERATOR_NAMESPACE ConfigConst = "ROR_OPERATOR_NAMESPACE"
-
+	LDAP_CONFIGS            ConfigConst = "LDAP_CONFIGS"
 	LDAP_CERTIFICATE_FOLDER ConfigConst = "LDAP_CERTIFICATE_FOLDER"
 
 	OIDC_PROVIDER           ConfigConst = "OIDC_PROVIDER"
 	OIDC_CLIENT_ID          ConfigConst = "OIDC_CLIENT_ID"
 	OIDC_DEVICE_CLIENT_ID   ConfigConst = "OIDC_DEVICE_CLIENT_ID"
-	OIDC_SKIP_ISSUER_VERIFY ConfigConst = "SKIP_OIDC_ISSUER_VERIFY"
+	OIDC_SKIP_ISSUER_VERIFY ConfigConst = "OIDC_SKIP_ISSUER_VERIFY"
 
 	VAULT_URL ConfigConst = "VAULT_URL"
 
 	MONGODB_HOST     ConfigConst = "MONGODB_HOST"
 	MONGODB_PORT     ConfigConst = "MONGODB_PORT"
 	MONGODB_DATABASE ConfigConst = "MONGODB_DATABASE"
-	MONGODB_URL      ConfigConst = "MONGODB_URL"
 	MONGO_DATABASE   ConfigConst = "MONGO_DATABASE"
+	MONGODB_URL      ConfigConst = "MONGODB_URL"
 
 	RABBITMQ_HOST             ConfigConst = "RABBITMQ_HOST"
 	RABBITMQ_PORT             ConfigConst = "RABBITMQ_PORT"
 	RABBITMQ_BROADCAST_NAME   ConfigConst = "RABBITMQ_BROADCAST_NAME"
 	RABBITMQ_CONNECTIONSTRING ConfigConst = "RABBITMQ_CONNECTIONSTRING"
-
-	REDIS_HOST ConfigConst = "REDIS_HOST"
-	REDIS_PORT ConfigConst = "REDIS_PORT"
 
 	KV_HOST ConfigConst = "KV_HOST"
 	KV_PORT ConfigConst = "KV_PORT"
@@ -66,211 +63,151 @@ const (
 	PROFILER_ENABLED   ConfigConst = "PROFILER_ENABLED"
 	STARTUP_SLEEP_TIME ConfigConst = "STARTUP_SLEEP_TIME"
 
-	GIN_USE_CORS      ConfigConst = "USE_CORS"
-	GIN_ALLOW_ORIGINS ConfigConst = "ALLOW_ORIGINS"
-
-	VERSION           ConfigConst = "VERSION"
-	COMMIT            ConfigConst = "COMMIT"
-	DEX_HOST          ConfigConst = "DEX_HOST"
-	DEX_PORT          ConfigConst = "DEX_PORT"
-	DEX_GRPC_PORT     ConfigConst = "DEX_GRPC_PORT"
-	DEX_CERT_FILEPATH ConfigConst = "DEX_CERT_FILEPATH"
-	DEX_VAULT_PATH    ConfigConst = "DEX_VAULT_PATH"
-	DEX_TLS           ConfigConst = "DEX_TLS"
-
-	SLACK_BOT_TOKEN ConfigConst = "SLACK_BOT_TOKEN" // #nosec G101 Jest the name of the variable holding the value
-	SLACK_APP_TOKEN ConfigConst = "SLACK_APP_TOKEN" // #nosec G101 Jest the name of the variable holding the value
-
-	CONTAINER_REG_PREFIX     ConfigConst = "CONTAINER_REG_PREFIX"
-	CONTAINER_REG_IMAGE_PATH ConfigConst = "CONTAINER_REG_IMAGE_PATH"
-	CONTAINER_REG_HELM_PATH  ConfigConst = "CONTAINER_REG_HELM_PATH"
-
-	// Operator
-	OPERATOR_BACKOFF_LIMIT       ConfigConst = "BACKOFF_LIMIT"
-	OPERATOR_DEADLINE_SECONDS    ConfigConst = "DEADLINE_SECONDS"
-	OPERATOR_JOB_SERVICE_ACCOUNT ConfigConst = "JOB_SERVICE_ACCOUNT"
-	OPERATOR_APPLOG_SECRET_NAME  ConfigConst = "APPLOG_SECRET_NAME" // #nosec G101 Jest the name of the variable holding the value
-
-	// Tanzu agent
-	TANZU_AGENT_KUBECONFIG         ConfigConst = "KUBECONFIG"
-	TANZU_AGENT_DELETE_KUBECONFIG  ConfigConst = "DELETE_KUBECONFIG"
-	TANZU_AGENT_KUBE_VSPHERE_PATH  ConfigConst = "KUBE_VSPHERE_PATH"
-	TANZU_AGENT_KUBECTL_PATH       ConfigConst = "KUBECTL_PATH"
-	TANZU_AGENT_DATACENTER_URL     ConfigConst = "DATACENTER_URL"
-	TANZU_AGENT_USERNAME           ConfigConst = "TANZU_USERNAME"
-	TANZU_AGENT_PASSWORD           ConfigConst = "TANZU_PWD"    // #nosec G101 Jest the name of the variable holding the value
-	TANZU_AGENT_TOKEN_EXPIRY       ConfigConst = "TOKEN_EXPIRY" // #nosec G101 Jest the name of the variable holding the value
-	TANZU_AGENT_LOGIN_EVERY_MINUTE ConfigConst = "LOGIN_EVERY_MINUTE"
-	TANZU_AGENT_HEALTH_PORT        ConfigConst = "HTTP_PORT"
-	TANZU_AGENT_TANZU_ACCESS       ConfigConst = "TANZU_ACCESS"
-	TANZU_AGENT_DATACENTER         ConfigConst = "DATACENTER"
-	TANZU_AGENT_PROVIDER           ConfigConst = "PROVIDER"
-	TANZU_AGENT_REGION             ConfigConst = "REGION"
-
-	// Tanzu Auth
-	TANZU_AUTH_HEALTH_PORT        ConfigConst = "HTTP_PORT"
-	TANZU_AUTH_KUBE_VSPHERE_PATH  ConfigConst = "KUBE_VSPHERE_PATH"
-	TANZU_AUTH_KUBECTL_PATH       ConfigConst = "KUBECTL_PATH"
-	TANZU_AUTH_BASE_URL           ConfigConst = "TANZU_AUTH_BASE_URL"
-	TANZU_AUTH_CONFIG_FOLDER_PATH ConfigConst = "TANZU_AUTH_CONFIG_FOLDER_PATH"
+	VERSION ConfigConst = "VERSION"
+	COMMIT  ConfigConst = "COMMIT"
 
 	// ms
-	MS_HTTP_PORT      ConfigConst = "HTTP_PORT"
-	MS_HTTP_BIND_PORT ConfigConst = "HTTP_BIND_PORT"
+	MS_ENDPOINT  ConfigConst = "MS_ENDPOINT"
+	MS_HTTP_PORT ConfigConst = "MS_HTTP_PORT"
 
-	LOCAL_KUBERNETES_ROR_BASE_URL ConfigConst = "LOCAL_KUBERNETES_ROR_BASE_URL"
-	ENABLE_PPROF                  ConfigConst = "ENABLE_PPROF"
+	ENABLE_PPROF ConfigConst = "ENABLE_PPROF"
 )
 
-type ConfigConstData struct {
-	value       string
+type EnvironmentVariableConfig struct {
+	key         string
 	deprecated  bool
 	description string
 }
 
-type ConfigconstsMap map[ConfigConst]ConfigConstData
+type EnvironmentVariables []EnvironmentVariableConfig
 
 // ...existing code...
-var ConfigConsts = ConfigconstsMap{
-	ConfigConst("ROLE"):                             {value: "ROLE", deprecated: false, description: ""},
-	ConfigConst("HTTP_HOST"):                        {value: "HTTP_HOST", deprecated: false, description: ""},
-	ConfigConst("HTTP_PORT"):                        {value: "HTTP_PORT", deprecated: false, description: ""},
-	ConfigConst("HTTP_HEALTH_HOST"):                 {value: "HTTP_HEALTH_HOST", deprecated: false, description: ""},
-	ConfigConst("HTTP_HEALTH_PORT"):                 {value: "HTTP_HEALTH_PORT", deprecated: false, description: ""},
-	ConfigConst("HTTP_TIMEOUT"):                     {value: "HTTP_TIMEOUT", deprecated: false, description: ""},
-	ConfigConst("HEALTH_ENDPOINT"):                  {value: "HEALTH_ENDPOINT", deprecated: true, description: "use HTTP_HEALTH_HOST / HTTP_HEALTH_PORT instead"},
-	ConfigConst("API_KEY_SALT"):                     {value: "API_KEY_SALT", deprecated: false, description: ""},
-	ConfigConst("API_KEY"):                          {value: "API_KEY", deprecated: false, description: ""},
-	ConfigConst("API_KEY_SECRET"):                   {value: "API_KEY_SECRET", deprecated: false, description: ""},
-	ConfigConst("API_ENDPOINT"):                     {value: "ROR_URL", deprecated: false, description: ""},
-	ConfigConst("DEVELOPMENT"):                      {value: "DEVELOPMENT", deprecated: false, description: ""},
-	ConfigConst("PORT"):                             {value: "PORT", deprecated: false, description: ""},
-	ConfigConst("POD_NAMESPACE"):                    {value: "POD_NAMESPACE", deprecated: false, description: ""},
-	ConfigConst("CLUSTER_ID"):                       {value: "CLUSTER_ID", deprecated: false, description: ""},
-	ConfigConst("ERROR_COUNT"):                      {value: "ERROR_COUNT", deprecated: false, description: ""},
-	ConfigConst("HELSEGITLAB_BASE_URL"):             {value: "HELSEGITLAB_BASE_URL", deprecated: false, description: ""},
-	ConfigConst("ENVIRONMENT"):                      {value: "ENVIRONMENT", deprecated: false, description: ""},
-	ConfigConst("LDAP_CONFIGS"):                     {value: "LDAP_CONFIGS", deprecated: false, description: ""},
-	ConfigConst("GIT_REPO_URL"):                     {value: "GIT_REPO_URL", deprecated: false, description: ""},
-	ConfigConst("GIT_BRANCH"):                       {value: "GIT_BRANCH", deprecated: false, description: ""},
-	ConfigConst("GIT_TOKEN"):                        {value: "GIT_TOKEN", deprecated: false, description: ""},
-	ConfigConst("GIT_PATH"):                         {value: "GIT_PATH", deprecated: false, description: ""},
-	ConfigConst("ROR_OPERATOR_NAMESPACE"):           {value: "ROR_OPERATOR_NAMESPACE", deprecated: false, description: ""},
-	ConfigConst("LDAP_CERTIFICATE_FOLDER"):          {value: "LDAP_CERTIFICATE_FOLDER", deprecated: false, description: ""},
-	ConfigConst("OIDC_PROVIDER"):                    {value: "OIDC_PROVIDER", deprecated: false, description: ""},
-	ConfigConst("OIDC_CLIENT_ID"):                   {value: "OIDC_CLIENT_ID", deprecated: false, description: ""},
-	ConfigConst("OIDC_DEVICE_CLIENT_ID"):            {value: "OIDC_DEVICE_CLIENT_ID", deprecated: false, description: ""},
-	ConfigConst("OIDC_SKIP_ISSUER_VERIFY"):          {value: "SKIP_OIDC_ISSUER_VERIFY", deprecated: false, description: ""},
-	ConfigConst("VAULT_URL"):                        {value: "VAULT_URL", deprecated: false, description: ""},
-	ConfigConst("MONGODB_HOST"):                     {value: "MONGODB_HOST", deprecated: false, description: ""},
-	ConfigConst("MONGODB_PORT"):                     {value: "MONGODB_PORT", deprecated: false, description: ""},
-	ConfigConst("MONGODB_DATABASE"):                 {value: "MONGODB_DATABASE", deprecated: false, description: ""},
-	ConfigConst("MONGODB_URL"):                      {value: "MONGODB_URL", deprecated: false, description: ""},
-	ConfigConst("MONGO_DATABASE"):                   {value: "MONGO_DATABASE", deprecated: false, description: ""},
-	ConfigConst("RABBITMQ_HOST"):                    {value: "RABBITMQ_HOST", deprecated: false, description: ""},
-	ConfigConst("RABBITMQ_PORT"):                    {value: "RABBITMQ_PORT", deprecated: false, description: ""},
-	ConfigConst("RABBITMQ_BROADCAST_NAME"):          {value: "RABBITMQ_BROADCAST_NAME", deprecated: false, description: ""},
-	ConfigConst("RABBITMQ_CONNECTIONSTRING"):        {value: "RABBITMQ_CONNECTIONSTRING", deprecated: false, description: ""},
-	ConfigConst("REDIS_HOST"):                       {value: "REDIS_HOST", deprecated: true, description: "Redis configuration is deprecated, use KV_HOST instead"},
-	ConfigConst("REDIS_PORT"):                       {value: "REDIS_PORT", deprecated: true, description: "Redis configuration is deprecated, use KV_PORT instead"},
-	ConfigConst("KV_HOST"):                          {value: "KV_HOST", deprecated: false, description: ""},
-	ConfigConst("KV_PORT"):                          {value: "KV_PORT", deprecated: false, description: ""},
-	ConfigConst("TRACER_ID"):                        {value: "TRACER_ID", deprecated: false, description: ""},
-	ConfigConst("ENABLE_TRACING"):                   {value: "ENABLE_TRACING", deprecated: false, description: ""},
-	ConfigConst("OPENTELEMETRY_COLLECTOR_ENDPOINT"): {value: "OPENTELEMETRY_COLLECTOR_ENDPOINT", deprecated: false, description: ""},
-	ConfigConst("PROFILER_ENABLED"):                 {value: "PROFILER_ENABLED", deprecated: false, description: ""},
-	ConfigConst("STARTUP_SLEEP_TIME"):               {value: "STARTUP_SLEEP_TIME", deprecated: false, description: ""},
-	ConfigConst("GIN_USE_CORS"):                     {value: "USE_CORS", deprecated: false, description: ""},
-	ConfigConst("GIN_ALLOW_ORIGINS"):                {value: "ALLOW_ORIGINS", deprecated: false, description: ""},
-	ConfigConst("VERSION"):                          {value: "VERSION", deprecated: false, description: ""},
-	ConfigConst("COMMIT"):                           {value: "COMMIT", deprecated: false, description: ""},
-	ConfigConst("DEX_HOST"):                         {value: "DEX_HOST", deprecated: false, description: ""},
-	ConfigConst("DEX_PORT"):                         {value: "DEX_PORT", deprecated: false, description: ""},
-	ConfigConst("DEX_GRPC_PORT"):                    {value: "DEX_GRPC_PORT", deprecated: false, description: ""},
-	ConfigConst("DEX_CERT_FILEPATH"):                {value: "DEX_CERT_FILEPATH", deprecated: false, description: ""},
-	ConfigConst("DEX_VAULT_PATH"):                   {value: "DEX_VAULT_PATH", deprecated: false, description: ""},
-	ConfigConst("DEX_TLS"):                          {value: "DEX_TLS", deprecated: false, description: ""},
-	ConfigConst("SLACK_BOT_TOKEN"):                  {value: "SLACK_BOT_TOKEN", deprecated: false, description: ""},
-	ConfigConst("SLACK_APP_TOKEN"):                  {value: "SLACK_APP_TOKEN", deprecated: false, description: ""},
-	ConfigConst("CONTAINER_REG_PREFIX"):             {value: "CONTAINER_REG_PREFIX", deprecated: false, description: ""},
-	ConfigConst("CONTAINER_REG_IMAGE_PATH"):         {value: "CONTAINER_REG_IMAGE_PATH", deprecated: false, description: ""},
-	ConfigConst("CONTAINER_REG_HELM_PATH"):          {value: "CONTAINER_REG_HELM_PATH", deprecated: false, description: ""},
-	ConfigConst("OPERATOR_BACKOFF_LIMIT"):           {value: "BACKOFF_LIMIT", deprecated: false, description: ""},
-	ConfigConst("OPERATOR_DEADLINE_SECONDS"):        {value: "DEADLINE_SECONDS", deprecated: false, description: ""},
-	ConfigConst("OPERATOR_JOB_SERVICE_ACCOUNT"):     {value: "JOB_SERVICE_ACCOUNT", deprecated: false, description: ""},
-	ConfigConst("OPERATOR_APPLOG_SECRET_NAME"):      {value: "APPLOG_SECRET_NAME", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_KUBECONFIG"):           {value: "KUBECONFIG", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_DELETE_KUBECONFIG"):    {value: "DELETE_KUBECONFIG", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_KUBE_VSPHERE_PATH"):    {value: "KUBE_VSPHERE_PATH", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_KUBECTL_PATH"):         {value: "KUBECTL_PATH", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_DATACENTER_URL"):       {value: "DATACENTER_URL", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_USERNAME"):             {value: "TANZU_USERNAME", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_PASSWORD"):             {value: "TANZU_PWD", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_TOKEN_EXPIRY"):         {value: "TOKEN_EXPIRY", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_LOGIN_EVERY_MINUTE"):   {value: "LOGIN_EVERY_MINUTE", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_HEALTH_PORT"):          {value: "HTTP_PORT", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_TANZU_ACCESS"):         {value: "TANZU_ACCESS", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_DATACENTER"):           {value: "DATACENTER", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_PROVIDER"):             {value: "PROVIDER", deprecated: false, description: ""},
-	ConfigConst("TANZU_AGENT_REGION"):               {value: "REGION", deprecated: false, description: ""},
-	ConfigConst("TANZU_AUTH_HEALTH_PORT"):           {value: "HTTP_PORT", deprecated: false, description: ""},
-	ConfigConst("TANZU_AUTH_KUBE_VSPHERE_PATH"):     {value: "KUBE_VSPHERE_PATH", deprecated: false, description: ""},
-	ConfigConst("TANZU_AUTH_KUBECTL_PATH"):          {value: "KUBECTL_PATH", deprecated: false, description: ""},
-	ConfigConst("TANZU_AUTH_BASE_URL"):              {value: "TANZU_AUTH_BASE_URL", deprecated: false, description: ""},
-	ConfigConst("TANZU_AUTH_CONFIG_FOLDER_PATH"):    {value: "TANZU_AUTH_CONFIG_FOLDER_PATH", deprecated: false, description: ""},
-	ConfigConst("MS_HTTP_PORT"):                     {value: "HTTP_PORT", deprecated: false, description: ""},
-	ConfigConst("MS_HTTP_BIND_PORT"):                {value: "HTTP_BIND_PORT", deprecated: false, description: ""},
-	ConfigConst("LOCAL_KUBERNETES_ROR_BASE_URL"):    {value: "LOCAL_KUBERNETES_ROR_BASE_URL", deprecated: false, description: ""},
-	ConfigConst("ENABLE_PPROF"):                     {value: "ENABLE_PPROF", deprecated: false, description: ""},
+var ConfigConsts = EnvironmentVariables{
+	{key: "ROLE", deprecated: false, description: ""},
+	{key: "HTTP_HOST", deprecated: false, description: ""},
+	{key: "HTTP_PORT", deprecated: false, description: ""},
+	{key: "HTTP_HEALTH_HOST", deprecated: false, description: ""},
+	{key: "HTTP_HEALTH_PORT", deprecated: false, description: ""},
+	{key: "HTTP_TIMEOUT", deprecated: false, description: ""},
+	{key: "API_KEY_SALT", deprecated: false, description: ""},
+	{key: "API_KEY", deprecated: false, description: ""},
+	{key: "API_KEY_SECRET", deprecated: false, description: ""},
+	{key: "ROR_URL", deprecated: false, description: ""},
+	{key: "DEVELOPMENT", deprecated: false, description: ""},
+	{key: "PORT", deprecated: false, description: ""},
+	{key: "POD_NAMESPACE", deprecated: false, description: ""},
+	{key: "CLUSTER_ID", deprecated: false, description: ""},
+	{key: "ERROR_COUNT", deprecated: false, description: ""},
+	{key: "HELSEGITLAB_BASE_URL", deprecated: false, description: ""},
+	{key: "ENVIRONMENT", deprecated: false, description: ""},
+	{key: "LDAP_CONFIGS", deprecated: false, description: ""},
+	{key: "GIT_REPO_URL", deprecated: false, description: ""},
+	{key: "GIT_BRANCH", deprecated: false, description: ""},
+	{key: "GIT_TOKEN", deprecated: false, description: ""},
+	{key: "GIT_PATH", deprecated: false, description: ""},
+	{key: "ROR_OPERATOR_NAMESPACE", deprecated: false, description: ""},
+	{key: "LDAP_CERTIFICATE_FOLDER", deprecated: false, description: ""},
+	{key: "OIDC_PROVIDER", deprecated: false, description: ""},
+	{key: "OIDC_CLIENT_ID", deprecated: false, description: ""},
+	{key: "OIDC_DEVICE_CLIENT_ID", deprecated: false, description: ""},
+	{key: "SKIP_OIDC_ISSUER_VERIFY", deprecated: false, description: ""},
+	{key: "VAULT_URL", deprecated: false, description: ""},
+	{key: "MONGODB_HOST", deprecated: false, description: ""},
+	{key: "MONGODB_PORT", deprecated: false, description: ""},
+	{key: "MONGODB_DATABASE", deprecated: false, description: ""},
+	{key: "MONGODB_URL", deprecated: false, description: ""},
+	{key: "MONGO_DATABASE", deprecated: false, description: ""},
+	{key: "RABBITMQ_HOST", deprecated: false, description: ""},
+	{key: "RABBITMQ_PORT", deprecated: false, description: ""},
+	{key: "RABBITMQ_BROADCAST_NAME", deprecated: false, description: ""},
+	{key: "RABBITMQ_CONNECTIONSTRING", deprecated: false, description: ""},
+	{key: "KV_HOST", deprecated: false, description: ""},
+	{key: "KV_PORT", deprecated: false, description: ""},
+	{key: "TRACER_ID", deprecated: false, description: ""},
+	{key: "ENABLE_TRACING", deprecated: false, description: ""},
+	{key: "OPENTELEMETRY_COLLECTOR_ENDPOINT", deprecated: false, description: ""},
+	{key: "PROFILER_ENABLED", deprecated: false, description: ""},
+	{key: "STARTUP_SLEEP_TIME", deprecated: false, description: ""},
+	{key: "USE_CORS", deprecated: false, description: ""},
+	{key: "ALLOW_ORIGINS", deprecated: false, description: ""},
+	{key: "VERSION", deprecated: false, description: ""},
+	{key: "COMMIT", deprecated: false, description: ""},
+	{key: "DEX_HOST", deprecated: false, description: ""},
+	{key: "DEX_PORT", deprecated: false, description: ""},
+	{key: "DEX_GRPC_PORT", deprecated: false, description: ""},
+	{key: "DEX_CERT_FILEPATH", deprecated: false, description: ""},
+	{key: "DEX_VAULT_PATH", deprecated: false, description: ""},
+	{key: "DEX_TLS", deprecated: false, description: ""},
+	{key: "SLACK_BOT_TOKEN", deprecated: false, description: ""},
+	{key: "SLACK_APP_TOKEN", deprecated: false, description: ""},
+	{key: "CONTAINER_REG_PREFIX", deprecated: false, description: ""},
+	{key: "CONTAINER_REG_IMAGE_PATH", deprecated: false, description: ""},
+	{key: "CONTAINER_REG_HELM_PATH", deprecated: false, description: ""},
+	{key: "BACKOFF_LIMIT", deprecated: false, description: ""},
+	{key: "DEADLINE_SECONDS", deprecated: false, description: ""},
+	{key: "JOB_SERVICE_ACCOUNT", deprecated: false, description: ""},
+	{key: "APPLOG_SECRET_NAME", deprecated: false, description: ""},
+	{key: "KUBECONFIG", deprecated: false, description: ""},
+	{key: "DELETE_KUBECONFIG", deprecated: false, description: ""},
+	{key: "KUBE_VSPHERE_PATH", deprecated: false, description: ""},
+	{key: "KUBECTL_PATH", deprecated: false, description: ""},
+	{key: "DATACENTER_URL", deprecated: false, description: ""},
+	{key: "TANZU_USERNAME", deprecated: false, description: ""},
+	{key: "TANZU_PWD", deprecated: false, description: ""},
+	{key: "TOKEN_EXPIRY", deprecated: false, description: ""},
+	{key: "LOGIN_EVERY_MINUTE", deprecated: false, description: ""},
+	{key: "HTTP_PORT", deprecated: false, description: ""},
+	{key: "TANZU_ACCESS", deprecated: false, description: ""},
+	{key: "DATACENTER", deprecated: false, description: ""},
+	{key: "PROVIDER", deprecated: false, description: ""},
+	{key: "REGION", deprecated: false, description: ""},
+	{key: "HTTP_PORT", deprecated: false, description: ""},
+	{key: "KUBE_VSPHERE_PATH", deprecated: false, description: ""},
+	{key: "KUBECTL_PATH", deprecated: false, description: ""},
+	{key: "TANZU_AUTH_BASE_URL", deprecated: false, description: ""},
+	{key: "TANZU_AUTH_CONFIG_FOLDER_PATH", deprecated: false, description: ""},
+	{key: "HTTP_PORT", deprecated: false, description: ""},
+	{key: "HTTP_BIND_PORT", deprecated: false, description: ""},
+	{key: "LOCAL_KUBERNETES_ROR_BASE_URL", deprecated: false, description: ""},
+	{key: "ENABLE_PPROF", deprecated: false, description: ""},
 }
 
-func (cc *ConfigconstsMap) GetConfigConstByName(key string) ConfigConst {
-	for configConst, Key := range *cc {
-		if Key.value == key {
-			return configConst
+func (ev *EnvironmentVariables) IsSet(val string) bool {
+	return slices.ContainsFunc(*ev, func(data EnvironmentVariableConfig) bool {
+		return data.key == val
+	})
+}
+
+// GetEnvVariableByKey returns the environment variable configration for the provided env var.
+func (ev *EnvironmentVariables) GetEnvVariableConfigByKey(key string) (EnvironmentVariableConfig, bool) {
+	for _, data := range *ev {
+		if data.key == key {
+			return data, true
 		}
 	}
-	return ConfigConst(key)
+	// Return a default config if not found
+	return EnvironmentVariableConfig{}, false
 }
 
-func (cc *ConfigconstsMap) GetConfigConstByKey(key ConfigConst) ConfigConst {
-	return cc.GetConfigConstByName(string(key))
-
-}
-
-func (cc *ConfigconstsMap) IsSet(key ConfigConst) bool {
-	_, exists := (*cc)[key]
-	return exists
-}
-func (cc *ConfigconstsMap) Add(key ConfigConst, data ConfigConstData) {
-	if !cc.IsSet(key) {
-		(*cc)[key] = data
+func (ev *EnvironmentVariables) Add(key string) {
+	if !ev.IsSet(key) {
+		data := EnvironmentVariableConfig{
+			key:         key,
+			deprecated:  false,
+			description: "Local env variable not in central list",
+		}
+		*ev = append(*ev, data)
 	}
 }
 
-func (cc *ConfigconstsMap) ensureKeyExists(key ConfigConst) {
-	if !cc.IsSet(key) {
-		cc.Add(
-			key,
-			ConfigConstData{
-				value:       string(key),
-				deprecated:  false,
-				description: "Local env variable not in central list",
-			},
-		)
-		rlog.Info("ConfigConst " + string(key) + " not in central list. Added as local only.")
-	}
+func (ev *EnvironmentVariables) IsDeprecated(key string) bool {
+	var v EnvironmentVariableConfig
+	v, _ = ev.GetEnvVariableConfigByKey(key)
+	return v.deprecated
 }
 
-func (cc *ConfigconstsMap) GetEnvVariable(key ConfigConst) string {
-	cc.ensureKeyExists(key)
-	return (*cc)[key].value
-}
-func (cc *ConfigconstsMap) IsDeprecated(key ConfigConst) bool {
-	cc.ensureKeyExists(key)
-	return (*cc)[key].deprecated
-}
-func (cc *ConfigconstsMap) GetDescription(key ConfigConst) string {
-	cc.ensureKeyExists(key)
-	return (*cc)[key].description
+func (ev *EnvironmentVariables) GetDescription(key string) string {
+	var v EnvironmentVariableConfig
+	v, _ = ev.GetEnvVariableConfigByKey(key)
+	return v.description
 }
