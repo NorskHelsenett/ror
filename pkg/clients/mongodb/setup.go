@@ -42,7 +42,7 @@ func GetMongoClient() *mongo.Client {
 // Initializes the mongodb client
 func Init(cp credshelper.CredHelperWithRenew, host string, port string, database string) {
 	mongodb.init(cp, host, port, database)
-	rorhealth.RegisterWithoutContext("mongodb", mongodb)
+	rorhealth.Register(context.TODO(), "mongodb", mongodb)
 }
 
 func GetMongodbConnection() *MongodbCon {
@@ -58,6 +58,15 @@ func (rc MongodbCon) GetMongoDb() *mongo.Database {
 func (rc MongodbCon) CheckHealthWithoutContext() []rorhealth.Check {
 	c := rorhealth.Check{}
 	if !Ping() {
+		c.Status = rorhealth.StatusFail
+		c.Output = "Could not ping mongodb"
+	}
+	return []rorhealth.Check{c}
+}
+
+func (rc MongodbCon) CheckHealth(ctx context.Context) []rorhealth.Check {
+	c := rorhealth.Check{}
+	if !PingWithContext(ctx) {
 		c.Status = rorhealth.StatusFail
 		c.Output = "Could not ping mongodb"
 	}

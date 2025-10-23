@@ -44,7 +44,7 @@ func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultC
 		return nil, err
 	}
 
-	rorhealth.RegisterWithoutContext("vault", vaultClient)
+	rorhealth.Register(ctx, "vault", vaultClient)
 	return &vaultClient, nil
 }
 

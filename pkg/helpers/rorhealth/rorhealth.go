@@ -44,7 +44,7 @@ type Check = health.Check
 
 type Status = health.Status
 
-// Deprecated: Use RegisterWithContext instead.
+// Deprecated: Use Register instead.
 // RegisterWithoutContext registers a health checker with the given name.
 // It wraps the provided Checker to conform to the health.Checker interface.
 func RegisterWithoutContext(name string, checker CheckerWithoutContext) {

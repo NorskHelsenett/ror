@@ -66,7 +66,7 @@ func (d DomainResolvers) RegisterHealthChecks() {
 	if len(d.resolvers) != 0 && d.resolvers != nil {
 		for key, resolver := range d.resolvers {
 			checkname := fmt.Sprintf("domainresolvers-%s", key)
-			rorhealth.RegisterWithoutContext(checkname, resolver)
+			rorhealth.Register(context.TODO(), checkname, resolver)
 		}
 	}
 }
