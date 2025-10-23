@@ -10,9 +10,9 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/activedirectory"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
+	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
-	newhealth "github.com/dotse/go-health"
 )
 
 type DomainResolverConfigs struct {
@@ -29,7 +29,7 @@ type DomainResolverConfig struct {
 
 type DomainResolverInterface interface {
 	GetUser(ctx context.Context, userId string) (*identitymodels.User, error)
-	CheckHealth() []newhealth.Check
+	clients.CommonHealthChecker
 }
 
 type DomainResolvers struct {
@@ -66,7 +66,7 @@ func (d DomainResolvers) RegisterHealthChecks() {
 	if len(d.resolvers) != 0 && d.resolvers != nil {
 		for key, resolver := range d.resolvers {
 			checkname := fmt.Sprintf("domainresolvers-%s", key)
-			rorhealth.Register(checkname, resolver)
+			rorhealth.Register(context.TODO(), checkname, resolver)
 		}
 	}
 }

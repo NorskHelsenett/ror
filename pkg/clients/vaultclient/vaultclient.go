@@ -10,8 +10,6 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
-	"github.com/dotse/go-health"
-
 	"github.com/hashicorp/vault-client-go"
 )
 
@@ -46,7 +44,7 @@ func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultC
 		return nil, err
 	}
 
-	rorhealth.Register("vault", vaultClient)
+	rorhealth.Register(ctx, "vault", vaultClient)
 	return &vaultClient, nil
 }
 
@@ -62,22 +60,40 @@ func getClient(vaultUrl string) (*vault.Client, error) {
 	return client, nil
 }
 
-func (rc VaultClient) CheckHealth() []health.Check {
-	c := health.Check{
-		Status: health.StatusPass,
+func (rc VaultClient) CheckHealth(_ context.Context) []rorhealth.Check {
+	return rc.CheckHealthWithoutContext()
+}
+
+func (rc VaultClient) CheckHealthWithoutContext() []rorhealth.Check {
+	c := rorhealth.Check{
+		Status: rorhealth.StatusPass,
 		Output: "Vault connection ok",
 	}
 	ok, err := rc.Ping()
 	if !ok {
 		rlog.Error("vault ping returned error", err)
-		c.Status = health.StatusFail
+		c.Status = rorhealth.StatusFail
 		c.Output = "Could not connect to vault"
 	}
 
-	return []health.Check{c}
+	return []rorhealth.Check{c}
 }
 
 func (v VaultClient) Ping() (bool, error) {
+	if v.Client == nil {
+		err := fmt.Errorf("vault client is not initialized")
+		rlog.Error("could not ping vault", err)
+		return false, err
+	}
+	_, err := v.Client.Auth.TokenLookUpSelf(v.Context)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (v VaultClient) PingWithContext(_ context.Context) (bool, error) {
 	if v.Client == nil {
 		err := fmt.Errorf("vault client is not initialized")
 		rlog.Error("could not ping vault", err)

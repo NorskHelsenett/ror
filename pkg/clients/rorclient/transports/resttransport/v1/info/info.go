@@ -1,6 +1,8 @@
 package info
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 )
@@ -17,10 +19,10 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 	}
 }
 
-func (c *V1Client) GetVersion() (string, error) {
+func (c *V1Client) GetVersion(ctx context.Context) (string, error) {
 	var versiondata rorversion.RorVersion
 
-	err := c.Client.GetJSON(c.basePath+"/version", &versiondata, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsNoAuth})
+	err := c.Client.GetJSONWithContext(ctx, c.basePath+"/version", &versiondata, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsNoAuth})
 	if err != nil {
 		return "", err
 	}

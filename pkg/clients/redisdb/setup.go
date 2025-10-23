@@ -7,11 +7,11 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb/redisdblogadapter"
 	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
-	"github.com/dotse/go-health"
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	goredis "github.com/redis/go-redis/v9"
 )
@@ -57,13 +57,18 @@ func GetRedis() *goredis.Client {
 }
 
 // CheckHealth checks the health of the redis connection and returns a health check
-func (rc rediscon) CheckHealth() []health.Check {
-	c := health.Check{}
+func (rc rediscon) CheckHealth(_ context.Context) []rorhealth.Check {
+	return rc.CheckHealthWithoutContext()
+}
+
+// CheckHealth checks the health of the redis connection and returns a health check
+func (rc rediscon) CheckHealthWithoutContext() []rorhealth.Check {
+	c := rorhealth.Check{}
 	if !rc.Ping() {
-		c.Status = health.StatusFail
+		c.Status = rorhealth.StatusFail
 		c.Output = "Could not ping redis"
 	}
-	return []health.Check{c}
+	return []rorhealth.Check{c}
 }
 
 // Ping the redis connection
@@ -73,6 +78,11 @@ func Ping() bool {
 
 func (rc rediscon) Ping() bool {
 	_, err := rc.Client.Ping(context.Background()).Result()
+	return err == nil
+}
+
+func (rc rediscon) PingWithContext(ctx context.Context) bool {
+	_, err := rc.Client.Ping(ctx).Result()
 	return err == nil
 }
 

@@ -1,5 +1,7 @@
 package info
 
+import "context"
+
 type InfoInterface interface {
-	GetVersion() (string, error)
+	GetVersion(ctx context.Context) (string, error)
 }

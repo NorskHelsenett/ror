@@ -1,6 +1,8 @@
 package transports
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
 	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
@@ -33,7 +35,7 @@ type RorTransport interface {
 	Streamv2() v2stream.StreamInterface
 	Acl() v1acl.AclInterface
 	CheckConnection() error
-	Ping() bool
+	Ping(ctx context.Context) bool
 	GetApiSecret() string
 	GetRole() string
 	GetTransportName() string

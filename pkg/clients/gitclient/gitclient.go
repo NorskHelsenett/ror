@@ -20,12 +20,13 @@
 package gitclient
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/dotse/go-health"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -205,11 +206,14 @@ func (c *GitClient) CheckConnection() error {
 }
 
 // CheckHealth checks the health of the git connection and returns a health check
-func (c *GitClient) CheckHealth() []health.Check {
-	check := health.Check{}
+func (c *GitClient) CheckHealth(_ context.Context) []rorhealth.Check {
+	return c.CheckeHealthWithoutContext()
+}
+func (c *GitClient) CheckeHealthWithoutContext() []rorhealth.Check {
+	check := rorhealth.Check{}
 	if err := c.CheckConnection(); err != nil {
-		check.Status = health.StatusFail
+		check.Status = rorhealth.StatusFail
 		check.Output = fmt.Sprintf("Could not connect to git: %v", err)
 	}
-	return []health.Check{check}
+	return []rorhealth.Check{check}
 }
