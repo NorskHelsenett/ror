@@ -1,6 +1,7 @@
 package resttransport
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
@@ -158,12 +159,12 @@ func (t *RorHttpTransport) Self() v2self.SelfInterface {
 }
 
 func (t *RorHttpTransport) CheckConnection() error {
-	_, err := t.infoClientV1.GetVersion()
+	_, err := t.infoClientV1.GetVersion(context.Background())
 	return err
 }
 
-func (t *RorHttpTransport) Ping() bool {
-	_, err := t.infoClientV1.GetVersion()
+func (t *RorHttpTransport) Ping(ctx context.Context) bool {
+	_, err := t.infoClientV1.GetVersion(ctx)
 	return err == nil
 }
 

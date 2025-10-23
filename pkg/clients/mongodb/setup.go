@@ -8,7 +8,6 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
-	"github.com/dotse/go-health"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -43,7 +42,7 @@ func GetMongoClient() *mongo.Client {
 // Initializes the mongodb client
 func Init(cp credshelper.CredHelperWithRenew, host string, port string, database string) {
 	mongodb.init(cp, host, port, database)
-	rorhealth.Register("mongodb", mongodb)
+	rorhealth.RegisterWithoutContext("mongodb", mongodb)
 }
 
 func GetMongodbConnection() *MongodbCon {
@@ -55,19 +54,22 @@ func (rc MongodbCon) GetMongoDb() *mongo.Database {
 	return mongoClient
 }
 
-// CheckHealth checks the health of the redis connection and returns a health check
-func (rc MongodbCon) CheckHealth() []health.Check {
-	c := health.Check{}
+// CheckHealthWithoutContext checks the health of the redis connection and returns a health check
+func (rc MongodbCon) CheckHealthWithoutContext() []rorhealth.Check {
+	c := rorhealth.Check{}
 	if !Ping() {
-		c.Status = health.StatusFail
+		c.Status = rorhealth.StatusFail
 		c.Output = "Could not ping mongodb"
 	}
-	return []health.Check{c}
+	return []rorhealth.Check{c}
 }
 
 // Ping the mongodb database and returns the result as a bool
 func Ping() bool {
-	return mongodb.ping()
+	return mongodb.ping(context.Background())
+}
+func PingWithContext(_ context.Context) bool {
+	return Ping()
 }
 
 func (mdb MongodbCon) getConnectionstring() string {
@@ -84,8 +86,8 @@ func (mdb *MongodbCon) init(cp credshelper.CredHelperWithRenew, host string, por
 	mdb.connect()
 }
 
-func (mdb MongodbCon) ping() bool {
-	err := mdb.Client.Ping(context.Background(), nil)
+func (mdb MongodbCon) ping(ctx context.Context) bool {
+	err := mdb.Client.Ping(ctx, nil)
 	if err != nil {
 		rlog.Debug(err.Error())
 		return false

@@ -11,9 +11,9 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	newhealth "github.com/dotse/go-health"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
@@ -188,17 +188,21 @@ func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<
 	groupsNameChan <- *group.GetDisplayName()
 }
 
-// TODO: Implement
-func (g *MsGraphClient) CheckHealth() []newhealth.Check {
-	var status newhealth.Status = newhealth.StatusPass
+func (g *MsGraphClient) CheckHealthWithoutContext() []rorhealth.Check {
+	var status rorhealth.Status = rorhealth.StatusPass
 	if g.Client == nil {
-		status = newhealth.StatusFail
+		status = rorhealth.StatusFail
 	}
-	return []newhealth.Check{
+	return []rorhealth.Check{
 		{
 			ComponentID:   g.config.Domain,
 			ComponentType: "msGrapDomainResolver",
 			Status:        status,
 		},
 	}
+}
+
+// TODO: Implement
+func (g *MsGraphClient) CheckHealth(_ context.Context) []rorhealth.Check {
+	return g.CheckHealthWithoutContext()
 }

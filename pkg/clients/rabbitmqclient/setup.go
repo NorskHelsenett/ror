@@ -8,12 +8,12 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 	"go.opentelemetry.io/otel/trace/noop"
 
-	"github.com/dotse/go-health"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -138,16 +138,24 @@ func (rc rabbitmqcon) GetChannel() *amqp.Channel {
 }
 
 // CheckHealth checks the health of the rabbitmq connection and returns a health check
-func (rc *rabbitmqcon) CheckHealth() []health.Check {
-	c := health.Check{}
+func (rc *rabbitmqcon) CheckHealth(_ context.Context) []rorhealth.Check {
+	return rc.CheckHealthWithoutContext()
+}
+
+func (rc *rabbitmqcon) CheckHealthWithoutContext() []rorhealth.Check {
+	c := rorhealth.Check{}
 	if !rc.Ping() {
-		c.Status = health.StatusFail
+		c.Status = rorhealth.StatusFail
 		c.Output = "Could not ping rabbitmq"
 	}
-	return []health.Check{c}
+	return []rorhealth.Check{c}
 }
 
 func (rc *rabbitmqcon) Ping() bool {
+	return rc.Connected
+}
+
+func (rc *rabbitmqcon) PingWithContext(_ context.Context) bool {
 	return rc.Connected
 }
 

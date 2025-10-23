@@ -1,6 +1,7 @@
 package rorclient
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
@@ -19,9 +20,9 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
-	"github.com/dotse/go-health"
 )
 
 type RorConfig struct {
@@ -150,7 +151,11 @@ func (c *RorClient) CheckConnection() error {
 // Ping checks the connection to the transport.
 // Old version used error handling, use CheckConnection instead.
 func (c *RorClient) Ping() bool {
-	return c.Transport.Ping()
+	return c.PingWithContext(context.TODO())
+}
+
+func (c *RorClient) PingWithContext(ctx context.Context) bool {
+	return c.Transport.Ping(ctx)
 }
 
 func (c *RorClient) ResourceV2() v2resources.ResourcesInterface {
@@ -180,12 +185,24 @@ func (c *RorClient) SetOwnerref(ownerref rorresourceowner.RorResourceOwnerRefere
 	c.ownerRef = &ownerref
 }
 
-func (c *RorClient) CheckHealth() []health.Check {
-	healthChecks := []health.Check{}
-	if !c.Transport.Ping() {
-		healthChecks = append(healthChecks, health.Check{
+func (c *RorClient) CheckHealth(ctx context.Context) []rorhealth.Check {
+	healthChecks := []rorhealth.Check{}
+	if !c.Transport.Ping(ctx) {
+		healthChecks = append(healthChecks, rorhealth.Check{
 			ComponentID: "Transport",
-			Status:      health.StatusFail,
+			Status:      rorhealth.StatusFail,
+			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
+		})
+	}
+	return healthChecks
+}
+
+func (c *RorClient) CheckHealthWithoutContext() []rorhealth.Check {
+	healthChecks := []rorhealth.Check{}
+	if !c.Transport.Ping(context.Background()) {
+		healthChecks = append(healthChecks, rorhealth.Check{
+			ComponentID: "Transport",
+			Status:      rorhealth.StatusFail,
 			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
 		})
 	}

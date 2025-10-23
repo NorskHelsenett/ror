@@ -2,40 +2,82 @@ package rorhealth
 
 import (
 	"context"
+	"net/http"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"
 	"github.com/dotse/go-health"
+	"github.com/gin-gonic/gin"
+)
+
+const (
+	// StatusPass is ‘pass’.
+	StatusPass Status = iota
+	// StatusWarn is ‘warn’.
+	StatusWarn Status = iota
+	// StatusFail is ‘fail’.
+	StatusFail Status = iota
 )
 
 // WrappedChecker is a wrapper that adapts the Checker interface to conform to health.Checker.
 type WrappedChecker struct {
-	Checker Checker
+	Checker CheckerWithoutContext
 }
 
 // CheckHealth implements the health.Checker interface by adding context support.
-func (wc *WrappedChecker) CheckHealth(ctx context.Context) []health.Check {
-	return wc.Checker.CheckHealth()
+func (wc *WrappedChecker) CheckHealth(ctx context.Context) []Check {
+	return wc.Checker.CheckHealthWithoutContext()
 }
 
 // WrapChecker wraps a Checker to conform to the health.Checker interface.
-func WrapChecker(checker Checker) *WrappedChecker {
+func WrapChecker(checker CheckerWithoutContext) *WrappedChecker {
 	return &WrappedChecker{Checker: checker}
 }
 
+type CheckerWithoutContext interface {
+	CheckHealthWithoutContext() (checks []Check)
+}
 type Checker interface {
-	CheckHealth() (checks []health.Check)
+	CheckHealth(ctx context.Context) (checks []Check)
 }
 
+type Check = health.Check
+
+type Status = health.Status
+
 // Deprecated: Use RegisterWithContext instead.
-// Register registers a health checker with the given name.
+// RegisterWithoutContext registers a health checker with the given name.
 // It wraps the provided Checker to conform to the health.Checker interface.
-func Register(name string, checker Checker) {
+func RegisterWithoutContext(name string, checker CheckerWithoutContext) {
 	ctx := context.TODO()
 	wrappedChecker := WrapChecker(checker)
 	health.Register(ctx, name, wrappedChecker)
 }
 
-// RegisterWithContext registers a health checker with the given name and context.
+// Register registers a health checker with the given name and context.
 // It wraps the provided Checker to conform to the health.Checker interface.
-func RegisterWithContext(ctx context.Context, name string, checker health.Checker) health.Registered {
+func Register(ctx context.Context, name string, checker Checker) health.Registered {
 	return health.Register(ctx, name, checker)
+}
+
+func GetHttpHandler(w http.ResponseWriter, req *http.Request) {
+	health.HandleHTTP(w, req)
+}
+
+func GetGinHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		resp, err := health.CheckNow(c.Request.Context())
+		if err != nil {
+			rerr := rorerror.NewRorError(http.StatusInternalServerError, "Unable to run health checks", err)
+			rerr.GinLogErrorAbort(c)
+			return
+		}
+		if resp.Status == health.StatusFail {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		bytes, _ := resp.Status.MarshalJSON()
+		c.Data(http.StatusOK, "application/json", bytes)
+
+	}
 }

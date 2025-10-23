@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	newhealth "github.com/dotse/go-health"
 	"github.com/go-ldap/ldap/v3"
 )
 
@@ -190,12 +190,17 @@ func (l *LdapsClient) GetUser(ctx context.Context, userId string) (*identitymode
 }
 
 // TODO: Implement
-func (l *LdapsClient) CheckHealth() []newhealth.Check {
-	return []newhealth.Check{
+func (l *LdapsClient) CheckHealthWithoutContext() []rorhealth.Check {
+	return []rorhealth.Check{
 		{
 			ComponentID:   l.config.Domain,
 			ComponentType: "openLdapDomainResolver",
-			Status:        newhealth.StatusPass,
+			Status:        rorhealth.StatusPass,
 		},
 	}
+}
+
+// TODO: Implement
+func (l *LdapsClient) CheckHealth(_ context.Context) []rorhealth.Check {
+	return l.CheckHealthWithoutContext()
 }

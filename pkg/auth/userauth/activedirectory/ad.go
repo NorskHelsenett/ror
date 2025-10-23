@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	newhealth "github.com/dotse/go-health"
 	"github.com/go-ldap/ldap/v3"
 )
 
@@ -285,12 +285,17 @@ func convertFileTime(fileTime int64) time.Time {
 }
 
 // TODO: Implement
-func (l *AdClient) CheckHealth() []newhealth.Check {
-	return []newhealth.Check{
+func (l *AdClient) CheckHealthWithoutContext() []rorhealth.Check {
+	return []rorhealth.Check{
 		{
 			ComponentID:   l.config.Domain,
 			ComponentType: "activeDirectoryDomainResolver",
-			Status:        newhealth.StatusPass,
+			Status:        rorhealth.StatusPass,
 		},
 	}
+}
+
+// TODO: Implement
+func (l *AdClient) CheckHealth(_ context.Context) []rorhealth.Check {
+	return l.CheckHealthWithoutContext()
 }
