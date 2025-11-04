@@ -15,6 +15,9 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceUnknown {}
+export interface ResourceBackupRunSpec {
+  delete: boolean;
+}
 export interface ResourceBackupRunStatus {
   id: string;
   backupJobId: string;
@@ -31,7 +34,7 @@ export interface ResourceBackupRun {
   provider: string;
   source: string;
   status: ResourceBackupRunStatus;
-  spec: ResourceBackupJobSpec;
+  spec: ResourceBackupRunSpec;
 }
 export interface ResourceBackupJobSpec {
   name: string;

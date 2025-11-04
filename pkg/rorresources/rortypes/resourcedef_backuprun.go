@@ -7,7 +7,7 @@ type ResourceBackupRun struct {
 	Provider string                  `json:"provider"`
 	Source   string                  `json:"source"`
 	Status   ResourceBackupRunStatus `json:"status"`
-	Spec     ResourceBackupJobSpec   `json:"spec"`
+	Spec     ResourceBackupRunSpec   `json:"spec"`
 }
 
 // Once instance of a run from a backup job
@@ -27,6 +27,10 @@ type ResourceBackupRunStatus struct {
 	ExpiryTime    metav1.Time           `json:"expiryTime"`
 	BackupStorage ResourceBackupStorage `json:"backupStorage"`
 	LastUpdated   metav1.Time           `json:"lastUpdated"`
+}
+
+type ResourceBackupRunSpec struct {
+	Delete bool `json:"delete"`
 }
 
 // Storage used by an instance of a run or a target
