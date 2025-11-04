@@ -1,0 +1,68 @@
+version: '2'
+
+run:
+  timeout: 5m
+  allow-parallel-runners: true
+
+issues:
+  exclude-use-default: false
+  exclude-rules:
+    - path: 'api/*'
+      linters:
+        - lll
+    - path: 'internal/*'
+      linters:
+        - dupl
+        - lll
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+
+linters:
+  # Enable a balanced set of linters for a Kubernetes operator
+  enable:
+    # Default linters
+    - errcheck # Check for unchecked errors
+    - govet # Suspicious constructs
+    - ineffassign # Detect ineffectual assignments
+    - staticcheck # Advanced static analysis
+    - unused # Checks for unused code
+
+    # Additional linters for code quality
+    - bodyclose # Checks that HTTP response bodies are closed
+    - dupl # Detect code clones
+    - durationcheck # Check for two durations multiplied together
+    - errorlint # Checks for error handling issues
+    - funlen # Check function length
+    - gocognit # Calculate cognitive complexity
+    - goconst # Find repeated strings that could be constants
+    - gocritic # Provides many diagnostics
+    - gocyclo # Check cyclomatic complexity
+    - misspell # Find misspelled words
+    - prealloc # Find slice declarations that could be prealloc'd
+    - revive # Fast, configurable, linter
+    - unconvert # Remove unnecessary type conversions
+    - unparam # Find unused function parameters
+
+  settings:
+    gocyclo:
+      min-complexity: 15
+    funlen:
+      lines: 100
+      statements: 50
+    revive:
+      rules:
+        - name: comment-spacings
+    gocritic:
+      enabled-checks:
+        # Only keep the checks that aren't enabled by default
+        - commentedOutCode
+        - commentedOutImport
+        - nilValReturn
+        - sloppyReassign
+        - weakCond
+        - rangeValCopy
+        - hugeParam
