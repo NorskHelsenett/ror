@@ -27,7 +27,6 @@ export interface ResourceBackupRunStatus {
   endTime: Time;
   expiryTime: Time;
   backupStorage: ResourceBackupStorage;
-  lastUpdated: Time;
 }
 export interface ResourceBackupRun {
   id: string;
@@ -94,7 +93,6 @@ export interface ResourceBackupJobStatus {
   activeTargets: ResourceBackupTarget[];
   indirectBackupTargets: ResourceIndirectBackupTarget[];
   location: string;
-  lastUpdated: Time;
   policyName: string;
   backupRunIds: string[];
 }

@@ -26,7 +26,6 @@ type ResourceBackupRunStatus struct {
 	// When the run will expire and be deleted
 	ExpiryTime    metav1.Time           `json:"expiryTime"`
 	BackupStorage ResourceBackupStorage `json:"backupStorage"`
-	LastUpdated   metav1.Time           `json:"lastUpdated"`
 }
 
 type ResourceBackupRunSpec struct {
