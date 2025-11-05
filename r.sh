@@ -12,6 +12,11 @@ if [ ! -f ./.vscode/settings.json ]; then
 fi
 
 envfile=".env"
+
+if [ ! -f "$envfile" ]; then
+  cp -v ./hacks/env/env.template "$envfile";
+fi
+
 while getopts "e:" arg; do
   case $arg in
     e) envfile=$OPTARG;;
