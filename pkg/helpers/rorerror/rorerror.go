@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var NoRorError = RorError{}
+
 type RorError struct {
 	Status  int    `json:"status" example:"400"`          // HTTP status code
 	Message string `json:"message" example:"Bad Request"` // Error message
@@ -67,4 +69,8 @@ func (e RorError) AsJson() []byte {
 
 func (e RorError) AsString() string {
 	return string(e.AsJson())
+}
+
+func (e RorError) IsError() bool {
+	return e.Status != 0
 }

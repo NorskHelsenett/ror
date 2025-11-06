@@ -36,6 +36,7 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 			Status:  http.StatusUnauthorized,
 			Message: "Could not fetch user",
 		})
+		//TODO, should gin context abe aborted here?
 		return nil, cancel
 	}
 	ctx = context.WithValue(ctx, identitymodels.ContexIdentity, *identity)
@@ -71,6 +72,10 @@ func getIdentityFromGinContext(c *gin.Context) (*identitymodels.Identity, error)
 		return nil, errors.New("identity object is nil")
 	}
 
-	identity := identityObj.(identitymodels.Identity)
+	identity, ok := identityObj.(identitymodels.Identity)
+	if !ok {
+		return nil, errors.New("could not assert identity object to identity type")
+	}
+
 	return &identity, nil
 }
