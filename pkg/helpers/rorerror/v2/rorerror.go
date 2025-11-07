@@ -181,6 +181,3 @@ func (e ErrorData) GetMessage() string {
 	return e.Message
 }
 
-func (e ErrorData) RorErrorData() ErrorData {
-	return e
-}
