@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var NoRorError = RorError{}
+
 type RorError struct {
 	Status  int    `json:"status" example:"400"`          // HTTP status code
 	Message string `json:"message" example:"Bad Request"` // Error message
@@ -52,6 +54,10 @@ func GinHandleErrorAndAbort(c *gin.Context, status int, err error, fields ...Fie
 }
 
 func maskApiKey(apikey string) string {
+	if len(apikey) < 5 {
+		// For short strings, mask all characters
+		return strings.Repeat("*", len(apikey))
+	}
 	maskedKey := string(apikey[0:2]) + strings.Repeat("*", len(apikey)-4) + string(apikey[len(apikey)-2:])
 	return maskedKey
 }
@@ -67,4 +73,8 @@ func (e RorError) AsJson() []byte {
 
 func (e RorError) AsString() string {
 	return string(e.AsJson())
+}
+
+func (e RorError) IsError() bool {
+	return e.Status != 0
 }
