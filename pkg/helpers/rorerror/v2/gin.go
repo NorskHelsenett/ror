@@ -67,6 +67,10 @@ func GinHandleErrorAndAbort(c *gin.Context, status int, err error, fields ...Fie
 //	masked := maskValue("secret123key")
 //	// Returns: "se********ey"
 func maskValue(value string) string {
+	if len(value) < 4 {
+		// For short strings, mask all characters
+		return strings.Repeat("*", len(value))
+	}
 	maskedKey := string(value[0:2]) + strings.Repeat("*", len(value)-4) + string(value[len(value)-2:])
 	return maskedKey
 }
