@@ -150,7 +150,10 @@ func (e ErrorData) logError(c *gin.Context, fields ...Field) {
 	}
 	for i, field := range fields {
 		if field.Key == "apikey" {
-			fields[i].String = maskValue(fields[i].String)
+			// Only mask if the field is a string type (non-empty String value)
+			if field.String != "" {
+				fields[i].String = maskValue(fields[i].String)
+			}
 		}
 	}
 	rlog.Errorc(c.Request.Context(), "error", e, fields...)
