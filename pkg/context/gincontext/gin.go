@@ -36,7 +36,7 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 			Status:  http.StatusUnauthorized,
 			Message: "Could not fetch user",
 		})
-		//TODO, should gin context abe aborted here?
+		//TODO, should gin context be aborted here?
 		return nil, cancel
 	}
 	ctx = context.WithValue(ctx, identitymodels.ContexIdentity, *identity)
