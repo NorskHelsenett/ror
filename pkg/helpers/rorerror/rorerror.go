@@ -54,6 +54,10 @@ func GinHandleErrorAndAbort(c *gin.Context, status int, err error, fields ...Fie
 }
 
 func maskApiKey(apikey string) string {
+	if len(apikey) < 5 {
+		// For short strings, mask all characters
+		return strings.Repeat("*", len(apikey))
+	}
 	maskedKey := string(apikey[0:2]) + strings.Repeat("*", len(apikey)-4) + string(apikey[len(apikey)-2:])
 	return maskedKey
 }

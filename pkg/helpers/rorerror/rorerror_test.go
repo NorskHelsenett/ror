@@ -267,6 +267,16 @@ func TestApiKeyMasking(t *testing.T) {
 		}
 	})
 
+	t.Run("maskApiKey masks short value correctly", func(t *testing.T) {
+		apikey := "ab45"
+		masked := maskApiKey(apikey)
+		expected := "****" // Fixed: length-4 characters are masked
+
+		if masked != expected {
+			t.Errorf("Expected %s, got %s", expected, masked)
+		}
+	})
+
 	t.Run("GinHandleErrorAndAbort masks apikey field", func(t *testing.T) {
 		gin.SetMode(gin.TestMode)
 		w := httptest.NewRecorder()

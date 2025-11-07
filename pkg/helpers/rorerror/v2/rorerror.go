@@ -180,4 +180,3 @@ func (e ErrorData) GetStatusCode() int {
 func (e ErrorData) GetMessage() string {
 	return e.Message
 }
-
