@@ -48,3 +48,4 @@ charts/*.tgz
 **/isbuilt
 resources.ts-*.backup
 cmd/test/**  */
+.env
