@@ -17,18 +17,18 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/joho/godotenv v1.5.1
-	github.com/microsoftgraph/msgraph-sdk-go v1.87.0
+	github.com/microsoftgraph/msgraph-sdk-go v1.89.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rabbitmq/amqp091-go v1.10.0
-	github.com/redis/go-redis/extra/redisotel/v9 v9.15.1
-	github.com/redis/go-redis/v9 v9.15.1
+	github.com/redis/go-redis/extra/redisotel/v9 v9.16.0
+	github.com/redis/go-redis/v9 v9.16.0
 	github.com/spf13/cobra v1.10.1
 	github.com/stretchr/testify v1.11.1
 	github.com/tkrajina/typescriptify-golang-structs v0.2.0
-	go.mongodb.org/mongo-driver v1.17.4
+	go.mongodb.org/mongo-driver v1.17.6
 	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.63.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0
 	go.opentelemetry.io/otel v1.38.0
@@ -49,7 +49,7 @@ require (
 	k8s.io/cli-runtime v0.34.1
 	k8s.io/client-go v0.34.1
 	k8s.io/metrics v0.34.1
-	sigs.k8s.io/controller-runtime v0.22.3
+	sigs.k8s.io/controller-runtime v0.22.4
 )
 
 require (
@@ -156,7 +156,7 @@ require (
 	github.com/prometheus/procfs v0.17.0 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.54.1 // indirect
-	github.com/redis/go-redis/extra/rediscmd/v9 v9.15.1 // indirect
+	github.com/redis/go-redis/extra/rediscmd/v9 v9.16.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
