@@ -29,9 +29,10 @@ const (
 
 // Identity is a representation of the consumers identity kept in the context for authentication
 type Identity struct {
-	Auth            AuthInfo         `json:"auth,omitempty"`
-	Type            IdentityType     `json:"type,omitempty"`
-	User            *User            `json:"user,omitempty"`
+	Auth            AuthInfo     `json:"auth,omitempty"`
+	Type            IdentityType `json:"type,omitempty"`
+	User            *User        `json:"user,omitempty"`
+	token           string
 	ClusterIdentity *ServiceIdentity `json:"clusterIdentity,omitempty"`
 	ServiceIdentity *ServiceIdentity `json:"serviceIdentity,omitempty"`
 }
@@ -110,6 +111,14 @@ func (identity Identity) ReturnGroupQuery() (bson.A, error) {
 // Function returns the auth info of the identity
 func (identity *Identity) GetAuthInfo() AuthInfo {
 	return identity.Auth
+}
+
+func (identity *Identity) SetToken(token string) {
+	identity.token = token
+}
+
+func (identity *Identity) GetToken() string {
+	return identity.token
 }
 
 // The type is a representation of a cluster or service identity. May be splited if needed.
