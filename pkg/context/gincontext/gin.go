@@ -47,18 +47,25 @@ func GetRorContextFromGinContext(c *gin.Context) (context.Context, context.Cance
 //
 // !!! Should only be used in audit middleware !!!
 func GetUserFromGinContext(c *gin.Context) (*identitymodels.User, error) {
-	userObject, exists := c.Get("user")
-	if !exists {
-		return nil, errors.New("user not set in gin context")
+	identityObj, ok := c.Get("identity")
+	if !ok {
+		return nil, errors.New("identity not set in gin context")
 	}
 
-	if userObject == nil {
-		return nil, errors.New("user object is nil")
+	if identityObj == nil {
+		return nil, errors.New("identity object is nil")
 	}
 
-	user := userObject.(identitymodels.User)
+	identity, ok := identityObj.(identitymodels.Identity)
+	if !ok {
+		return nil, errors.New("could not assert identity object to identity type")
+	}
 
-	return &user, nil
+	if identity.Type != identitymodels.IdentityTypeUser {
+		return nil, errors.New("identity is not of type user")
+	}
+
+	return identity.User, nil
 }
 
 // Function extracts the identity from gin context
