@@ -159,7 +159,7 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetVirtualMachineClass(res)
 		r.SetCommonInterface(res)
 
-	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
+	case "vitistack.io/v1alpha1, Kind=KubernetesCluster":
 		res := newKubernetesClusterFromMapInterface(input)
 		r.SetKubernetesCluster(res)
 		r.SetCommonInterface(res)
