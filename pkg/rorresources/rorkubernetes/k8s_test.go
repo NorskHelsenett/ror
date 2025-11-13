@@ -454,7 +454,7 @@ func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "KubernetesCluster",
-			"apiVersion": "general.ror.internal/v1alpha1",
+			"apiVersion": "vitistack.io/v1alpha1",
 			"metadata": map[string]interface{}{
 				"name": "test-kubernetescluster",
 			},
