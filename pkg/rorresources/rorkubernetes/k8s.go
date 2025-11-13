@@ -162,7 +162,7 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetVirtualMachineClass(res)
 		r.SetCommonInterface(res)
 
-	case "vitistack.io/v1alpha1, Kind=KubernetesCluster":
+	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		res := newKubernetesClusterFromDynamicClient(input)
 		r.SetKubernetesCluster(res)
 		r.SetCommonInterface(res)
