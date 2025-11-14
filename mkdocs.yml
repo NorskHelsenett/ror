@@ -12,7 +12,7 @@ theme:
     - navigation.indexes
     - content.action.edit
   icon:
-    edit: material/pencil 
+    edit: material/pencil
     view: material/eye
 
   palette:
@@ -25,9 +25,9 @@ theme:
 extra_css:
   - css/nhn.css
 plugins:
-    - search
-    - mermaid2
-    - glightbox
+  - search
+  - mermaid2
+  - glightbox
 markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
@@ -51,42 +51,62 @@ extra:
       link: https://github.com/NorskHelsenett/ror
       name: Privat sky på github
   generator: false
-copyright: Norsk Helsenett SF - Privat sky
+copyright: Norsk helsenett SF - Privat sky
 nav:
   - ROR:
-    - index.md
-    - components.md
-    - design.md
-    - getting-started.md
-  - Clients:
-    - ror-admin:
-      - ror-admin/index.md
-    - ror-cli:
-      - ror-cli/index.md
-      - ror-cli/auth-flow.md
-  - Core:
-    - ror-api:
-      - ror-api/index.md
-      - ror-api/aclv2.md
-      - ror-api/config-management.md
-    - vault:
-      - vault/index.md
-    - mongoDB:
-      - mongodb/index.md
-    - ror-docs:
-      - ror-docs/index.md
-  - Microservices:
-    - ror-ms-nhn:
-      - ror-ms-nhn/index.md
-    - ror-ms-auth:
-      - ror-ms-auth/index.md
-    - ror-ms-slack:
-      - ror-ms-slack/index.md  
-  - Distributed:
-    - ror-operator:
-      - ror-operator/index.md
-    - ror-agent:
-      - ror-agent/index.md
+      - index.md
+      - introduction.md
+      - components.md
+      - design.md
+      - getting-started.md
   - Design:
-    - design/index.md
-    - design/react-framework.md
+      - design/index.md
+      - designrecords:
+          - design/designrecords/index.md
+          - design/designrecords/react-framework.md
+  - Installation:
+      - installation/index.md
+      - Local:
+          - installation/local/index.md
+          - installation/local/repos.md
+          - installation/local/docker.md
+      - Kubernetes:
+          - installation/kuberentes/index.md
+  - Components:
+      - components/index.md
+      - clients:
+          - components/clients/index.md
+          - ror-admin:
+              - components/clients/ror-admin/index.md
+          - ror-cli:
+              - components/clients/ror-cli/index.md
+              - components/clients/ror-cli/auth-flow.md
+      - distributables:
+          - ror-operator:
+              - components/distributables/ror-operator/index.md
+          - ror-agent:
+              - components/distributables/ror-agent/index.md
+      - Core:
+          - components/core/index.md
+          - ror-api:
+              - components/core/ror-api/index.md
+              - components/core/ror-api/aclv2.md
+              - components/core/ror-api/config-management.md
+          - vault:
+              - components/core/vault/index.md
+          - mongoDB:
+              - components/core/mongodb/index.md
+          - ror-docs:
+              - components/core/ror-docs/index.md
+      - Microservices:
+          - components/microservices/index.md
+          - ror-ms-nhn:
+              - components/microservices/ror-ms-nhn/index.md
+          - ror-ms-auth:
+              - components/microservices/ror-ms-auth/index.md
+          - ror-ms-slack:
+              - components/microservices/ror-ms-slack/index.md
+  - Development:
+      - development/index.md
+  - Trivia:
+      - trivia/index.md
