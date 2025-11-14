@@ -14,6 +14,14 @@ theme:
   icon:
     edit: material/pencil 
     view: material/eye
+
+  palette:
+    # Scheme can be 'default' (light), 'slate' (dark), or 'preference' (system preference)
+    scheme: preference
+    # Optional: Add a toggle for users to switch between light/dark mode
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to dark mode
 extra_css:
   - css/nhn.css
 plugins:
