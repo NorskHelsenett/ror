@@ -6,11 +6,11 @@ Acl v2 implements an accessmodel in two layers, scope og subject.
 
 ### Scope
 
-Scope represent the exten of the right. eg. if you want to grant access to a cluster the scope is **cluster**.
+Scope represent the extent of the right. eg. if you want to grant access to a cluster the scope is **cluster**.
 
 There is a global scope called **ror** that aplies to the whole system
 
-All scopes are represented by the enum type [Acl2Scope](https://docs.ror.sky.test.nhn.no/code/internal/acl/models/#Acl2Scope) .
+All scopes are represented by the enum type [Acl2Scope](https://docs.ror.sky.test.nhn.no/code/internal/acl/models/#Acl2Scope).
 
 ### Subject
 
