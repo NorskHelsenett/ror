@@ -16,12 +16,20 @@ theme:
     view: material/eye
 
   palette:
-    # Scheme can be 'default' (light), 'slate' (dark), or 'preference' (system preference)
-    scheme: preference
-    # Optional: Add a toggle for users to switch between light/dark mode
-    toggle:
-      icon: material/toggle-switch
-      name: Switch to dark mode
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
 extra_css:
   - css/nhn.css
 plugins:
@@ -71,7 +79,7 @@ nav:
           - installation/local/repos.md
           - installation/local/docker.md
       - Kubernetes:
-          - installation/kuberentes/index.md
+          - installation/kubernetes/index.md
   - Components:
       - components/index.md
       - clients:
