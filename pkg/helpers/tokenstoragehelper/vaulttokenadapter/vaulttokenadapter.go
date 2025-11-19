@@ -24,8 +24,16 @@ import (
 // VaultStorageAdapter implements the StorageAdapter interface using HashiCorp Vault
 // as the persistence backend. It stores and retrieves KeyStorageProvider data from
 // Vault's key-value secrets engine.
+type vaultClient interface {
+	SetSecret(secretPath string, value []byte) (bool, error)
+	GetSecret(secretPath string) (map[string]interface{}, error)
+}
+
+// ensure the HashiCorp vault client satisfies the interface used by the adapter
+var _ vaultClient = (*vaultclient.VaultClient)(nil)
+
 type VaultStorageAdapter struct {
-	vaultclient *vaultclient.VaultClient
+	vaultclient vaultClient
 	secretPath  string
 }
 
@@ -37,7 +45,7 @@ type VaultStorageAdapter struct {
 //     (e.g., "secret/data/jwt-keys")
 //
 // Returns a configured VaultStorageAdapter ready for use.
-func NewVaultStorageAdapter(vaultclient *vaultclient.VaultClient, secretPath string) *VaultStorageAdapter {
+func NewVaultStorageAdapter(vaultclient vaultClient, secretPath string) *VaultStorageAdapter {
 	return &VaultStorageAdapter{
 		vaultclient: vaultclient,
 		secretPath:  secretPath,
@@ -52,12 +60,14 @@ func NewVaultStorageAdapter(vaultclient *vaultclient.VaultClient, secretPath str
 //   - The vault client is not initialized
 //   - JSON marshaling fails
 //   - The Vault write operation fails
+var marshalJSON = json.Marshal
+
 func (v *VaultStorageAdapter) Set(ks *tokenstoragehelper.KeyStorageProvider) error {
 	if v.vaultclient == nil {
 		return errors.New("vault client not initialized")
 	}
 
-	payload, err := json.Marshal(ks)
+	payload, err := marshalJSON(ks)
 	if err != nil {
 		return err
 	}
@@ -68,7 +78,7 @@ func (v *VaultStorageAdapter) Set(ks *tokenstoragehelper.KeyStorageProvider) err
 		},
 	}
 
-	body, err := json.Marshal(data)
+	body, err := marshalJSON(data)
 	if err != nil {
 		return err
 	}
@@ -95,6 +105,9 @@ func (v *VaultStorageAdapter) Get() (tokenstoragehelper.KeyStorageProvider, erro
 		return tokenstoragehelper.KeyStorageProvider{}, err
 	}
 	data, ok := secretData["data"].(map[string]interface{})
+	if !ok {
+		return tokenstoragehelper.KeyStorageProvider{}, errors.New("invalid data format in vault secret")
+	}
 
 	dataStr, ok := data["config"].(string)
 	if !ok {
