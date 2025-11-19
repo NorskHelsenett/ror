@@ -318,6 +318,164 @@ func TestKeyStorageProviderSignError(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestKeyStorageProviderVerifySuccess(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 2048)
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	tokenString, err := provider.Sign(jwt.MapClaims{"sub": "user"})
+	require.NoError(t, err)
+
+	token, err := provider.Verify(tokenString)
+	require.NoError(t, err)
+	require.NotNil(t, token)
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	require.True(t, ok)
+	require.Equal(t, "user", claims["sub"])
+}
+
+func TestKeyStorageProviderVerifyMissingKid(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{"sub": "user"})
+	tokenString, err := token.SignedString(privKey)
+	require.NoError(t, err)
+
+	_, err = provider.Verify(tokenString)
+	require.ErrorContains(t, err, "token missing kid header")
+}
+
+func TestKeyStorageProviderVerifyUnknownKid(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{"sub": "user"})
+	token.Header["kid"] = "unknown"
+	tokenString, err := token.SignedString(privKey)
+	require.NoError(t, err)
+
+	_, err = provider.Verify(tokenString)
+	require.ErrorContains(t, err, "no matching key for kid unknown")
+}
+
+func TestKeyStorageProviderVerifyUnexpectedAlgorithm(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS512, jwt.MapClaims{"sub": "user"})
+	token.Header["kid"] = "kid"
+	tokenString, err := token.SignedString(privKey)
+	require.NoError(t, err)
+
+	_, err = provider.Verify(tokenString)
+	require.ErrorContains(t, err, "signing method RS512 is invalid")
+}
+
+func TestKeyStorageProviderVerifyEmptyToken(t *testing.T) {
+	resetGlobals()
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   generateRSAKey(t, 1024),
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.Verify("")
+	require.EqualError(t, err, "token string is empty")
+}
+
+func TestKeyStorageProviderVerifyNilProvider(t *testing.T) {
+	resetGlobals()
+	var provider *KeyStorageProvider
+
+	_, err := provider.Verify("token")
+	require.EqualError(t, err, "keystorage provider is nil")
+}
+
+func TestKeyStorageProviderVerifyNoKeys(t *testing.T) {
+	resetGlobals()
+	provider := &KeyStorageProvider{}
+
+	_, err := provider.Verify("token")
+	require.EqualError(t, err, "no keys available in keystorage")
+}
+
+func TestKeyStorageProviderVerifyNoKeyIDs(t *testing.T) {
+	resetGlobals()
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				PrivateKey:   generateRSAKey(t, 1024),
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.Verify("token")
+	require.EqualError(t, err, "no keys with key ids available in keystorage")
+}
+
+func TestKeyStorageProviderVerifyMissingPrivateKey(t *testing.T) {
+	resetGlobals()
+	signingKey := generateRSAKey(t, 1024)
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{"sub": "user"})
+	token.Header["kid"] = "kid"
+	tokenString, err := token.SignedString(signingKey)
+	require.NoError(t, err)
+
+	_, err = provider.Verify(tokenString)
+	require.ErrorContains(t, err, "key material missing for kid kid")
+}
+
 func TestKeyStorageProviderGetJwksNoKeys(t *testing.T) {
 	resetGlobals()
 	var provider *KeyStorageProvider
@@ -658,7 +816,7 @@ func TestRotateKeysSuccess(t *testing.T) {
 
 	setCalled := false
 	var contexts []string
-	rotateErrorHandler = func(ctx string, err error) {
+	rotateErrorHandler = func(ctx string, _ error) {
 		contexts = append(contexts, ctx)
 	}
 	adapter := &mockStorageAdapter{
