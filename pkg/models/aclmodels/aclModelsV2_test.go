@@ -20,8 +20,9 @@ func TestNewAclV2ListItem(t *testing.T) {
 	issuedBy := "Thomas Vifte"
 
 	actual := aclmodels.NewAclV2ListItem(groupName, scope, subject, access, kuberneteslogon, issuedBy)
-	expected := aclmodels.AclV2ListItem{
-		Id:         actual.Id,
+	expected := &aclmodels.AclV2ListItem{
+		Id:         "",
+		Version:    2,
 		Group:      groupName,
 		Scope:      scope,
 		Subject:    subject,
@@ -32,7 +33,7 @@ func TestNewAclV2ListItem(t *testing.T) {
 	}
 
 	// Checks that it autogenerates an ID.
-	assert.NotEmpty(t, expected.Id)
+	assert.Empty(t, expected.Id)
 
 	// Checks that time.Time is created with an value and not set with time.Time{}.
 	assert.Equal(t, expected.Created.IsZero(), false)
