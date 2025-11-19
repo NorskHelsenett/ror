@@ -103,8 +103,10 @@ func TestSetSucceeds(t *testing.T) {
 		},
 	}, "secret/path")
 
+	lastRotation := time.Unix(1697040000, 0).UTC()
+
 	ks := &tokenstoragehelper.KeyStorageProvider{
-		LastRotation:     time.Unix(1697040000, 0),
+		LastRotation:     lastRotation,
 		RotationInterval: time.Hour,
 		NumKeys:          1,
 		Keys: map[int]tokenstoragehelper.Key{
@@ -193,8 +195,10 @@ func TestGetReturnsErrorOnUnmarshalFailure(t *testing.T) {
 }
 
 func TestGetSucceeds(t *testing.T) {
+	lastRotation := time.Unix(1697040000, 0).UTC()
+
 	expected := tokenstoragehelper.KeyStorageProvider{
-		LastRotation:     time.Unix(1697040000, 0),
+		LastRotation:     lastRotation,
 		RotationInterval: time.Hour,
 		NumKeys:          2,
 		Keys: map[int]tokenstoragehelper.Key{

@@ -13,6 +13,11 @@ import (
 var (
 	nowFunc       = time.Now
 	generateKeyFn = GenerateKey
+	jwkFromRawFn  = jwk.FromRaw
+	newJWKSetFn   = jwk.NewSet
+	addKeyFunc    = func(set jwk.Set, key jwk.Key) error {
+		return set.AddKey(key)
+	}
 )
 
 // TokenKeyStorage defines the interface for managing cryptographic keys used in token signing.
@@ -198,10 +203,10 @@ func (k *KeyStorageProvider) GetJwks() (jwk.Set, error) {
 	if k == nil || len(k.Keys) == 0 {
 		return nil, errors.New("no keys available in keystorage")
 	}
-	set := jwk.NewSet()
+	set := newJWKSetFn()
 	for _, data := range k.Keys {
 		pubKey := data.PrivateKey.Public().(*rsa.PublicKey)
-		jwkKey, err := jwk.FromRaw(pubKey)
+		jwkKey, err := jwkFromRawFn(pubKey)
 		if err != nil {
 			return nil, err
 		}
@@ -215,7 +220,7 @@ func (k *KeyStorageProvider) GetJwks() (jwk.Set, error) {
 			return nil, err
 		}
 
-		if err := set.AddKey(jwkKey); err != nil {
+		if err := addKeyFunc(set, jwkKey); err != nil {
 			return nil, err
 		}
 	}

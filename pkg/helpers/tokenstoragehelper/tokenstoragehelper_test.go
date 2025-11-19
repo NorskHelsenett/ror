@@ -1,6 +1,7 @@
 package tokenstoragehelper
 
 import (
+	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
 	"errors"
@@ -33,11 +34,34 @@ func (m *mockStorageAdapter) Get() (KeyStorageProvider, error) {
 	return m.getFn()
 }
 
+type stubJWKKey struct {
+	jwk.Key
+	failName string
+	err      error
+}
+
+func (s *stubJWKKey) Set(name string, value interface{}) error {
+	if name == s.failName {
+		return s.err
+	}
+	return s.Key.Set(name, value)
+}
+
 func resetGlobals() {
 	nowFunc = time.Now
 	generateKeyFn = GenerateKey
 	randomIntFunc = rand.Int
 	sleepFunc = time.Sleep
+	jwkFromRawFn = jwk.FromRaw
+	newJWKSetFn = jwk.NewSet
+	addKeyFunc = func(set jwk.Set, key jwk.Key) error {
+		return set.AddKey(key)
+	}
+	rotateErrorHandler = func(string, error) {}
+	rsaGenerateKeyFunc = rsa.GenerateKey
+	jwkThumbprintFunc = func(key jwk.Key, hash crypto.Hash) ([]byte, error) {
+		return key.Thumbprint(hash)
+	}
 	keyStorage = KeyStorageProvider{}
 }
 
@@ -216,6 +240,34 @@ func TestKeyStorageProviderRotateWithGeneration(t *testing.T) {
 	require.Equal(t, "generated", provider.Keys[1].KeyID)
 }
 
+func TestKeyStorageProviderRotateGenerateKeyError(t *testing.T) {
+	resetGlobals()
+	fixedNow := time.Unix(800, 0)
+	nowFunc = func() time.Time { return fixedNow }
+	generateKeyFn = func() (Key, error) {
+		return Key{}, errors.New("generate failure")
+	}
+	defer func() {
+		nowFunc = time.Now
+		generateKeyFn = GenerateKey
+	}()
+
+	provider := KeyStorageProvider{
+		LastRotation:     fixedNow.Add(-time.Hour),
+		RotationInterval: time.Minute,
+		NumKeys:          1,
+		Keys: map[int]Key{
+			0: {KeyID: "active"},
+			1: {},
+		},
+	}
+
+	rotated := provider.Rotate(false)
+	require.True(t, rotated)
+	require.Equal(t, fixedNow, provider.LastRotation)
+	require.Empty(t, provider.Keys[0].KeyID)
+}
+
 func TestKeyStorageProviderNeedRotate(t *testing.T) {
 	resetGlobals()
 	baseTime := time.Unix(10, 0)
@@ -300,6 +352,135 @@ func TestKeyStorageProviderGetJwksSuccess(t *testing.T) {
 	require.Equal(t, "jwks", kidStr)
 }
 
+func TestKeyStorageProviderGetJwksFromRawError(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	jwkFromRawFn = func(interface{}) (jwk.Key, error) {
+		return nil, errors.New("from raw failure")
+	}
+	defer func() { jwkFromRawFn = jwk.FromRaw }()
+
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.GetJwks()
+	require.EqualError(t, err, "from raw failure")
+}
+
+func TestKeyStorageProviderGetJwksKeyIDSetError(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	original := jwkFromRawFn
+	jwkFromRawFn = func(v interface{}) (jwk.Key, error) {
+		key, err := original(v)
+		if err != nil {
+			return nil, err
+		}
+		return &stubJWKKey{Key: key, failName: jwk.KeyIDKey, err: errors.New("key id failure")}, nil
+	}
+	defer func() { jwkFromRawFn = jwk.FromRaw }()
+
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.GetJwks()
+	require.EqualError(t, err, "key id failure")
+}
+
+func TestKeyStorageProviderGetJwksAlgorithmSetError(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	original := jwkFromRawFn
+	jwkFromRawFn = func(v interface{}) (jwk.Key, error) {
+		key, err := original(v)
+		if err != nil {
+			return nil, err
+		}
+		return &stubJWKKey{Key: key, failName: jwk.AlgorithmKey, err: errors.New("algorithm failure")}, nil
+	}
+	defer func() { jwkFromRawFn = jwk.FromRaw }()
+
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.GetJwks()
+	require.EqualError(t, err, "algorithm failure")
+}
+
+func TestKeyStorageProviderGetJwksUsageSetError(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	original := jwkFromRawFn
+	jwkFromRawFn = func(v interface{}) (jwk.Key, error) {
+		key, err := original(v)
+		if err != nil {
+			return nil, err
+		}
+		return &stubJWKKey{Key: key, failName: jwk.KeyUsageKey, err: errors.New("usage failure")}, nil
+	}
+	defer func() { jwkFromRawFn = jwk.FromRaw }()
+
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.GetJwks()
+	require.EqualError(t, err, "usage failure")
+}
+
+func TestKeyStorageProviderGetJwksAddKeyError(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	addKeyFunc = func(jwk.Set, jwk.Key) error {
+		return errors.New("add key failure")
+	}
+	defer func() {
+		addKeyFunc = func(set jwk.Set, key jwk.Key) error {
+			return set.AddKey(key)
+		}
+	}()
+
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{
+			1: {
+				KeyID:        "kid",
+				PrivateKey:   privKey,
+				AlgorithmKey: "RS256",
+			},
+		},
+	}
+
+	_, err := provider.GetJwks()
+	require.EqualError(t, err, "add key failure")
+}
+
 func TestGetTokenKeyStorage(t *testing.T) {
 	resetGlobals()
 	storage := GetTokenKeyStorage()
@@ -351,7 +532,13 @@ func TestRotateKeysRandomError(t *testing.T) {
 	sleepFunc = func(d time.Duration) {
 		sleepCalled = true
 	}
+	var contexts []string
+	rotateErrorHandler = func(ctx string, err error) {
+		contexts = append(contexts, ctx)
+	}
+	randCalled := false
 	randomIntFunc = func(_ io.Reader, _ *big.Int) (*big.Int, error) {
+		randCalled = true
 		return nil, errors.New("rand failure")
 	}
 	defer func() {
@@ -359,8 +546,11 @@ func TestRotateKeysRandomError(t *testing.T) {
 		randomIntFunc = rand.Int
 	}()
 
+	require.True(t, keyStorage.needRotate(false))
 	RotateKeys()
 	require.False(t, sleepCalled)
+	require.True(t, randCalled)
+	require.Equal(t, []string{"random_interval"}, contexts)
 }
 
 func TestRotateKeysLoadError(t *testing.T) {
@@ -380,15 +570,24 @@ func TestRotateKeysLoadError(t *testing.T) {
 		randomIntFunc = rand.Int
 	}()
 
+	loadCalled := false
+	var contexts []string
+	rotateErrorHandler = func(ctx string, err error) {
+		contexts = append(contexts, ctx)
+	}
 	adapter := &mockStorageAdapter{
 		getFn: func() (KeyStorageProvider, error) {
+			loadCalled = true
 			return KeyStorageProvider{}, errors.New("load error")
 		},
 		setFn: func(*KeyStorageProvider) error { return nil },
 	}
 	keyStorage.storageAdapter = adapter
 
+	require.True(t, keyStorage.needRotate(false))
 	RotateKeys()
+	require.True(t, loadCalled)
+	require.Equal(t, []string{"load"}, contexts)
 }
 
 func TestRotateKeysSaveError(t *testing.T) {
@@ -409,6 +608,11 @@ func TestRotateKeysSaveError(t *testing.T) {
 		randomIntFunc = rand.Int
 	}()
 
+	setCalled := false
+	var contexts []string
+	rotateErrorHandler = func(ctx string, err error) {
+		contexts = append(contexts, ctx)
+	}
 	adapter := &mockStorageAdapter{
 		getFn: func() (KeyStorageProvider, error) {
 			return KeyStorageProvider{
@@ -422,12 +626,16 @@ func TestRotateKeysSaveError(t *testing.T) {
 			}, nil
 		},
 		setFn: func(*KeyStorageProvider) error {
+			setCalled = true
 			return errors.New("save error")
 		},
 	}
 	keyStorage.storageAdapter = adapter
 
+	require.True(t, keyStorage.needRotate(false))
 	RotateKeys()
+	require.True(t, setCalled)
+	require.Equal(t, []string{"save"}, contexts)
 }
 
 func TestRotateKeysSuccess(t *testing.T) {
@@ -448,6 +656,11 @@ func TestRotateKeysSuccess(t *testing.T) {
 		randomIntFunc = rand.Int
 	}()
 
+	setCalled := false
+	var contexts []string
+	rotateErrorHandler = func(ctx string, err error) {
+		contexts = append(contexts, ctx)
+	}
 	adapter := &mockStorageAdapter{
 		getFn: func() (KeyStorageProvider, error) {
 			return KeyStorageProvider{
@@ -461,15 +674,19 @@ func TestRotateKeysSuccess(t *testing.T) {
 			}, nil
 		},
 		setFn: func(ks *KeyStorageProvider) error {
+			setCalled = true
 			require.Equal(t, "generated", ks.Keys[0].KeyID)
 			return nil
 		},
 	}
 	keyStorage.storageAdapter = adapter
 
+	require.True(t, keyStorage.needRotate(false))
 	RotateKeys()
 	require.Equal(t, fixedNow, keyStorage.LastRotation)
 	require.Equal(t, "generated", keyStorage.Keys[0].KeyID)
+	require.True(t, setCalled)
+	require.Empty(t, contexts)
 }
 
 func TestGenerateKey(t *testing.T) {
@@ -479,4 +696,64 @@ func TestGenerateKey(t *testing.T) {
 	require.Equal(t, "RS512", key.AlgorithmKey)
 	require.NotEmpty(t, key.KeyID)
 	require.NotNil(t, key.PrivateKey)
+}
+
+func TestGenerateKeyRSAGenerateError(t *testing.T) {
+	resetGlobals()
+	rsaGenerateKeyFunc = func(io.Reader, int) (*rsa.PrivateKey, error) {
+		return nil, errors.New("rsa failure")
+	}
+	defer func() { rsaGenerateKeyFunc = rsa.GenerateKey }()
+
+	_, err := GenerateKey()
+	require.EqualError(t, err, "rsa failure")
+}
+
+func TestGenerateKeyFromRawError(t *testing.T) {
+	resetGlobals()
+	rsaGenerateKeyFunc = func(reader io.Reader, bits int) (*rsa.PrivateKey, error) {
+		return generateRSAKey(t, 1024), nil
+	}
+	original := jwkFromRawFn
+	jwkFromRawFn = func(interface{}) (jwk.Key, error) {
+		return nil, errors.New("from raw failure")
+	}
+	defer func() {
+		rsaGenerateKeyFunc = rsa.GenerateKey
+		jwkFromRawFn = original
+	}()
+
+	_, err := GenerateKey()
+	require.EqualError(t, err, "from raw failure")
+}
+
+func TestGenerateKeyThumbprintError(t *testing.T) {
+	resetGlobals()
+	rsaGenerateKeyFunc = func(reader io.Reader, bits int) (*rsa.PrivateKey, error) {
+		return generateRSAKey(t, 1024), nil
+	}
+	jwkThumbprintFunc = func(jwk.Key, crypto.Hash) ([]byte, error) {
+		return nil, errors.New("thumbprint failure")
+	}
+	defer func() {
+		rsaGenerateKeyFunc = rsa.GenerateKey
+		jwkThumbprintFunc = func(key jwk.Key, hash crypto.Hash) ([]byte, error) {
+			return key.Thumbprint(hash)
+		}
+	}()
+
+	_, err := GenerateKey()
+	require.EqualError(t, err, "thumbprint failure")
+}
+
+func TestDefaultAddKeyFunc(t *testing.T) {
+	resetGlobals()
+	privKey := generateRSAKey(t, 1024)
+	set := newJWKSetFn()
+	jwkKey, err := jwkFromRawFn(&privKey.PublicKey)
+	require.NoError(t, err)
+
+	err = addKeyFunc(set, jwkKey)
+	require.NoError(t, err)
+	require.Equal(t, 1, set.Len())
 }

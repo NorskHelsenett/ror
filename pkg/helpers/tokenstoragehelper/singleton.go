@@ -14,9 +14,14 @@ import (
 
 var (
 	// keyStorage is the singleton instance of the key storage provider
-	keyStorage    KeyStorageProvider
-	randomIntFunc = rand.Int
-	sleepFunc     = time.Sleep
+	keyStorage         KeyStorageProvider
+	randomIntFunc      = rand.Int
+	sleepFunc          = time.Sleep
+	rotateErrorHandler = func(string, error) {}
+	rsaGenerateKeyFunc = rsa.GenerateKey
+	jwkThumbprintFunc  = func(key jwk.Key, hash crypto.Hash) ([]byte, error) {
+		return key.Thumbprint(hash)
+	}
 )
 
 // RotateKeys performs a key rotation operation on the singleton key storage instance.
@@ -37,12 +42,14 @@ func RotateKeys() {
 
 		randomInterval, err := randomIntFunc(rand.Reader, big.NewInt(5000))
 		if err != nil {
+			rotateErrorHandler("random_interval", err)
 			rlog.Error("could not generate random interval for key rotation", err)
 			return
 		}
 		sleepFunc(time.Duration(time.Duration(randomInterval.Int64()) * time.Millisecond))
 		err = keyStorage.Load()
 		if err != nil {
+			rotateErrorHandler("load", err)
 			rlog.Error("could not load keystorage from vault", err)
 			return
 		}
@@ -50,6 +57,7 @@ func RotateKeys() {
 		if rotated {
 			err := keyStorage.Save()
 			if err != nil {
+				rotateErrorHandler("save", err)
 				rlog.Error("could not save keystorage to vault", err)
 			}
 		}
@@ -70,16 +78,16 @@ func RotateKeys() {
 //
 // Returns an error if key generation or thumbprint calculation fails.
 func GenerateKey() (Key, error) {
-	newPrivatekey, err := rsa.GenerateKey(rand.Reader, 4096)
+	newPrivatekey, err := rsaGenerateKeyFunc(rand.Reader, 4096)
 	if err != nil {
 		return Key{}, err
 	}
 
-	thumprint, err := jwk.FromRaw(newPrivatekey.PublicKey)
+	jwkKey, err := jwkFromRawFn(newPrivatekey.PublicKey)
 	if err != nil {
 		return Key{}, err
 	}
-	keyid, err := thumprint.Thumbprint(crypto.SHA256)
+	keyid, err := jwkThumbprintFunc(jwkKey, crypto.SHA256)
 	if err != nil {
 		return Key{}, err
 	}
