@@ -33,14 +33,18 @@ type TokenKeyStorage interface {
 	Rotate(force bool) bool
 	// GetJwks returns a JSON Web Key Set containing the public keys for token verification
 	GetJwks() (jwk.Set, error)
-	// Verify verifies the provided JWT token string and returns the parsed token if valid
-	Verify(tokenString string) (*jwt.Token, error)
+	TokenVerifier
 }
 
 type SigningTokenKeyStorage interface {
 	TokenKeyStorage
 	// Sign creates and signs a JWT token with the provided claims using the current key
 	Sign(claims jwt.MapClaims) (string, error)
+}
+
+type TokenVerifier interface {
+	// Verify verifies the provided JWT token string and returns the parsed token if valid
+	Verify(tokenString string) (*jwt.Token, error)
 }
 
 // cast KeystorageProvider to TokenKeyStorage to test interface implementation
