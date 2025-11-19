@@ -14,7 +14,9 @@ import (
 
 var (
 	// keyStorage is the singleton instance of the key storage provider
-	keyStorage KeyStorageProvider
+	keyStorage    KeyStorageProvider
+	randomIntFunc = rand.Int
+	sleepFunc     = time.Sleep
 )
 
 // RotateKeys performs a key rotation operation on the singleton key storage instance.
@@ -33,12 +35,12 @@ var (
 func RotateKeys() {
 	if keyStorage.needRotate(false) {
 
-		randomInterval, err := rand.Int(rand.Reader, big.NewInt(5000))
+		randomInterval, err := randomIntFunc(rand.Reader, big.NewInt(5000))
 		if err != nil {
 			rlog.Error("could not generate random interval for key rotation", err)
 			return
 		}
-		time.Sleep(time.Duration(time.Duration(randomInterval.Int64()) * time.Millisecond))
+		sleepFunc(time.Duration(time.Duration(randomInterval.Int64()) * time.Millisecond))
 		err = keyStorage.Load()
 		if err != nil {
 			rlog.Error("could not load keystorage from vault", err)

@@ -10,6 +10,11 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
 
+var (
+	nowFunc       = time.Now
+	generateKeyFn = GenerateKey
+)
+
 // TokenKeyStorage defines the interface for managing cryptographic keys used in token signing.
 // Implementations of this interface handle key generation, rotation, storage, and JWT operations.
 type TokenKeyStorage interface {
@@ -132,14 +137,14 @@ func (k *KeyStorageProvider) Rotate(force bool) bool {
 			k.Keys[i] = k.Keys[i+1]
 			if k.Keys[i].KeyID == "" {
 				rlog.Info("generating new key for position", rlog.Int("position", i))
-				newKey, err := GenerateKey()
+				newKey, err := generateKeyFn()
 				if err != nil {
 					rlog.Error("could not generate new key", err)
 				}
 				k.Keys[i] = newKey
 			}
 		}
-		k.LastRotation = time.Now()
+		k.LastRotation = nowFunc()
 		return true
 	}
 	return false
@@ -149,7 +154,7 @@ func (k *KeyStorageProvider) Rotate(force bool) bool {
 // or the force parameter. Returns true if the current time exceeds the last rotation
 // time plus the rotation interval, or if force is true.
 func (k *KeyStorageProvider) needRotate(force bool) bool {
-	return time.Now().Unix() > k.LastRotation.Add(k.RotationInterval).Unix() || force
+	return nowFunc().Unix() > k.LastRotation.Add(k.RotationInterval).Unix() || force
 }
 
 // Sign creates and signs a JWT token with the provided claims using the current active key.
