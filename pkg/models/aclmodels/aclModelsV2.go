@@ -26,16 +26,15 @@ type AclV2ListItems struct {
 
 // Full acl v2 model
 type AclV2ListItem struct {
-	Id      string              `json:"id" bson:"_id,omitempty"`                   // Id
-	Version int                 `json:"version" default:"2" validate:"eq=2" `      // Acl Version, must be 2
-	Group   string              `json:"group" validate:"required,min=1,rortext" `  // The group which the acces is granted
-	Scope   Acl2Scope           `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
-	Subject Acl2Subject         `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
-	Access  AclV2ListItemAccess `json:"access" validate:"required"`                // v2 access model for ror api
-	//	Accessv2   []map[AccessType]bool    `json:"accessv2" validate:""`                      // v2 access model for ror api
-	Kubernetes AclV2ListItemKubernetes `json:"kubernetes" validate:""` // v2 access model for kubernetes
+	Id         string                  `json:"id" bson:"_id,omitempty"`                   // Id
+	Version    int                     `json:"version" default:"2" validate:"eq=2" `      // Acl Version, must be 2
+	Group      string                  `json:"group" validate:"required,min=1,rortext" `  // The group which the acces is granted
+	Scope      Acl2Scope               `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
+	Subject    Acl2Subject             `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
+	Access     AclV2ListItemAccess     `json:"access" validate:"required"`                // v2 access model for ror api
+	Kubernetes AclV2ListItemKubernetes `json:"kubernetes" validate:""`                    // v2 access model for kubernetes
 	Created    time.Time               `json:"created"`
-	IssuedBy   string                  `json:"issuedBy,omitempty" validate:"email"`
+	IssuedBy   string                  `json:"issuedBy,omitempty" validate:"email"` // expects an email
 }
 
 func NewAclV2ListItem(group string,
@@ -85,7 +84,7 @@ func NewAclV2ListItemAccessReadOnly() AclV2ListItemAccess {
 	return NewAclV2ListItemAccess(true, false, false, false, false)
 }
 
-// NewAclV2ListItemAccessCreateOnly gives you Read and Create  access.
+// NewAclV2ListItemAccessCreateOnly gives you Read and Create access.
 func NewAclV2ListItemAccessCreateOnly() AclV2ListItemAccess {
 	return NewAclV2ListItemAccess(true, true, false, false, false)
 }
