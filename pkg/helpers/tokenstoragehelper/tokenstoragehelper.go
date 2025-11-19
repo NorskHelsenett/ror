@@ -1,0 +1,341 @@
+package tokenstoragehelper
+
+import (
+	"crypto/rsa"
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/helpers/tokenhelper"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/lestrrat-go/jwx/v2/jwk"
+)
+
+var (
+	nowFunc       = time.Now
+	generateKeyFn = GenerateKey
+	jwkFromRawFn  = jwk.FromRaw
+	newJWKSetFn   = jwk.NewSet
+	addKeyFunc    = func(set jwk.Set, key jwk.Key) error {
+		return set.AddKey(key)
+	}
+)
+
+// TokenKeyStorage defines the interface for managing cryptographic keys used in token signing.
+// Implementations of this interface handle key generation, rotation, storage, and JWT operations.
+type TokenKeyStorage interface {
+	// Load retrieves the key storage state from the underlying storage adapter
+	Load() error
+	// Save persists the current key storage state to the underlying storage adapter
+	Save() error
+	// Rotate rotates the keys if the rotation interval has elapsed or if force is true.
+	// Returns true if rotation occurred, false otherwise.
+	Rotate(force bool) bool
+	// GetJwks returns a JSON Web Key Set containing the public keys for token verification
+	GetJwks() (jwk.Set, error)
+	tokenhelper.TokenVerifier
+}
+
+type SigningTokenKeyStorage interface {
+	TokenKeyStorage
+	// Sign creates and signs a JWT token with the provided claims using the current key
+	Sign(claims jwt.MapClaims) (string, error)
+}
+
+// cast KeystorageProvider to TokenKeyStorage to test interface implementation
+var _ TokenKeyStorage = &KeyStorageProvider{}
+var _ SigningTokenKeyStorage = &KeyStorageProvider{}
+
+// StorageAdapter defines the interface for persisting and retrieving key storage.
+// Implementations can use various backends such as Vault, databases, or file systems.
+type StorageAdapter interface {
+	// Set persists the key storage provider to the storage backend
+	Set(*KeyStorageProvider) error
+	// Get retrieves the key storage provider from the storage backend
+	Get() (KeyStorageProvider, error)
+}
+
+// KeyStorageProvider manages the storage and rotation of cryptographic keys.
+// It maintains multiple keys to support gradual rotation and uses a storage adapter
+// for persistence.
+type KeyStorageProvider struct {
+	storageAdapter   StorageAdapter
+	LastRotation     time.Time     `json:"last_rotation"`     // Timestamp of the last key rotation
+	RotationInterval time.Duration `json:"rotation_interval"` // Duration between automatic rotations
+	NumKeys          int           `json:"num_keys"`          // Total number of keys to maintain
+	Keys             map[int]Key   `json:"keys"`              // Map of key index to Key
+}
+
+// Key represents an RSA keypair used for JWT signing.
+type Key struct {
+	KeyID        string          `json:"key_id"`        // Unique identifier for the key (SHA256 thumbprint)
+	PrivateKey   *rsa.PrivateKey `json:"private_key"`   // RSA private key for signing
+	AlgorithmKey string          `json:"algorithm_key"` // JWT signing algorithm (e.g., "RS512")
+}
+
+// NewTokenKeyStorage creates a new instance of the keystorage provider with the provided storage adapter.
+// It initializes the key storage by loading existing keys from the adapter and performing an initial
+// rotation check. This function is an alternative to using the singleton pattern via Init().
+//
+// Returns an error if the storage adapter fails to load existing keys.
+func NewTokenKeyStorage(storageAdapter StorageAdapter) (TokenKeyStorage, error) {
+	tokenStorage := &KeyStorageProvider{}
+	tokenStorage.storageAdapter = storageAdapter
+	err := tokenStorage.Load()
+	if err != nil {
+		rlog.Error("could not load keystorage from vault", err)
+		return nil, err
+	}
+	tokenStorage.Rotate(false)
+	return tokenStorage, nil
+}
+
+// NewSigningTokenKeyStorage creates a new instance of the keystorage provider with the provided storage adapter.
+// It initializes the key storage by loading existing keys from the adapter and performing an initial
+// rotation check. This function is an alternative to using the singleton pattern via Init().
+//
+// Returns an error if the storage adapter fails to load existing keys.
+func NewSigningTokenKeyStorage(storageAdapter StorageAdapter) (SigningTokenKeyStorage, error) {
+	tokenStorage := &KeyStorageProvider{}
+	tokenStorage.storageAdapter = storageAdapter
+	err := tokenStorage.Load()
+	if err != nil {
+		rlog.Error("could not load keystorage from vault", err)
+		return nil, err
+	}
+	tokenStorage.Rotate(false)
+	return tokenStorage, nil
+}
+
+// GetTokenKeyStorage returns the singleton instance of the keystorage provider.
+// This should only be called after Init() has been invoked to initialize the singleton.
+//
+// Example:
+//
+//	tokenStorage := tokenstoragehelper.GetTokenKeyStorage()
+//	token, err := tokenStorage.Sign(claims)
+func GetTokenKeyStorage() TokenKeyStorage {
+	return &keyStorage
+}
+
+// GetSigningTokenKeyStorage returns the singleton instance of the keystorage provider.
+// This should only be called after Init() has been invoked to initialize the singleton.
+//
+// Example:
+//
+//	tokenStorage := tokenstoragehelper.GetTokenKeyStorage()
+//	token, err := tokenStorage.Sign(claims)
+func GetSigningTokenKeyStorage() SigningTokenKeyStorage {
+	return &keyStorage
+}
+
+// getCurrentKey returns the current active key used for signing new tokens.
+// The current key is always at index 1 in the Keys map.
+func (k *KeyStorageProvider) getCurrentKey() Key {
+	return k.Keys[1]
+}
+
+// Save persists the current key storage state to the underlying storage adapter.
+// Returns an error if no storage adapter is configured or if the save operation fails.
+func (k *KeyStorageProvider) Save() error {
+	if k.storageAdapter != nil {
+		return k.storageAdapter.Set(k)
+	}
+	return errors.New("no storage provider set")
+}
+
+// Load retrieves the key storage state from the underlying storage adapter.
+// It updates the current instance with the loaded configuration including keys,
+// rotation settings, and timestamps.
+//
+// Returns an error if no storage adapter is configured or if the load operation fails.
+func (k *KeyStorageProvider) Load() error {
+	if k.storageAdapter != nil {
+		loaded, err := k.storageAdapter.Get()
+		if err != nil {
+			return err
+		}
+		k.LastRotation = loaded.LastRotation
+		k.RotationInterval = loaded.RotationInterval
+		k.NumKeys = loaded.NumKeys
+		k.Keys = loaded.Keys
+		return nil
+	}
+	return errors.New("no storage provider set")
+}
+
+// Rotate performs key rotation if needed based on the rotation interval or if forced.
+// During rotation, keys are shifted down by one position and a new key is generated
+// for the highest position. This ensures older keys remain available for verifying
+// existing tokens while new tokens are signed with the fresh key.
+//
+// The force parameter can be set to true to bypass the interval check and force rotation.
+// Returns true if rotation occurred, false otherwise.
+func (k *KeyStorageProvider) Rotate(force bool) bool {
+	if k.needRotate(force) {
+		for i := 0; i < k.NumKeys; i++ {
+			k.Keys[i] = k.Keys[i+1]
+			if k.Keys[i].KeyID == "" {
+				rlog.Info("generating new key for position", rlog.Int("position", i))
+				newKey, err := generateKeyFn()
+				if err != nil {
+					rlog.Error("could not generate new key", err)
+				}
+				k.Keys[i] = newKey
+			}
+		}
+		k.LastRotation = nowFunc()
+		return true
+	}
+	return false
+}
+
+// needRotate determines whether key rotation is needed based on the rotation interval
+// or the force parameter. Returns true if the current time exceeds the last rotation
+// time plus the rotation interval, or if force is true.
+func (k *KeyStorageProvider) needRotate(force bool) bool {
+	return nowFunc().Unix() > k.LastRotation.Add(k.RotationInterval).Unix() || force
+}
+
+// Verify parses and validates a JWT string using the stored public keys based on kid header.
+// Returns the verified token or an error if verification fails.
+func (k *KeyStorageProvider) Verify(tokenString string) (*jwt.Token, error) {
+	if k == nil {
+		return nil, errors.New("keystorage provider is nil")
+	}
+	if tokenString == "" {
+		return nil, errors.New("token string is empty")
+	}
+	if len(k.Keys) == 0 {
+		return nil, errors.New("no keys available in keystorage")
+	}
+
+	keyByID := make(map[string]Key)
+	validAlgorithms := make(map[string]struct{})
+	for _, key := range k.Keys {
+		if key.KeyID == "" {
+			continue
+		}
+		keyByID[key.KeyID] = key
+		if key.AlgorithmKey != "" {
+			validAlgorithms[key.AlgorithmKey] = struct{}{}
+		}
+	}
+
+	if len(keyByID) == 0 {
+		return nil, errors.New("no keys with key ids available in keystorage")
+	}
+
+	var parserOptions []jwt.ParserOption
+	if len(validAlgorithms) > 0 {
+		algs := make([]string, 0, len(validAlgorithms))
+		for alg := range validAlgorithms {
+			algs = append(algs, alg)
+		}
+		parserOptions = append(parserOptions, jwt.WithValidMethods(algs))
+	}
+
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		rawKid, ok := token.Header["kid"]
+		if !ok {
+			return nil, errors.New("token missing kid header")
+		}
+
+		kid, ok := rawKid.(string)
+		if !ok || kid == "" {
+			return nil, errors.New("token kid header must be a non-empty string")
+		}
+
+		key, ok := keyByID[kid]
+		if !ok {
+			return nil, fmt.Errorf("no matching key for kid %s", kid)
+		}
+		if key.PrivateKey == nil {
+			return nil, fmt.Errorf("key material missing for kid %s", kid)
+		}
+		if key.AlgorithmKey != "" && token.Method != nil && token.Method.Alg() != key.AlgorithmKey {
+			return nil, fmt.Errorf("unexpected signing algorithm %s for kid %s", token.Method.Alg(), kid)
+		}
+
+		pubKey := key.PrivateKey.Public()
+		if pubKey == nil {
+			return nil, fmt.Errorf("public key not available for kid %s", kid)
+		}
+
+		return pubKey, nil
+	}
+
+	token, err := jwt.Parse(tokenString, keyFunc, parserOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+// Sign creates and signs a JWT token with the provided claims using the current active key.
+// The signed token includes a "kid" (key ID) header to identify which key was used for signing.
+//
+// Example:
+//
+//	claims := jwt.MapClaims{
+//		"sub": "user123",
+//		"exp": time.Now().Add(time.Hour).Unix(),
+//		"iat": time.Now().Unix(),
+//	}
+//	token, err := keyStorage.Sign(claims)
+//
+// Returns the signed JWT token as a string, or an error if signing fails.
+func (k *KeyStorageProvider) Sign(claims jwt.MapClaims) (string, error) {
+	currentKey := k.getCurrentKey()
+
+	token := jwt.NewWithClaims(jwt.GetSigningMethod(currentKey.AlgorithmKey), claims)
+	token.Header["kid"] = currentKey.KeyID
+	signedString, err := token.SignedString(currentKey.PrivateKey)
+	if err != nil {
+		return "", err
+	}
+	return signedString, nil
+
+}
+
+// GetJwks returns a JSON Web Key Set (JWKS) containing all public keys from the key storage.
+// The JWKS can be published at a well-known endpoint (e.g., /.well-known/jwks.json) to allow
+// token verifiers to retrieve public keys for signature validation.
+//
+// Each key in the set includes:
+//   - kid: Key ID for matching with JWT header
+//   - alg: Algorithm used for signing
+//   - use: Set to "sig" for signature verification
+//   - Public key material (n, e for RSA)
+//
+// Returns an error if no keys are available or if key conversion fails.
+func (k *KeyStorageProvider) GetJwks() (jwk.Set, error) {
+	if k == nil || len(k.Keys) == 0 {
+		return nil, errors.New("no keys available in keystorage")
+	}
+	set := newJWKSetFn()
+	for _, data := range k.Keys {
+		pubKey := data.PrivateKey.Public().(*rsa.PublicKey)
+		jwkKey, err := jwkFromRawFn(pubKey)
+		if err != nil {
+			return nil, err
+		}
+		if err := jwkKey.Set(jwk.KeyIDKey, data.KeyID); err != nil {
+			return nil, err
+		}
+		if err := jwkKey.Set(jwk.AlgorithmKey, data.AlgorithmKey); err != nil {
+			return nil, err
+		}
+		if err := jwkKey.Set(jwk.KeyUsageKey, "sig"); err != nil {
+			return nil, err
+		}
+
+		if err := addKeyFunc(set, jwkKey); err != nil {
+			return nil, err
+		}
+	}
+
+	return set, nil
+}
