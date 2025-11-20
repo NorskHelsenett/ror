@@ -71,16 +71,16 @@ nav:
   - ROR:
       - index.md
       - introduction.md
+  - Installation:
+      - installation/index.md
   - Design:
       - design/index.md
       - design/design.md
       - Roadmap:
           - design/roadmap/index.md
-      - designrecords:
+      - Designrecords:
           - design/designrecords/index.md
           - design/designrecords/react-framework.md
-  - Installation:
-      - installation/index.md
   - Components:
       - components/index.md
       - clients:
@@ -90,26 +90,40 @@ nav:
           - RORClient:
               - components/clients/rorclient/index.md
               - components/clients/rorclient/getting-started.md
-          - ROR-CLI:
-              - components/clients/ror-cli/index.md
-              - components/clients/ror-cli/auth-flow.md
-      - distributables:
+      - Distributables:
           - components/distributables/index.md
-          - ror-operator:
+          - ROR-Operator:
               - components/distributables/ror-operator/index.md
-          - ror-agent:
+          - ROR-Agent:
               - components/distributables/ror-agent/index.md
       - Core:
           - components/core/index.md
+          - ROR:
+              - components/core/ror/index.md
           - ROR-API:
               - components/core/ror-api/index.md
               - components/core/ror-api/aclv2.md
               - components/core/ror-api/config-management.md
-          - vault:
+          - ROR-WEB:
+              - components/core/ror-web/index.md
+          - Authentication:
+              - components/core/authentication/index.md
+              - components/core/authentication/dex.md
+              - components/core/authentication/openldap.md
+          - Vault:
               - components/core/vault/index.md
-          - mongoDB:
-              - components/core/mongodb/index.md
-      - Micro Services:
+          - Database:
+              - components/core/database/index.md
+              - components/core/database/mongo-express.md
+          - Cache:
+              - components/core/cache/index.md
+          - Queueing:
+              - components/core/queueing/index.md
+          - Observability:
+              - components/core/observability/index.md
+              - components/core/observability/jaeger.md
+              - components/core/observability/opentelemtry.md
+      - MicroServices:
           - components/microservices/index.md
           - ROR-MS-Auth:
               - components/microservices/ror-ms-auth/index.md
@@ -130,6 +144,8 @@ nav:
           - development/generator/using-generator.md
       - Makerfile:
           - development/makerfile/index.md
+      - RORResources:
+          - development/rorresources/index.md
   - Documentation:
       - documentation/index.md
       - documentation/guidelines.md
