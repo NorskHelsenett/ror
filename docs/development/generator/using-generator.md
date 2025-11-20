@@ -17,23 +17,12 @@ When creating a new resource, editing, or deleting an existing resource for ROR 
 
 ### Cloning the repository
 
-1. Create a folder for where you want to store the code.
-2. Clone the repository into it.
-
-```bash
-git clone git@github.com:NorskHelsenett/ror.git
-```
-
-```bash
-git clone https://github.com/NorskHelsenett/ror.git
-```
-
-For more information on this part see: https://norskhelsenett.github.io/ror/getting-started/
-
+To start with you need to first setup your repositories ready for development.
+For how to do that please see [here](./repos.md)
 
 ### Creating the base resource files
 
-#### Create the resource definition 
+#### Create the resource definition
 
 1. Creating it at:
 
@@ -48,10 +37,10 @@ resourcedef_<resourceName>.go
 ```
 
 2. When creating this file the following rule must be followed:
-    - The package name is ``rortypes``
-    - The structs all begin with ``Resource`` resulting your type to be ``Resource<YourResourceName>``
-    - Your main struct should contain a ``Spec`` and a ``Status`` field
-    - The ``Spec`` is the desired state, while ``Status`` is observed state, more about that further down.
+    - The package name is `rortypes`
+    - The structs all begin with `Resource` resulting your type to be `Resource<YourResourceName>`
+    - Your main struct should contain a `Spec` and a `Status` field
+    - The `Spec` is the desired state, while `Status` is observed state, more about that further down.
 
 An example of a resourcedef:
 
@@ -97,7 +86,7 @@ If the resource is read-only Spec is necessary to implement.
 
 Status will be what we observe about this resource, like ids, the current cpu, disk, or memory for the example above.
 
-#### Create the resource_input_filter definition 
+#### Create the resource_input_filter definition
 
 The resource_input_filter runs on import on that type, it can be used to censor, anonymize, remove, or change data before import.
 
@@ -129,16 +118,20 @@ func (r *<ResourceName>) ApplyInputFilter(cr *CommonResource) error {
 #### ROR definitions
 
 1. Go to:
+
 ```bash
 ror/pkg/rorresources/rordefs
 ```
+
 2. And edit defs.go
 3. On the top const definition, add your new agent in the format:
+
 ```
 ApiResoureType<Name> ApiReesourceType = "<AgentName>"
 ```
 
 4. And at the near bottom at at to the Resroucedefs slice:
+
 ```
 {
         TypeMeta: metav1.TypeMeta{
@@ -161,7 +154,3 @@ go run cmd/generator/main.go
 ```
 
 3. And you're done, commit to the branch and make a pull/merge request.
-
-### Afterwards
-
-- To import data to this (newly) created ROR resource, you need to implement the ROR client, which you can read more about here: ror/docs/rorclient/getting-started.md
