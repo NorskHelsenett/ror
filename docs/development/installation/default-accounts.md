@@ -19,3 +19,4 @@ Log in with any of these accounts:
 | MongoDB       | `someone` | `S3cret!` |
 | Mongo-Express | `test`    | `S3cr3t`  |
 | RabbitMQ      | `admin`   | `S3cret!` |
+| vault         | `token`   | `S3cret!` |
