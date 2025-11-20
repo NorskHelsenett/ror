@@ -61,6 +61,7 @@ func TestNewAclV2ListItemAccess(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+// TestNewAclV2ListItemAccessPredefined tests that the predinfed ListItem sets output what is expected of them.
 func TestNewAclV2ListItemAccessPredefined(t *testing.T) {
 
 	expected := aclmodels.AclV2ListItemAccess{
