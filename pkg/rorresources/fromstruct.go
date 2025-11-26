@@ -130,7 +130,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
 		r.SetCommonInterface(res.VirtualMachineClassResource)
 
-	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
+	case "vitistack.io/v1alpha1, Kind=KubernetesCluster":
 		r.SetKubernetesCluster(res.KubernetesClusterResource)
 		r.SetCommonInterface(res.KubernetesClusterResource)
 
