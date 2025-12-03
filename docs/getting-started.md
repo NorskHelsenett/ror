@@ -13,6 +13,7 @@ Clone the ror-api repositiroy and run
 
 ```bash
 git clone https://github.com/NorskHelsenett/ror-api
+cp .env.example .env
 docker compose up -d
 go run cmd/api/main.go
 ```
