@@ -2,168 +2,20 @@
 
 ## Prerequisites
 
--   Linux distro or WSL2 for windows
--   Docker runtime
-    -   Docker CE: https://docs.docker.com/engine/install/
-    -   WSL2 tips: https://learn.microsoft.com/en-us/windows/wsl/systemd
--   Golang SDK (For debugging and changing) https://go.dev
--   ROR API: https://github.com/NorskHelsenett/ror-api
--   ROR Web: https://github.com/NorskHelsenett/ror-webapp
-
-### Optional:
-
--   Docker Desktop (https://www.docker.com/products/docker-desktop/)
--   Talosctl (https://www.talos.dev/v1.8/introduction/quickstart/)
--   Kind (https://kind.sigs.k8s.io)
--   K3d (https://k3d.io/stable/)
--   Python for running documentation with mkdocs
--   RO Agent: https://github.com/NorskHelsenett/ror-agent
-
-## Clone
-
-1.  Create a folder on you computer where you want to put the code
-2.  Clone the repository
-
-```bash
-git clone git@github.com:NorskHelsenett/ror.git
-```
-
-```bash
-git clone https://github.com/NorskHelsenett/ror.git
-```
-
-## Hardware requirements:
-
-| Recommendations | CPU | Memory |
-| --------------- | --- | ------ |
-| Minimum         | 2   | 16GB   |
-| Recommended     | 4   | 32GB   |
-
-## Install docker
-
-### Linux
-
-Installation steps for Linux:
-https://docs.docker.com/engine/install
-Recommended post-installation steps:
-https://docs.docker.com/engine/install/linux-postinstall/
-
-#### Fedora
-
-<details>
-  <summary>Fedora</summary>
-
-### Installations:
-
-```bash
-sudo dnf -y install dnf-plugins-core
-sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-```
-
-:warning: if you receive errors like this, you might have an old Docker installation already installed:
-
-```bash
-- package docker-ce-3:27.3.1-1.fc40.x86_64 from docker-ce-stable conflicts with docker provided by moby-engine-24.0.5-4.fc40.x86_64 from fedora
-- package moby-engine-24.0.5-4.fc40.x86_64 from fedora conflicts with docker-ce provided by docker-ce-3:27.3.1-1.fc40.x86_64 from docker-ce-stable
-```
-
-#### Install the Docker Engine
-
-```bash
-sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-#### Start the Docker engine
-
-```bash
-sudo systemctl enable --now docker
-```
-
-#### (Optional) Install Docker auto-complete
-
-https://docs.docker.com/engine/cli/completion/
-
-#### (Optional) Test the docker installation
-
-```bash
-sudo docker run hello-world
-```
-
-#### Manage Dockker as a non-root
-
-Doc reference: https://docs.docker.com/engine/install/linux-postinstall/
-
-#### Create the docker group.
-
-```bash
-sudo groupadd docker
-```
-
-#### Add your user to the docker group.
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-Log out and log back in so that your group membership is re-evaluated.
-:warning: If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
-
-#### Verify
-
-```bash
-docker run hello-world
-```
-
-</details>
-
-### Windows
-
-https://learn.microsoft.com/en-us/windows/wsl/systemd
-
-TODO
+-   Docker
+-   Go
 
 ## Starting ROR
 
-### Run with docker
+### ROR-API
 
-_Note Specific environment variables need to be set up for ROR to run, see_ [Environment Variables](#Environment-Variables)
-
-To start the ROR infrastructure you can run:
+Clone the ror-api repositiroy and run
 
 ```bash
-./r.sh
+git clone https://github.com/NorskHelsenett/ror-api
+docker compose up -d
+go run cmd/api/main.go
 ```
-
-Which will start the [Core infrastructure](#Core-infrastructure)
-
-To include any [optional services](#Optional-services) you can add them as arguments as shown:
-
-```bash
-./r.sh jaeger opentelemetry-collector
-```
-
-When the containers start you'll note that the following services will keep crashing,
-This is intended as they're dependent on the API service which has yet to be started:
-
--   dex
--   ms-auth
--   ms-talos
--   ms-kind
-
-### ROR API
-
-For ROR to work you require minimum the API, which can be found here:
-https://github.com/NorskHelsenett/ror-api
-
-#### Visual Studio Code
-
-1. Open the repository in VSCode
-2. Go to Debugging
-3. On "Run and debug" select "Debug ROR-Api" or "Debug ROR-Api tests"
-
-#### Terminal
-
-TODO
 
 ### ROR WEB
 
@@ -171,27 +23,11 @@ Clone the ror-webapp repository
 
 ```bash
 git clone https://github.com/NorskHelsenett/ror-webapp
+npm i
+nmp start
 ```
 
-Start the core services as mentioned [Here](#Starting-ROR)
-
-Start the API as mentioned [Here](#ROR-API)
-
-Start the webapp as mentioned [Here](https://github.com/NorskHelsenett/ror-webapp)
-
-#### VSCode
-
-TODO
-
-#### Terminal
-
-TODO
-
-### Environment Variables
-
--   &lt;repo root&gt;/`.env` has the default settings for docker compose
--   Env variables used during development are set in `hacks/docker-compose/`
--   Env variables used in cluster are set with charts in `charts/`
+Point your browser to http://localhost:11000
 
 ## Login to ROR-web
 
