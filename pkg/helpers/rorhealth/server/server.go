@@ -30,7 +30,7 @@ type ServerParams struct {
 	Server string
 }
 
-func ServerString(serverstring string) Option {
+func ServerString(serverstring string) optionFunc {
 	return optionFunc(func(cfg *config) {
 		var err error
 		serverstring = parseServerString(serverstring)
@@ -82,19 +82,13 @@ func getDefaultAddrPort() netip.AddrPort {
 	return addrPort
 }
 
-type Option interface {
-	apply(*config)
-}
-
 type config struct {
 	ipPort netip.AddrPort
 }
 
 type optionFunc func(*config)
 
-func (of optionFunc) apply(cfg *config) { of(cfg) }
-
-func Start(opts ...Option) error {
+func Start(opts ...optionFunc) error {
 	initMtx.Lock()
 	defer initMtx.Unlock()
 	cfg := &config{
@@ -102,7 +96,7 @@ func Start(opts ...Option) error {
 	}
 
 	for _, o := range opts {
-		o.apply(cfg)
+		o(cfg)
 	}
 
 	if httpServer == nil {
@@ -127,18 +121,18 @@ func Start(opts ...Option) error {
 	return nil
 }
 
-func MustStart(opts ...Option) {
+func MustStart(opts ...optionFunc) {
 	if err := Start(opts...); err != nil {
 		rlog.Error("Failed to start health server", err)
 		os.Exit(1)
 	}
 }
-func StartWithDefaults(opts ...Option) error {
+func StartWithDefaults(opts ...optionFunc) error {
 	opts = append(opts, ServerString(getHealthEndpoint()))
 	return Start(opts...)
 }
 
-func MustStartWithDefaults(opts ...Option) {
+func MustStartWithDefaults(opts ...optionFunc) {
 	if err := StartWithDefaults(opts...); err != nil {
 		rlog.Error("Failed to start health server with defaults", err)
 		os.Exit(1)
