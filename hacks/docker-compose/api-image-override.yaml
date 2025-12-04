@@ -1,3 +1,0 @@
-services:
-  api:
-    image: ${ROR_REPO}ror-api:${ROR_BUILD_TAG}
