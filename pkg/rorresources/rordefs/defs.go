@@ -166,6 +166,15 @@ var Resourcedefs = ApiResources{
 		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
+			Kind:       "SbomReport",
+			APIVersion: "aquasecurity.github.io/v1alpha1",
+		},
+		Plural:     "sbomreports",
+		Namespaced: true,
+		Types:      []ApiResourceType{ApiResourceTypeAgent},
+		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+	}, {
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "ExposedSecretReport",
 			APIVersion: "aquasecurity.github.io/v1alpha1",
 		},
