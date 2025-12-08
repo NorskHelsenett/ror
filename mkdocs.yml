@@ -117,8 +117,8 @@ nav:
               - components/core/database/mongo-express.md
           - Cache:
               - components/core/cache/index.md
-          - Queueing:
-              - components/core/queueing/index.md
+          - MessageBus:
+              - components/core/messagebus/index.md
           - Observability:
               - components/core/observability/index.md
               - components/core/observability/jaeger.md
@@ -132,20 +132,18 @@ nav:
   - Development:
       - development/index.md
       - development/setup.md
-      - Installation:
-          - development/installation/index.md
-          - development/installation/repos.md
-          - development/installation/docker.md
-          - development/installation/default-accounts.md
-          - development/installation/endpoints.md
-          - development/installation/known-issues.md
+      - development/index.md
+      - development/repos.md
+      - development/docker.md
+      - development/default-accounts.md
+      - development/default-urls.md
+      - development/endpoints.md
+      - development/known-issues.md
       - Generator:
           - development/generator/index.md
           - development/generator/using-generator.md
       - Makerfile:
           - development/makerfile/index.md
-      - RORResources:
-          - development/rorresources/index.md
   - Documentation:
       - documentation/index.md
       - documentation/guidelines.md
