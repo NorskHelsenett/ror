@@ -19,3 +19,8 @@ make <function>
 ```.bash .copy
 make help
 ```
+
+For what functionality is available see the README of the relevant project for more information.
+
+[ror](https://github.com/NorskHelsenett/ror/blob/main/README.md)
+[ror-api](https://github.com/NorskHelsenett/ror-api/blob/main/README.md)
