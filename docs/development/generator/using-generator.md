@@ -18,7 +18,7 @@ When creating a new resource, editing, or deleting an existing resource for ROR 
 ### Cloning the repository
 
 To start with you need to first setup your repositories ready for development.
-For how to do that please see [here](../installation/repos.md)
+For how to do that please see [here](../repos.md)
 
 ### Creating the base resource files
 

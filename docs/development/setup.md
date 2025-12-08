@@ -50,13 +50,13 @@ For working on the [ror Agent](../components/distributables/ror-agent/index.md):
 
 To develop on ROR it is highly recommended to setup a Go Workspace with all relevant projects.
 
-See [here](./installation/repos.md) for instructions.
+See [here](./repos.md) for instructions.
 
 ## Install docker
 
 To run the development environment Docker is required.
 
-See [here](./installation/docker.md) for instructions.
+See [here](./docker.md) for instructions.
 
 ## Starting the environment
 
@@ -72,15 +72,15 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 
 ## Core infrastructure
 
-For default urls see [here](./installation/default-urls.md).
+For default urls see [here](./default-urls.md).
 
 ## Default users
 
-For default users see [here](./installation/default-accounts.md).
+For default users see [here](./default-accounts.md).
 
 ## Known issues
 
-See [Known-issues](./installation/known-issues.md)
+See [Known-issues](./known-issues.md)
 
 ## Documentation
 
