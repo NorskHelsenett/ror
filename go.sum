@@ -430,8 +430,8 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.3.1 h1:waO7eEiFDwidsBN6agj1vJQ4AG7lh2yqXyOXqhgQuyY=
 github.com/ugorji/go/codec v1.3.1/go.mod h1:pRBVtBSKl77K30Bv8R2P+cLSGaTtex6fsA2Wjqmfxj4=
-github.com/vitistack/common v0.6.1 h1:ECWzVYUiQes+ipnfZ0pNFKp0qBrumbfOYs/n6cxHj8M=
-github.com/vitistack/common v0.6.1/go.mod h1:kvYzFwGbcryVZuKyGKOGhzhNIi3xbFEUAhTxvfGGkpc=
+github.com/vitistack/common v0.8.5 h1:OqxdkIrep1LIqLcNSmyj+NGxy+PCRdizJ6Z4Qom7Md0=
+github.com/vitistack/common v0.8.5/go.mod h1:D5ywqO7P2T76tqflTscRb0tqb8N6ltSPpXxzzUQBmEw=
 github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
 github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
 github.com/xanzy/ssh-agent v0.3.3 h1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=
