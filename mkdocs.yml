@@ -12,14 +12,37 @@ theme:
     - navigation.indexes
     - content.action.edit
   icon:
-    edit: material/pencil 
+    edit: material/pencil
     view: material/eye
+
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
 extra_css:
   - css/nhn.css
 plugins:
-    - search
-    - mermaid2
-    - glightbox
+  - search
+  - mermaid2
+  - glightbox
 markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
@@ -43,42 +66,87 @@ extra:
       link: https://github.com/NorskHelsenett/ror
       name: Privat sky på github
   generator: false
-copyright: Norsk Helsenett SF - Privat sky
+copyright: Norsk helsenett SF - Privat sky
 nav:
   - ROR:
-    - index.md
-    - components.md
-    - design.md
-    - getting-started.md
-  - Clients:
-    - ror-admin:
-      - ror-admin/index.md
-    - ror-cli:
-      - ror-cli/index.md
-      - ror-cli/auth-flow.md
-  - Core:
-    - ror-api:
-      - ror-api/index.md
-      - ror-api/aclv2.md
-      - ror-api/config-management.md
-    - vault:
-      - vault/index.md
-    - mongoDB:
-      - mongodb/index.md
-    - ror-docs:
-      - ror-docs/index.md
-  - Microservices:
-    - ror-ms-nhn:
-      - ror-ms-nhn/index.md
-    - ror-ms-auth:
-      - ror-ms-auth/index.md
-    - ror-ms-slack:
-      - ror-ms-slack/index.md  
-  - Distributed:
-    - ror-operator:
-      - ror-operator/index.md
-    - ror-agent:
-      - ror-agent/index.md
+      - index.md
+      - introduction.md
+  - Installation:
+      - installation/index.md
   - Design:
-    - design/index.md
-    - design/react-framework.md
+      - design/index.md
+      - design/design.md
+      - Roadmap:
+          - design/roadmap/index.md
+      - Designrecords:
+          - design/designrecords/index.md
+          - design/designrecords/react-framework.md
+  - Components:
+      - components/index.md
+      - clients:
+          - components/clients/index.md
+          - ROR-Admin:
+              - components/clients/ror-admin/index.md
+          - RORClient:
+              - components/clients/rorclient/index.md
+              - components/clients/rorclient/getting-started.md
+      - Distributables:
+          - components/distributables/index.md
+          - ROR-Operator:
+              - components/distributables/ror-operator/index.md
+          - ROR-Agent:
+              - components/distributables/ror-agent/index.md
+      - Core:
+          - components/core/index.md
+          - ROR:
+              - components/core/ror/index.md
+          - ROR-API:
+              - components/core/ror-api/index.md
+              - components/core/ror-api/aclv2.md
+              - components/core/ror-api/config-management.md
+          - ROR-WEB:
+              - components/core/ror-web/index.md
+          - Authentication:
+              - components/core/authentication/index.md
+              - components/core/authentication/dex.md
+              - components/core/authentication/openldap.md
+          - Vault:
+              - components/core/vault/index.md
+          - Database:
+              - components/core/database/index.md
+              - components/core/database/mongo-express.md
+          - Cache:
+              - components/core/cache/index.md
+          - MessageBus:
+              - components/core/messagebus/index.md
+          - Observability:
+              - components/core/observability/index.md
+              - components/core/observability/jaeger.md
+              - components/core/observability/opentelemtry.md
+      - MicroServices:
+          - components/microservices/index.md
+          - ROR-MS-Auth:
+              - components/microservices/ror-ms-auth/index.md
+          - ROR-MS-Slack:
+              - components/microservices/ror-ms-slack/index.md
+  - Development:
+      - development/index.md
+      - development/setup.md
+      - development/index.md
+      - development/repos.md
+      - development/docker.md
+      - development/default-accounts.md
+      - development/default-urls.md
+      - development/endpoints.md
+      - development/known-issues.md
+      - Generator:
+          - development/generator/index.md
+          - development/generator/using-generator.md
+      - Makerfile:
+          - development/makerfile/index.md
+  - Documentation:
+      - documentation/index.md
+      - documentation/guidelines.md
+      - documentation/mkdocs.md
+  - Trivia:
+      - trivia/index.md
