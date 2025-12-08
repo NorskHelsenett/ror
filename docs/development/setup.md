@@ -13,7 +13,7 @@
 
 ### Optional
 
-If developing on the frontend this one becomes mandatory:
+If developing on the frontend the frontend repository is required:
 
 - ROR Web: https://github.com/NorskHelsenett/ror-webapp
 
@@ -31,7 +31,7 @@ For kubernetes specific things:
 - Kind (https://kind.sigs.k8s.io)
 - K3d (https://k3d.io/stable/)
 
-For running documentation with mkdocs
+For running documentation with mkdocs:
 
 - Python
 
@@ -58,80 +58,13 @@ To run the development environment Docker is required.
 
 See [here](./installation/docker.md) for instructions.
 
-### Run with docker
+## Starting the environment
 
-For environment variables an `env.example` file exists in `ror/hacks/env/env.example` that will be copied.
-If any modifications is wanted - like adding your own dockerhub mirror - you can copy that to the root folder
-and name it `.env` and edit it.
-
-To start the ROR infrastructure you can run:
-
-```bash
-./r.sh
-```
-
-Which will start the [Core infrastructure](#Core-infrastructure)
-
-To include any [optional services](#Optional-services) you can add them as arguments as shown:
-
-```bash
-./r.sh jaeger opentelemetry-collector
-```
-
-When the containers start you'll note that the following services will keep crashing,
-This is intended as they're dependent on the API service which has yet to be started:
-
-- dex
-- ms-auth
-- ms-talos
-- ms-kind
-
-### ROR API
-
-#### Visual Studio Code
-
-1. Open the repository in VSCode
-2. Go to Debugging
-3. On "Run and debug" select "Debug ROR-Api" or "Debug ROR-Api tests"
-
-#### Terminal
-
-1. If you haven't already, start r.sh
-2. Start ./debug.sh
+For instructions on how to start the environment see the ror-api [README.md](https://github.com/NorskHelsenett/ror-api/blob/main/README.md) for instructions.
 
 ### ROR WEB
 
-Start the core services as mentioned [Here](#Starting-ROR)
-
-Start the API as mentioned [Here](#ROR-API)
-
-Start the webapp as mentioned [Here](https://github.com/NorskHelsenett/ror-webapp)
-
-#### VSCode
-
-TODO
-
-#### Terminal
-
-TODO
-
-### Environment Variables
-
-- &lt;repo root&gt;/`.env` has the default settings for docker compose
-- Env variables used during development are set in `hacks/docker-compose/`
-- Env variables used in cluster are set with charts in `charts/`
-
-## Login to ROR-web
-
-Open your favorite browser, and go to http://localhost:11000
-Log in with any of these accounts:
-
-| Title           | Username             | Password  |
-| --------------- | -------------------- | --------- |
-| super admin     | `superadmin@ror.dev` | `S3cret!` |
-| read only admin | `readadmin@ror.dev`  | `S3cret!` |
-| developer 1     | `dev1@ror.dev`       | `S3cret!` |
-| developer 2     | `dev2@ror.dev`       | `S3cret!` |
+For instructions on how to start the webapp see the ror-web [README.md](https://github.com/NorskHelsenett/ror-web) for instructions.
 
 ## Swagger
 
@@ -139,38 +72,11 @@ To see swagger for ROR Api, go to http://localhost:10000/swagger/index.html
 
 ## Core infrastructure
 
-| Service       | What                  | Url                                                         | ReadMe link                                                                           | Comment                                     |
-| ------------- | --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------- |
-| DEX           | Authentication        | www: http://localhost:5556, grpc api: http://localhost:5557 | [dex doc](https://dexidp.io/docs/) [docker hub](https://hub.docker.com/r/bitnami/dex) | Reachable from inside and outside of docker |
-| Openldap      | Mocking users         | http://localhost:389                                        |                                                                                       |                                             |
-| MongoDB       | Document database     | mongodb://localhost:27017                                   |                                                                                       |                                             |
-| Mongo-Express | Gui for document base | http://localhost:8081                                       |                                                                                       |                                             |
-| RabbitMQ      | Message bus           | GUI: http://localhost:15672, amqp port: localhost:5672      |                                                                                       |                                             |
-| Vault         | Secrets handling      | GUI: http://localhost:8200                                  |                                                                                       |                                             |
-| Valkey        | Cache                 | GUI: http://localhost:6379                                  |                                                                                       |                                             |
+For default urls see [here](./installation/default-urls.md).
 
 ## Default users
 
-| Service       | Username  | Password  |
-| ------------- | --------- | --------- |
-| MongoDB       | `someone` | `S3cret!` |
-| Mongo-Express | `test`    | `S3cr3t`  |
-| RabbitMQ      | `admin`   | `S3cret!` |
-
-## Optional services
-
-| Service                 | What | Url | ReadMe link | Comment |
-| ----------------------- | ---- | --- | ----------- | ------- |
-| jaeger                  |      |     |             |         |
-| opentelemetry-collector |      |     |             |         |
-
-## ROR services
-
-| Service    | What      | Url                    | Port | ReadMe link                                                | Comment                   |
-| ---------- | --------- | ---------------------- | ---- | ---------------------------------------------------------- | ------------------------- |
-| ROR-Api    | Api       | http://localhost:10000 | 8080 | [ror-api](https://github.com/NorskHelsenett/ror-api)       |                           |
-| ROR-WebApp | Web       | http://localhost:11000 | 8090 | [ror-webapp](https://github.com/NorskHelsenett/ror-webapp) |                           |
-| ROR-Agent  | K8s Agent | http://localhost:8100  | 8100 | [ror-agent](https://github.com/NorskHelsenett/ror-agent)   | Not run by docker-compose |
+For default users see [here](./installation/default-accounts.md).
 
 ## Known issues
 
