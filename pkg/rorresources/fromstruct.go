@@ -130,7 +130,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetVirtualMachineClass(res.VirtualMachineClassResource)
 		r.SetCommonInterface(res.VirtualMachineClassResource)
 
-	case "vitistack.io/v1alpha1, Kind=KubernetesCluster":
+	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		r.SetKubernetesCluster(res.KubernetesClusterResource)
 		r.SetCommonInterface(res.KubernetesClusterResource)
 
@@ -181,6 +181,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 	case "general.ror.internal/v1alpha1, Kind=VirtualMachine":
 		r.SetVirtualMachine(res.VirtualMachineResource)
 		r.SetCommonInterface(res.VirtualMachineResource)
+
+	case "general.ror.internal/v1alpha1, Kind=VirtualMachineVulnerabilityInfo":
+		r.SetVirtualMachineVulnerabilityInfo(res.VirtualMachineVulnerabilityInfoResource)
+		r.SetCommonInterface(res.VirtualMachineVulnerabilityInfoResource)
 
 	case "/v1, Kind=Endpoints":
 		r.SetEndpoints(res.EndpointsResource)

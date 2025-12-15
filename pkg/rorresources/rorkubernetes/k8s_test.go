@@ -454,7 +454,7 @@ func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"kind":       "KubernetesCluster",
-			"apiVersion": "vitistack.io/v1alpha1",
+			"apiVersion": "general.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
 				"name": "test-kubernetescluster",
 			},
@@ -685,6 +685,25 @@ func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
 			"apiVersion": "general.ror.internal/v1alpha1",
 			"metadata": map[string]interface{}{
 				"name": "test-virtualmachine",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientVirtualMachineVulnerabilityInfo(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "VirtualMachineVulnerabilityInfo",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-virtualmachinevulnerabilityinfo",
 			},
 		},
 	}
