@@ -163,7 +163,7 @@ var Resourcedefs = ApiResources{
 		Plural:     "sbomreports",
 		Namespaced: true,
 		Types:      []ApiResourceType{ApiResourceTypeAgent},
-		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "VulnerabilityReport",
