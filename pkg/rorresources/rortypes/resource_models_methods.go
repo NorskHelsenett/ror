@@ -297,6 +297,24 @@ func (r *ResourceIngressClass) Get() *ResourceIngressClass {
 	return r
 }
 
+// (r *ResourceSbomReport) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceSbomReport) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceSbomReport) Get returns a pointer to the resource of type ResourceSbomReport
+func (r *ResourceSbomReport) Get() *ResourceSbomReport {
+	return r
+}
+
 // (r *ResourceVulnerabilityReport) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource

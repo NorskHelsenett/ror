@@ -317,6 +317,25 @@ func TestNewResourceSetFromDynamicClientIngressClass(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientSbomReport(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "SbomReport",
+			"apiVersion": "aquasecurity.github.io/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-sbomreport",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientVulnerabilityReport(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
