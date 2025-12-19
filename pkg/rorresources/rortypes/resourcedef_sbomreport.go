@@ -1,7 +1,7 @@
 package rortypes
 
 // Trivy SBOM Report structure based on aquasecurity.github.io/v1alpha1
-type ResourceSbomReports struct {
+type ResourceSbomReport struct {
 	Report ResourceSbomReportsReport `json:"report"`
 }
 
