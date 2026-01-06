@@ -368,7 +368,7 @@ func TestRorConfigSetAddStructUnsupportedKind(t *testing.T) {
 
 	rc := rorConfigSet{configs: make(configsMap)}
 
-	if err := rc.ImportStruct(invalid{}); err == nil {
+	if err := rc.ImportStruct(invalid{Numbers: []int{1}}); err == nil {
 		t.Fatalf("expected error for unsupported slice field")
 	}
 }
@@ -419,7 +419,10 @@ func TestRorConfigSetAddStructTaggedStructField(t *testing.T) {
 
 	rc := rorConfigSet{configs: make(configsMap)}
 
-	if err := rc.ImportStruct(invalid{}); err == nil {
+	sample := invalid{}
+	sample.Nested.Value = "test"
+
+	if err := rc.ImportStruct(sample); err == nil {
 		t.Fatalf("expected error when struct field has rorconfig tag")
 	}
 }
