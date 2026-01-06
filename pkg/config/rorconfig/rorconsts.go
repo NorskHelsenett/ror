@@ -99,7 +99,7 @@ var ConfigConsts = EnvironmentVariables{
 	{key: "CLUSTER_ID", deprecated: false, description: ""},
 	{key: "ERROR_COUNT", deprecated: false, description: ""},
 	{key: "HELSEGITLAB_BASE_URL", deprecated: false, description: ""},
-	{key: "ENVIRONMENT", deprecated: false, description: ""},
+	{key: "ENVIRONMENT", deprecated: true, description: "Dont use ENVIRONMENT as its ambigous. Use DEVELOPMENT instead."},
 	{key: "LDAP_CONFIGS", deprecated: false, description: ""},
 	{key: "GIT_REPO_URL", deprecated: false, description: ""},
 	{key: "GIT_BRANCH", deprecated: false, description: ""},

@@ -3,6 +3,8 @@
 // and custom secret providers.
 package rorconfig
 
+import "time"
+
 // configKey is a constraint that allows any type that can be represented as a string.
 type configKey interface {
 	~string
@@ -51,7 +53,15 @@ func SetDefault[K configKey](key K, defaultValue any) {
 // GetConfigs returns a copy of all currently loaded configuration values.
 // This is primarily used for debugging and testing purposes.
 func GetConfigs() configsMap {
-	return config.configs.GetAll()
+	test := config.configs.GetAll()
+	return test
+}
+
+// SetConfigFromStruct registers configuration values from a struct using the rorconfig tag on each field.
+// Tagged fields are written into the internal configuration map using their tag value as key.
+// Supported field kinds are strings, booleans, integers, unsigned integers, and floats.
+func SetConfigFromStruct(source any) error {
+	return config.ImportStruct(source)
 }
 
 // AutomaticEnv loads configuration values from environment variables for all registered string(key)s.
@@ -119,4 +129,16 @@ func GetUint64[K configKey](key K) uint64 {
 // Returns the uint32 value, or 0 if the value cannot be parsed as a uint32.
 func GetUint32[K configKey](key K) uint32 {
 	return config.GetUint32(string(key))
+}
+
+// GetTime retrieves a configuration value as a time.Time.
+// Returns the time.Time value, or the zero time if the value cannot be parsed as a time.
+func GetTime[K configKey](key K) time.Time {
+	return config.GetTime(string(key))
+}
+
+// GetTimeDuration retrieves a configuration value as a time.Duration.
+// Returns the time.Duration value, or 0 if the value cannot be parsed as a duration.
+func GetTimeDuration[K configKey](key K) time.Duration {
+	return config.GetTimeDuration(string(key))
 }
