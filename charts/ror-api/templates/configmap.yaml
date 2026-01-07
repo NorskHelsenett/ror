@@ -3,7 +3,6 @@ kind: ConfigMap
 metadata:
   name: ror-api-cm-env
 data:
-  GIN_MODE: {{.Values.api.http.mode | quote}}
   ALLOW_ORIGINS: "https://ror.sky.test.nhn.no"
   USE_CORS: "true"
   RABBITMQ_HOST: "rabbitmq-ror.nhn-ror.svc"

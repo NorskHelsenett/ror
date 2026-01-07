@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/joho/godotenv"
@@ -40,6 +41,10 @@ func anyToString(value any) string {
 		return fmt.Sprintf("%d", v)
 	case bool:
 		return fmt.Sprintf("%t", v)
+	case time.Time:
+		return v.Format(time.RFC3339Nano)
+	case time.Duration:
+		return v.String()
 	default:
 		rlog.Error("Unsupported type for config value", fmt.Errorf("type %T not supported", v))
 		return ""

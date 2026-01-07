@@ -145,8 +145,8 @@ func TestGetConfigsReturnsCopy(t *testing.T) {
 	Set("TEST_KEY", "value")
 
 	snapshot := GetConfigs()
-	snapshot["TEST_KEY"] = ConfigData("mutated")
-	snapshot["OTHER_KEY"] = ConfigData("new")
+	snapshot["TEST_KEY"] = ConfigData{Value: "mutated"}
+	snapshot["OTHER_KEY"] = ConfigData{Value: "new"}
 
 	if got := GetString("TEST_KEY"); got != "value" {
 		t.Fatalf("GetString() = %q, want %q", got, "value")
@@ -165,5 +165,123 @@ func TestInitConfigLoadsEnvironment(t *testing.T) {
 
 	if got := GetString(HTTP_PORT); got != "6060" {
 		t.Fatalf("GetString() = %q, want %q", got, "6060")
+	}
+}
+
+func TestAddStruct(t *testing.T) {
+	resetConfigState(t)
+
+	type sample struct {
+		Host string `rorconfig:"HOST"`
+		Port int    `rorconfig:"PORT"`
+	}
+
+	if err := SetConfigFromStruct(sample{Host: "srv", Port: 7000}); err != nil {
+		t.Fatalf("AddStruct() returned error: %v", err)
+	}
+
+	if got := GetString("HOST"); got != "srv" {
+		t.Fatalf("GetString(HOST) = %q, want %q", got, "srv")
+	}
+
+	if got := GetInt("PORT"); got != 7000 {
+		t.Fatalf("GetInt(PORT) = %d, want %d", got, 7000)
+	}
+}
+
+func TestAddStructWithPointerInput(t *testing.T) {
+	resetConfigState(t)
+
+	type sample struct {
+		Enabled *bool   `rorconfig:"ENABLED"`
+		Rate    float32 `rorconfig:"RATE"`
+	}
+
+	flag := false
+	s := &sample{Enabled: &flag, Rate: 2.5}
+
+	if err := SetConfigFromStruct(s); err != nil {
+		t.Fatalf("AddStruct() with pointer input returned error: %v", err)
+	}
+
+	if GetBool("ENABLED") {
+		t.Fatalf("GetBool(ENABLED) = true, want false")
+	}
+
+	if got := GetFloat32("RATE"); got != 2.5 {
+		t.Fatalf("GetFloat32(RATE) = %f, want %f", got, 2.5)
+	}
+}
+
+func TestAddStructInvalidSource(t *testing.T) {
+	resetConfigState(t)
+
+	if err := SetConfigFromStruct(123); err == nil {
+		t.Fatalf("expected AddStruct() to fail for non-struct input")
+	}
+
+	var ptr *struct {
+		Value string `rorconfig:"VALUE"`
+	}
+	if err := SetConfigFromStruct(ptr); err == nil {
+		t.Fatalf("expected AddStruct() to fail for nil pointer")
+	}
+}
+
+func TestAddStructNestedFields(t *testing.T) {
+	resetConfigState(t)
+
+	type config struct {
+		Logging struct {
+			Level   string `rorconfig:"LOG_LEVEL"`
+			Enabled bool   `rorconfig:"LOG_ENABLED"`
+		}
+	}
+
+	sample := config{}
+	sample.Logging.Level = "debug"
+	sample.Logging.Enabled = true
+
+	if err := SetConfigFromStruct(sample); err != nil {
+		t.Fatalf("AddStruct() returned error: %v", err)
+	}
+
+	if got := GetString("LOG_LEVEL"); got != "debug" {
+		t.Fatalf("GetString(LOG_LEVEL) = %q, want %q", got, "debug")
+	}
+
+	if got := GetBool("LOG_ENABLED"); !got {
+		t.Fatalf("GetBool(LOG_ENABLED) = %t, want true", got)
+	}
+}
+
+func TestAddStructNestedPointerFields(t *testing.T) {
+	resetConfigState(t)
+
+	type config struct {
+		Telemetry *struct {
+			Endpoint string `rorconfig:"TEL_ENDPOINT"`
+		}
+	}
+
+	var sample config
+	if err := SetConfigFromStruct(sample); err != nil {
+		t.Fatalf("AddStruct() returned error for nil nested pointer: %v", err)
+	}
+
+	if IsSet("TEL_ENDPOINT") {
+		t.Fatalf("expected TEL_ENDPOINT to remain unset for nil nested pointer")
+	}
+
+	sample.Telemetry = &struct {
+		Endpoint string `rorconfig:"TEL_ENDPOINT"`
+	}{Endpoint: "http://example"}
+
+	if err := SetConfigFromStruct(sample); err != nil {
+		t.Fatalf("AddStruct() returned error for populated nested pointer: %v", err)
+	}
+
+	if got := GetString("TEL_ENDPOINT"); got != "http://example" {
+		t.Fatalf("GetString(TEL_ENDPOINT) = %q, want %q", got, "http://example")
 	}
 }
