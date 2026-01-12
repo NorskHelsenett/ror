@@ -48,7 +48,7 @@ require (
 	golang.org/x/text v0.31.0
 	google.golang.org/grpc v1.77.0
 	k8s.io/api v0.34.2
-	k8s.io/apimachinery v0.34.2
+	k8s.io/apimachinery v0.35.0
 	k8s.io/cli-runtime v0.34.2
 	k8s.io/client-go v0.34.2
 	k8s.io/metrics v0.34.2
@@ -62,6 +62,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
 	github.com/Azure/go-ntlmssp v0.1.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.6.0 // indirect
+	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.3.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -159,8 +160,6 @@ require (
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/mxk/go-flowrate v0.0.0-20140419014527-cca7078d478f // indirect
-	github.com/onsi/ginkgo/v2 v2.25.2 // indirect
-	github.com/onsi/gomega v1.38.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pjbgf/sha1cd v0.5.0 // indirect
