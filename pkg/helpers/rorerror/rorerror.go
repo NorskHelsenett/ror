@@ -3,10 +3,6 @@ package rorerror
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-
-	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/gin-gonic/gin"
 )
 
 var NoRorError = RorError{}
@@ -31,35 +27,6 @@ func NewRorError(status int, err string, errors ...error) RorError {
 		errors:  errors,
 	}
 	return rorerror
-}
-
-func GinHandleErrorAndAbort(c *gin.Context, status int, err error, fields ...Field) bool {
-	if err != nil {
-		rorerror := NewRorErrorFromError(status, err)
-		fields = append(fields, String("statuscode", fmt.Sprintf("%d", status)))
-		zfields := make([]rlog.Field, len(fields))
-		for i, field := range fields {
-			if field.Key != "apikey" {
-				zfields[i] = field.ToRlog()
-			} else {
-				zfields[i] = rlog.String(field.Key, maskApiKey(field.Value))
-			}
-
-		}
-		rlog.Errorc(c.Request.Context(), "error:", err, zfields...)
-		c.AbortWithStatusJSON(rorerror.Status, rorerror)
-		return true
-	}
-	return false
-}
-
-func maskApiKey(apikey string) string {
-	if len(apikey) < 5 {
-		// For short strings, mask all characters
-		return strings.Repeat("*", len(apikey))
-	}
-	maskedKey := string(apikey[0:2]) + strings.Repeat("*", len(apikey)-4) + string(apikey[len(apikey)-2:])
-	return maskedKey
 }
 
 func (e RorError) Error() string {

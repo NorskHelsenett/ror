@@ -1,4 +1,4 @@
-package rorerror
+package rorginerror
 
 import (
 	"strings"
@@ -44,7 +44,7 @@ type Field = rlog.Field
 //	}
 func GinHandleErrorAndAbort(c *gin.Context, status int, err error, fields ...Field) bool {
 	if err != nil {
-		rorerror := NewRorErrorFromError(status, err)
+		rorerror := NewRorGinErrorFromError(status, err)
 		fields = append(fields, rlog.Int("statuscode", status))
 		rorerror.GinLogErrorAbort(c, fields...)
 		return true
@@ -94,9 +94,9 @@ func maskValue(value string) string {
 //	    err.GinLogErrorJSON(c, rlog.String("field", "email"))
 //	    // Handler can continue if needed
 //	}
-func (e ErrorData) GinLogErrorJSON(c *gin.Context, fields ...Field) {
+func (e RorGinErrorData) GinLogErrorJSON(c *gin.Context, fields ...Field) {
 	e.logError(c, fields...)
-	c.JSON(e.Status, e)
+	c.JSON(e.GetStatusCode(), e)
 }
 
 // GinLogErrorAbort logs the error with context and aborts the Gin request
@@ -125,9 +125,9 @@ func (e ErrorData) GinLogErrorJSON(c *gin.Context, fields ...Field) {
 //	        return
 //	    }
 //	}
-func (e ErrorData) GinLogErrorAbort(c *gin.Context, fields ...Field) {
+func (e RorGinErrorData) GinLogErrorAbort(c *gin.Context, fields ...Field) {
 	e.logError(c, fields...)
-	c.AbortWithStatusJSON(e.Status, e)
+	c.AbortWithStatusJSON(e.GetStatusCode(), e)
 }
 
 // logError is an internal method that handles the actual logging of errors.
@@ -142,9 +142,10 @@ func (e ErrorData) GinLogErrorAbort(c *gin.Context, fields ...Field) {
 // Parameters:
 //   - c: Gin context containing the HTTP request context
 //   - fields: Structured logging fields to include in the log entry
-func (e ErrorData) logError(c *gin.Context, fields ...Field) {
-	if len(e.errors) > 0 {
-		for _, errs := range e.errors {
+func (e RorGinErrorData) logError(c *gin.Context, fields ...Field) {
+	errors := e.GetErrors()
+	if len(errors) > 0 {
+		for _, errs := range errors {
 			fields = append(fields, rlog.String("error", errs.Error()))
 		}
 	}

@@ -1,3 +1,4 @@
+// TODO: move to ror-api, this is middleware specific to HTTP server
 package metric
 
 import (

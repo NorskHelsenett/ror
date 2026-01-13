@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/rorerror"
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorginerror"
 	"github.com/dotse/go-health"
 	"github.com/gin-gonic/gin"
 )
@@ -67,7 +67,7 @@ func GetGinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		resp, err := health.CheckNow(c.Request.Context())
 		if err != nil {
-			rerr := rorerror.NewRorError(http.StatusInternalServerError, "Unable to run health checks", err)
+			rerr := rorginerror.NewRorGinError(http.StatusInternalServerError, "Unable to run health checks", err)
 			rerr.GinLogErrorAbort(c)
 			return
 		}
