@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/rorginerror"
+	"github.com/NorskHelsenett/ror-api/pkg/helpers/rorginerror"
 	"github.com/dotse/go-health"
 	"github.com/gin-gonic/gin"
 )
