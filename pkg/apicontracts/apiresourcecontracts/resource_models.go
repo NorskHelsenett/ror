@@ -4,8 +4,6 @@ package apiresourcecontracts
 
 import (
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Allowed actions from the kubernetes dynamic client// Deprecated: This type is only to be used in resource/v1 and will be deprecated
@@ -31,26 +29,6 @@ const (
 type ResourceOwnerReference struct {
 	Scope   aclmodels.Acl2Scope `json:"scope"`   // cluster, workspace,...
 	Subject string              `json:"subject"` // ror id eg clusterId or workspaceName
-}
-
-func NewResourceQueryFromClient(c *gin.Context) ResourceQuery {
-
-	owner := ResourceOwnerReference{
-		Scope:   aclmodels.Acl2Scope(c.Query("ownerScope")),
-		Subject: c.Query("ownerSubject"),
-	}
-
-	query := ResourceQuery{
-		Owner:      owner,
-		Kind:       c.Query("kind"),
-		ApiVersion: c.Query("apiversion"),
-	}
-
-	if query.Owner.Scope == aclmodels.Acl2ScopeRor {
-		query.Global = true
-	}
-
-	return query
 }
 
 // Returns a map to use in the `*Resty.Request.SetQueryParams(<ResourceOwnerReference>.GetQueryParams())“ function
