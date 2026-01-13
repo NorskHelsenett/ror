@@ -67,8 +67,6 @@ package rorerror
 
 import (
 	"fmt"
-
-	"github.com/gin-gonic/gin"
 )
 
 // RorError defines the interface for structured HTTP errors.
@@ -81,16 +79,11 @@ type RorError interface {
 	// GetMessage returns the human-readable error message.
 	GetMessage() string
 
+	// GetErrors returns the slice of underlying errors for internal tracking.
+	GetErrors() []error
+
 	// Error implements the error interface, returning a formatted error string.
 	Error() string
-
-	// GinLogErrorAbort logs the error with context and aborts the Gin request
-	// with a JSON response containing the error details.
-	GinLogErrorAbort(c *gin.Context, fields ...Field)
-
-	// GinLogErrorJSON logs the error with context and returns a JSON response
-	// containing the error details without aborting the request.
-	GinLogErrorJSON(c *gin.Context, fields ...Field)
 }
 
 // ErrorData is the concrete implementation of RorError.
@@ -179,4 +172,12 @@ func (e ErrorData) GetStatusCode() int {
 //   - Error message string
 func (e ErrorData) GetMessage() string {
 	return e.Message
+}
+
+// GetErrors returns the slice of underlying errors for internal tracking.
+//
+// Returns:
+//   - Slice of error objects
+func (e ErrorData) GetErrors() []error {
+	return e.errors
 }
