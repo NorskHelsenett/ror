@@ -12,7 +12,6 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.12
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.3.0
-	github.com/gomodule/redigo v1.9.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
@@ -20,7 +19,6 @@ require (
 	github.com/lestrrat-go/jwx/v2 v2.1.6
 	github.com/microsoftgraph/msgraph-sdk-go v1.90.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
-	github.com/nitishm/go-rejson/v4 v4.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rabbitmq/amqp091-go v1.10.0
