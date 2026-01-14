@@ -159,7 +159,7 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetVirtualMachineClass(res)
 		r.SetCommonInterface(res)
 
-	case "vitistack.io/v1alpha1, Kind=KubernetesCluster":
+	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		res := newKubernetesClusterFromMapInterface(input)
 		r.SetKubernetesCluster(res)
 		r.SetCommonInterface(res)
@@ -222,6 +222,11 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 	case "general.ror.internal/v1alpha1, Kind=VirtualMachine":
 		res := newVirtualMachineFromMapInterface(input)
 		r.SetVirtualMachine(res)
+		r.SetCommonInterface(res)
+
+	case "general.ror.internal/v1alpha1, Kind=VirtualMachineVulnerabilityInfo":
+		res := newVirtualMachineVulnerabilityInfoFromMapInterface(input)
+		r.SetVirtualMachineVulnerabilityInfo(res)
 		r.SetCommonInterface(res)
 
 	case "/v1, Kind=Endpoints":
@@ -759,6 +764,20 @@ func newVirtualMachineFromMapInterface(input map[string]interface{}) *rortypes.R
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceVirtualMachine", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newVirtualMachineVulnerabilityInfoFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newVirtualMachineVulnerabilityInfoFromMapInterface(input map[string]interface{}) *rortypes.ResourceVirtualMachineVulnerabilityInfo {
+	result := rortypes.ResourceVirtualMachineVulnerabilityInfo{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceVirtualMachineVulnerabilityInfo", err)
 		return nil
 	}
 
