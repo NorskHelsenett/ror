@@ -227,6 +227,22 @@ export interface ResourceEndpointSpecSubsets {
 export interface ResourceEndpoints {
   subsets?: ResourceEndpointSpecSubsets[];
 }
+export interface ResourceVirtualMachineVulnerabilitySpec {}
+export interface ResourceVirtualMachineVulnerabilityStatus {
+  id: string;
+  hostSeverity: string;
+  severity: string;
+  severityScore: number;
+  cves: string[];
+  lastCalculationTime: number;
+  lastReportTime: number;
+}
+export interface ResourceVirtualMachineVulnerabilityInfo {
+  id: string;
+  hostName: string;
+  status: ResourceVirtualMachineVulnerabilityStatus;
+  spec: ResourceVirtualMachineVulnerabilitySpec;
+}
 export interface ResourceVirtualMachineOperatingSystemStatus {
   id: string;
   name: string;
@@ -594,6 +610,7 @@ export interface KubernetesClusterNodePool {
   autoscaling: KubernetesClusterAutoscalingSpec;
   metadata: KubernetesClusterSpecMetadataDetails;
   taint: KubernetesClusterTaint[];
+  storage: KubernetesClusterStorage[];
 }
 export interface KubernetesClusterWorkers {
   nodePools: KubernetesClusterNodePool[];
@@ -1329,6 +1346,7 @@ export interface Resource {
   slackmessage?: ResourceSlackMessage;
   vulnerabilityevent?: ResourceVulnerabilityEvent;
   virtualmachine?: ResourceVirtualMachine;
+  virtualmachinevulnerabilityinfo?: ResourceVirtualMachineVulnerabilityInfo;
   endpoints?: ResourceEndpoints;
   networkpolicy?: ResourceNetworkPolicy;
   datacenter?: ResourceDatacenter;
