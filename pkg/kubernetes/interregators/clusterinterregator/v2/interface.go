@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/azure/azureproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/gke/gkeproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindproviderinterregator/v2"
@@ -25,6 +26,8 @@ var (
 	_ interregatortypes.ClusterInterregator = (*kindproviderinterregator.Kindtypes)(nil)
 	_ interregatortypes.ClusterInterregator = (*k3dproviderinterregator.K3dtypes)(nil)
 	_ interregatortypes.ClusterInterregator = (*gkeproviderinterregator.Gketypes)(nil)
+	_ interregatortypes.ClusterInterregator = (*unknownproviderinterregator.UnknownProviderinterregator)(nil)
+	_ interregatortypes.ClusterInterregator = (*azureproviderinterregator.Azuretypes)(nil)
 
 	// _ ClusterInterregator = (*azureproviderinterregator.AzureTypes)(nil)
 	// _ ClusterInterregator = (*k3dproviderinterregator.K3dTypes)(nil)
