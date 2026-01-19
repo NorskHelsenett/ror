@@ -7,25 +7,25 @@ import (
 )
 
 const (
-	ClusterNameAnnotation        = "vitistack.io/clustername"        // The name of the cluster
-	ClusterWorkspaceAnnotation   = "vitistack.io/clusterworkspace"   // The workspace of the cluster
-	RegionAnnotation             = "vitistack.io/region"             // The region of the cluster
-	AzAnnotation                 = "vitistack.io/az"                 // The availability zone of the cluster
-	MachineProviderAnnotation    = "vitistack.io/vmprovider"         // The VM provider of the cluster
-	KubernetesProviderAnnotation = "vitistack.io/kubernetesprovider" // The Kubernetes provider of the cluster
-	ClusterIdAnnotation          = "vitistack.io/clusterid"          // The ID of the cluster, this is the uuid in ror
+	ClusterNameKey        = "vitistack.io/clustername"        // The name of the cluster
+	ClusterWorkspaceKey   = "vitistack.io/clusterworkspace"   // The workspace of the cluster
+	RegionKey             = "vitistack.io/region"             // The region of the cluster
+	AzKey                 = "vitistack.io/az"                 // The availability zone of the cluster
+	MachineProviderKey    = "vitistack.io/vmprovider"         // The VM provider of the cluster
+	KubernetesProviderKey = "vitistack.io/kubernetesprovider" // The Kubernetes provider of the cluster
+	ClusterIdKey          = "vitistack.io/clusterid"          // The ID of the cluster, this is the uuid in ror
 
 )
 
 var (
 	MustBeSet = []string{
-		ClusterNameAnnotation,
-		ClusterWorkspaceAnnotation,
-		RegionAnnotation,
-		AzAnnotation,
-		MachineProviderAnnotation,
-		KubernetesProviderAnnotation,
-		ClusterIdAnnotation,
+		ClusterNameKey,
+		ClusterWorkspaceKey,
+		RegionKey,
+		AzKey,
+		MachineProviderKey,
+		KubernetesProviderKey,
+		ClusterIdKey,
 	}
 )
 
@@ -48,15 +48,13 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	interregator := &Vitistacktypes{
 		nodes: nodes,
 	}
-	interregator.MustInitialize()
-
-	if !interregator.isOfType {
+	if !interregator.MustInitialize() {
 		return nil
 	}
 	return interregator
 }
 
-func (v Vitistacktypes) MustInitialize() bool {
+func (v *Vitistacktypes) MustInitialize() bool {
 	if v.isOfType {
 		return true
 	}
@@ -67,13 +65,13 @@ func (v Vitistacktypes) MustInitialize() bool {
 
 	for _, node := range v.nodes {
 		if v.checkIfValid(&node) {
-			v.clustername = getValueByKey(&node, ClusterNameAnnotation)
-			v.clusterworkspace = getValueByKey(&node, ClusterWorkspaceAnnotation)
-			v.region = getValueByKey(&node, RegionAnnotation)
-			v.az = getValueByKey(&node, AzAnnotation)
-			v.machineprovider = getValueByKey(&node, MachineProviderAnnotation)
-			v.kubernetesprovider = getValueByKey(&node, KubernetesProviderAnnotation)
-			v.clusterId = getValueByKey(&node, ClusterIdAnnotation)
+			v.clustername = getValueByKey(&node, ClusterNameKey)
+			v.clusterworkspace = getValueByKey(&node, ClusterWorkspaceKey)
+			v.region = getValueByKey(&node, RegionKey)
+			v.az = getValueByKey(&node, AzKey)
+			v.machineprovider = getValueByKey(&node, MachineProviderKey)
+			v.kubernetesprovider = getValueByKey(&node, KubernetesProviderKey)
+			v.clusterId = getValueByKey(&node, ClusterIdKey)
 			v.isOfType = true
 			v.initialized = true
 			return true
@@ -137,77 +135,66 @@ func (v Vitistacktypes) GetProvider() providermodels.ProviderType {
 
 // GetClusterId returns the cluster ID of the nodes.
 func (v Vitistacktypes) GetClusterId() string {
-	v.MustInitialize()
-
-	clusterId, ok := v.nodes[0].GetAnnotations()[ClusterIdAnnotation]
-	if !ok {
-		clusterId = providermodels.UNKNOWN_CLUSTER_ID
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_CLUSTER_ID
 	}
-	return clusterId
+	return v.clusterId
 }
 
 // GetClusterName returns the cluster name of the nodes.
 func (v Vitistacktypes) GetClusterName() string {
-	clusterName, ok := v.nodes[0].GetAnnotations()[ClusterNameAnnotation]
-	if !ok {
-		clusterName = providermodels.UNKNOWN_CLUSTER
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_CLUSTER
 	}
-	return clusterName
+	return v.clustername
 }
 
 // GetClusterWorkspace returns the cluster workspace of the nodes.
 func (v Vitistacktypes) GetClusterWorkspace() string {
-	workspace, ok := v.nodes[0].GetAnnotations()[ClusterWorkspaceAnnotation]
-	if !ok {
-		workspace = "Vitistack"
+	if !v.MustInitialize() {
+		return "Vitistack"
 	}
-
-	return workspace
+	return v.clusterworkspace
 }
 
 // GetDatacenter returns the datacenter of the cluster.
 func (v Vitistacktypes) GetDatacenter() string {
-	dataCenter := v.GetRegion() + " " + v.GetAz()
-	return dataCenter
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_DATACENTER
+	}
+
+	return v.GetRegion() + " " + v.GetAz()
+
 }
 
 // GetRegion returns the region of the cluster.
 func (v Vitistacktypes) GetRegion() string {
-
-	region, ok := v.nodes[0].GetAnnotations()[RegionAnnotation]
-	if !ok {
-		region = providermodels.UNKNOWN_REGION
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_REGION
 	}
-
-	return region
+	return v.region
 }
 
 // GetAz returns the availability zone of the cluster.
 func (v Vitistacktypes) GetAz() string {
-	az, ok := v.nodes[0].GetAnnotations()[AzAnnotation]
-	if !ok {
-		az = providermodels.UNKNOWN_AZ
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_AZ
 	}
-
-	return az
+	return v.az
 }
 
 // GetVMProvider returns the VM provider of the cluster.
 func (v Vitistacktypes) GetMachineProvider() string {
-
-	vmProvider, ok := v.nodes[0].GetAnnotations()[MachineProviderAnnotation]
-	if !ok {
-		vmProvider = providermodels.UNKNOWN_VMPROVIDER
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_MACHINE_PROVIDER
 	}
-
-	return vmProvider
+	return v.machineprovider
 }
 
 // GetKubernetesProvider returns the Kubernetes provider of the cluster.
 func (v Vitistacktypes) GetKubernetesProvider() string {
-	kubernetesProvider, ok := v.nodes[0].GetAnnotations()[KubernetesProviderAnnotation]
-	if !ok {
-		kubernetesProvider = providermodels.UNKNOWN_KUBERNETES_PROVIDER
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_KUBERNETES_PROVIDER
 	}
-	return kubernetesProvider
+	return v.kubernetesprovider
 }
