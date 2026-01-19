@@ -4,13 +4,34 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/tanzu/tanzuproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/unknown/unknownproviderinterregator/v2"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/vitistack/vitistackinterregator/v2"
 	v1core "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
 // IsTypeOf(nodes []v1.Node) bool
+
+var (
+	_ interregatortypes.ClusterInterregator = (*vitistackinterregator.Vitistacktypes)(nil)
+	_ interregatortypes.ClusterInterregator = (*tanzuproviderinterregator.TanzuProviderinterregator)(nil)
+	// _ ClusterInterregator = (*azureproviderinterregator.AzureTypes)(nil)
+	// _ ClusterInterregator = (*k3dproviderinterregator.K3dTypes)(nil)
+	// _ ClusterInterregator = (*kindproviderinterregator.KindTypes)(nil)
+	// _ ClusterInterregator = (*gkeproviderinterregator.GkeTypes)(nil)
+	// _ ClusterInterregator = (*talosproviderinterregator.TalosTypes)(nil)
+)
+
+type ClusterProviderInterregator interface {
+	NewInterregator([]v1core.Node) interregatortypes.ClusterInterregator
+}
+
+var interregators = []interregatortypes.ClusterProviderInterregator{
+	vitistackinterregator.Interregator{},
+	tanzuproviderinterregator.Interregator{},
+}
 
 func NewClusterInterregatorFromKubernetesClient(client *kubernetes.Clientset) interregatortypes.ClusterInterregator {
 	nodes, err := client.CoreV1().Nodes().List(context.TODO(), v1.ListOptions{})
