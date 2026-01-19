@@ -28,12 +28,6 @@ var (
 	_ interregatortypes.ClusterInterregator = (*gkeproviderinterregator.Gketypes)(nil)
 	_ interregatortypes.ClusterInterregator = (*unknownproviderinterregator.UnknownProviderinterregator)(nil)
 	_ interregatortypes.ClusterInterregator = (*azureproviderinterregator.Azuretypes)(nil)
-
-	// _ ClusterInterregator = (*azureproviderinterregator.AzureTypes)(nil)
-	// _ ClusterInterregator = (*k3dproviderinterregator.K3dTypes)(nil)
-	// _ ClusterInterregator = (*kindproviderinterregator.KindTypes)(nil)
-	// _ ClusterInterregator = (*gkeproviderinterregator.GkeTypes)(nil)
-	// _ ClusterInterregator = (*talosproviderinterregator.TalosTypes)(nil)
 )
 
 type ClusterProviderInterregator interface {
