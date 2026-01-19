@@ -13,9 +13,13 @@ type TanzuProviderinterregator struct {
 }
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
-	return &TanzuProviderinterregator{
+	interregator := &TanzuProviderinterregator{
 		nodes: nodes,
 	}
+	if !interregator.IsTypeOf() {
+		return nil
+	}
+	return interregator
 }
 
 func (t TanzuProviderinterregator) IsTypeOf() bool {
