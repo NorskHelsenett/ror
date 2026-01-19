@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/gke/gkeproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindproviderinterregator/v2"
 	talosproviderinterregator "github.com/NorskHelsenett/ror/pkg/kubernetes/providers/talos/v2"
@@ -23,6 +24,7 @@ var (
 	_ interregatortypes.ClusterInterregator = (*tanzuproviderinterregator.TanzuProviderinterregator)(nil)
 	_ interregatortypes.ClusterInterregator = (*kindproviderinterregator.Kindtypes)(nil)
 	_ interregatortypes.ClusterInterregator = (*k3dproviderinterregator.K3dtypes)(nil)
+	_ interregatortypes.ClusterInterregator = (*gkeproviderinterregator.Gketypes)(nil)
 
 	// _ ClusterInterregator = (*azureproviderinterregator.AzureTypes)(nil)
 	// _ ClusterInterregator = (*k3dproviderinterregator.K3dTypes)(nil)
@@ -41,6 +43,7 @@ var interregators = []interregatortypes.ClusterProviderInterregator{
 	talosproviderinterregator.Interregator{},
 	kindproviderinterregator.Interregator{},
 	k3dproviderinterregator.Interregator{},
+	gkeproviderinterregator.Interregator{},
 }
 
 func NewClusterInterregatorFromKubernetesClient(client *kubernetes.Clientset) interregatortypes.ClusterInterregator {
