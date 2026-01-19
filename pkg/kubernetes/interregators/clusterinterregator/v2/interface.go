@@ -41,6 +41,7 @@ var interregators = []interregatortypes.ClusterProviderInterregator{
 	kindproviderinterregator.Interregator{},
 	k3dproviderinterregator.Interregator{},
 	gkeproviderinterregator.Interregator{},
+	azureproviderinterregator.Interregator{},
 }
 
 func NewClusterInterregatorFromKubernetesClient(client *kubernetes.Clientset) interregatortypes.ClusterInterregator {
