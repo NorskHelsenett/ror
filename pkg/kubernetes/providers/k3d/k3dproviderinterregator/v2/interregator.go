@@ -13,9 +13,13 @@ import (
 type Interregator struct{}
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
-	return &K3dtypes{
+	interregator := &K3dtypes{
 		nodes: nodes,
 	}
+	if !interregator.IsTypeOf() {
+		return nil
+	}
+	return interregator
 }
 
 type K3dtypes struct {
