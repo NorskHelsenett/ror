@@ -36,8 +36,7 @@ func (t TalosProviderinterregator) GetProvider() providermodels.ProviderType {
 }
 
 func (t TalosProviderinterregator) GetClusterId() string {
-	clusterId := t.nodes[0].GetAnnotations()["ror.io/cluster-id"]
-	return clusterId
+	return providermodels.UNKNOWN_CLUSTER_ID
 }
 
 func (t TalosProviderinterregator) GetClusterName() string {

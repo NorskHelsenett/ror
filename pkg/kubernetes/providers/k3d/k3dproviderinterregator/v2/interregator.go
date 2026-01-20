@@ -37,7 +37,7 @@ func (t K3dProviderinterregator) GetProvider() providermodels.ProviderType {
 	return providermodels.ProviderTypeUnknown
 }
 func (t K3dProviderinterregator) GetClusterId() string {
-	return t.nodes[0].GetLabels()["kubernetes.io/cluster-id"]
+	return providermodels.UNKNOWN_CLUSTER_ID
 }
 func (t K3dProviderinterregator) GetClusterName() string {
 	hostname := t.nodes[0].GetLabels()["kubernetes.io/hostname"]

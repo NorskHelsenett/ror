@@ -35,7 +35,7 @@ func (t GkeProviderinterregator) GetProvider() providermodels.ProviderType {
 }
 
 func (t GkeProviderinterregator) GetClusterId() string {
-	return t.nodes[0].GetLabels()["kubernetes.io/cluster-id"]
+	return providermodels.UNKNOWN_CLUSTER_ID
 }
 
 func (t GkeProviderinterregator) GetClusterName() string {
