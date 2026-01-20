@@ -11,7 +11,7 @@ import (
 type Interregator struct{}
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
-	interregator := &Talostypes{
+	interregator := &TalosProviderinterregator{
 		nodes: nodes,
 	}
 	if !interregator.IsTypeOf() {
@@ -20,32 +20,32 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	return interregator
 }
 
-type Talostypes struct {
+type TalosProviderinterregator struct {
 	nodes []v1.Node
 }
 
-func (t Talostypes) IsTypeOf() bool {
+func (t TalosProviderinterregator) IsTypeOf() bool {
 	return strings.Contains(strings.ToLower(t.nodes[0].Status.NodeInfo.OSImage), "talos")
 }
 
-func (t Talostypes) GetProvider() providermodels.ProviderType {
+func (t TalosProviderinterregator) GetProvider() providermodels.ProviderType {
 	if t.IsTypeOf() {
 		return providermodels.ProviderTypeTalos
 	}
 	return providermodels.ProviderTypeUnknown
 }
 
-func (t Talostypes) GetClusterId() string {
+func (t TalosProviderinterregator) GetClusterId() string {
 	clusterId := t.nodes[0].GetAnnotations()["ror.io/cluster-id"]
 	return clusterId
 }
 
-func (t Talostypes) GetClusterName() string {
+func (t TalosProviderinterregator) GetClusterName() string {
 	clusterName := t.nodes[0].GetAnnotations()["ror.io/name"]
 	return clusterName
 }
 
-func (t Talostypes) GetClusterWorkspace() string {
+func (t TalosProviderinterregator) GetClusterWorkspace() string {
 	workspace, ok := t.nodes[0].GetAnnotations()["ror.io/namespace"]
 	if !ok {
 		workspace = "Talos"
@@ -54,20 +54,20 @@ func (t Talostypes) GetClusterWorkspace() string {
 	return workspace
 }
 
-func (t Talostypes) GetDatacenter() string {
+func (t TalosProviderinterregator) GetDatacenter() string {
 	dataCenter := t.GetRegion() + " " + t.GetAz()
 	return dataCenter
 }
 
-func (t Talostypes) GetAz() string {
+func (t TalosProviderinterregator) GetAz() string {
 	return "TalosAZ"
 }
 
-func (t Talostypes) GetMachineProvider() string {
+func (t TalosProviderinterregator) GetMachineProvider() string {
 	return "TalosVM"
 }
 
-func (t Talostypes) GetRegion() string {
+func (t TalosProviderinterregator) GetRegion() string {
 	dataCenter, ok := t.nodes[0].GetAnnotations()["ror.io/datacenter"]
 	if !ok {
 		dataCenter = "TalosDC"
@@ -76,6 +76,6 @@ func (t Talostypes) GetRegion() string {
 	return dataCenter
 }
 
-func (t Talostypes) GetKubernetesProvider() string {
+func (t TalosProviderinterregator) GetKubernetesProvider() string {
 	return "Talos"
 }

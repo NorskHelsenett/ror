@@ -13,7 +13,7 @@ import (
 type Interregator struct{}
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
-	interregator := &Kindtypes{
+	interregator := &KindProviderinterregator{
 		nodes: nodes,
 	}
 	if !interregator.IsTypeOf() {
@@ -22,42 +22,42 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	return interregator
 }
 
-type Kindtypes struct {
+type KindProviderinterregator struct {
 	nodes []v1.Node
 }
 
-func (t Kindtypes) IsTypeOf() bool {
+func (t KindProviderinterregator) IsTypeOf() bool {
 	return strings.HasPrefix(t.nodes[0].Spec.ProviderID, "kind")
 }
-func (t Kindtypes) GetProvider() providermodels.ProviderType {
+func (t KindProviderinterregator) GetProvider() providermodels.ProviderType {
 	if t.IsTypeOf() {
 		return providermodels.ProviderTypeKind
 	}
 	return providermodels.ProviderTypeUnknown
 }
-func (t Kindtypes) GetClusterId() string {
+func (t KindProviderinterregator) GetClusterId() string {
 	return t.nodes[0].GetLabels()["kubernetes.io/cluster-id"]
 }
-func (t Kindtypes) GetClusterName() string {
+func (t KindProviderinterregator) GetClusterName() string {
 	hostname := t.nodes[0].GetLabels()["kubernetes.io/hostname"]
 	return providerclusternamehelper.GetKindClustername(hostname)
 }
-func (t Kindtypes) GetClusterWorkspace() string {
+func (t KindProviderinterregator) GetClusterWorkspace() string {
 	return fmt.Sprintf("%s-%s", "local", t.nodes[0].GetLabels()["beta.kubernetes.io/instance-type"])
 }
-func (t Kindtypes) GetDatacenter() string {
+func (t KindProviderinterregator) GetDatacenter() string {
 	dataCenter := t.GetRegion() + " " + t.GetAz()
 	return dataCenter
 }
-func (t Kindtypes) GetAz() string {
+func (t KindProviderinterregator) GetAz() string {
 	return "local"
 }
-func (t Kindtypes) GetRegion() string {
+func (t KindProviderinterregator) GetRegion() string {
 	return "kind"
 }
-func (t Kindtypes) GetMachineProvider() string {
+func (t KindProviderinterregator) GetMachineProvider() string {
 	return "kind"
 }
-func (t Kindtypes) GetKubernetesProvider() string {
+func (t KindProviderinterregator) GetKubernetesProvider() string {
 	return "kind"
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/gke/gkeproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindproviderinterregator/v2"
-	talosproviderinterregator "github.com/NorskHelsenett/ror/pkg/kubernetes/providers/talos/v2"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/talos/talosproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/tanzu/tanzuproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/unknown/unknownproviderinterregator/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/vitistack/vitistackinterregator/v2"
@@ -19,14 +19,14 @@ import (
 
 // Ensure interfaces are implemented
 var (
-	_ interregatortypes.ClusterInterregator = (*vitistackinterregator.Vitistacktypes)(nil)
-	_ interregatortypes.ClusterInterregator = (*talosproviderinterregator.Talostypes)(nil)
+	_ interregatortypes.ClusterInterregator = (*vitistackinterregator.VitistackProviderinterregator)(nil)
+	_ interregatortypes.ClusterInterregator = (*talosproviderinterregator.TalosProviderinterregator)(nil)
 	_ interregatortypes.ClusterInterregator = (*tanzuproviderinterregator.TanzuProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*kindproviderinterregator.Kindtypes)(nil)
-	_ interregatortypes.ClusterInterregator = (*k3dproviderinterregator.K3dtypes)(nil)
-	_ interregatortypes.ClusterInterregator = (*gkeproviderinterregator.Gketypes)(nil)
+	_ interregatortypes.ClusterInterregator = (*kindproviderinterregator.KindProviderinterregator)(nil)
+	_ interregatortypes.ClusterInterregator = (*k3dproviderinterregator.K3dProviderinterregator)(nil)
+	_ interregatortypes.ClusterInterregator = (*gkeproviderinterregator.GkeProviderinterregator)(nil)
 	_ interregatortypes.ClusterInterregator = (*unknownproviderinterregator.UnknownProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*azureproviderinterregator.Azuretypes)(nil)
+	_ interregatortypes.ClusterInterregator = (*azureproviderinterregator.AzureProviderinterregator)(nil)
 )
 
 type ClusterProviderInterregator interface {
@@ -61,5 +61,4 @@ func NewClusterInterregator(nodes []v1core.Node) interregatortypes.ClusterInterr
 	}
 
 	return unknownproviderinterregator.NewInterregator()
-
 }

@@ -31,7 +31,7 @@ var (
 
 type Interregator struct{}
 
-type Vitistacktypes struct {
+type VitistackProviderinterregator struct {
 	nodes              []v1.Node
 	initialized        bool
 	isOfType           bool
@@ -45,7 +45,7 @@ type Vitistacktypes struct {
 }
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
-	interregator := &Vitistacktypes{
+	interregator := &VitistackProviderinterregator{
 		nodes: nodes,
 	}
 	if !interregator.MustInitialize() {
@@ -54,7 +54,7 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	return interregator
 }
 
-func (v *Vitistacktypes) MustInitialize() bool {
+func (v *VitistackProviderinterregator) MustInitialize() bool {
 	if v.isOfType {
 		return true
 	}
@@ -83,7 +83,7 @@ func (v *Vitistacktypes) MustInitialize() bool {
 	return false
 }
 
-func (v Vitistacktypes) checkIfValid(node *v1.Node) bool {
+func (v VitistackProviderinterregator) checkIfValid(node *v1.Node) bool {
 
 	for _, key := range MustBeSet {
 		if !checkIfKeyPresent(node, key) {
@@ -120,12 +120,12 @@ func getValueByKey(node *v1.Node, key string) string {
 
 // IsTypeOf checks if the nodes are of type Vitistack
 // TODO: Improve detection logic
-func (v Vitistacktypes) IsTypeOf() bool {
+func (v VitistackProviderinterregator) IsTypeOf() bool {
 	return v.MustInitialize()
 }
 
 // GetProvider returns the provider type of the nodes.
-func (v Vitistacktypes) GetProvider() providermodels.ProviderType {
+func (v VitistackProviderinterregator) GetProvider() providermodels.ProviderType {
 	if !v.MustInitialize() {
 		return providermodels.ProviderTypeUnknown
 	}
@@ -134,7 +134,7 @@ func (v Vitistacktypes) GetProvider() providermodels.ProviderType {
 }
 
 // GetClusterId returns the cluster ID of the nodes.
-func (v Vitistacktypes) GetClusterId() string {
+func (v VitistackProviderinterregator) GetClusterId() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_CLUSTER_ID
 	}
@@ -142,7 +142,7 @@ func (v Vitistacktypes) GetClusterId() string {
 }
 
 // GetClusterName returns the cluster name of the nodes.
-func (v Vitistacktypes) GetClusterName() string {
+func (v VitistackProviderinterregator) GetClusterName() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_CLUSTER
 	}
@@ -150,7 +150,7 @@ func (v Vitistacktypes) GetClusterName() string {
 }
 
 // GetClusterWorkspace returns the cluster workspace of the nodes.
-func (v Vitistacktypes) GetClusterWorkspace() string {
+func (v VitistackProviderinterregator) GetClusterWorkspace() string {
 	if !v.MustInitialize() {
 		return "Vitistack"
 	}
@@ -158,7 +158,7 @@ func (v Vitistacktypes) GetClusterWorkspace() string {
 }
 
 // GetDatacenter returns the datacenter of the cluster.
-func (v Vitistacktypes) GetDatacenter() string {
+func (v VitistackProviderinterregator) GetDatacenter() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_DATACENTER
 	}
@@ -168,7 +168,7 @@ func (v Vitistacktypes) GetDatacenter() string {
 }
 
 // GetRegion returns the region of the cluster.
-func (v Vitistacktypes) GetRegion() string {
+func (v VitistackProviderinterregator) GetRegion() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_REGION
 	}
@@ -176,7 +176,7 @@ func (v Vitistacktypes) GetRegion() string {
 }
 
 // GetAz returns the availability zone of the cluster.
-func (v Vitistacktypes) GetAz() string {
+func (v VitistackProviderinterregator) GetAz() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_AZ
 	}
@@ -184,7 +184,7 @@ func (v Vitistacktypes) GetAz() string {
 }
 
 // GetVMProvider returns the VM provider of the cluster.
-func (v Vitistacktypes) GetMachineProvider() string {
+func (v VitistackProviderinterregator) GetMachineProvider() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_MACHINE_PROVIDER
 	}
@@ -192,7 +192,7 @@ func (v Vitistacktypes) GetMachineProvider() string {
 }
 
 // GetKubernetesProvider returns the Kubernetes provider of the cluster.
-func (v Vitistacktypes) GetKubernetesProvider() string {
+func (v VitistackProviderinterregator) GetKubernetesProvider() string {
 	if !v.MustInitialize() {
 		return providermodels.UNKNOWN_KUBERNETES_PROVIDER
 	}

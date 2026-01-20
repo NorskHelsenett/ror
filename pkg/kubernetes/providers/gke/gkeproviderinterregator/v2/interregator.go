@@ -9,13 +9,13 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-type Gketypes struct {
+type GkeProviderinterregator struct {
 	nodes []v1.Node
 }
 type Interregator struct{}
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
-	interregator := &Gketypes{
+	interregator := &GkeProviderinterregator{
 		nodes: nodes,
 	}
 	if !interregator.IsTypeOf() {
@@ -24,21 +24,21 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	return interregator
 }
 
-func (t Gketypes) IsTypeOf() bool {
+func (t GkeProviderinterregator) IsTypeOf() bool {
 	return t.nodes[0].GetLabels()["cloud.google.com/gke-container-runtime"] != ""
 }
-func (t Gketypes) GetProvider() providermodels.ProviderType {
+func (t GkeProviderinterregator) GetProvider() providermodels.ProviderType {
 	if t.IsTypeOf() {
 		return providermodels.ProviderTypeGke
 	}
 	return providermodels.ProviderTypeUnknown
 }
 
-func (t Gketypes) GetClusterId() string {
+func (t GkeProviderinterregator) GetClusterId() string {
 	return t.nodes[0].GetLabels()["kubernetes.io/cluster-id"]
 }
 
-func (t Gketypes) GetClusterName() string {
+func (t GkeProviderinterregator) GetClusterName() string {
 	//gk3-roger-cluster-1-pool-2-22ae7c65-3ohs
 	hostname := t.nodes[0].Labels["kubernetes.io/hostname"]
 	hostname = strings.Replace(hostname, fmt.Sprintf("%s%s", "-", t.nodes[0].Labels["cloud.google.com/gke-nodepool"]), ":", -1)
@@ -48,26 +48,26 @@ func (t Gketypes) GetClusterName() string {
 	return hostname
 
 }
-func (t Gketypes) GetClusterWorkspace() string {
+func (t GkeProviderinterregator) GetClusterWorkspace() string {
 	return "Gke"
 }
-func (t Gketypes) GetDatacenter() string {
+func (t GkeProviderinterregator) GetDatacenter() string {
 	dataCenter := t.GetRegion() + " " + t.GetAz()
 	return dataCenter
 }
 
-func (t Gketypes) GetAz() string {
+func (t GkeProviderinterregator) GetAz() string {
 	return t.nodes[0].GetLabels()["topology.kubernetes.io/zone"]
 }
 
-func (t Gketypes) GetRegion() string {
+func (t GkeProviderinterregator) GetRegion() string {
 	return t.nodes[0].GetLabels()["topology.kubernetes.io/region"]
 }
 
-func (t Gketypes) GetMachineProvider() string {
+func (t GkeProviderinterregator) GetMachineProvider() string {
 	return t.nodes[0].GetLabels()["kubernetes.azure.com/role"]
 }
 
-func (t Gketypes) GetKubernetesProvider() string {
+func (t GkeProviderinterregator) GetKubernetesProvider() string {
 	return "GKE"
 }

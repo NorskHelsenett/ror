@@ -192,36 +192,36 @@ func TestVitistacktypesMustInitialize(t *testing.T) {
 
 	tests := []struct {
 		name string
-		vt   Vitistacktypes
+		vt   VitistackProviderinterregator
 		want bool
 	}{
 		{
 			name: "already typed short-circuits",
-			vt:   Vitistacktypes{isOfType: true},
+			vt:   VitistackProviderinterregator{isOfType: true},
 			want: true,
 		},
 		{
 			name: "initialized but not typed stays false",
-			vt:   Vitistacktypes{initialized: true},
+			vt:   VitistackProviderinterregator{initialized: true},
 			want: false,
 		},
 		{
 			name: "valid nodes initialize",
-			vt: Vitistacktypes{nodes: []v1.Node{
+			vt: VitistackProviderinterregator{nodes: []v1.Node{
 				makeNode(validKeys(), nil),
 			}},
 			want: true,
 		},
 		{
 			name: "invalid nodes fail",
-			vt: Vitistacktypes{nodes: []v1.Node{
+			vt: VitistackProviderinterregator{nodes: []v1.Node{
 				makeNode(map[string]string{}, nil),
 			}},
 			want: false,
 		},
 		{
 			name: "mix of nodes picks first valid",
-			vt: Vitistacktypes{nodes: []v1.Node{
+			vt: VitistackProviderinterregator{nodes: []v1.Node{
 				makeNode(map[string]string{}, nil),
 				makeNode(validKeys(), nil),
 			}},
@@ -229,7 +229,7 @@ func TestVitistacktypesMustInitialize(t *testing.T) {
 		},
 		{
 			name: "no nodes returns false",
-			vt:   Vitistacktypes{},
+			vt:   VitistackProviderinterregator{},
 			want: false,
 		},
 	}
@@ -247,7 +247,7 @@ func TestVitistacktypesMustInitialize(t *testing.T) {
 }
 
 func TestCheckIfValid(t *testing.T) {
-	vt := Vitistacktypes{}
+	vt := VitistackProviderinterregator{}
 	node := makeNode(validKeys(), nil)
 	if !vt.checkIfValid(&node) {
 		t.Fatalf("expected node with annotations to be valid")
@@ -303,24 +303,24 @@ func TestGetValueByKey(t *testing.T) {
 }
 
 func TestIsTypeOf(t *testing.T) {
-	vt := Vitistacktypes{isOfType: true}
+	vt := VitistackProviderinterregator{isOfType: true}
 	if !vt.IsTypeOf() {
 		t.Fatalf("expected true when already typed")
 	}
 
-	invalid := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	invalid := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if invalid.IsTypeOf() {
 		t.Fatalf("expected false for non vitistack nodes")
 	}
 }
 
 func TestGetProvider(t *testing.T) {
-	vt := Vitistacktypes{nodes: []v1.Node{}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{}}
 	if got := vt.GetProvider(); got != providermodels.ProviderTypeUnknown {
 		t.Fatalf("expected unknown provider, got %v", got)
 	}
 
-	valid := Vitistacktypes{nodes: []v1.Node{makeNode(validKeys(), nil)}}
+	valid := VitistackProviderinterregator{nodes: []v1.Node{makeNode(validKeys(), nil)}}
 	if got := valid.GetProvider(); got != providermodels.ProviderTypeVitistack {
 		t.Fatalf("expected vitistack provider, got %v", got)
 	}
@@ -328,12 +328,12 @@ func TestGetProvider(t *testing.T) {
 
 func TestGetClusterId(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetClusterId(); got != "cluster-123" {
 		t.Fatalf("expected cluster id cluster-123, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetClusterId(); got != providermodels.UNKNOWN_CLUSTER_ID {
 		t.Fatalf("expected unknown cluster id, got %s", got)
 	}
@@ -341,12 +341,12 @@ func TestGetClusterId(t *testing.T) {
 
 func TestGetClusterName(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetClusterName(); got != "test-cluster" {
 		t.Fatalf("expected cluster name test-cluster, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetClusterName(); got != providermodels.UNKNOWN_CLUSTER {
 		t.Fatalf("expected unknown cluster name, got %s", got)
 	}
@@ -354,12 +354,12 @@ func TestGetClusterName(t *testing.T) {
 
 func TestGetClusterWorkspace(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetClusterWorkspace(); got != "workspace-1" {
 		t.Fatalf("expected workspace workspace-1, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetClusterWorkspace(); got != "Vitistack" {
 		t.Fatalf("expected default workspace Vitistack, got %s", got)
 	}
@@ -367,12 +367,12 @@ func TestGetClusterWorkspace(t *testing.T) {
 
 func TestGetDatacenter(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetDatacenter(); got != "region-1 az-1" {
 		t.Fatalf("expected datacenter region-1 az-1, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	expected := providermodels.UNKNOWN_DATACENTER
 	if got := vtMissing.GetDatacenter(); got != expected {
 		t.Fatalf("expected unknown datacenter, got %s", got)
@@ -381,12 +381,12 @@ func TestGetDatacenter(t *testing.T) {
 
 func TestGetRegion(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetRegion(); got != "region-1" {
 		t.Fatalf("expected region region-1, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetRegion(); got != providermodels.UNKNOWN_REGION {
 		t.Fatalf("expected unknown region, got %s", got)
 	}
@@ -394,12 +394,12 @@ func TestGetRegion(t *testing.T) {
 
 func TestGetAz(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetAz(); got != "az-1" {
 		t.Fatalf("expected az az-1, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetAz(); got != providermodels.UNKNOWN_AZ {
 		t.Fatalf("expected unknown az, got %s", got)
 	}
@@ -407,12 +407,12 @@ func TestGetAz(t *testing.T) {
 
 func TestGetMachineProvider(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetMachineProvider(); got != "vm-provider" {
 		t.Fatalf("expected vm provider vm-provider, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetMachineProvider(); got != providermodels.UNKNOWN_MACHINE_PROVIDER {
 		t.Fatalf("expected unknown vm provider, got %s", got)
 	}
@@ -420,12 +420,12 @@ func TestGetMachineProvider(t *testing.T) {
 
 func TestGetKubernetesProvider(t *testing.T) {
 	node := makeNode(validKeys(), nil)
-	vt := Vitistacktypes{nodes: []v1.Node{node}}
+	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
 	if got := vt.GetKubernetesProvider(); got != "kube-provider" {
 		t.Fatalf("expected kubernetes provider kube-provider, got %s", got)
 	}
 
-	vtMissing := Vitistacktypes{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetKubernetesProvider(); got != providermodels.UNKNOWN_KUBERNETES_PROVIDER {
 		t.Fatalf("expected unknown kubernetes provider, got %s", got)
 	}
