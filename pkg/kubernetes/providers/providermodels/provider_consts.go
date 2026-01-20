@@ -7,6 +7,7 @@ const (
 	UNKNOWN_DATACENTER          string = "unknown-datacenter"
 	UNKNOWN_WORKSPACE           string = "unknown-workspace"
 	UNKNOWN_VMPROVIDER          string = "unknown-virtualization-provider"
+	UNKNOWN_MACHINE_PROVIDER    string = "unknown-machine-provider"
 	UNKNOWN_KUBERNETES_PROVIDER string = "unknown-kubernetes-provider"
 	UNKNOWN_CLUSTER             string = "unknown-cluster"
 	UNKNOWN_CLUSTER_ID          string = "unknown-cluster-id"
