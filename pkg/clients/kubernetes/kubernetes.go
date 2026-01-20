@@ -235,3 +235,15 @@ func (c *K8sClientsets) GetNamespace(namespace string) (*v1.Namespace, error) {
 
 	return ns, nil
 }
+
+// MustInitializeKubernetesClient initializes a Kubernetes client and panics if the initialization fails.
+//
+// Returns:
+// - (*K8sClientsets): The initialized K8sClientsets object.
+func MustInitializeKubernetesClient() *K8sClientsets {
+	kubernetesCli := NewK8sClientConfig()
+	if kubernetesCli == nil {
+		panic("failed to initialize kubernetes client")
+	}
+	return kubernetesCli
+}
