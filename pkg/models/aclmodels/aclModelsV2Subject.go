@@ -8,18 +8,20 @@ import (
 type Acl2Subject string
 
 const (
-	Acl2RorSubjecUnknown         = "UNKNOWN"
-	Acl2RorSubjectCluster        = "cluster"
-	Acl2RorSubjectProject        = "project"
-	Acl2RorSubjectGlobal         = "globalscope" // for subject, not scope, TODO: new const
-	Acl2RorSubjectAcl            = "acl"         // for subject, not scope, TODO: new const
-	Acl2RorSubjectApiKey         = "apikey"      //api key
-	Acl2RorSubjectDatacenter     = "datacenter"
-	Acl2RorSubjectWorkspace      = "workspace"
-	Acl2RorSubjectPrice          = "price"
-	Acl2RorSubjectVirtualMachine = "virtualmachine"
+	Acl2RorSubjecUnknown         Acl2Subject = "UNKNOWN"
+	Acl2RorSubjectCluster        Acl2Subject = "cluster"
+	Acl2RorSubjectProject        Acl2Subject = "project"
+	Acl2RorSubjectGlobal         Acl2Subject = "globalscope" // for subject, not scope, TODO: new const
+	Acl2RorSubjectAcl            Acl2Subject = "acl"         // for subject, not scope, TODO: new const
+	Acl2RorSubjectApiKey         Acl2Subject = "apikey"      //api key
+	Acl2RorSubjectDatacenter     Acl2Subject = "datacenter"
+	Acl2RorSubjectWorkspace      Acl2Subject = "workspace"
+	Acl2RorSubjectPrice          Acl2Subject = "price"
+	Acl2RorSubjectVirtualMachine Acl2Subject = "virtualmachine"
 )
 
+// Deprecated: Use function GetAcl2RorValidSubjects() as dropin replacement instead.
+// This variable gives the possiblity of being overwritten on accident.
 var (
 	Acl2RorValidSubjects []Acl2Subject = []Acl2Subject{
 		Acl2RorSubjectGlobal,
@@ -32,6 +34,20 @@ var (
 		Acl2RorSubjectVirtualMachine,
 	}
 )
+
+// GetAcl2RorValidSubjects returns all possible Acl2Subject values.
+func GetAcl2RorValidSubjects() []Acl2Subject {
+	return []Acl2Subject{
+		Acl2RorSubjectGlobal,
+		Acl2RorSubjectCluster,
+		Acl2RorSubjectProject,
+		Acl2RorSubjectAcl,
+		Acl2RorSubjectDatacenter,
+		Acl2RorSubjectWorkspace,
+		Acl2RorSubjectPrice,
+		Acl2RorSubjectVirtualMachine,
+	}
+}
 
 // TODO: implement
 func (s Acl2Subject) HasValidScope(scope Acl2Scope) bool {
