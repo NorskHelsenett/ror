@@ -95,7 +95,6 @@ func NewHttpTransportClientStatus() *HttpTransportClientStatus {
 	}
 }
 
-
 // NewHttpTransportClientConfig creates a new configuration object for the HTTP transport client
 // The constructor allows for validation of parameters like BaseURL to stop some of the faulty configuration possibilities.
 //
@@ -428,6 +427,8 @@ func (t *HttpTransportClient) postflightCheck(res *http.Response) error {
 // It handles both JSON and plain text responses, ensuring the output variable is a pointer.
 // If the response is successful (2xx status code), it reads the body and unmarshals it into the provided output variable.
 // If the response is not successful, it checks for errors and returns an appropriate error message.
+// TODO: This method should have "out *any" as input parameter, not "out any", as this implicitly requires an pointer.
+// Adding the "out *any" would be more explicit.
 func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error {
 
 	if err := t.postflightCheck(res); err != nil {
