@@ -120,7 +120,7 @@ func (c V1Client) Delete(ctx context.Context, id string) error {
 	url = url.JoinPath(id)
 
 	var res bool
-	err = c.Client.DeleteWithContext(ctx, url.String(), res)
+	err = c.Client.DeleteWithContext(ctx, url.String(), &res)
 	if err != nil {
 		return err
 	}
