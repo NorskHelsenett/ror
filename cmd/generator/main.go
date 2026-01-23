@@ -107,17 +107,19 @@ func formatTypescript() {
 
 	getNodeDependenciesCmd := exec.Command("npm", "install")
 	getNodeDependenciesCmd.Dir = resourceV2TypescriptFilePath
-	_, err = getNodeDependenciesCmd.CombinedOutput()
+	npminstalloutput, err := getNodeDependenciesCmd.CombinedOutput()
 	if err != nil {
-		_, _ = fmt.Println("npm install failed with err: ", err.Error())
+		_, _ = fmt.Println("npm install failed on path", resourceV2TypescriptFilePath, "with err:", err.Error())
+		fmt.Println("output", string(npminstalloutput))
 		fmt.Println(err)
 	}
 
 	formatCmd := exec.Command("npm", "run", "format")
 	formatCmd.Dir = resourceV2TypescriptFilePath
-	_, err = formatCmd.CombinedOutput()
+	npmformatoutput, err := formatCmd.CombinedOutput()
 	if err != nil {
-		_, _ = fmt.Println("prettier failed with err: ", err.Error())
+		_, _ = fmt.Println("prettier failed on path", resourceV2TypescriptFilePath, "with err:", err.Error())
+		fmt.Println("output", string(npmformatoutput))
 		fmt.Println(err)
 	}
 }
