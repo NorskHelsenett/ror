@@ -54,6 +54,8 @@ func GetRorVersion() RorVersion {
 	}
 }
 
+// GetVersion returns the version string
+// e.g. "1.2.3"
 func (v RorVersion) GetVersion() string {
 	return v.Version
 }
