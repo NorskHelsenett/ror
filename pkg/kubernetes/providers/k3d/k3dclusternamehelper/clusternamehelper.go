@@ -40,7 +40,8 @@ func GetClusternameFromHostname(hostname string) string {
 	for i := start; i < end; i++ {
 		part := parts[i]
 		if part == "" {
-			continue
+			// Malformed hostname (e.g., consecutive hyphens); do not attempt to derive a cluster name.
+			return ""
 		}
 		switch part {
 		case "agent", "server", "serverlb", "control", "plane", "controlplane":
