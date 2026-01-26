@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-// getClusterNameOfArray returns the clustername from a hostname on one of the formats:
+// GetClusternameFromHostname returns the clustername from a hostname on one of the formats:
 // <clustername>-control-plane
 // <clustername>-control-plane2
 // <clustername>-worker
