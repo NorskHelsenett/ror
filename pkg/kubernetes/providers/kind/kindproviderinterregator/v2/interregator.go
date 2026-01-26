@@ -64,7 +64,6 @@ func (t KindProviderinterregator) GetKubernetesProvider() string {
 func getClusterNameOfArray(hostname string) string {
 	hostnameArray := strings.Split(hostname, "-")
 	lastblock := hostnameArray[len(hostnameArray)-1]
-	var clusterName string
 	var length int
 	if _, err := strconv.Atoi(lastblock); err == nil {
 		length = len(hostnameArray) - 2
@@ -73,7 +72,7 @@ func getClusterNameOfArray(hostname string) string {
 		length = len(hostnameArray) - 1
 	}
 
-	var separator string
+	var builder strings.Builder
 	for i := 0; i < length; i++ {
 		if hostnameArray[i] == "control" || hostnameArray[i] == "plane" {
 			break
@@ -81,10 +80,10 @@ func getClusterNameOfArray(hostname string) string {
 		if hostnameArray[i] == "controlplane" {
 			break
 		}
-		if len(clusterName) > 0 {
-			separator = "-"
+		if builder.Len() > 0 {
+			builder.WriteString("-")
 		}
-		clusterName = clusterName + separator + hostnameArray[i]
+		builder.WriteString(hostnameArray[i])
 	}
-	return clusterName
+	return builder.String()
 }
