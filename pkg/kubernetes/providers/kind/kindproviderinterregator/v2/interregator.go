@@ -2,9 +2,9 @@ package kindproviderinterregator
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/providerclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
@@ -40,7 +40,7 @@ func (t KindProviderinterregator) GetClusterId() string {
 }
 func (t KindProviderinterregator) GetClusterName() string {
 	hostname := t.nodes[0].GetLabels()["kubernetes.io/hostname"]
-	return providerclusternamehelper.GetKindClustername(hostname)
+	return getClusterNameOfArray(hostname)
 }
 func (t KindProviderinterregator) GetClusterWorkspace() string {
 	return fmt.Sprintf("%s-%s", "local", t.nodes[0].GetLabels()["beta.kubernetes.io/instance-type"])
@@ -60,4 +60,31 @@ func (t KindProviderinterregator) GetMachineProvider() string {
 }
 func (t KindProviderinterregator) GetKubernetesProvider() string {
 	return "kind"
+}
+func getClusterNameOfArray(hostname string) string {
+	hostnameArray := strings.Split(hostname, "-")
+	lastblock := hostnameArray[len(hostnameArray)-1]
+	var clusterName string
+	var length int
+	if _, err := strconv.Atoi(lastblock); err == nil {
+		length = len(hostnameArray) - 2
+
+	} else {
+		length = len(hostnameArray) - 1
+	}
+
+	var separator string
+	for i := 0; i < length; i++ {
+		if hostnameArray[i] == "control" || hostnameArray[i] == "plane" {
+			break
+		}
+		if hostnameArray[i] == "controlplane" {
+			break
+		}
+		if len(clusterName) > 0 {
+			separator = "-"
+		}
+		clusterName = clusterName + separator + hostnameArray[i]
+	}
+	return clusterName
 }
