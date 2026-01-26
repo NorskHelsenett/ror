@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/providerclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
 )
@@ -40,7 +40,7 @@ func (t KindProviderinterregator) GetClusterId() string {
 }
 func (t KindProviderinterregator) GetClusterName() string {
 	hostname := t.nodes[0].GetLabels()["kubernetes.io/hostname"]
-	return providerclusternamehelper.GetKindClustername(hostname)
+	return kindclusternamehelper.GetClusternameFromHostname(hostname)
 }
 func (t KindProviderinterregator) GetClusterWorkspace() string {
 	return fmt.Sprintf("%s-%s", "local", t.nodes[0].GetLabels()["beta.kubernetes.io/instance-type"])

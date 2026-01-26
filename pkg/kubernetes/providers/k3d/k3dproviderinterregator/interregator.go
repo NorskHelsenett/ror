@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/NorskHelsenett/ror/pkg/helpers/providerclusternamehelper"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
 )
@@ -31,7 +31,7 @@ func (t K3dtypes) GetClusterId(nodes []v1.Node) string {
 }
 func (t K3dtypes) GetClusterName(nodes []v1.Node) string {
 	hostname := nodes[0].GetLabels()["kubernetes.io/hostname"]
-	return providerclusternamehelper.GetK3dClustername(hostname)
+	return k3dclusternamehelper.GetClusternameFromHostname(hostname)
 }
 func (t K3dtypes) GetClusterWorkspace(nodes []v1.Node) string {
 	return fmt.Sprintf("%s-%s", "local", nodes[0].GetLabels()["beta.kubernetes.io/instance-type"])
