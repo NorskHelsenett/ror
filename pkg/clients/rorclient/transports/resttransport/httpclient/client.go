@@ -427,8 +427,6 @@ func (t *HttpTransportClient) postflightCheck(res *http.Response) error {
 // It handles both JSON and plain text responses, ensuring the output variable is a pointer.
 // If the response is successful (2xx status code), it reads the body and unmarshals it into the provided output variable.
 // If the response is not successful, it checks for errors and returns an appropriate error message.
-// TODO: This method should have "out *any" as input parameter, not "out any", as this implicitly requires an pointer.
-// Adding the "out *any" would be more explicit.
 func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error {
 
 	if err := t.postflightCheck(res); err != nil {
@@ -440,16 +438,17 @@ func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error 
 		return nil
 	}
 
+	v := reflect.ValueOf(out)
+	if v.Kind() != reflect.Pointer || v.IsNil() {
+		return fmt.Errorf("out must be a pointer and not nil")
+	}
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
 	if res.Header.Get("Content-Type") == "text/plain" {
-		v := reflect.ValueOf(out)
-		if v.Kind() != reflect.Pointer || v.IsNil() {
-			return fmt.Errorf("out must be a pointer and not nil")
-		}
 		if v.Elem().Kind() != reflect.String {
 			rlog.Infof("something went wrong, server returned text/plain (%s) but we expected a %s", string(body), v.Elem().Kind().String())
 			return fmt.Errorf("out must be a pointer to a string as the content type is text/plain")
