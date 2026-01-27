@@ -97,7 +97,7 @@ func (c GitClient) UploadFile(filePath string, newContent []byte, commitMsg stri
 	}
 	err = f.Close()
 	if err != nil {
-		rlog.Error("failed to clsose file", err, rlog.Field{Key: "absPath", String: absPath})
+		rlog.Error("failed to close file", err, rlog.Field{Key: "absPath", String: absPath})
 	}
 
 	// Add the file
