@@ -189,7 +189,10 @@ func (rc *rorConfigSet) AutoLoadAllEnv(local ...string) {
 		}
 	}
 	for key, value := range readDotEnv() {
-		os.Setenv(key, value)
+		err := os.Setenv(key, value)
+		if err != nil {
+			rlog.Error("failed to set env variable", err)
+		}
 	}
 	for _, value := range ConfigConsts {
 		_, exists := os.LookupEnv(value.key)
