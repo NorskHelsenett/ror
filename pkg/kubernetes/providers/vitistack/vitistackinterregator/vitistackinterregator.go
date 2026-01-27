@@ -13,33 +13,120 @@ const (
 	VMProviderAnnotation         = "vitistack.io/vmprovider"         // The VM provider of the cluster
 	KubernetesProviderAnnotation = "vitistack.io/kubernetesprovider" // The Kubernetes provider of the cluster
 	ClusterIdAnnotation          = "vitistack.io/clusterid"          // The ID of the cluster, this is the uuid in ror
+
+)
+
+var (
+	MustBeSet = []string{
+		ClusterNameAnnotation,
+		ClusterWorkspaceAnnotation,
+		RegionAnnotation,
+		AzAnnotation,
+		VMProviderAnnotation,
+		KubernetesProviderAnnotation,
+		ClusterIdAnnotation,
+	}
 )
 
 type Vitistacktypes struct {
+	initialized        bool
+	isOfType           bool
+	clustername        string
+	clusterworkspace   string
+	region             string
+	az                 string
+	machineprovider    string
+	kubernetesprovider string
+	clusterId          string
 }
 
 func NewInterregator() *Vitistacktypes {
 	return &Vitistacktypes{}
 }
 
-// IsTypeOf checks if the nodes are of type Vitistack
-func (v Vitistacktypes) IsTypeOf(nodes []v1.Node) bool {
-	if _, ok := nodes[0].GetAnnotations()[ClusterNameAnnotation]; ok {
+func (v Vitistacktypes) MustInitialize(nodes []v1.Node) bool {
+	if v.isOfType {
+		return true
+	}
+
+	if v.initialized {
+		return false
+	}
+
+	for _, node := range nodes {
+		if v.checkIfValid(node) {
+			v.clustername = getValueByKey(node, ClusterNameAnnotation)
+			v.clusterworkspace = getValueByKey(node, ClusterWorkspaceAnnotation)
+			v.region = getValueByKey(node, RegionAnnotation)
+			v.az = getValueByKey(node, AzAnnotation)
+			v.machineprovider = getValueByKey(node, VMProviderAnnotation)
+			v.kubernetesprovider = getValueByKey(node, KubernetesProviderAnnotation)
+			v.clusterId = getValueByKey(node, ClusterIdAnnotation)
+			v.isOfType = true
+			v.initialized = true
+			return true
+		}
+	}
+
+	v.initialized = true
+	v.isOfType = false
+	return false
+}
+
+func (v Vitistacktypes) checkIfValid(node v1.Node) bool {
+
+	for _, key := range MustBeSet {
+		if !checkIfKeyPresent(node, key) {
+			return false
+		}
+	}
+	return true
+}
+
+func checkIfKeyPresent(node v1.Node, key string) bool {
+	_, ok := node.GetAnnotations()[key]
+	if ok {
+		return true
+	}
+
+	_, ok = node.GetLabels()[key]
+	if ok {
 		return true
 	}
 	return false
 }
+func getValueByKey(node v1.Node, key string) string {
+	value, ok := node.GetAnnotations()[key]
+	if ok {
+		return value
+	}
+
+	value, ok = node.GetLabels()[key]
+	if ok {
+		return value
+	}
+	return ""
+}
+
+// IsTypeOf checks if the nodes are of type Vitistack
+// TODO: Improve detection logic
+func (v Vitistacktypes) IsTypeOf(nodes []v1.Node) bool {
+	return v.MustInitialize(nodes)
+}
 
 // GetProvider returns the provider type of the nodes.
 func (v Vitistacktypes) GetProvider(nodes []v1.Node) providermodels.ProviderType {
-	if v.IsTypeOf(nodes) {
-		return providermodels.ProviderTypeVitistack
+	if !v.MustInitialize(nodes) {
+		return providermodels.ProviderTypeUnknown
 	}
-	return providermodels.ProviderTypeUnknown
+	return providermodels.ProviderTypeVitistack
+
 }
 
 // GetClusterId returns the cluster ID of the nodes.
 func (v Vitistacktypes) GetClusterId(nodes []v1.Node) string {
+	v.MustInitialize(nodes)
+
 	clusterId, ok := nodes[0].GetAnnotations()[ClusterIdAnnotation]
 	if !ok {
 		clusterId = providermodels.UNKNOWN_CLUSTER_ID
@@ -85,7 +172,6 @@ func (v Vitistacktypes) GetRegion(nodes []v1.Node) string {
 
 // GetAz returns the availability zone of the cluster.
 func (v Vitistacktypes) GetAz(nodes []v1.Node) string {
-
 	az, ok := nodes[0].GetAnnotations()[AzAnnotation]
 	if !ok {
 		az = providermodels.UNKNOWN_AZ

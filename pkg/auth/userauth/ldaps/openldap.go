@@ -115,7 +115,7 @@ func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.
 	)
 	result, err := l.connection.Search(request)
 	if err != nil {
-		return nil, fmt.Errorf("search error: %s", err)
+		return nil, fmt.Errorf("search error: %w", err)
 	}
 
 	if len(result.Entries) > 0 {

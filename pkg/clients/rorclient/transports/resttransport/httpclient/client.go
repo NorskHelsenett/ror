@@ -95,7 +95,6 @@ func NewHttpTransportClientStatus() *HttpTransportClientStatus {
 	}
 }
 
-
 // NewHttpTransportClientConfig creates a new configuration object for the HTTP transport client
 // The constructor allows for validation of parameters like BaseURL to stop some of the faulty configuration possibilities.
 //
@@ -146,12 +145,14 @@ func (t *HttpTransportClientConfig) GetRole() string {
 
 // GetJSON performs a GET request and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around GetJSONWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
 	return t.GetJSONWithContext(context.TODO(), path, out, params...)
 }
 
 // GetJSONWithContext performs a GET request with the provided context and unmarshals
 // the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -184,12 +185,14 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 
 // PostJSON performs a POST request with the provided input and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around PostJSONWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
 // PostJSONWithContext performs a POST request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -223,12 +226,14 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 
 // PutJSON performs a PUT request with the provided input and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around PutJSONWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
 // PutJSONWithContext performs a PUT request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -261,12 +266,14 @@ func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path strin
 
 // Delete performs a DELETE request and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around DeleteWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
 	return t.DeleteWithContext(context.TODO(), path, out, params...)
 }
 
 // DeleteWithContext performs a DELETE request with the provided context and
 // unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -439,16 +446,17 @@ func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error 
 		return nil
 	}
 
+	v := reflect.ValueOf(out)
+	if v.Kind() != reflect.Pointer || v.IsNil() {
+		return fmt.Errorf("out must be a pointer and not nil")
+	}
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
 	if res.Header.Get("Content-Type") == "text/plain" {
-		v := reflect.ValueOf(out)
-		if v.Kind() != reflect.Pointer || v.IsNil() {
-			return fmt.Errorf("out must be a pointer and not nil")
-		}
 		if v.Elem().Kind() != reflect.String {
 			rlog.Infof("something went wrong, server returned text/plain (%s) but we expected a %s", string(body), v.Elem().Kind().String())
 			return fmt.Errorf("out must be a pointer to a string as the content type is text/plain")

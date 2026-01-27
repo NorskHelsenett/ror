@@ -21,8 +21,6 @@ type RedisDB interface {
 	Keys(ctx context.Context) ([]string, error)
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Delete(ctx context.Context, key string) error
-	GetJSON(context.Context, string, string, interface{}) error
-	SetJSON(ctx context.Context, key string, path string, value interface{}) error
 	clients.CommonClient
 }
 

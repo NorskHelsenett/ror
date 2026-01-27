@@ -78,7 +78,7 @@ func (rc MongodbCon) Aggregate(ctx context.Context, col string, query []bson.M, 
 
 	err = results.All(ctx, value)
 	if err != nil {
-		return fmt.Errorf("could not fetch resource: %v", err)
+		return fmt.Errorf("could not fetch resource: %w", err)
 	}
 
 	return nil
