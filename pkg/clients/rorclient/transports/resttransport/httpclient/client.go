@@ -145,12 +145,14 @@ func (t *HttpTransportClientConfig) GetRole() string {
 
 // GetJSON performs a GET request and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around GetJSONWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
 	return t.GetJSONWithContext(context.TODO(), path, out, params...)
 }
 
 // GetJSONWithContext performs a GET request with the provided context and unmarshals
 // the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -183,12 +185,14 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 
 // PostJSON performs a POST request with the provided input and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around PostJSONWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
 // PostJSONWithContext performs a POST request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -222,12 +226,14 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 
 // PutJSON performs a PUT request with the provided input and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around PutJSONWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
 	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
 }
 
 // PutJSONWithContext performs a PUT request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -260,12 +266,14 @@ func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path strin
 
 // Delete performs a DELETE request and unmarshals the JSON response into the out parameter.
 // This is a convenience wrapper around DeleteWithContext using the background context.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
 	return t.DeleteWithContext(context.TODO(), path, out, params...)
 }
 
 // DeleteWithContext performs a DELETE request with the provided context and
 // unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
