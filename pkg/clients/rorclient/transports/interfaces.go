@@ -3,7 +3,7 @@ package transports
 import (
 	"context"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/transportstatus"
 	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
 	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
@@ -22,25 +22,26 @@ import (
 )
 
 type RorTransport interface {
-	Status() transportstatus.RorTransportStatus
-	Stream() v1stream.StreamInterface
-	Info() v1info.InfoInterface
-	Datacenters() v1datacenter.DatacenterInterface
-	Clusters() v1clusters.ClustersInterface
+	Acl() v1acl.AclInterface
 	ApiKeysV2() v2apikeys.ApiKeysInterface
-	Self() rorclientv2self.SelfInterface
-	Workspaces() v1workspaces.WorkspacesInterface
+	Clusters() v1clusters.ClustersInterface
+	Datacenters() v1datacenter.DatacenterInterface
+	Info() v1info.InfoInterface
+	Metrics() v1metrics.MetricsInterface
 	Projects() v1projects.ProjectsInterface
 	Resources() v1resources.ResourceInterface
-	Metrics() v1metrics.MetricsInterface
 	ResourcesV2() v2resources.ResourcesInterface
+	Self() rorclientv2self.SelfInterface
+	Stream() v1stream.StreamInterface
 	Streamv2() v2stream.StreamInterface
-	Acl() v1acl.AclInterface
+	Token() v1token.TokenInterface
+	TokenV2() v2token.TokenInterface
+	Workspaces() v1workspaces.WorkspacesInterface
+
 	CheckConnection() error
 	Ping(ctx context.Context) bool
 	GetApiSecret() string
 	GetRole() string
 	GetTransportName() string
-	Token() v1token.TokenInterface
-	TokenV2() v2token.TokenInterface
+	Status() transportstatus.RorTransportStatus
 }

@@ -8,7 +8,7 @@ import (
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/transportstatus"
 
 	restv1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
@@ -46,7 +46,8 @@ import (
 var _ transports.RorTransport = (*RorHttpTransport)(nil)
 
 type RorHttpTransport struct {
-	Client             *httpclient.HttpTransportClient
+	Client *httpclient.HttpTransportClient
+
 	streamClientV1     v1stream.StreamInterface
 	infoClientV1       v1info.InfoInterface
 	datacenterClientV1 v1datacenter.DatacenterInterface

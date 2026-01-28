@@ -1,7 +1,7 @@
 package apikeys
 
-import "github.com/NorskHelsenett/ror/pkg/apicontracts/clustersapi/v2"
+import "github.com/NorskHelsenett/ror/pkg/apicontracts/apikeystypes/v2"
 
 type ApiKeysInterface interface {
-	RegisterAgent(data clustersapi.RegisterClusterRequest) (clustersapi.RegisterClusterResponse, error)
+	RegisterAgent(data apikeystypes.RegisterClusterRequest) (apikeystypes.RegisterClusterResponse, error)
 }

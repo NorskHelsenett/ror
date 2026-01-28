@@ -1,4 +1,4 @@
-package clustersapi
+package apikeystypes
 
 type RegisterClusterRequest struct {
 	ClusterId string `json:"clusterid"`
