@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportstatus"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportstatusinterface"
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
@@ -102,7 +102,7 @@ func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient 
 	return t
 }
 
-func (t *RorHttpTransport) Status() transportstatus.RorTransportStatus {
+func (t *RorHttpTransport) Status() transportstatusinterface.RorTransportStatus {
 	return t.Client.Status
 }
 
@@ -160,7 +160,7 @@ func (t *RorHttpTransport) TokenV2() v2token.TokenInterface {
 	return t.tokenClientV2
 }
 
-func (t *RorHttpTransport) Streamv2() v2stream.StreamInterface {
+func (t *RorHttpTransport) StreamV2() v2stream.StreamInterface {
 	return t.streamClientV2
 }
 

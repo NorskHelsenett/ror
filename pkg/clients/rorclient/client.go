@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/clientinterface"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportinterface"
 	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/acl"
 	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/clusters"
@@ -36,22 +37,7 @@ var _ RorClientInterface = (*RorClient)(nil)
 
 type RorClientInterface interface {
 	transportinterface.RorCommonTransport
-
-	Acl() v1acl.AclInterface
-	ApiKeysV2() v2apikeys.ApiKeysInterface
-	Clusters() v1clusters.ClustersInterface
-	Datacenters() v1datacenter.DatacenterInterface
-	Info() v1info.InfoInterface
-	Metrics() v1metrics.MetricsInterface
-	Projects() v1projects.ProjectsInterface
-	Resources() v1resources.ResourceInterface
-	ResourceV2() v2resources.ResourcesInterface
-	Self() rorclientv2self.SelfInterface
-	Stream() v1stream.StreamInterface
-	StreamV2() v2stream.StreamInterface
-	Token() v1token.TokenInterface
-	TokenV2() v2token.TokenInterface
-	Workspaces() v1workspaces.WorkspacesInterface
+	clientinterface.RorCommonClientInterface
 
 	SetTransport(transport transportinterface.RorTransport)
 	GetOwnerref() rorresourceowner.RorResourceOwnerReference
@@ -96,7 +82,7 @@ func NewRorClient(transport transportinterface.RorTransport) *RorClient {
 		resourceClientV1:   transport.Resources(),
 		metricsClientV1:    transport.Metrics(),
 		resourcesClientV2:  transport.ResourcesV2(),
-		streamClientV2:     transport.Streamv2(),
+		streamClientV2:     transport.StreamV2(),
 		tokenClientV1:      transport.Token(),
 		tokenClientV2:      transport.TokenV2(),
 	}
@@ -152,7 +138,7 @@ func (c *RorClient) TokenV2() v2token.TokenInterface {
 	return c.tokenClientV2
 }
 
-func (c *RorClient) ResourceV2() v2resources.ResourcesInterface {
+func (c *RorClient) ResourcesV2() v2resources.ResourcesInterface {
 	return c.resourcesClientV2
 }
 
