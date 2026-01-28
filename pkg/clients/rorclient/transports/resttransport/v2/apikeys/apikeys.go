@@ -1,4 +1,4 @@
-package clusters
+package apikeys
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/clustersapi/v2"
@@ -17,7 +17,7 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	}
 }
 
-func (c *V2Client) Register(data clustersapi.RegisterClusterRequest) (clustersapi.RegisterClusterResponse, error) {
+func (c *V2Client) RegisterAgent(data clustersapi.RegisterClusterRequest) (clustersapi.RegisterClusterResponse, error) {
 	var selfdata clustersapi.RegisterClusterResponse
 	err := c.Client.GetJSON(c.basePath+"/self", &selfdata)
 	if err != nil {

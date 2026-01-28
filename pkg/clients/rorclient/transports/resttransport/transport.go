@@ -20,7 +20,7 @@ import (
 	restv1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/token"
 	restv1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/v1stream"
 	restv1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/workspaces"
-	restv2clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/clusters"
+	restv2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/apikeys"
 	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
 	restv2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/token"
@@ -35,7 +35,7 @@ import (
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
-	v2clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/clusters"
+	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/apikeys"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
@@ -51,7 +51,7 @@ type RorHttpTransport struct {
 	infoClientV1       v1info.InfoInterface
 	datacenterClientV1 v1datacenter.DatacenterInterface
 	clustersClientV1   v1clusters.ClustersInterface
-	clustersClientV2   v2clusters.ClustersInterface
+	apikeysClientV2    v2apikeys.ApiKeysInterface
 	workspacesClientV1 v1workspaces.WorkspacesInterface
 	projectsClientV1   v1projects.ProjectsInterface
 	resourcesClientV1  v1resources.ResourceInterface
@@ -86,7 +86,7 @@ func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient 
 		infoClientV1:       restv1info.NewV1Client(client),
 		datacenterClientV1: restv1datacenter.NewV1Client(client),
 		clustersClientV1:   restv1clusters.NewV1Client(client),
-		clustersClientV2:   restv2clusters.NewV2Client(client),
+		apikeysClientV2:    restv2apikeys.NewV2Client(client),
 		selfClientV2:       restclientv2self.NewV2Client(client),
 		workspacesClientV1: restv1workspaces.NewV1Client(client),
 		projectsClientV1:   restv1projects.NewV1Client(client),
@@ -125,8 +125,8 @@ func (t *RorHttpTransport) Clusters() v1clusters.ClustersInterface {
 	return t.clustersClientV1
 }
 
-func (t *RorHttpTransport) ClustersV2() v2clusters.ClustersInterface {
-	return t.clustersClientV2
+func (t *RorHttpTransport) ApiKeysV2() v2apikeys.ApiKeysInterface {
+	return t.apikeysClientV2
 }
 
 func (t *RorHttpTransport) Workspaces() v1workspaces.WorkspacesInterface {
