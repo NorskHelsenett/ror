@@ -6,6 +6,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
@@ -174,6 +175,47 @@ func (c *K8sClientsets) GetSecret(namespace string, name string) (*v1.Secret, er
 	}
 
 	return secret, nil
+}
+
+// SetSecret creates or updates a Kubernetes secret in the specified namespace using the provided clientsets.
+// If the secret does not exist (IsNotFound error), it will be created.
+// If the secret exists, its Data field will be updated.
+// For other errors (e.g., permission issues, network problems), the error is returned without attempting creation.
+//
+// Parameters:
+// - c (*K8sClientsets): The K8sClientsets object that contains the necessary clientsets for interacting with secrets.
+// - namespace (string): The namespace in which to set the secret.
+// - secret (*corev1.Secret): The secret to set.
+func (c *K8sClientsets) SetSecret(namespace string, secret *v1.Secret) (*v1.Secret, error) {
+	client, err := c.GetKubernetesClientset()
+	if err != nil {
+		return nil, err
+	}
+
+	existingSecret, err := client.CoreV1().Secrets(namespace).Get(context.Background(), secret.Name, metav1.GetOptions{})
+	if err != nil {
+		// Only attempt to create if the error is specifically "not found"
+		if errors.IsNotFound(err) {
+			createdSecret, err := client.CoreV1().Secrets(namespace).Create(context.Background(), secret, metav1.CreateOptions{})
+			if err != nil {
+				return nil, err
+			}
+			return createdSecret, nil
+		}
+		// For other errors (permissions, network, etc.), return the error
+		return nil, err
+	}
+
+	// Secret exists, update it
+	// Note: Only the Data field is updated here by design. Other fields such as
+	// StringData, Type, Labels, and Annotations are preserved from the existing
+	// Secret and are not synchronized from the input Secret.
+	existingSecret.Data = secret.Data
+	updatedSecret, err := client.CoreV1().Secrets(namespace).Update(context.Background(), existingSecret, metav1.UpdateOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return updatedSecret, nil
 }
 
 // CreateSecret creates a Kubernetes secret in the specified namespace using the provided clientsets.
