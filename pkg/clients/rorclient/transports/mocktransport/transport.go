@@ -1,8 +1,8 @@
 package mocktransport
 
 import (
+	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/info"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/mocktransport/mocktransportinfo"
-	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
 )
 
 type RorMockTransport struct {

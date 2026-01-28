@@ -5,22 +5,23 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
-	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
-	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
-	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
-	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
-	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
-	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
-	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
-	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
-	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
-	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
-	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/apikeys"
-	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
-	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
-	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportinterface"
+	v1acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/acl"
+	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/clusters"
+	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/datacenter"
+	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/info"
+	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/metrics"
+	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/projects"
+	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/resources"
+	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/stream"
+	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/token"
+	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/workspaces"
+	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/apikeys"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/resources"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/rorclientv2self"
+	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/token"
+	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
+
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
@@ -34,11 +35,7 @@ type RorConfig struct {
 var _ RorClientInterface = (*RorClient)(nil)
 
 type RorClientInterface interface {
-	GetRole() string
-	GetApiSecret() string
-	GetOwnerref() rorresourceowner.RorResourceOwnerReference
-	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
-	CheckConnection() error
+	transportinterface.RorCommonTransport
 
 	Acl() v1acl.AclInterface
 	ApiKeysV2() v2apikeys.ApiKeysInterface
@@ -47,22 +44,26 @@ type RorClientInterface interface {
 	Info() v1info.InfoInterface
 	Metrics() v1metrics.MetricsInterface
 	Projects() v1projects.ProjectsInterface
-	ResourceV2() v2resources.ResourcesInterface
 	Resources() v1resources.ResourceInterface
+	ResourceV2() v2resources.ResourcesInterface
 	Self() rorclientv2self.SelfInterface
-	SetTransport(transport transports.RorTransport)
 	Stream() v1stream.StreamInterface
 	StreamV2() v2stream.StreamInterface
 	Token() v1token.TokenInterface
 	TokenV2() v2token.TokenInterface
 	Workspaces() v1workspaces.WorkspacesInterface
+
+	SetTransport(transport transportinterface.RorTransport)
+	GetOwnerref() rorresourceowner.RorResourceOwnerReference
+	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
+
 	clients.CommonClient
 }
 
 type RorClient struct {
 	ownerRef *rorresourceowner.RorResourceOwnerReference
 
-	Transport          transports.RorTransport
+	Transport          transportinterface.RorTransport
 	streamClientV1     v1stream.StreamInterface
 	infoClientV1       v1info.InfoInterface
 	datacenterClientV1 v1datacenter.DatacenterInterface
@@ -80,7 +81,7 @@ type RorClient struct {
 	tokenClientV2      v2token.TokenInterface
 }
 
-func NewRorClient(transport transports.RorTransport) *RorClient {
+func NewRorClient(transport transportinterface.RorTransport) *RorClient {
 	return &RorClient{
 		Transport:          transport,
 		aclClientV1:        transport.Acl(),
@@ -101,9 +102,6 @@ func NewRorClient(transport transports.RorTransport) *RorClient {
 	}
 }
 
-func (c *RorClient) SetTransport(transport transports.RorTransport) {
-	c.Transport = transport
-}
 func (c *RorClient) Stream() v1stream.StreamInterface {
 	return c.streamClientV1
 }
@@ -115,9 +113,11 @@ func (c *RorClient) Acl() v1acl.AclInterface {
 func (c *RorClient) Info() v1info.InfoInterface {
 	return c.infoClientV1
 }
+
 func (c *RorClient) Self() rorclientv2self.SelfInterface {
 	return c.selfClientV2
 }
+
 func (c *RorClient) Datacenters() v1datacenter.DatacenterInterface {
 	return c.datacenterClientV1
 }
@@ -152,20 +152,6 @@ func (c *RorClient) TokenV2() v2token.TokenInterface {
 	return c.tokenClientV2
 }
 
-func (c *RorClient) CheckConnection() error {
-	return c.Transport.CheckConnection()
-}
-
-// Ping checks the connection to the transport.
-// Old version used error handling, use CheckConnection instead.
-func (c *RorClient) Ping() bool {
-	return c.PingWithContext(context.TODO())
-}
-
-func (c *RorClient) PingWithContext(ctx context.Context) bool {
-	return c.Transport.Ping(ctx)
-}
-
 func (c *RorClient) ResourceV2() v2resources.ResourcesInterface {
 	return c.resourcesClientV2
 }
@@ -174,14 +160,39 @@ func (c *RorClient) StreamV2() v2stream.StreamInterface {
 	return c.streamClientV2
 }
 
+// Ping checks the connection to the transport.
+// Old version used error handling, use CheckConnection instead.
+func (c *RorClient) Ping() bool {
+	return c.PingWithContext(context.TODO())
+}
+
+// PingWithContext checks the connection to the transport with a context.
+func (c *RorClient) PingWithContext(ctx context.Context) bool {
+	return c.Transport.Ping(ctx)
+}
+
+// Transport related methods
+
+// CheckConnection checks the connection to the transport.
+func (c *RorClient) CheckConnection() error {
+	return c.Transport.CheckConnection()
+}
+
 func (c *RorClient) GetRole() string {
 	return c.Transport.GetRole()
 }
 
+// GetApiSecret gets the API secret from the transport.
 func (c *RorClient) GetApiSecret() string {
 	return c.Transport.GetApiSecret()
 }
 
+// SetTransport sets the transport for the RorClient.
+func (c *RorClient) SetTransport(transport transportinterface.RorTransport) {
+	c.Transport = transport
+}
+
+// GetOwnerref gets the owner reference for the RorClient.
 func (c *RorClient) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
 	if c.ownerRef == nil {
 		return rorresourceowner.RorResourceOwnerReference{Scope: aclmodels.Acl2ScopeUnknown, Subject: aclmodels.Acl2RorSubjecUnknown}
@@ -189,10 +200,12 @@ func (c *RorClient) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
 	return *c.ownerRef
 }
 
+// SetOwnerref sets the owner reference for the RorClient.
 func (c *RorClient) SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference) {
 	c.ownerRef = &ownerref
 }
 
+// CheckHealth checks the health of the RorClient.
 func (c *RorClient) CheckHealth(ctx context.Context) []rorhealth.Check {
 	healthChecks := []rorhealth.Check{}
 	if !c.Transport.Ping(ctx) {
@@ -205,6 +218,7 @@ func (c *RorClient) CheckHealth(ctx context.Context) []rorhealth.Check {
 	return healthChecks
 }
 
+// CheckHealthWithoutContext checks the health of the RorClient without a context.
 func (c *RorClient) CheckHealthWithoutContext() []rorhealth.Check {
 	healthChecks := []rorhealth.Check{}
 	if !c.Transport.Ping(context.Background()) {

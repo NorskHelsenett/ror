@@ -4,12 +4,27 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportstatus"
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/transportstatus"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportinterface"
+	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/acl"
+	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/clusters"
+	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/datacenter"
+	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/info"
+	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/metrics"
+	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/projects"
+	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/resources"
+	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/stream"
+	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/token"
+	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/workspaces"
+	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/apikeys"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/resources"
+	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/rorclientv2self"
+	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/token"
+	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
 	restv1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
 	restv1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/datacenter"
@@ -25,25 +40,10 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
 	restv2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/token"
 	restv2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/v2stream"
-	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
-	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
-	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
-	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
-	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
-	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
-	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
-	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
-	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
-	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
-	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/apikeys"
-	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
-	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
-	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
-	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
 // Compile-time check to ensure resourcecache implements ResourceCacheInterface
-var _ transports.RorTransport = (*RorHttpTransport)(nil)
+var _ transportinterface.RorTransport = (*RorHttpTransport)(nil)
 
 type RorHttpTransport struct {
 	Client *httpclient.HttpTransportClient

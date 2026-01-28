@@ -5,7 +5,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 )
 
-// implements ApiKeysInterface pkg/clients/rorclient/v2/apikeys
+// implements ApiKeysInterface pkg/clients/rorclient/interfaces/v2/apikeys
 type V2Client struct {
 	Client   *httpclient.HttpTransportClient
 	basePath string
