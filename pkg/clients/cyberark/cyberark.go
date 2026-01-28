@@ -237,7 +237,12 @@ func (c *CyberArkClient) executeRequest(req *http.Request) (*http.Response, []by
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(req.Context(), "error in closing response body", err)
+		}
+	}()
 
 	// Check response status
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
