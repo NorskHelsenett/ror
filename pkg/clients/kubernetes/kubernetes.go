@@ -178,6 +178,9 @@ func (c *K8sClientsets) GetSecret(namespace string, name string) (*v1.Secret, er
 }
 
 // SetSecret creates or updates a Kubernetes secret in the specified namespace using the provided clientsets.
+// If the secret does not exist (IsNotFound error), it will be created.
+// If the secret exists, its Data field will be updated.
+// For other errors (e.g., permission issues, network problems), the error is returned without attempting creation.
 //
 // Parameters:
 // - c (*K8sClientsets): The K8sClientsets object that contains the necessary clientsets for interacting with secrets.
