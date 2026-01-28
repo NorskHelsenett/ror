@@ -4,12 +4,27 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportstatusinterface"
 	httpclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/transportstatus"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportinterface"
+	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/acl"
+	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/clusters"
+	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/datacenter"
+	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/info"
+	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/metrics"
+	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/projects"
+	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/resources"
+	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/stream"
+	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/token"
+	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/workspaces"
+	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/apikeys"
+	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/resources"
+	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/rorclientv2self"
+	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/token"
+	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
 	restv1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/acl"
 	restv1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/clusters"
 	restv1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/datacenter"
@@ -20,35 +35,24 @@ import (
 	restv1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/token"
 	restv1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/v1stream"
 	restv1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v1/workspaces"
+	restv2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/apikeys"
 	restv2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/restclientv2self"
 	restv2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/token"
 	restv2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/v2/v2stream"
-	v1Acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/acl"
-	v1clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/clusters"
-	v1datacenter "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/datacenter"
-	v1info "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/info"
-	v1metrics "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/metrics"
-	v1projects "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/projects"
-	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/resources"
-	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
-	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
-	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
-	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
-	v2self "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
-	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
-	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
 // Compile-time check to ensure resourcecache implements ResourceCacheInterface
-var _ transports.RorTransport = (*RorHttpTransport)(nil)
+var _ transportinterface.RorTransport = (*RorHttpTransport)(nil)
 
 type RorHttpTransport struct {
-	Client             *httpclient.HttpTransportClient
+	Client *httpclient.HttpTransportClient
+
 	streamClientV1     v1stream.StreamInterface
 	infoClientV1       v1info.InfoInterface
 	datacenterClientV1 v1datacenter.DatacenterInterface
 	clustersClientV1   v1clusters.ClustersInterface
+	apikeysClientV2    v2apikeys.ApiKeysInterface
 	workspacesClientV1 v1workspaces.WorkspacesInterface
 	projectsClientV1   v1projects.ProjectsInterface
 	resourcesClientV1  v1resources.ResourceInterface
@@ -83,6 +87,7 @@ func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient 
 		infoClientV1:       restv1info.NewV1Client(client),
 		datacenterClientV1: restv1datacenter.NewV1Client(client),
 		clustersClientV1:   restv1clusters.NewV1Client(client),
+		apikeysClientV2:    restv2apikeys.NewV2Client(client),
 		selfClientV2:       restclientv2self.NewV2Client(client),
 		workspacesClientV1: restv1workspaces.NewV1Client(client),
 		projectsClientV1:   restv1projects.NewV1Client(client),
@@ -97,7 +102,7 @@ func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient 
 	return t
 }
 
-func (t *RorHttpTransport) Status() transportstatus.RorTransportStatus {
+func (t *RorHttpTransport) Status() transportstatusinterface.RorTransportStatus {
 	return t.Client.Status
 }
 
@@ -120,6 +125,11 @@ func (t *RorHttpTransport) Datacenters() v1datacenter.DatacenterInterface {
 func (t *RorHttpTransport) Clusters() v1clusters.ClustersInterface {
 	return t.clustersClientV1
 }
+
+func (t *RorHttpTransport) ApiKeysV2() v2apikeys.ApiKeysInterface {
+	return t.apikeysClientV2
+}
+
 func (t *RorHttpTransport) Workspaces() v1workspaces.WorkspacesInterface {
 	return t.workspacesClientV1
 }
@@ -150,7 +160,7 @@ func (t *RorHttpTransport) TokenV2() v2token.TokenInterface {
 	return t.tokenClientV2
 }
 
-func (t *RorHttpTransport) Streamv2() v2stream.StreamInterface {
+func (t *RorHttpTransport) StreamV2() v2stream.StreamInterface {
 	return t.streamClientV2
 }
 

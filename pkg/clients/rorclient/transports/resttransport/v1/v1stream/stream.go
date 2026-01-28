@@ -1,8 +1,8 @@
 package v1stream
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/stream"
 	v1sseclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v1sseclient"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 )
 
 type V1Client struct {

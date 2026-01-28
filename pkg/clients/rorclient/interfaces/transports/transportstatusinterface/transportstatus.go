@@ -1,4 +1,4 @@
-package transportstatus
+package transportstatusinterface
 
 type RorTransportStatus interface {
 	IsEstablished() bool

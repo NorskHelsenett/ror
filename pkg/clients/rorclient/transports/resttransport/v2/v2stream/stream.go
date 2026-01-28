@@ -1,8 +1,8 @@
 package v2stream
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/sseclient/v2sseclient"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 )
 
 type V2Client struct {

@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/v2stream"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 

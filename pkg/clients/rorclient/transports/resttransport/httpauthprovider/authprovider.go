@@ -37,5 +37,4 @@ func (a *AuthProvider) AddAuthHeaders(req *http.Request) {
 
 func (a *AuthProvider) GetApiSecret() string {
 	return a.Secret
-
 }
