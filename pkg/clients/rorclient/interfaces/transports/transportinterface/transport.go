@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/clientinterface"
-
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportstatusinterface"
 )
 
