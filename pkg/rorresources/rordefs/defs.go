@@ -221,7 +221,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "KubernetesCluster",
-			APIVersion: "vitistack.io/v1alpha1",
+			APIVersion: "general.ror.internal/v1alpha1",
 		},
 		Plural:     "kubernetesclusters",
 		Namespaced: true,
@@ -337,6 +337,16 @@ var Resourcedefs = ApiResources{
 		Namespaced: false,
 		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
 		Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+	},
+	{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "VirtualMachineVulnerabilityInfo",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "VirtualMachinesVulnerabilityInfo",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
+		Versions:   []ApiVersions{ApiVersionV2},
 	},
 	{
 		TypeMeta: metav1.TypeMeta{
