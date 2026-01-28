@@ -6,6 +6,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
@@ -190,12 +191,16 @@ func (c *K8sClientsets) SetSecret(namespace string, secret *v1.Secret) (*v1.Secr
 
 	existingSecret, err := client.CoreV1().Secrets(namespace).Get(context.Background(), secret.Name, metav1.GetOptions{})
 	if err != nil {
-		// Secret does not exist, create it
-		createdSecret, err := client.CoreV1().Secrets(namespace).Create(context.Background(), secret, metav1.CreateOptions{})
-		if err != nil {
-			return nil, err
+		// Only attempt to create if the error is specifically "not found"
+		if errors.IsNotFound(err) {
+			createdSecret, err := client.CoreV1().Secrets(namespace).Create(context.Background(), secret, metav1.CreateOptions{})
+			if err != nil {
+				return nil, err
+			}
+			return createdSecret, nil
 		}
-		return createdSecret, nil
+		// For other errors (permissions, network, etc.), return the error
+		return nil, err
 	}
 
 	// Secret exists, update it
