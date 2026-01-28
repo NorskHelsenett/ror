@@ -199,6 +199,9 @@ func (c *K8sClientsets) SetSecret(namespace string, secret *v1.Secret) (*v1.Secr
 	}
 
 	// Secret exists, update it
+	// Note: Only the Data field is updated here by design. Other fields such as
+	// StringData, Type, Labels, and Annotations are preserved from the existing
+	// Secret and are not synchronized from the input Secret.
 	existingSecret.Data = secret.Data
 	updatedSecret, err := client.CoreV1().Secrets(namespace).Update(context.Background(), existingSecret, metav1.UpdateOptions{})
 	if err != nil {
