@@ -14,6 +14,7 @@ import (
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/stream"
 	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/token"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v1/workspaces"
+	v2clusters "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/clusters"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/rorclientv2self"
 	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/token"
@@ -26,6 +27,7 @@ type RorTransport interface {
 	Info() v1info.InfoInterface
 	Datacenters() v1datacenter.DatacenterInterface
 	Clusters() v1clusters.ClustersInterface
+	ClustersV2() v2clusters.ClustersInterface
 	Self() rorclientv2self.SelfInterface
 	Workspaces() v1workspaces.WorkspacesInterface
 	Projects() v1projects.ProjectsInterface
