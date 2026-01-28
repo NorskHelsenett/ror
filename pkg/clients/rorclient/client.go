@@ -16,11 +16,13 @@ import (
 	v1resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/resources"
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/stream"
 	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/token"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/v1clientset"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/workspaces"
 	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/apikeys"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/rorclientv2self"
 	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/token"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2clientset"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
@@ -64,6 +66,8 @@ type RorClient struct {
 	aclClientV1        v1acl.AclInterface
 	tokenClientV1      v1token.TokenInterface
 	tokenClientV2      v2token.TokenInterface
+	v1                 clientinterface.RorCommonClientApiInterfaceV1
+	v2                 clientinterface.RorCommonClientApiInterfaceV2
 }
 
 func NewRorClient(transport transportinterface.RorTransport) *RorClient {
@@ -84,7 +88,13 @@ func NewRorClient(transport transportinterface.RorTransport) *RorClient {
 		streamClientV2:     transport.StreamV2(),
 		tokenClientV1:      transport.Token(),
 		tokenClientV2:      transport.TokenV2(),
+		v1:                 v1clientset.NewV1ClientSet(transport),
+		v2:                 v2clientset.NewV2ClientSet(transport),
 	}
+}
+
+func (c *RorClient) V1() clientinterface.RorCommonClientApiInterfaceV1 {
+	return c.v1
 }
 
 func (c *RorClient) Stream() v1stream.StreamInterface {

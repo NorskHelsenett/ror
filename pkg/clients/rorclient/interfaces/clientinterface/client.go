@@ -37,6 +37,32 @@ type RorCommonClientApiInterface interface {
 	Workspaces() v1workspaces.WorkspacesInterface
 }
 
+type RorCommonClientApiInterfaceVersioned interface {
+	V1() RorCommonClientApiInterfaceV1
+	V2() RorCommonClientApiInterfaceV2
+}
+
+type RorCommonClientApiInterfaceV1 interface {
+	Acl() v1acl.AclInterface
+	Clusters() v1clusters.ClustersInterface
+	Datacenters() v1datacenter.DatacenterInterface
+	Info() v1info.InfoInterface
+	Metrics() v1metrics.MetricsInterface
+	Projects() v1projects.ProjectsInterface
+	Resources() v1resources.ResourceInterface
+	Stream() v1stream.StreamInterface
+	Token() v1token.TokenInterface
+	Workspaces() v1workspaces.WorkspacesInterface
+}
+
+type RorCommonClientApiInterfaceV2 interface {
+	ApiKeys() v2apikeys.ApiKeysInterface
+	Resources() v2resources.ResourcesInterface
+	Stream() v2stream.StreamInterface
+	Token() v2token.TokenInterface
+	Self() rorclientv2self.SelfInterface
+}
+
 type RorCommonClientOwnerInterface interface {
 	GetOwnerref() rorresourceowner.RorResourceOwnerReference
 	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
