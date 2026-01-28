@@ -36,12 +36,11 @@ type RorConfig struct {
 var _ RorClientInterface = (*RorClient)(nil)
 
 type RorClientInterface interface {
-	transportinterface.RorCommonTransport
-	clientinterface.RorCommonClientInterface
+	transportinterface.RorCommonClientTransportInterface
+	clientinterface.RorCommonClientApiInterface
 
-	SetTransport(transport transportinterface.RorTransport)
-	GetOwnerref() rorresourceowner.RorResourceOwnerReference
-	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
+	clientinterface.RorCommonClientOwnerInterface
+	transportinterface.RorCommonClientTransportSetterInterface
 
 	clients.CommonClient
 }

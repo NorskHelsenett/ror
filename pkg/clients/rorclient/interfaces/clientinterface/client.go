@@ -16,9 +16,10 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/rorclientv2self"
 	v2token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/token"
 	v2stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2stream"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
 
-type RorCommonClientInterface interface {
+type RorCommonClientApiInterface interface {
 	Acl() v1acl.AclInterface
 	ApiKeysV2() v2apikeys.ApiKeysInterface
 	Clusters() v1clusters.ClustersInterface
@@ -34,4 +35,9 @@ type RorCommonClientInterface interface {
 	Token() v1token.TokenInterface
 	TokenV2() v2token.TokenInterface
 	Workspaces() v1workspaces.WorkspacesInterface
+}
+
+type RorCommonClientOwnerInterface interface {
+	GetOwnerref() rorresourceowner.RorResourceOwnerReference
+	SetOwnerref(ownerref rorresourceowner.RorResourceOwnerReference)
 }

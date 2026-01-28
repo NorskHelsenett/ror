@@ -4,22 +4,31 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/clientinterface"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportstatusinterface"
 )
 
 type RorTransport interface {
-	clientinterface.RorCommonClientInterface
+	clientinterface.RorCommonClientApiInterface
 
-	GetTransportName() string
-	Status() transportstatusinterface.RorTransportStatus
+	RorCommonTransportInterface
 
-	Ping(ctx context.Context) bool
-
-	RorCommonTransport
+	RorCommonClientTransportInterface
 }
 
-type RorCommonTransport interface {
+type RorCommonClientTransportInterface interface {
 	CheckConnection() error
 	GetRole() string
 	GetApiSecret() string
+}
+
+type RorCommonTransportInterface interface {
+	Ping(ctx context.Context) bool
+
+	GetTransportName() string
+	Status() transportstatusinterface.RorTransportStatus
+}
+
+type RorCommonClientTransportSetterInterface interface {
+	SetTransport(transport RorTransport)
 }
