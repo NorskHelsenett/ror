@@ -41,8 +41,8 @@ type RorClientInterface interface {
 	CheckConnection() error
 
 	Acl() v1acl.AclInterface
-	Clusters() v1clusters.ClustersInterface
 	ApiKeysV2() v2apikeys.ApiKeysInterface
+	Clusters() v1clusters.ClustersInterface
 	Datacenters() v1datacenter.DatacenterInterface
 	Info() v1info.InfoInterface
 	Metrics() v1metrics.MetricsInterface
@@ -53,10 +53,9 @@ type RorClientInterface interface {
 	SetTransport(transport transports.RorTransport)
 	Stream() v1stream.StreamInterface
 	StreamV2() v2stream.StreamInterface
-	Workspaces() v1workspaces.WorkspacesInterface
 	Token() v1token.TokenInterface
 	TokenV2() v2token.TokenInterface
-
+	Workspaces() v1workspaces.WorkspacesInterface
 	clients.CommonClient
 }
 
