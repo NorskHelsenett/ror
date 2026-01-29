@@ -59,7 +59,10 @@ func (rc *rorConfigSet) LoadEnv(key string) {
 	}
 
 	data := os.Getenv(key)
-	rc.configs.Set(key, data, ConfigSourceEnv)
+	if data != "" {
+		rc.configs.Set(key, data, ConfigSourceEnv)
+	}
+
 }
 
 func (rc *rorConfigSet) ImportStruct(source any) error {

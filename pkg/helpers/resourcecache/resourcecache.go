@@ -74,7 +74,7 @@ func newResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
 	rc.rorClient = rcConfig.RorClient
 
 	if rc.rorClient.CheckConnection() == nil {
-		hashes, err := rc.rorClient.ResourceV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
+		hashes, err := rc.rorClient.ResourcesV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
 		if err != nil {
 			rc.hashList = NewEmptyHashList()
 			return nil, fmt.Errorf("failed to get own hashes: %w", err)
@@ -163,7 +163,7 @@ func (rc *resourcecache) RunWorkQeue() {
 	}
 	cacheworkqueue := rc.workQueue.ConsumeWorkQeue()
 
-	status, err := rc.rorClient.ResourceV2().Update(context.Background(), cacheworkqueue.ResourceSet)
+	status, err := rc.rorClient.ResourcesV2().Update(context.Background(), cacheworkqueue.ResourceSet)
 	if err != nil {
 		rlog.Error("error sending resources update to ror, added to retryQeue", err)
 		rc.workQueue.ReQueue(cacheworkqueue)
