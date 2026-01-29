@@ -40,6 +40,7 @@ var _ RorClientInterface = (*RorClient)(nil)
 type RorClientInterface interface {
 	transportinterface.RorCommonClientTransportInterface
 	clientinterface.RorCommonClientApiInterface
+	clientinterface.RorCommonClientApiInterfaceVersioned
 
 	clientinterface.RorCommonClientOwnerInterface
 	transportinterface.RorCommonClientTransportSetterInterface
@@ -95,6 +96,9 @@ func NewRorClient(transport transportinterface.RorTransport) *RorClient {
 
 func (c *RorClient) V1() clientinterface.RorCommonClientApiInterfaceV1 {
 	return c.v1
+}
+func (c *RorClient) V2() clientinterface.RorCommonClientApiInterfaceV2 {
+	return c.v2
 }
 
 func (c *RorClient) Stream() v1stream.StreamInterface {
