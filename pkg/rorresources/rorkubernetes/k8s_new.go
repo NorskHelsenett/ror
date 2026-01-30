@@ -124,6 +124,11 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetIngressClass(res)
 		r.SetCommonInterface(res)
 
+	case "aquasecurity.github.io/v1alpha1, Kind=SbomReport":
+		res := newSbomReportFromMapInterface(input)
+		r.SetSbomReport(res)
+		r.SetCommonInterface(res)
+
 	case "aquasecurity.github.io/v1alpha1, Kind=VulnerabilityReport":
 		res := newVulnerabilityReportFromMapInterface(input)
 		r.SetVulnerabilityReport(res)
@@ -479,6 +484,20 @@ func newIngressClassFromMapInterface(input map[string]interface{}) *rortypes.Res
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceIngressClass", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newSbomReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newSbomReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceSbomReport {
+	result := rortypes.ResourceSbomReport{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceSbomReport", err)
 		return nil
 	}
 
