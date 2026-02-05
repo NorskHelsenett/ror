@@ -697,6 +697,25 @@ func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientVirtualMachineVulnerabilityInfo(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "VirtualMachineVulnerabilityInfo",
+			"apiVersion": "general.ror.internal/v1alpha1",
+			"metadata": map[string]interface{}{
+				"name": "test-virtualmachinevulnerabilityinfo",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientEndpoints(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
