@@ -173,7 +173,12 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 	if res.StatusCode > 399 || res.StatusCode < 200 {
 		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, out)
 	if err != nil {
@@ -214,7 +219,12 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, out)
 	if err != nil {
