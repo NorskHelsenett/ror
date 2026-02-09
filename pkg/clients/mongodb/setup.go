@@ -7,7 +7,9 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/credshelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/rorresources"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -137,4 +139,12 @@ func (mdb *MongodbCon) getDbConnectionWithReconnect() *mongo.Client {
 	}
 
 	return mdb.Client
+}
+
+// DEPRECATED: This function is wrongly placed, its a local function for ror-api and is implemented
+// in the ror-api repo. It should not be used by other services, and is removed from this package.
+// it will panic if used, to prevent usage. Please use the implementation in ror-api instead.
+// GenerateAggregateQuery generates a MongoDB aggregation query based on the provided ResourceQuery.
+func (mdb *MongodbCon) GenerateAggregateQuery(rorResourceQuery *rorresources.ResourceQuery) []bson.M {
+	panic("not implemented, use local implementation")
 }
