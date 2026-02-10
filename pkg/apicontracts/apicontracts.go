@@ -43,7 +43,7 @@ type ProjectMetadataModel struct {
 
 type ProjectRoleModel struct {
 	ContactInfo    ProjectContactInfoModel `json:"contactInfo" validate:"required"`
-	RoleDefinition ProjectRoleDefinition   `json:"roleDefinition" validate:"required,oneof=Owner Responsible" `
+	RoleDefinition ProjectRoleDefinition   `json:"roleDefinition" validate:"required,oneof=Owner Responsible TechnicalContact" `
 }
 
 type ProjectContactInfoModel struct {
@@ -60,7 +60,7 @@ type ClusterMetadataModel struct {
 	ProjectID   string            `json:"projectId" validate:"required,min=1"`
 	Criticality CriticalityLevel  `json:"criticality" validate:"required,min=1,max=4"`
 	Sensitivity SensitivityLevel  `json:"sensitivity" validate:"required,min=1,max=4"`
-	Description string            `json:"description" validate:"omitempty,min=1,rortext"`
+	Description string            `json:"description" validate:"omitempty,min=1"`
 	ServiceTags map[string]string `json:"serviceTags" validate:"omitempty"`
 	Billing     BillingModel      `json:"billing"`
 	Roles       []ProjectRole     `json:"roles" validate:"required,gt=1,dive,required"`

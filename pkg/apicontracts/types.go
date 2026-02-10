@@ -44,9 +44,10 @@ const (
 type ProjectRoleDefinition = string
 
 const (
-	ProjectRoleUnknown     ProjectRoleDefinition = ""
-	ProjectRoleOwner       ProjectRoleDefinition = "Owner"
-	ProjectRoleResponsible ProjectRoleDefinition = "Responsible"
+	ProjectRoleUnknown          ProjectRoleDefinition = ""
+	ProjectRoleOwner            ProjectRoleDefinition = "Owner"
+	ProjectRoleResponsible      ProjectRoleDefinition = "Responsible"
+	ProjectRoleTechnicalContact ProjectRoleDefinition = "TechnicalContact"
 )
 
 type TaskSpecType = string
