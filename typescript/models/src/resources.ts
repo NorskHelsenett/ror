@@ -229,7 +229,6 @@ export interface ResourceEndpoints {
 }
 export interface ResourceVirtualMachineVulnerabilitySpec {}
 export interface ResourceVirtualMachineVulnerabilityStatus {
-  id: string;
   hostSeverity: string;
   severity: string;
   severityScore: number;
