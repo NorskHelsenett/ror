@@ -10,7 +10,6 @@ type ResourceVirtualMachineVulnerabilityInfo struct {
 }
 
 type ResourceVirtualMachineVulnerabilityStatus struct {
-	Id                  string  `json:"id"`
 	HostSeverity        string  `json:"hostSeverity"`
 	Severity            string  `json:"severity"`
 	SeverityScore       float32 `json:"severityScore"`
