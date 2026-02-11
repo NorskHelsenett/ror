@@ -29,6 +29,7 @@ type Resource struct {
 	DaemonSetResource                  *rortypes.ResourceDaemonSet                  `json:"daemonset,omitempty" bson:"daemonset,omitempty"`
 	IngressResource                    *rortypes.ResourceIngress                    `json:"ingress,omitempty" bson:"ingress,omitempty"`
 	IngressClassResource               *rortypes.ResourceIngressClass               `json:"ingressclass,omitempty" bson:"ingressclass,omitempty"`
+	SbomReportResource                 *rortypes.ResourceSbomReport                 `json:"sbomreport,omitempty" bson:"sbomreport,omitempty"`
 	VulnerabilityReportResource        *rortypes.ResourceVulnerabilityReport        `json:"vulnerabilityreport,omitempty" bson:"vulnerabilityreport,omitempty"`
 	ExposedSecretReportResource        *rortypes.ResourceExposedSecretReport        `json:"exposedsecretreport,omitempty" bson:"exposedsecretreport,omitempty"`
 	ConfigAuditReportResource          *rortypes.ResourceConfigAuditReport          `json:"configauditreport,omitempty" bson:"configauditreport,omitempty"`
@@ -139,6 +140,10 @@ func (r *Resource) SetIngress(res *rortypes.ResourceIngress) {
 
 func (r *Resource) SetIngressClass(res *rortypes.ResourceIngressClass) {
 	r.IngressClassResource = res
+}
+
+func (r *Resource) SetSbomReport(res *rortypes.ResourceSbomReport) {
+	r.SbomReportResource = res
 }
 
 func (r *Resource) SetVulnerabilityReport(res *rortypes.ResourceVulnerabilityReport) {
@@ -323,6 +328,11 @@ func (r *Resource) Ingress() rortypes.Ingressinterface {
 // IngressClass is a wrapper for the underlying resource, it provides a IngressClassinterface to work with ingressclasses
 func (r *Resource) IngressClass() rortypes.IngressClassinterface {
 	return r.IngressClassResource
+}
+
+// SbomReport is a wrapper for the underlying resource, it provides a SbomReportinterface to work with sbomreports
+func (r *Resource) SbomReport() rortypes.SbomReportinterface {
+	return r.SbomReportResource
 }
 
 // VulnerabilityReport is a wrapper for the underlying resource, it provides a VulnerabilityReportinterface to work with vulnerabilityreports
