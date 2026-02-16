@@ -594,6 +594,8 @@ export interface KubernetesClusterNodePool {
   autoscaling: KubernetesClusterAutoscalingSpec;
   metadata: KubernetesClusterSpecMetadataDetails;
   taint: KubernetesClusterTaint[];
+  storage: KubernetesClusterStorage[];
+  architecture?: string;
 }
 export interface KubernetesClusterWorkers {
   nodePools: KubernetesClusterNodePool[];
@@ -614,6 +616,7 @@ export interface KubernetesClusterSpecControlPlane {
   machineClass: string;
   metadata: KubernetesClusterSpecMetadataDetails;
   storage: KubernetesClusterStorage[];
+  architecture?: string;
 }
 export interface KubernetesClusterSpecTopology {
   version: string;

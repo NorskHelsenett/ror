@@ -2,6 +2,7 @@ package rorresources
 
 import (
 	"encoding/json"
+	"math"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
@@ -177,8 +178,53 @@ type ResourceUpdateResult struct {
 	Message string `json:"message,omitempty"`
 }
 
+func NewResourceUpdateResult(status int, message string) *ResourceUpdateResult {
+	return &ResourceUpdateResult{
+		Status:  status,
+		Message: message,
+	}
+}
+
+type (
+	config struct {
+		size int
+	}
+
+	ConfigOption func(*config)
+)
+
+func newConfig() *config {
+	return &config{
+		size: 0,
+	}
+}
+
 type ResourceUpdateResults struct {
 	Results map[string]ResourceUpdateResult `json:"results,omitempty"`
+}
+
+// WithCapacity sets the map's initial capacity to the specified amount.
+func WithCapacity(size uint) ConfigOption {
+	if size > math.MaxInt {
+		size = math.MaxInt
+	}
+	return func(c *config) {
+		c.size = int(size)
+	}
+}
+
+func NewResourceUpdateResults(opts ...ConfigOption) *ResourceUpdateResults {
+	config := newConfig()
+	for _, opt := range opts {
+		opt(config)
+	}
+	return &ResourceUpdateResults{
+		Results: make(map[string]ResourceUpdateResult, config.size),
+	}
+}
+
+func (r *ResourceUpdateResults) Add(key string, entry *ResourceUpdateResult) {
+	r.Results[key] = *entry
 }
 
 // FailedResources is a method to return a list of failed resources.
