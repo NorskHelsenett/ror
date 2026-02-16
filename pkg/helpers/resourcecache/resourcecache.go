@@ -206,11 +206,14 @@ func (rc *resourcecache) DeleteResourceByUID(uid string) {
 	}
 	resource := rorresources.NewRorResource("Unknown", "unknown.ror.internal/v1")
 	resource.Metadata.SetUID(types.UID(uid))
-	resource.SetRorMeta(rortypes.ResourceRorMeta{
+	err := resource.SetRorMeta(rortypes.ResourceRorMeta{
 		Version:  "v2",
 		Ownerref: rc.rorClient.GetOwnerref(),
 		Action:   rortypes.K8sActionDelete,
 	})
+	if err != nil {
+		rlog.Error("failed to set ror meta", err)
+	}
 	rc.workQueue.AddResource(resource)
 	rc.hashList.DeleteByUid(uid)
 }

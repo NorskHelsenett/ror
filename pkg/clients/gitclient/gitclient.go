@@ -95,7 +95,10 @@ func (c GitClient) UploadFile(filePath string, newContent []byte, commitMsg stri
 	if _, err := f.Write(newContent); err != nil {
 		return fmt.Errorf("failed to write file in memfs: %w", err)
 	}
-	f.Close()
+	err = f.Close()
+	if err != nil {
+		rlog.Error("failed to close file", err, rlog.Field{Key: "absPath", String: absPath})
+	}
 
 	// Add the file
 	wt, err := repo.Worktree()
@@ -166,7 +169,12 @@ func (c *GitClient) GetFile(filePath string) ([]byte, error) {
 		// File does not exist
 		return nil, nil
 	}
-	defer f.Close()
+	defer func() {
+		err := f.Close()
+		if err != nil {
+			rlog.Error("failed to close file", err)
+		}
+	}()
 
 	content := make([]byte, 0)
 	buf := make([]byte, 4096)

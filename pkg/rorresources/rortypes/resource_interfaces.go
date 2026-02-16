@@ -105,6 +105,12 @@ type IngressClassinterface interface {
 	Get() *ResourceIngressClass
 }
 
+// SbomReportinterface represents the interface for resources of the type sbomreport
+type SbomReportinterface interface {
+	CommonResourceInterface
+	Get() *ResourceSbomReport
+}
+
 // VulnerabilityReportinterface represents the interface for resources of the type vulnerabilityreport
 type VulnerabilityReportinterface interface {
 	CommonResourceInterface
