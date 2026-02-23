@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
+	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
@@ -10,7 +11,7 @@ type ResourceInterface interface {
 	GetClusterOrderByUid(uid string, ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error)
 	GetClusterOrders(ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error)
 	UpdateClusterOrder(clusterOrder *apiresourcecontracts.ResourceUpdateModel) error
-	GetHashList(ownerref rorresourceowner.RorResourceOwnerReference) (apiresourcecontracts.HashList, error)
+	GetHashList(ownerref rorresourceowner.RorResourceOwnerReference) (resourcecachehashlist.HashList, error)
 	GetTanzuKubernetesClusterByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceTanzuKubernetesCluster, error)
 
 	GetApplicationByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceApplication, error)
