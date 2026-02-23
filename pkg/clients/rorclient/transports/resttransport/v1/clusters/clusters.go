@@ -129,3 +129,9 @@ func (c *V1Client) Register(data apicontracts.AgentApiKeyModel) (string, error) 
 
 	return clusterResponse, nil
 }
+
+func (c *V1Client) SendHeartbeat(clusterReport apicontracts.Cluster) error {
+	var ret any
+	err := c.Client.PostJSON("/v1/cluster/heartbeat", clusterReport, &ret)
+	return err
+}
