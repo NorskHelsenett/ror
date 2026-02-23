@@ -30,6 +30,7 @@ func (c *V1Client) Update(resourceUpdate *apiresourcecontracts.ResourceUpdateMod
 }
 
 func (c *V1Client) Delete(uid string) error {
-	err := c.Client.Delete(c.basePath+"/uid/"+uid, nil)
+	var ret any
+	err := c.Client.Delete(c.basePath+"/uid/"+uid, &ret)
 	return err
 }
