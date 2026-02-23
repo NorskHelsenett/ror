@@ -232,6 +232,12 @@ func (c *RorClient) CheckHealthWithoutContext() []rorhealth.Check {
 			Status:      rorhealth.StatusFail,
 			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
 		})
+	} else {
+		healthChecks = append(healthChecks, rorhealth.Check{
+			ComponentID: "Transport",
+			Status:      rorhealth.StatusPass,
+			Output:      fmt.Sprintf("%s is healthy", c.Transport.GetTransportName()),
+		})
 	}
 	return healthChecks
 }
