@@ -14,4 +14,5 @@ type ClustersInterface interface {
 	GetKubeconfig(clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error)
 	Create(cluster apicontracts.Cluster) (string, error)
 	Register(data apicontracts.AgentApiKeyModel) (string, error)
+	SendHeartbeat(clusterReport apicontracts.Cluster) error
 }

@@ -8,6 +8,10 @@ import (
 )
 
 type ResourceInterface interface {
+	Create(resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error
+	Update(resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error
+	Delete(uid string) error
+
 	GetClusterOrderByUid(uid string, ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error)
 	GetClusterOrders(ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error)
 	UpdateClusterOrder(clusterOrder *apiresourcecontracts.ResourceUpdateModel) error
