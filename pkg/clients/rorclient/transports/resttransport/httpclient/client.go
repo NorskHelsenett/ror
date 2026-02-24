@@ -451,7 +451,12 @@ func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error 
 	}
 
 	// If no output is expected, return early
-	if out == nil && res.StatusCode == http.StatusNoContent {
+	if out == nil {
+		return nil
+	}
+
+	// If no output is expected, return early
+	if res.StatusCode == http.StatusNoContent {
 		return nil
 	}
 
