@@ -20,7 +20,7 @@ For a more detailed guide on developemnt see [Devleopment](https://norskhelsenet
 
 - Perform a cursory search in our [Core services](https://norskhelsenett.github.io/ror/components/core/#Issue-boards) if you can find a similar issue.
 - If an existing one exists add a comment on it to show this is still an issue and affecting you.
-- If not create a new issue.
+- If not create a new issue using the bug report template.
 
 ## Developer guidelines
 
