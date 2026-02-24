@@ -135,7 +135,6 @@ nav:
       - development/index.md
       - development/guideline.md
       - development/setup.md
-      - development/index.md
       - development/repos.md
       - development/docker.md
       - development/default-accounts.md
