@@ -1,0 +1,46 @@
+name: Bug Report
+description: Report a problem about ROR
+type: 'bug'
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        *Before reporting:*
+        - Confirm the problem is reproducible on [**main**](https://github.com/NorskHelsenett/ror) or [**latest stable**](https://github.com/NorskHelsenett/ror/releases/stable) release
+        - Search [existing issues](https://github.com/NorskHelsenett/ror/issues?q=is%3Aissue%20is%3Aopen%20type%3ABug) (including [closed](https://github.com/NorskHelsenett/ror/issues?q=is%3Aissue%20is%3Aclosed%20type%3ABug))
+        - Read the [FAQ](https://norskhelsenett.github.io/faq/) and ["Reporting issues" in CONTRIBUTING.md](https://github.com/NorskHelsenett/ror/blob/master/CONTRIBUTING.md#reporting-issues).
+
+        Usage or "How to" questions belong on our [discussions](https://github.com/NorskHelsenett/ror/discussions) page and will be closed.
+  - type: textarea
+    attributes:
+      label: "Problem"
+      description: "Describe the current behavior. May include logs, images, or videos."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Steps to reproduce"
+      description: |
+        - For build failures: list the exact steps.
+        - If the bug pertains to crashing (or segfault), please include a stacktrace.
+      placeholder: |
+        - Did X
+        - Did Y
+        - Got Z
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Expected behavior"
+      description: "Describe the behavior you expect."
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: "Version"
+      placeholder: "0.6.0 commit db1b0ee3b30f"
+    validations:
+      required: true
