@@ -2,35 +2,76 @@
 
 # Release Operate Report
 
-Norwegian
+## What is ROR
 
-```
-Et ror er en styreanordning hvor blad eller en vinge festet til en aksling.
-Dette brukes til å endre en krafts retning i en væske eller gass.
-Ror brukes oftest på båter, skip og fly.
-```
-
-English
-
-```
-A rudder is a steering device where a blade or a wing is attached to a shaft.
-This is used to change the direction of a force in a liquid or gas.
-Rudders are most commonly used on boats, ships, and airplanes.
-```
+ROR is an vendor agnostic eco-system for resources.
+For more detailed explaination see [here](https://norskhelsenett.github.io/ror/).
 
 # Documentation
 
-The documentation is automaticly built and available at [norskhelsenett.github.io/ror](https://norskhelsenett.github.io/ror/)
+The documentation is automatically built and available at [norskhelsenett.github.io/ror](https://norskhelsenett.github.io/ror/), see it for more detailed information.
 
-## Local build
-For this you need a version Python installed.
-Open a terminal in root of this repo, and:
+For more information about the documentation see [here](https://norskhelsenett.github.io/ror/documentation/).
 
-```bash
-pip install -r mkdocs-requirements.txt
-mkdocs serve
+# ROR Eco-System
+
+For a complete list and more information see [here](https://norskhelsenett.github.io/ror/components/core/#Repositories).
+
+The ROR ecosystem is made out of multiple repositories to seperate each major component.
+Other components such as microservices and "addons" are also seperated out to be clear distiction what is ROR and what is an implementation of a resource to ROR.
+A complete list can be found [here](https://norskhelsenett.github.io/ror/components/)
+
+# Features
+
+# Installation
+
+For a local installation see [here](webap://norskhelsenett.github.io/ror/development/setup/).
+For a kubernetes installation see [here](https://norskhelsenett.github.io/ror/installation/).
+
+## Installation from source
+
+See [BUILD.md](https://github.com/NorskHelsenett/ror-api/blob/main/README.md) and [supported platforms](https://github.com/NorskHelsenett/ror-api/blob/main/README.md) for details.
+
+The build is CMake-based, but a Makefile is provided as a convenience.
+
+# Project layout
+
 ```
+├─ charts/                 helm charts for the entire ROR eco-system
+├─ cmd/                    executable files related to the ROR Core
+│  ├─ docs/                contain dockerfile and doc automation
+│  ├─ generator/           starts the generator to generate files
+├─ docs/                   documentation for the mkdocs
+├─ hacks/                  files for local development environment
+│  ├─ assets/              TODO
+│  ├─ data/                Mix of configuration files and container mounts.
+│  ├─ scripts/             various scripts for mocking k8s cluster, mongodb, etc.
+├─ media/                  various media (pictures, videos, etc) of ror
+├─ pkg/                    various subsectioned parts of ror
+│  ├─ apicontracts/        TODO
+│  ├─ auth/                authorization packges, ldap, ad, userauth, etc.
+│  ├─ clients/             various clients
+│  ├─ config/              TODO
+│  ├─ context/             TODO
+│  ├─ handlers/            TODO
+│  ├─ helpers/             TODO
+│  ├─ kubernetes/          TODO
+│  ├─ messagebuscontracts/ TODO
+│  ├─ models/              various models used in the ror eco-system
+│  ├─ rlog/                logging package used in the ror eco-system
+│  ├─ rorresources/        resource, resourcetypes, api, etc. definitions. TODO
+│  ├─ services/            TODO
+│  └─ telemetry/           telemetry (metrics, trace) package used
+├─ typescript/             generated typescript based on Go code for frontend
+├─ mkdocs-requirements.txt requirements for bringing up mkdocs.
+├─ mkdocs.yml              mkdocs navigation paths.
+└─ r.sh                    starting script, copies files and start docker environment
+```
+
+# License
+
+See [LICENSE](https://github.com/NorskHelsenett/ror/blob/main/LICENSE)
 
 # Run ROR?
 
-See documentation in [docs/get-started.md](https://norskhelsenett.github.io/ror/getting-started/) to run locally with docker compose
+See [ROR-API README](https://github.com/NorskHelsenett/ror-api/blob/main/README.md) for more information on how to bring up a development environmnent.
