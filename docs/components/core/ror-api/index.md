@@ -1,10 +1,12 @@
-# NHN-ROR-API
+# ROR-API
 
-Webapi made with Golang and Gin webapi framework
+ROR-API is the API definition of the ROR-Ecosystem, any communication done through ROR involves the ROR-API in some way.
+
+ROR-API is a web API made with Golang and the Gin Web API framework.
 
 # Prerequisites
 
-- Golang 1.20.x https://go.dev
+- Golang 1.26.x https://go.dev
 
 # Get started
 
