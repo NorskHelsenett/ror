@@ -71,10 +71,12 @@ nav:
   - ROR:
       - index.md
       - introduction.md
+      - philosophy.md
   - Installation:
       - installation/index.md
   - Design:
       - design/index.md
+      - design/resources.md
       - design/design.md
       - Roadmap:
           - design/roadmap/index.md
@@ -142,6 +144,7 @@ nav:
       - development/known-issues.md
       - Generator:
           - development/generator/index.md
+          - development/generator/resources.md
           - development/generator/using-generator.md
       - Makerfile:
           - development/makerfile/index.md
