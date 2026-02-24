@@ -1,6 +1,6 @@
 # ROR Docs
 
-ROR Docs is an mkdocs-material ppage that generates automatically when changes are pushed to `docs/*` and `mkdocs.yaml`.
+ROR Docs is an mkdocs-material page that generates automatically when changes are pushed to `docs/*` and `mkdocs.yaml`.
 
 `mkdocs.yaml` holds the configuration and the mapping of files that's available under `docs/`.
 

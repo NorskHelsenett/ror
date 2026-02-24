@@ -76,7 +76,7 @@ nav:
       - installation/index.md
   - Design:
       - design/index.md
-      - design/resources.md
+      - design/resources/index.md
       - design/design.md
       - Roadmap:
           - design/roadmap/index.md

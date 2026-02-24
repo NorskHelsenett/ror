@@ -4,8 +4,8 @@
 
 ## What is ROR
 
-ROR is an vendor agnostic eco-system for resources.
-For more detailed explaination see [here](https://norskhelsenett.github.io/ror/).
+ROR is a vendor-agnostic eco-system for resources.
+For more detailed explanation see [here](https://norskhelsenett.github.io/ror/).
 
 # Documentation
 
@@ -18,14 +18,14 @@ For more information about the documentation see [here](https://norskhelsenett.g
 For a complete list and more information see [here](https://norskhelsenett.github.io/ror/components/core/#Repositories).
 
 The ROR ecosystem is made out of multiple repositories to seperate each major component.
-Other components such as microservices and "addons" are also seperated out to be clear distiction what is ROR and what is an implementation of a resource to ROR.
+Other components such as microservices and "addons" are also seperated out to be clear distinction what is ROR and what is an implementation of a resource to ROR.
 A complete list can be found [here](https://norskhelsenett.github.io/ror/components/)
 
 # Features
 
 # Installation
 
-For a local installation see [here](webap://norskhelsenett.github.io/ror/development/setup/).
+For a local installation see [here](https://norskhelsenett.github.io/ror/development/setup/).
 For a kubernetes installation see [here](https://norskhelsenett.github.io/ror/installation/).
 
 ## Installation from source
@@ -74,4 +74,4 @@ See [LICENSE](https://github.com/NorskHelsenett/ror/blob/main/LICENSE)
 
 # Run ROR?
 
-See [ROR-API README](https://github.com/NorskHelsenett/ror-api/blob/main/README.md) for more information on how to bring up a development environmnent.
+See [ROR-API README](https://github.com/NorskHelsenett/ror-api/blob/main/README.md) for more information on how to bring up a development environment.

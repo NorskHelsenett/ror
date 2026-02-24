@@ -78,14 +78,14 @@ type ResourceVirtualMachineStatus struct {
 .
 ```
 
-Note that json tags has to be in [camel case](https://en.wikipedia.org/wiki/Camel_case), as thee generator convert the Go structs to TypeScript, which does not support field names with hyphens.
+Note that JSON tags have to be in [camel case](https://en.wikipedia.org/wiki/Camel_case), as the generator converts the Go structs to TypeScript, which does not support field names with hyphens.
 
 ##### Spec
 
 Spec will be what we desire the configuration to be for when we wish to change something, like cpu, disk, or memory for the example above.
-Any parameter within here it is expected we're allowed to change if change from ROR is implmeneted.
+Any parameter within here it is expected we're allowed to change if change from ROR is implemented.
 
-If the resource is read-only Spec is not necessary to implement.
+If the resource is read-only, the Spec field is not necessary to implement.
 
 ##### Status
 
@@ -149,7 +149,7 @@ ApiResoureType<Name> ApiReesourceType = "<AgentName>"
 },
 ```
 
-an example of a resource defintion:
+an example of a resource definition:
 
 ```go
 {
@@ -166,7 +166,7 @@ an example of a resource defintion:
 
 ### TypeMeta
 
-Type meta is a Kubernetes structure that
+TypeMeta is a standard Kubernetes API metadata struct that specifies the resource `Kind` and `APIVersion`. In this context it identifies what type of resource this definition represents and which API group/version it belongs to.
 
 ### Plural
 

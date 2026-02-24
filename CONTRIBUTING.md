@@ -6,7 +6,7 @@ Thank you for wanting to contribute to ROR. Below you will find a guide outlinin
 
 For more detailed documentation see [ROR Docs](https://norskhelsenett.github.io/ror/).
 
-For a more detailed guide on developemnt see [Devleopment](https://norskhelsenett.github.io/ror/development/).
+For a more detailed guide on development see [Development](https://norskhelsenett.github.io/ror/development/).
 
 ## Reporting problems
 

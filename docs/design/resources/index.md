@@ -4,7 +4,7 @@
 
 ### v1
 
-ROR resource v1 is deprecated. It was not very modular and there was a lot of manual steps to create a new resource. Each type was its own full definition with very litte reuse of code between them.
+ROR resource v1 is deprecated. It was not very modular and there was a lot of manual steps to create a new resource. Each type was its own full definition with very little reuse of code between them.
 
 ### v2
 
