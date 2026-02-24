@@ -18,14 +18,12 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 }
 
 func (c *V1Client) Create(resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error {
-	var ret any
-	err := c.Client.PostJSON(c.basePath, resourceUpdate, &ret)
+	err := c.Client.PostJSON(c.basePath, resourceUpdate, nil)
 	return err
 }
 
 func (c *V1Client) Update(resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error {
-	var ret any
-	err := c.Client.PutJSON(c.basePath+"/uid/"+resourceUpdate.Uid, resourceUpdate, &ret)
+	err := c.Client.PutJSON(c.basePath+"/uid/"+resourceUpdate.Uid, resourceUpdate, nil)
 	return err
 }
 
