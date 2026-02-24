@@ -131,6 +131,7 @@ nav:
               - components/microservices/ror-ms-slack/index.md
   - Development:
       - development/index.md
+      - development/guideline.md
       - development/setup.md
       - development/index.md
       - development/repos.md
@@ -148,5 +149,7 @@ nav:
       - documentation/index.md
       - documentation/guidelines.md
       - documentation/mkdocs.md
+  - FAQ:
+      - faq/index.md
   - Trivia:
       - trivia/index.md
