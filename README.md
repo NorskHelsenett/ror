@@ -17,8 +17,8 @@ For more information about the documentation see [here](https://norskhelsenett.g
 
 For a complete list and more information see [here](https://norskhelsenett.github.io/ror/components/core/#Repositories).
 
-The ROR ecosystem is made out of multiple repositories to seperate each major component.
-Other components such as microservices and "addons" are also seperated out to be clear distinction what is ROR and what is an implementation of a resource to ROR.
+The ROR ecosystem is made out of multiple repositories to separate each major component.
+Other components such as microservices and "addons" are also separated out to be a clear distinction between what is ROR and what is an implementation of a resource to ROR.
 A complete list can be found [here](https://norskhelsenett.github.io/ror/components/)
 
 # Features
