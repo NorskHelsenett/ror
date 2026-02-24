@@ -75,6 +75,8 @@ type ResourceVirtualMachineStatus struct {
 .
 ```
 
+Note that json tags has to be in [camel case](https://en.wikipedia.org/wiki/Camel_case), as thee generator convert the Go structs to TypeScript, which does not support field names with hyphens.
+
 ##### Spec
 
 Spec will be what we desire the configuration to be for when we wish to change something, like cpu, disk, or memory for the example above.
