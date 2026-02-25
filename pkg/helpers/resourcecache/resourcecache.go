@@ -59,6 +59,14 @@ type ResourceCacheConfig struct {
 	RorClient         rorclient.RorClientInterface
 }
 
+func MustInitNewResourceCache(rcConfig ResourceCacheConfig) ResourceCacheInterface {
+	rc, err := NewResourceCache(rcConfig)
+	if err != nil {
+		rlog.Fatal("failed to initialize resource cache", err)
+	}
+	return rc
+}
+
 func NewResourceCache(rcConfig ResourceCacheConfig) (ResourceCacheInterface, error) {
 	return newResourceCache(rcConfig)
 }
