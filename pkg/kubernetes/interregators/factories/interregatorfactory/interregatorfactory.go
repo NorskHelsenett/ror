@@ -89,7 +89,7 @@ func (c ClusterInterregatorFactory) GetRegion() string {
 }
 
 func (c ClusterInterregatorFactory) GetCountry() string {
-	if c.config.GetRegionFunc != nil {
+	if c.config.GetCountryFunc != nil {
 		return c.config.GetCountryFunc()
 	}
 	return c.unknowninterregator.GetCountry()
