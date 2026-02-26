@@ -368,8 +368,8 @@ func TestGetClusterWorkspace(t *testing.T) {
 func TestGetDatacenter(t *testing.T) {
 	node := makeNode(validKeys(), nil)
 	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
-	if got := vt.GetDatacenter(); got != "az-1.region-1" {
-		t.Fatalf("expected datacenter az-1.region-1, got %s", got)
+	if got := vt.GetDatacenter(); got != "az-1.region-1.no" {
+		t.Fatalf("expected datacenter az-1.region-1.no, got %s", got)
 	}
 
 	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
