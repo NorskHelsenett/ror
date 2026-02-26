@@ -215,7 +215,7 @@ func (v VitistackProviderinterregator) GetCountry() string {
 	return v.country
 }
 
-// GetVMProvider returns the VM provider of the cluster.
+// GetMachineProvider returns the machine provider of the cluster.
 func (v VitistackProviderinterregator) GetMachineProvider() providermodels.ProviderType {
 	if !v.MustInitialize() {
 		return providermodels.ProviderTypeUnknown
