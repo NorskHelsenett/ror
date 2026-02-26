@@ -53,6 +53,9 @@ type K3dProviderinterregator struct {
 }
 
 func (t K3dProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return strings.Contains(t.nodes[0].Status.NodeInfo.KubeletVersion, "k3s")
 
 }

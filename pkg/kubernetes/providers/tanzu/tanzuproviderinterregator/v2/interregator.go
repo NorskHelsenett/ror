@@ -49,6 +49,9 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 }
 
 func (t TanzuProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	labels := t.nodes[0].GetLabels()
 	return labels["run.tanzu.vmware.com/kubernetesDistributionVersion"] != ""
 }

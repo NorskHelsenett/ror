@@ -37,6 +37,10 @@ func TestInterregatorNewInterregatorValidAnnotations(t *testing.T) {
 		t.Fatalf("expected interregator instance")
 	}
 
+	if got := inter.GetProvider(); got != providermodels.ProviderTypeVitistack {
+		t.Fatalf("expected provider vitistack, got %v", got)
+	}
+
 	if got := inter.GetClusterName(); got != "test-cluster" {
 		t.Fatalf("expected cluster name test-cluster, got %s", got)
 	}
@@ -57,6 +61,12 @@ func TestInterregatorNewInterregatorValidAnnotations(t *testing.T) {
 	}
 	if got := inter.GetClusterId(); got != "cluster-123" {
 		t.Fatalf("expected cluster id cluster-123, got %s", got)
+	}
+	if got := inter.GetCountry(); got != providermodels.DefaultCountry {
+		t.Fatalf("expected default country %s, got %s", providermodels.DefaultCountry, got)
+	}
+	if got := inter.GetDatacenter(); got != "az-1.region-1."+providermodels.DefaultCountry {
+		t.Fatalf("expected datacenter az-1.region-1.%s, got %s", providermodels.DefaultCountry, got)
 	}
 }
 func TestInterregatorNewInterregatorValidAnnotationsEmptyNode(t *testing.T) {
@@ -428,5 +438,79 @@ func TestGetKubernetesProvider(t *testing.T) {
 	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
 	if got := vtMissing.GetKubernetesProvider(); got != providermodels.ProviderTypeUnknown {
 		t.Fatalf("expected unknown kubernetes provider, got %s", got)
+	}
+}
+
+func TestGetCountry(t *testing.T) {
+	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	if got := vtMissing.GetCountry(); got != providermodels.UNKNOWN_UNDEFINED {
+		t.Fatalf("expected unknown country, got %s", got)
+	}
+
+	// CountryKey is optional; when missing it should default.
+	vtDefault := VitistackProviderinterregator{nodes: []v1.Node{makeNode(validKeys(), nil)}}
+	if got := vtDefault.GetCountry(); got != providermodels.DefaultCountry {
+		t.Fatalf("expected default country %s, got %s", providermodels.DefaultCountry, got)
+	}
+
+	withCountry := validKeys()
+	withCountry[CountryKey] = "se"
+	vt := VitistackProviderinterregator{nodes: []v1.Node{makeNode(withCountry, nil)}}
+	if got := vt.GetCountry(); got != "se" {
+		t.Fatalf("expected country se, got %s", got)
+	}
+}
+
+func TestInterregatorNewInterregatorNoNodesSlice(t *testing.T) {
+	inter := Interregator{}.NewInterregator(nil)
+	if inter != nil {
+		t.Fatalf("expected nil interregator for nil nodes slice")
+	}
+}
+
+func TestMustInitialize_SetsStateAndFields(t *testing.T) {
+	vt := &VitistackProviderinterregator{nodes: []v1.Node{makeNode(validKeys(), nil)}}
+	if got := vt.MustInitialize(); !got {
+		t.Fatalf("expected MustInitialize to return true")
+	}
+	if !vt.initialized {
+		t.Fatalf("expected initialized=true")
+	}
+	if !vt.isOfType {
+		t.Fatalf("expected isOfType=true")
+	}
+	if vt.clustername != "test-cluster" {
+		t.Fatalf("expected clustername test-cluster, got %s", vt.clustername)
+	}
+	if vt.clusterworkspace != "workspace-1" {
+		t.Fatalf("expected clusterworkspace workspace-1, got %s", vt.clusterworkspace)
+	}
+	if vt.region != "region-1" {
+		t.Fatalf("expected region region-1, got %s", vt.region)
+	}
+	if vt.az != "az-1" {
+		t.Fatalf("expected az az-1, got %s", vt.az)
+	}
+	if vt.machineprovider != "vm-provider" {
+		t.Fatalf("expected machineprovider vm-provider, got %s", vt.machineprovider)
+	}
+	if vt.kubernetesprovider != "kube-provider" {
+		t.Fatalf("expected kubernetesprovider kube-provider, got %s", vt.kubernetesprovider)
+	}
+	if vt.clusterId != "cluster-123" {
+		t.Fatalf("expected clusterId cluster-123, got %s", vt.clusterId)
+	}
+}
+
+func TestMustInitialize_InvalidNodesMarksInitialized(t *testing.T) {
+	vt := &VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
+	if got := vt.MustInitialize(); got {
+		t.Fatalf("expected MustInitialize to return false")
+	}
+	if !vt.initialized {
+		t.Fatalf("expected initialized=true")
+	}
+	if vt.isOfType {
+		t.Fatalf("expected isOfType=false")
 	}
 }

@@ -54,6 +54,9 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 }
 
 func (t GkeProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return t.nodes[0].GetLabels()["cloud.google.com/gke-container-runtime"] != ""
 }
 func (t GkeProviderinterregator) GetProvider() providermodels.ProviderType {

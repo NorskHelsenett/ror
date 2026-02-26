@@ -41,6 +41,9 @@ func NewClusterInterregatorFromKubernetesClient(client *kubernetes.Clientset) in
 }
 
 func NewClusterInterregator(nodes []v1core.Node) interregatortypes.ClusterInterregator {
+	if len(nodes) == 0 {
+		return unknownproviderinterregator.NewInterregator()
+	}
 	for _, inter := range interregators {
 		interregator := inter.NewInterregator(nodes)
 		if interregator != nil {

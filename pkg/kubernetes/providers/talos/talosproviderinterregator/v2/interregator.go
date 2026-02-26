@@ -51,6 +51,9 @@ type TalosProviderinterregator struct {
 }
 
 func (t TalosProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return strings.Contains(strings.ToLower(t.nodes[0].Status.NodeInfo.OSImage), "talos")
 }
 

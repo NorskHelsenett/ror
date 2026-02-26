@@ -53,6 +53,9 @@ type KindProviderinterregator struct {
 }
 
 func (t KindProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return strings.HasPrefix(t.nodes[0].Spec.ProviderID, "kind")
 }
 func (t KindProviderinterregator) GetProvider() providermodels.ProviderType {
