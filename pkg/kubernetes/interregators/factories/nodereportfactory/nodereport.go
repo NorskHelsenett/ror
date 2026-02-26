@@ -37,27 +37,27 @@ func (n NodeReport) Get() []v1.Node {
 }
 
 func (n NodeReport) GetByName(name string) *v1.Node {
-	for _, node := range n.nodes {
-		if node.Name == name {
-			return &node
+	for i := range n.nodes {
+		if n.nodes[i].Name == name {
+			return &n.nodes[i]
 		}
 	}
 	return nil
 }
 
 func (n NodeReport) GetByUid(uid string) *v1.Node {
-	for _, node := range n.nodes {
-		if string(node.UID) == uid {
-			return &node
+	for i := range n.nodes {
+		if string(n.nodes[i].UID) == uid {
+			return &n.nodes[i]
 		}
 	}
 	return nil
 }
 
 func (n NodeReport) GetByHostname(hostname string) *v1.Node {
-	for _, node := range n.nodes {
-		if node.Labels["kubernetes.io/hostname"] == hostname {
-			return &node
+	for i := range n.nodes {
+		if n.nodes[i].Labels["kubernetes.io/hostname"] == hostname {
+			return &n.nodes[i]
 		}
 	}
 	return nil
