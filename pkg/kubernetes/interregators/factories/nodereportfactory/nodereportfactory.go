@@ -12,12 +12,6 @@ func NewNodeReportFactory(nodes []v1.Node) interregatortypes.ClusterNodeReport {
 	}
 }
 
-// Get() []v1.Node
-// GetByName(name string) *v1.Node
-// GetByUid(uid string) *v1.Node
-// GetByHostname(hostname string) *v1.Node
-// GetByMachineProvider(machineProvider providermodels.ProviderType) []v1.Node
-
 type ClusterNodeReportFactory struct {
 	nodereport               interregatortypes.ClusterNodeReport
 	GetFunc                  func() []v1.Node
