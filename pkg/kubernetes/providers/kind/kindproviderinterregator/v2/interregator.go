@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/kind/kindclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
@@ -19,7 +20,32 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.IsTypeOf() {
 		return nil
 	}
-	return interregator
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetAzFunc: func() string {
+			return interregator.GetAz()
+		},
+		GetRegionFunc: func() string {
+			return interregator.GetRegion()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+	})
 }
 
 type KindProviderinterregator struct {
@@ -34,9 +60,6 @@ func (t KindProviderinterregator) GetProvider() providermodels.ProviderType {
 		return providermodels.ProviderTypeKind
 	}
 	return providermodels.ProviderTypeUnknown
-}
-func (t KindProviderinterregator) GetClusterId() string {
-	return providermodels.UNKNOWN_CLUSTER_ID
 }
 func (t KindProviderinterregator) GetClusterName() string {
 	hostname := t.nodes[0].GetLabels()["kubernetes.io/hostname"]
@@ -55,9 +78,9 @@ func (t KindProviderinterregator) GetAz() string {
 func (t KindProviderinterregator) GetRegion() string {
 	return "kind"
 }
-func (t KindProviderinterregator) GetMachineProvider() string {
-	return "kind"
+func (t KindProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeKind
 }
-func (t KindProviderinterregator) GetKubernetesProvider() string {
-	return "kind"
+func (t KindProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeKind
 }

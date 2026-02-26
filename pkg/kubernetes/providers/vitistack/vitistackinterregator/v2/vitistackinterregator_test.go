@@ -287,17 +287,17 @@ func TestCheckIfKeyPresent(t *testing.T) {
 
 func TestGetValueByKey(t *testing.T) {
 	node := makeNode(map[string]string{RegionKey: "annotation"}, nil)
-	if val := getValueByKey(&node, RegionKey); val != "annotation" {
+	if val, _ := getValueByKey(&node, RegionKey); val != "annotation" {
 		t.Fatalf("expected annotation value, got %s", val)
 	}
 
 	nodeLabel := makeNode(nil, map[string]string{RegionKey: "label"})
-	if val := getValueByKey(&nodeLabel, RegionKey); val != "label" {
+	if val, _ := getValueByKey(&nodeLabel, RegionKey); val != "label" {
 		t.Fatalf("expected label value, got %s", val)
 	}
 
 	empty := makeNode(nil, nil)
-	if val := getValueByKey(&empty, RegionKey); val != "" {
+	if val, _ := getValueByKey(&empty, RegionKey); val != "" {
 		t.Fatalf("expected empty string, got %s", val)
 	}
 }
@@ -368,8 +368,8 @@ func TestGetClusterWorkspace(t *testing.T) {
 func TestGetDatacenter(t *testing.T) {
 	node := makeNode(validKeys(), nil)
 	vt := VitistackProviderinterregator{nodes: []v1.Node{node}}
-	if got := vt.GetDatacenter(); got != "region-1 az-1" {
-		t.Fatalf("expected datacenter region-1 az-1, got %s", got)
+	if got := vt.GetDatacenter(); got != "az-1.region-1" {
+		t.Fatalf("expected datacenter az-1.region-1, got %s", got)
 	}
 
 	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
@@ -413,7 +413,7 @@ func TestGetMachineProvider(t *testing.T) {
 	}
 
 	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
-	if got := vtMissing.GetMachineProvider(); got != providermodels.UNKNOWN_MACHINE_PROVIDER {
+	if got := vtMissing.GetMachineProvider(); got != providermodels.ProviderTypeUnknown {
 		t.Fatalf("expected unknown vm provider, got %s", got)
 	}
 }
@@ -426,7 +426,7 @@ func TestGetKubernetesProvider(t *testing.T) {
 	}
 
 	vtMissing := VitistackProviderinterregator{nodes: []v1.Node{makeNode(map[string]string{}, nil)}}
-	if got := vtMissing.GetKubernetesProvider(); got != providermodels.UNKNOWN_KUBERNETES_PROVIDER {
+	if got := vtMissing.GetKubernetesProvider(); got != providermodels.ProviderTypeUnknown {
 		t.Fatalf("expected unknown kubernetes provider, got %s", got)
 	}
 }

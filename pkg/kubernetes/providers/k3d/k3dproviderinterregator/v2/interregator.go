@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/k3d/k3dclusternamehelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
@@ -19,7 +20,32 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.IsTypeOf() {
 		return nil
 	}
-	return interregator
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetAzFunc: func() string {
+			return interregator.GetAz()
+		},
+		GetRegionFunc: func() string {
+			return interregator.GetRegion()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+	})
 }
 
 type K3dProviderinterregator struct {
@@ -35,9 +61,6 @@ func (t K3dProviderinterregator) GetProvider() providermodels.ProviderType {
 		return providermodels.ProviderTypeK3d
 	}
 	return providermodels.ProviderTypeUnknown
-}
-func (t K3dProviderinterregator) GetClusterId() string {
-	return providermodels.UNKNOWN_CLUSTER_ID
 }
 func (t K3dProviderinterregator) GetClusterName() string {
 	hostname := t.nodes[0].GetLabels()["kubernetes.io/hostname"]
@@ -56,13 +79,13 @@ func (t K3dProviderinterregator) GetAz() string {
 }
 
 func (t K3dProviderinterregator) GetRegion() string {
-	return "k3s"
+	return "k3d"
 }
 
-func (t K3dProviderinterregator) GetMachineProvider() string {
-	return "k3s"
+func (t K3dProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeK3d
 }
 
-func (t K3dProviderinterregator) GetKubernetesProvider() string {
-	return "k3s"
+func (t K3dProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeK3d
 }

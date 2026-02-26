@@ -3,6 +3,8 @@ package tanzuproviderinterregator
 import (
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/nodereportfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
@@ -21,7 +23,29 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.IsTypeOf() {
 		return nil
 	}
-	return interregator
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+		NodesFunc: func() interregatortypes.ClusterNodeReport {
+			return nodereportfactory.NewNodeReportFactory(nodes)
+		},
+	})
 }
 
 func (t TanzuProviderinterregator) IsTypeOf() bool {
@@ -33,9 +57,6 @@ func (t TanzuProviderinterregator) GetProvider() providermodels.ProviderType {
 		return providermodels.ProviderTypeTanzu
 	}
 	return providermodels.ProviderTypeUnknown
-}
-func (t TanzuProviderinterregator) GetClusterId() string {
-	return providermodels.UNKNOWN_CLUSTER_ID
 }
 func (t TanzuProviderinterregator) GetClusterName() string {
 	return t.nodes[0].GetAnnotations()["cluster.x-k8s.io/cluster-name"]
@@ -52,18 +73,10 @@ func (t TanzuProviderinterregator) GetDatacenter() string {
 	return providermodels.UNKNOWN_DATACENTER
 }
 
-func (t TanzuProviderinterregator) GetAz() string {
-	return providermodels.UNKNOWN_AZ
+func (t TanzuProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeVmware
 }
 
-func (t TanzuProviderinterregator) GetRegion() string {
-	return providermodels.UNKNOWN_REGION
-}
-
-func (t TanzuProviderinterregator) GetMachineProvider() string {
-	return "VMwareESXi"
-}
-
-func (t TanzuProviderinterregator) GetKubernetesProvider() string {
-	return providermodels.ProviderTypeTanzu.String()
+func (t TanzuProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeTanzu
 }

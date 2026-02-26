@@ -17,18 +17,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-// Ensure interfaces are implemented
-var (
-	_ interregatortypes.ClusterInterregator = (*vitistackinterregator.VitistackProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*talosproviderinterregator.TalosProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*tanzuproviderinterregator.TanzuProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*kindproviderinterregator.KindProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*k3dproviderinterregator.K3dProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*gkeproviderinterregator.GkeProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*unknownproviderinterregator.UnknownProviderinterregator)(nil)
-	_ interregatortypes.ClusterInterregator = (*azureproviderinterregator.AzureProviderinterregator)(nil)
-)
-
 type ClusterProviderInterregator interface {
 	NewInterregator([]v1core.Node) interregatortypes.ClusterInterregator
 }

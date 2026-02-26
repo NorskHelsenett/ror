@@ -2,7 +2,13 @@ package providermodels
 
 type ProviderType string
 
+var (
+	DefaultCountry = "no"
+)
+
 const (
+	UNKNOWN_UNDEFINED string = "unknown-undefined"
+
 	UNKNOWN_REGION              string = "unknown-region"
 	UNKNOWN_DATACENTER          string = "unknown-datacenter"
 	UNKNOWN_WORKSPACE           string = "unknown-workspace"
@@ -21,6 +27,12 @@ const (
 	ProviderTypeGke       ProviderType = "gke"
 	ProviderTypeTalos     ProviderType = "talos"
 	ProviderTypeVitistack ProviderType = "vitistack"
+	ProviderTypeEKS       ProviderType = "eks"
+	ProviderTypeKubevirt  ProviderType = "kubevirt"
+	ProviderTypeOpenShift ProviderType = "openshift"
+	ProviderTypeRancher   ProviderType = "rancher"
+	ProviderTypeProxmox   ProviderType = "proxmox"
+	ProviderTypeVmware    ProviderType = "vmware"
 )
 
 // String returns the string representation of the ProviderType.
