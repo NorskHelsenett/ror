@@ -3,6 +3,7 @@ package talosproviderinterregator
 import (
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
@@ -17,7 +18,32 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.IsTypeOf() {
 		return nil
 	}
-	return interregator
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetAzFunc: func() string {
+			return interregator.GetAz()
+		},
+		GetRegionFunc: func() string {
+			return interregator.GetRegion()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+	})
 }
 
 type TalosProviderinterregator struct {
@@ -25,6 +51,9 @@ type TalosProviderinterregator struct {
 }
 
 func (t TalosProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return strings.Contains(strings.ToLower(t.nodes[0].Status.NodeInfo.OSImage), "talos")
 }
 
@@ -33,10 +62,6 @@ func (t TalosProviderinterregator) GetProvider() providermodels.ProviderType {
 		return providermodels.ProviderTypeTalos
 	}
 	return providermodels.ProviderTypeUnknown
-}
-
-func (t TalosProviderinterregator) GetClusterId() string {
-	return providermodels.UNKNOWN_CLUSTER_ID
 }
 
 func (t TalosProviderinterregator) GetClusterName() string {
@@ -62,8 +87,8 @@ func (t TalosProviderinterregator) GetAz() string {
 	return "TalosAZ"
 }
 
-func (t TalosProviderinterregator) GetMachineProvider() string {
-	return "TalosVM"
+func (t TalosProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeUnknown
 }
 
 func (t TalosProviderinterregator) GetRegion() string {
@@ -75,6 +100,6 @@ func (t TalosProviderinterregator) GetRegion() string {
 	return dataCenter
 }
 
-func (t TalosProviderinterregator) GetKubernetesProvider() string {
-	return "Talos"
+func (t TalosProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeTalos
 }

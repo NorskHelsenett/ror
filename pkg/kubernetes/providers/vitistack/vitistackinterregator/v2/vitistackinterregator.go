@@ -1,20 +1,24 @@
 package vitistackinterregator
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/helpers/kubernetes/metadatahelper"
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
+
+	vitiv1alpha1 "github.com/vitistack/common/pkg/v1alpha1"
 )
 
 const (
-	ClusterNameKey        = "vitistack.io/clustername"        // The name of the cluster
-	ClusterWorkspaceKey   = "vitistack.io/clusterworkspace"   // The workspace of the cluster
-	RegionKey             = "vitistack.io/region"             // The region of the cluster
-	AzKey                 = "vitistack.io/az"                 // The availability zone of the cluster
-	MachineProviderKey    = "vitistack.io/vmprovider"         // The VM provider of the cluster
-	KubernetesProviderKey = "vitistack.io/kubernetesprovider" // The Kubernetes provider of the cluster
-	ClusterIdKey          = "vitistack.io/clusterid"          // The ID of the cluster, this is the uuid in ror
-
+	ClusterNameKey        = vitiv1alpha1.ClusterNameAnnotation        // The name of the cluster
+	ClusterWorkspaceKey   = vitiv1alpha1.ClusterWorkspaceAnnotation   // The workspace of the cluster
+	RegionKey             = vitiv1alpha1.RegionAnnotation             // The region of the cluster
+	AzKey                 = vitiv1alpha1.AzAnnotation                 // The availability zone of the cluster
+	MachineProviderKey    = vitiv1alpha1.VMProviderAnnotation         // The VM provider of the cluster
+	KubernetesProviderKey = vitiv1alpha1.KubernetesProviderAnnotation // The Kubernetes provider of the cluster
+	ClusterIdKey          = vitiv1alpha1.ClusterIdAnnotation          // The ID of the cluster, this is the uuid in ror
+	CountryKey            = vitiv1alpha1.CountryAnnotation            // The country of the cluster
 )
 
 var (
@@ -42,6 +46,7 @@ type VitistackProviderinterregator struct {
 	machineprovider    string
 	kubernetesprovider string
 	clusterId          string
+	country            string
 }
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
@@ -51,7 +56,40 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.MustInitialize() {
 		return nil
 	}
-	return interregator
+
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterIdFunc: func() string {
+			return interregator.GetClusterId()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetAzFunc: func() string {
+			return interregator.GetAz()
+		},
+		GetRegionFunc: func() string {
+			return interregator.GetRegion()
+		},
+		GetCountryFunc: func() string {
+			return interregator.GetCountry()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+	})
+
 }
 
 func (v *VitistackProviderinterregator) MustInitialize() bool {
@@ -65,13 +103,14 @@ func (v *VitistackProviderinterregator) MustInitialize() bool {
 
 	for _, node := range v.nodes {
 		if v.checkIfValid(&node) {
-			v.clustername = getValueByKey(&node, ClusterNameKey)
-			v.clusterworkspace = getValueByKey(&node, ClusterWorkspaceKey)
-			v.region = getValueByKey(&node, RegionKey)
-			v.az = getValueByKey(&node, AzKey)
-			v.machineprovider = getValueByKey(&node, MachineProviderKey)
-			v.kubernetesprovider = getValueByKey(&node, KubernetesProviderKey)
-			v.clusterId = getValueByKey(&node, ClusterIdKey)
+			v.clustername, _ = getValueByKey(&node, ClusterNameKey)
+			v.clusterworkspace, _ = getValueByKey(&node, ClusterWorkspaceKey)
+			v.region, _ = getValueByKey(&node, RegionKey)
+			v.az, _ = getValueByKey(&node, AzKey)
+			v.machineprovider, _ = getValueByKey(&node, MachineProviderKey)
+			v.kubernetesprovider, _ = getValueByKey(&node, KubernetesProviderKey)
+			v.clusterId, _ = getValueByKey(&node, ClusterIdKey)
+			v.country, _ = getValueByKey(&node, CountryKey)
 			v.isOfType = true
 			v.initialized = true
 			return true
@@ -94,28 +133,10 @@ func (v VitistackProviderinterregator) checkIfValid(node *v1.Node) bool {
 }
 
 func checkIfKeyPresent(node *v1.Node, key string) bool {
-	_, ok := node.GetAnnotations()[key]
-	if ok {
-		return true
-	}
-
-	_, ok = node.GetLabels()[key]
-	if ok {
-		return true
-	}
-	return false
+	return metadatahelper.CheckAnnotationOrLabel(node.ObjectMeta, key)
 }
-func getValueByKey(node *v1.Node, key string) string {
-	value, ok := node.GetAnnotations()[key]
-	if ok {
-		return value
-	}
-
-	value, ok = node.GetLabels()[key]
-	if ok {
-		return value
-	}
-	return ""
+func getValueByKey(node *v1.Node, key string) (string, bool) {
+	return metadatahelper.GetAnnotationOrLabel(node.ObjectMeta, key)
 }
 
 // IsTypeOf checks if the nodes are of type Vitistack
@@ -163,7 +184,7 @@ func (v VitistackProviderinterregator) GetDatacenter() string {
 		return providermodels.UNKNOWN_DATACENTER
 	}
 
-	return v.GetRegion() + " " + v.GetAz()
+	return v.GetAz() + "." + v.GetRegion() + "." + v.GetCountry()
 
 }
 
@@ -183,18 +204,29 @@ func (v VitistackProviderinterregator) GetAz() string {
 	return v.az
 }
 
-// GetVMProvider returns the VM provider of the cluster.
-func (v VitistackProviderinterregator) GetMachineProvider() string {
+// GetCountry returns the country of the cluster.
+func (v VitistackProviderinterregator) GetCountry() string {
 	if !v.MustInitialize() {
-		return providermodels.UNKNOWN_MACHINE_PROVIDER
+		return providermodels.UNKNOWN_UNDEFINED
 	}
-	return v.machineprovider
+	if v.country == "" {
+		return providermodels.DefaultCountry
+	}
+	return v.country
+}
+
+// GetMachineProvider returns the machine provider of the cluster.
+func (v VitistackProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	if !v.MustInitialize() {
+		return providermodels.ProviderTypeUnknown
+	}
+	return providermodels.ProviderType(v.machineprovider)
 }
 
 // GetKubernetesProvider returns the Kubernetes provider of the cluster.
-func (v VitistackProviderinterregator) GetKubernetesProvider() string {
+func (v VitistackProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
 	if !v.MustInitialize() {
-		return providermodels.UNKNOWN_KUBERNETES_PROVIDER
+		return providermodels.ProviderTypeUnknown
 	}
-	return v.kubernetesprovider
+	return providermodels.ProviderType(v.kubernetesprovider)
 }
