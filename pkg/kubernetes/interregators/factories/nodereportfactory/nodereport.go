@@ -66,7 +66,7 @@ func (n NodeReport) GetByHostname(hostname string) *v1.Node {
 func (n NodeReport) GetByMachineProvider(machineProvider providermodels.ProviderType) []v1.Node {
 	var nodes []v1.Node
 	for _, node := range n.nodes {
-		if node.Labels["machineProvider"] == string(machineProvider) {
+		if node.Labels[providermodels.NodeLabelMachineProvider] == string(machineProvider) {
 			nodes = append(nodes, node)
 		}
 	}

@@ -7,6 +7,8 @@ var (
 )
 
 const (
+	NodeLabelMachineProvider string = "machineProvider"
+
 	UNKNOWN_UNDEFINED string = "unknown-undefined"
 
 	UNKNOWN_REGION              string = "unknown-region"
