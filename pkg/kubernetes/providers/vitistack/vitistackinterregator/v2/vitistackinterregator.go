@@ -184,7 +184,7 @@ func (v VitistackProviderinterregator) GetDatacenter() string {
 		return providermodels.UNKNOWN_DATACENTER
 	}
 
-	return v.GetAz() + "." + v.GetRegion()
+	return v.GetAz() + "." + v.GetRegion() + "." + v.GetCountry()
 
 }
 
