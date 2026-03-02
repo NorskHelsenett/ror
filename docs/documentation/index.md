@@ -1,12 +1,21 @@
-# ror-docs
+# ROR Docs
 
-ror-docs en en mkdocs-material side som genereres automatisk ved push til `docs/**/*` og `mkdocs.yaml`. mkdocs.yaml inneholder config og mapping av filer under /docs.
+ROR Docs is an mkdocs-material page that generates automatically when changes are pushed to `docs/*` and `mkdocs.yaml`.
 
-## Mapping av filer
+`mkdocs.yaml` holds the configuration and the mapping of files that's available under `docs/`.
 
-under `map:` i `mkdocs.yaml`defineres mapping av filer, første nivå er headere, undernivå er trestruktur i sidemenyen.
+To run docs locally you'll need python installed and run the following in the root of the repository:
 
-eks:
+```bash
+pip install -r mkdocs-requirements.txt
+mkdocs serve
+```
+
+## Mapping of files
+
+Under `map:` in `mkdocs.yaml` it defines the header, articles and under articles based on the indentation.
+
+Example:
 
 ```yaml
 nav:
@@ -21,17 +30,4 @@ nav:
           - ror-cli:
                 - ror-cli/index.md
                 - ror-cli/auth-flow.md
-```
-
-## Kodenær dokumentasjon
-
-Hvis dokumentasjonen er lagt sammen med koden kan den automatisk integreres med ror-docs ved å legg til en kopieringskommando i filen `/cmd/docs/collectdocs.sh`. Husk å mappe filen i `mkdocs.yaml`
-
-eks:
-
-```bash
-#!/bin/bash
-
-#API
-cp cmd/api/ReadMe.md docs/ror-api/index.md
 ```
