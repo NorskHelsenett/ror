@@ -349,6 +349,16 @@ var Resourcedefs = ApiResources{
 	},
 	{
 		TypeMeta: metav1.TypeMeta{
+			Kind:       "VirtualMachineVulnerabilityInfo",
+			APIVersion: "general.ror.internal/v1alpha1",
+		},
+		Plural:     "VirtualMachinesVulnerabilityInfo",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeVmAgent},
+		Versions:   []ApiVersions{ApiVersionV2},
+	},
+	{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Endpoints",
 			APIVersion: "v1",
 		},

@@ -231,6 +231,12 @@ type VirtualMachineinterface interface {
 	Get() *ResourceVirtualMachine
 }
 
+// VirtualMachineVulnerabilityInfointerface represents the interface for resources of the type virtualmachinevulnerabilityinfo
+type VirtualMachineVulnerabilityInfointerface interface {
+	CommonResourceInterface
+	Get() *ResourceVirtualMachineVulnerabilityInfo
+}
+
 // Endpointsinterface represents the interface for resources of the type endpoints
 type Endpointsinterface interface {
 	CommonResourceInterface
