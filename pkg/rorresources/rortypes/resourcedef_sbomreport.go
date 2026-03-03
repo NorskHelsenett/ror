@@ -51,7 +51,7 @@ type ResourceSbomReportsBomMetadataTools struct {
 }
 
 type ResourceSbomReportsComponent struct {
-	BomRef     string                                 `json:"bom-ref,omitempty"`
+	BomRef     string                                 `json:"bomRef,omitempty"`
 	Type       string                                 `json:"type,omitempty"`
 	Name       string                                 `json:"name,omitempty"`
 	Group      string                                 `json:"group,omitempty"`

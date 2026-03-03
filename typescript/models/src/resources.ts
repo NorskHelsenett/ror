@@ -595,6 +595,7 @@ export interface KubernetesClusterNodePool {
   metadata: KubernetesClusterSpecMetadataDetails;
   taint: KubernetesClusterTaint[];
   storage: KubernetesClusterStorage[];
+  architecture?: string;
 }
 export interface KubernetesClusterWorkers {
   nodePools: KubernetesClusterNodePool[];
@@ -615,6 +616,7 @@ export interface KubernetesClusterSpecControlPlane {
   machineClass: string;
   metadata: KubernetesClusterSpecMetadataDetails;
   storage: KubernetesClusterStorage[];
+  architecture?: string;
 }
 export interface KubernetesClusterSpecTopology {
   version: string;
@@ -837,11 +839,6 @@ export interface ResourceVulnerabilityReportReportArtifact {
   repository: string;
   tag: string;
 }
-export interface AquaReportScanner {
-  name: string;
-  vendor: string;
-  version: string;
-}
 export interface AquaReportSummary {
   criticalCount: number;
   highCount: number;
@@ -858,6 +855,95 @@ export interface ResourceVulnerabilityReportReport {
 }
 export interface ResourceVulnerabilityReport {
   report: ResourceVulnerabilityReportReport;
+}
+export interface ResourceSbomReportsComponentDep {
+  ref?: string;
+  dependsOn?: string[];
+}
+export interface ResourceSbomReportsComponentSupplierContact {
+  name?: string;
+  email?: string;
+  phone?: string;
+}
+export interface ResourceSbomReportsComponentSupplier {
+  name?: string;
+  url?: string[];
+  contact?: ResourceSbomReportsComponentSupplierContact[];
+}
+export interface ResourceSbomReportsComponentProperty {
+  name?: string;
+  value?: string;
+}
+export interface ResourceSbomReportsComponentLicenseDetails {
+  id?: string;
+  name?: string;
+  url?: string;
+}
+export interface ResourceSbomReportsComponentLicense {
+  expression?: string;
+  license?: ResourceSbomReportsComponentLicenseDetails;
+}
+export interface ResourceSbomReportsComponentHash {
+  alg?: string;
+  content?: string;
+}
+export interface ResourceSbomReportsComponent {
+  bomRef?: string;
+  type?: string;
+  name?: string;
+  group?: string;
+  version?: string;
+  purl?: string;
+  hashes?: ResourceSbomReportsComponentHash[];
+  licenses?: ResourceSbomReportsComponentLicense[];
+  properties?: ResourceSbomReportsComponentProperty[];
+  supplier?: ResourceSbomReportsComponentSupplier;
+}
+export interface ResourceSbomReportsBomMetadataTools {
+  components?: ResourceSbomReportsComponent[];
+}
+export interface ResourceSbomReportsBomMetadata {
+  timestamp?: string;
+  tools?: ResourceSbomReportsBomMetadataTools;
+  component?: ResourceSbomReportsComponent;
+}
+export interface ResourceSbomReportsBom {
+  bomFormat: string;
+  specVersion: string;
+  serialNumber?: string;
+  version?: number;
+  metadata?: ResourceSbomReportsBomMetadata;
+  components?: ResourceSbomReportsComponent[];
+  dependencies?: ResourceSbomReportsComponentDep[];
+}
+export interface ResourceSbomReportsSummary {
+  componentsCount: number;
+  dependenciesCount: number;
+}
+export interface ResourceSbomReportsRegistry {
+  server?: string;
+}
+export interface ResourceSbomReportsArtifact {
+  repository?: string;
+  tag?: string;
+  digest?: string;
+  mimeType?: string;
+}
+export interface AquaReportScanner {
+  name: string;
+  vendor: string;
+  version: string;
+}
+export interface ResourceSbomReportsReport {
+  scanner: AquaReportScanner;
+  artifact: ResourceSbomReportsArtifact;
+  registry?: ResourceSbomReportsRegistry;
+  summary: ResourceSbomReportsSummary;
+  components: ResourceSbomReportsBom;
+  updateTimestamp: string;
+}
+export interface ResourceSbomReport {
+  report: ResourceSbomReportsReport;
 }
 export interface ResourceIngressClassSpecParameters {
   apiGroup: string;
@@ -1310,6 +1396,7 @@ export interface Resource {
   daemonset?: ResourceDaemonSet;
   ingress?: ResourceIngress;
   ingressclass?: ResourceIngressClass;
+  sbomreport?: ResourceSbomReport;
   vulnerabilityreport?: ResourceVulnerabilityReport;
   exposedsecretreport?: ResourceExposedSecretReport;
   configauditreport?: ResourceConfigAuditReport;
