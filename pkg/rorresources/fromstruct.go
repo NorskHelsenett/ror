@@ -186,6 +186,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetVirtualMachine(res.VirtualMachineResource)
 		r.SetCommonInterface(res.VirtualMachineResource)
 
+	case "general.ror.internal/v1alpha1, Kind=VirtualMachineVulnerabilityInfo":
+		r.SetVirtualMachineVulnerabilityInfo(res.VirtualMachineVulnerabilityInfoResource)
+		r.SetCommonInterface(res.VirtualMachineVulnerabilityInfoResource)
+
 	case "/v1, Kind=Endpoints":
 		r.SetEndpoints(res.EndpointsResource)
 		r.SetCommonInterface(res.EndpointsResource)

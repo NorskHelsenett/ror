@@ -227,6 +227,33 @@ export interface ResourceEndpointSpecSubsets {
 export interface ResourceEndpoints {
   subsets?: ResourceEndpointSpecSubsets[];
 }
+export interface ResourceVirtualMachineVulnerabilitySpec {}
+export interface VulnerableVersion {
+  version: string;
+  packageName: string;
+}
+export interface CVE {
+  id: string;
+  csvss: string;
+  title: string;
+  description: string;
+  references: string[];
+  vulnerableVersions: VulnerableVersion[];
+}
+export interface ResourceVirtualMachineVulnerabilityStatus {
+  hostSeverity: string;
+  severity: string;
+  severityScore: number;
+  cves: CVE[];
+  lastCalculationTime: number;
+  lastReportTime: number;
+}
+export interface ResourceVirtualMachineVulnerabilityInfo {
+  id: string;
+  hostName: string;
+  status: ResourceVirtualMachineVulnerabilityStatus;
+  spec: ResourceVirtualMachineVulnerabilitySpec;
+}
 export interface ResourceVirtualMachineOperatingSystemStatus {
   id: string;
   name: string;
@@ -1417,6 +1444,7 @@ export interface Resource {
   slackmessage?: ResourceSlackMessage;
   vulnerabilityevent?: ResourceVulnerabilityEvent;
   virtualmachine?: ResourceVirtualMachine;
+  virtualmachinevulnerabilityinfo?: ResourceVirtualMachineVulnerabilityInfo;
   endpoints?: ResourceEndpoints;
   networkpolicy?: ResourceNetworkPolicy;
   datacenter?: ResourceDatacenter;

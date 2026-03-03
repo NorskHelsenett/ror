@@ -13,49 +13,50 @@ import (
 type Resource struct {
 	rortypes.CommonResource `json:",inline" bson:",inline"`
 
-	NamespaceResource                  *rortypes.ResourceNamespace                  `json:"namespace,omitempty" bson:"namespace,omitempty"`
-	NodeResource                       *rortypes.ResourceNode                       `json:"node,omitempty" bson:"node,omitempty"`
-	PersistentVolumeClaimResource      *rortypes.ResourcePersistentVolumeClaim      `json:"persistentvolumeclaim,omitempty" bson:"persistentvolumeclaim,omitempty"`
-	DeploymentResource                 *rortypes.ResourceDeployment                 `json:"deployment,omitempty" bson:"deployment,omitempty"`
-	StorageClassResource               *rortypes.ResourceStorageClass               `json:"storageclass,omitempty" bson:"storageclass,omitempty"`
-	PolicyReportResource               *rortypes.ResourcePolicyReport               `json:"policyreport,omitempty" bson:"policyreport,omitempty"`
-	ApplicationResource                *rortypes.ResourceApplication                `json:"application,omitempty" bson:"application,omitempty"`
-	AppProjectResource                 *rortypes.ResourceAppProject                 `json:"appproject,omitempty" bson:"appproject,omitempty"`
-	CertificateResource                *rortypes.ResourceCertificate                `json:"certificate,omitempty" bson:"certificate,omitempty"`
-	ServiceResource                    *rortypes.ResourceService                    `json:"service,omitempty" bson:"service,omitempty"`
-	PodResource                        *rortypes.ResourcePod                        `json:"pod,omitempty" bson:"pod,omitempty"`
-	ReplicaSetResource                 *rortypes.ResourceReplicaSet                 `json:"replicaset,omitempty" bson:"replicaset,omitempty"`
-	StatefulSetResource                *rortypes.ResourceStatefulSet                `json:"statefulset,omitempty" bson:"statefulset,omitempty"`
-	DaemonSetResource                  *rortypes.ResourceDaemonSet                  `json:"daemonset,omitempty" bson:"daemonset,omitempty"`
-	IngressResource                    *rortypes.ResourceIngress                    `json:"ingress,omitempty" bson:"ingress,omitempty"`
-	IngressClassResource               *rortypes.ResourceIngressClass               `json:"ingressclass,omitempty" bson:"ingressclass,omitempty"`
-	SbomReportResource                 *rortypes.ResourceSbomReport                 `json:"sbomreport,omitempty" bson:"sbomreport,omitempty"`
-	VulnerabilityReportResource        *rortypes.ResourceVulnerabilityReport        `json:"vulnerabilityreport,omitempty" bson:"vulnerabilityreport,omitempty"`
-	ExposedSecretReportResource        *rortypes.ResourceExposedSecretReport        `json:"exposedsecretreport,omitempty" bson:"exposedsecretreport,omitempty"`
-	ConfigAuditReportResource          *rortypes.ResourceConfigAuditReport          `json:"configauditreport,omitempty" bson:"configauditreport,omitempty"`
-	RbacAssessmentReportResource       *rortypes.ResourceRbacAssessmentReport       `json:"rbacassessmentreport,omitempty" bson:"rbacassessmentreport,omitempty"`
-	TanzuKubernetesClusterResource     *rortypes.ResourceTanzuKubernetesCluster     `json:"tanzukubernetescluster,omitempty" bson:"tanzukubernetescluster,omitempty"`
-	TanzuKubernetesReleaseResource     *rortypes.ResourceTanzuKubernetesRelease     `json:"tanzukubernetesrelease,omitempty" bson:"tanzukubernetesrelease,omitempty"`
-	VirtualMachineClassResource        *rortypes.ResourceVirtualMachineClass        `json:"virtualmachineclass,omitempty" bson:"virtualmachineclass,omitempty"`
-	KubernetesClusterResource          *rortypes.ResourceKubernetesCluster          `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
-	ProviderResource                   *rortypes.ResourceProvider                   `json:"provider,omitempty" bson:"provider,omitempty"`
-	WorkspaceResource                  *rortypes.ResourceWorkspace                  `json:"workspace,omitempty" bson:"workspace,omitempty"`
-	KubernetesMachineClassResource     *rortypes.ResourceKubernetesMachineClass     `json:"kubernetesmachineclass,omitempty" bson:"kubernetesmachineclass,omitempty"`
-	ClusterOrderResource               *rortypes.ResourceClusterOrder               `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
-	ProjectResource                    *rortypes.ResourceProject                    `json:"project,omitempty" bson:"project,omitempty"`
-	ConfigurationResource              *rortypes.ResourceConfiguration              `json:"configuration,omitempty" bson:"configuration,omitempty"`
-	ClusterComplianceReportResource    *rortypes.ResourceClusterComplianceReport    `json:"clustercompliancereport,omitempty" bson:"clustercompliancereport,omitempty"`
-	ClusterVulnerabilityReportResource *rortypes.ResourceClusterVulnerabilityReport `json:"clustervulnerabilityreport,omitempty" bson:"clustervulnerabilityreport,omitempty"`
-	RouteResource                      *rortypes.ResourceRoute                      `json:"route,omitempty" bson:"route,omitempty"`
-	SlackMessageResource               *rortypes.ResourceSlackMessage               `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
-	VulnerabilityEventResource         *rortypes.ResourceVulnerabilityEvent         `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
-	VirtualMachineResource             *rortypes.ResourceVirtualMachine             `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
-	EndpointsResource                  *rortypes.ResourceEndpoints                  `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
-	NetworkPolicyResource              *rortypes.ResourceNetworkPolicy              `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
-	DatacenterResource                 *rortypes.ResourceDatacenter                 `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
-	BackupJobResource                  *rortypes.ResourceBackupJob                  `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
-	BackupRunResource                  *rortypes.ResourceBackupRun                  `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
-	UnknownResource                    *rortypes.ResourceUnknown                    `json:"unknown,omitempty" bson:"unknown,omitempty"`
+	NamespaceResource                       *rortypes.ResourceNamespace                       `json:"namespace,omitempty" bson:"namespace,omitempty"`
+	NodeResource                            *rortypes.ResourceNode                            `json:"node,omitempty" bson:"node,omitempty"`
+	PersistentVolumeClaimResource           *rortypes.ResourcePersistentVolumeClaim           `json:"persistentvolumeclaim,omitempty" bson:"persistentvolumeclaim,omitempty"`
+	DeploymentResource                      *rortypes.ResourceDeployment                      `json:"deployment,omitempty" bson:"deployment,omitempty"`
+	StorageClassResource                    *rortypes.ResourceStorageClass                    `json:"storageclass,omitempty" bson:"storageclass,omitempty"`
+	PolicyReportResource                    *rortypes.ResourcePolicyReport                    `json:"policyreport,omitempty" bson:"policyreport,omitempty"`
+	ApplicationResource                     *rortypes.ResourceApplication                     `json:"application,omitempty" bson:"application,omitempty"`
+	AppProjectResource                      *rortypes.ResourceAppProject                      `json:"appproject,omitempty" bson:"appproject,omitempty"`
+	CertificateResource                     *rortypes.ResourceCertificate                     `json:"certificate,omitempty" bson:"certificate,omitempty"`
+	ServiceResource                         *rortypes.ResourceService                         `json:"service,omitempty" bson:"service,omitempty"`
+	PodResource                             *rortypes.ResourcePod                             `json:"pod,omitempty" bson:"pod,omitempty"`
+	ReplicaSetResource                      *rortypes.ResourceReplicaSet                      `json:"replicaset,omitempty" bson:"replicaset,omitempty"`
+	StatefulSetResource                     *rortypes.ResourceStatefulSet                     `json:"statefulset,omitempty" bson:"statefulset,omitempty"`
+	DaemonSetResource                       *rortypes.ResourceDaemonSet                       `json:"daemonset,omitempty" bson:"daemonset,omitempty"`
+	IngressResource                         *rortypes.ResourceIngress                         `json:"ingress,omitempty" bson:"ingress,omitempty"`
+	IngressClassResource                    *rortypes.ResourceIngressClass                    `json:"ingressclass,omitempty" bson:"ingressclass,omitempty"`
+	SbomReportResource                      *rortypes.ResourceSbomReport                      `json:"sbomreport,omitempty" bson:"sbomreport,omitempty"`
+	VulnerabilityReportResource             *rortypes.ResourceVulnerabilityReport             `json:"vulnerabilityreport,omitempty" bson:"vulnerabilityreport,omitempty"`
+	ExposedSecretReportResource             *rortypes.ResourceExposedSecretReport             `json:"exposedsecretreport,omitempty" bson:"exposedsecretreport,omitempty"`
+	ConfigAuditReportResource               *rortypes.ResourceConfigAuditReport               `json:"configauditreport,omitempty" bson:"configauditreport,omitempty"`
+	RbacAssessmentReportResource            *rortypes.ResourceRbacAssessmentReport            `json:"rbacassessmentreport,omitempty" bson:"rbacassessmentreport,omitempty"`
+	TanzuKubernetesClusterResource          *rortypes.ResourceTanzuKubernetesCluster          `json:"tanzukubernetescluster,omitempty" bson:"tanzukubernetescluster,omitempty"`
+	TanzuKubernetesReleaseResource          *rortypes.ResourceTanzuKubernetesRelease          `json:"tanzukubernetesrelease,omitempty" bson:"tanzukubernetesrelease,omitempty"`
+	VirtualMachineClassResource             *rortypes.ResourceVirtualMachineClass             `json:"virtualmachineclass,omitempty" bson:"virtualmachineclass,omitempty"`
+	KubernetesClusterResource               *rortypes.ResourceKubernetesCluster               `json:"kubernetescluster,omitempty" bson:"kubernetescluster,omitempty"`
+	ProviderResource                        *rortypes.ResourceProvider                        `json:"provider,omitempty" bson:"provider,omitempty"`
+	WorkspaceResource                       *rortypes.ResourceWorkspace                       `json:"workspace,omitempty" bson:"workspace,omitempty"`
+	KubernetesMachineClassResource          *rortypes.ResourceKubernetesMachineClass          `json:"kubernetesmachineclass,omitempty" bson:"kubernetesmachineclass,omitempty"`
+	ClusterOrderResource                    *rortypes.ResourceClusterOrder                    `json:"clusterorder,omitempty" bson:"clusterorder,omitempty"`
+	ProjectResource                         *rortypes.ResourceProject                         `json:"project,omitempty" bson:"project,omitempty"`
+	ConfigurationResource                   *rortypes.ResourceConfiguration                   `json:"configuration,omitempty" bson:"configuration,omitempty"`
+	ClusterComplianceReportResource         *rortypes.ResourceClusterComplianceReport         `json:"clustercompliancereport,omitempty" bson:"clustercompliancereport,omitempty"`
+	ClusterVulnerabilityReportResource      *rortypes.ResourceClusterVulnerabilityReport      `json:"clustervulnerabilityreport,omitempty" bson:"clustervulnerabilityreport,omitempty"`
+	RouteResource                           *rortypes.ResourceRoute                           `json:"route,omitempty" bson:"route,omitempty"`
+	SlackMessageResource                    *rortypes.ResourceSlackMessage                    `json:"slackmessage,omitempty" bson:"slackmessage,omitempty"`
+	VulnerabilityEventResource              *rortypes.ResourceVulnerabilityEvent              `json:"vulnerabilityevent,omitempty" bson:"vulnerabilityevent,omitempty"`
+	VirtualMachineResource                  *rortypes.ResourceVirtualMachine                  `json:"virtualmachine,omitempty" bson:"virtualmachine,omitempty"`
+	VirtualMachineVulnerabilityInfoResource *rortypes.ResourceVirtualMachineVulnerabilityInfo `json:"virtualmachinevulnerabilityinfo,omitempty" bson:"virtualmachinevulnerabilityinfo,omitempty"`
+	EndpointsResource                       *rortypes.ResourceEndpoints                       `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
+	NetworkPolicyResource                   *rortypes.ResourceNetworkPolicy                   `json:"networkpolicy,omitempty" bson:"networkpolicy,omitempty"`
+	DatacenterResource                      *rortypes.ResourceDatacenter                      `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
+	BackupJobResource                       *rortypes.ResourceBackupJob                       `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
+	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
+	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -224,6 +225,10 @@ func (r *Resource) SetVulnerabilityEvent(res *rortypes.ResourceVulnerabilityEven
 
 func (r *Resource) SetVirtualMachine(res *rortypes.ResourceVirtualMachine) {
 	r.VirtualMachineResource = res
+}
+
+func (r *Resource) SetVirtualMachineVulnerabilityInfo(res *rortypes.ResourceVirtualMachineVulnerabilityInfo) {
+	r.VirtualMachineVulnerabilityInfoResource = res
 }
 
 func (r *Resource) SetEndpoints(res *rortypes.ResourceEndpoints) {
@@ -433,6 +438,11 @@ func (r *Resource) VulnerabilityEvent() rortypes.VulnerabilityEventinterface {
 // VirtualMachine is a wrapper for the underlying resource, it provides a VirtualMachineinterface to work with VirtualMachines
 func (r *Resource) VirtualMachine() rortypes.VirtualMachineinterface {
 	return r.VirtualMachineResource
+}
+
+// VirtualMachineVulnerabilityInfo is a wrapper for the underlying resource, it provides a VirtualMachineVulnerabilityInfointerface to work with VirtualMachinesVulnerabilityInfo
+func (r *Resource) VirtualMachineVulnerabilityInfo() rortypes.VirtualMachineVulnerabilityInfointerface {
+	return r.VirtualMachineVulnerabilityInfoResource
 }
 
 // Endpoints is a wrapper for the underlying resource, it provides a Endpointsinterface to work with endpoints
