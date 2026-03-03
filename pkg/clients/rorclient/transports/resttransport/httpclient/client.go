@@ -412,11 +412,11 @@ func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 			t.Status.RetryAfter = t.getRetryAfterHeader(res)
 			return fmt.Errorf("http error: %s from %s (retry after: %s)", res.Status, res.Request.URL, t.Status.RetryAfter.Format(time.RFC3339))
 		}
-		if res.StatusCode == http.StatusUnauthorized {
+		if res.StatusCode == http.StatusUnauthorized && res.Request.Method != "HEAD" {
 			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for unauthorized
 			return fmt.Errorf("http error: %s from %s (unauthorized, check your authentication) Connection throttled", res.Status, res.Request.URL)
 		}
-		if res.StatusCode == http.StatusForbidden {
+		if res.StatusCode == http.StatusForbidden && res.Request.Method != "HEAD" {
 			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for forbidden
 			return fmt.Errorf("http error: %s from %s (forbidden, check your permissions) Connection throttled", res.Status, res.Request.URL)
 		}
