@@ -43,34 +43,47 @@ func NewRedisCache(redisDb redisdb.RedisDB, opts ...kvcachehelper.CacheOptions) 
 	return &rc
 }
 
-func (c *RedisCache) Set(ctx context.Context, key string, value string) {
+func (c *RedisCache) Set(ctx context.Context, key string, value any, opts ...kvcachehelper.CacheSetOptions) {
+	var expiresIn time.Duration = c.expiration
+	var prefix string = c.prefix
+	for _, opt := range opts {
+		if opt.Timeout.Seconds() != 0 {
+			expiresIn = opt.Timeout
+		}
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
+
 	if key == "" {
 		rlog.Warnc(ctx, "Key is empty")
 		return
 	}
 
-	rkey := c.prefix + key
-	err := c.redisDb.Set(ctx, rkey, value, c.expiration)
+	rkey := prefix + key
+	err := c.redisDb.Set(ctx, rkey, value, expiresIn)
 	if err != nil {
 		rlog.Debugc(ctx, fmt.Sprintf("Error adding value to redis cache by key: %s", rkey))
 		return
 	}
 }
 
-func (c *RedisCache) Get(ctx context.Context, key string) (string, bool) {
+func (c *RedisCache) Get(ctx context.Context, key string, opts ...kvcachehelper.CacheGetOptions) (any, bool) {
+	var prefix string = c.prefix
+	for _, opt := range opts {
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
 	if key == "" {
 		rlog.Warnc(ctx, "Key is empty")
 		return "", false
 	}
 	var cacheValue string
-	rkey := c.prefix + key
+	rkey := prefix + key
 	err := c.redisDb.Get(ctx, rkey, &cacheValue)
 	if err != nil {
 		rlog.Debugc(ctx, fmt.Sprintf("Error getting value from redis cache by key: %s", rkey))
-		return "", false
-	}
-
-	if cacheValue == "" {
 		return "", false
 	}
 
@@ -95,12 +108,18 @@ func (c *RedisCache) Keys(ctx context.Context) ([]string, error) {
 	return keys, nil
 }
 
-func (c *RedisCache) Remove(ctx context.Context, key string) bool {
+func (c *RedisCache) Remove(ctx context.Context, key string, opts ...kvcachehelper.CacheRemoveOptions) bool {
+	prefix := c.prefix
+	for _, opt := range opts {
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
 	if key == "" {
 		rlog.Warnc(ctx, "Key is empty")
 		return false
 	}
-	rkey := c.prefix + key
+	rkey := prefix + key
 	err := c.redisDb.Delete(ctx, rkey)
 	if err != nil {
 		rlog.Debugc(ctx, fmt.Sprintf("Error deleting value from redis cache by key: %s", rkey))
