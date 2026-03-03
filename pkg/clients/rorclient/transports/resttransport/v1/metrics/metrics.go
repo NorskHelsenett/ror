@@ -20,10 +20,11 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 }
 
 func (c *V1Client) CreatePVC(input apicontracts.PersistentVolumeClaimMetric) error {
-	var dummy interface{}
+	var dummy any
 	return c.Client.PostJSON(c.basePath+"/pvc", input, &dummy)
 }
 
 func (c *V1Client) PostReport(ctx context.Context, metricsReport apicontracts.MetricsReport) error {
-	return c.Client.PostJSONWithContext(ctx, c.basePath, metricsReport, nil)
+	var dummy any
+	return c.Client.PostJSONWithContext(ctx, c.basePath, metricsReport, &dummy)
 }

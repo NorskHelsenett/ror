@@ -611,7 +611,6 @@ export interface KubernetesClusterNodePool {
   metadata: KubernetesClusterSpecMetadataDetails;
   taint: KubernetesClusterTaint[];
   storage: KubernetesClusterStorage[];
-  architecture?: string;
 }
 export interface KubernetesClusterWorkers {
   nodePools: KubernetesClusterNodePool[];

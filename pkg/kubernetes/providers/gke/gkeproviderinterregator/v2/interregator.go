@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
@@ -21,10 +22,41 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.IsTypeOf() {
 		return nil
 	}
-	return interregator
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterIdFunc: func() string {
+			return interregator.GetClusterId()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetAzFunc: func() string {
+			return interregator.GetAz()
+		},
+		GetRegionFunc: func() string {
+			return interregator.GetRegion()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+	})
 }
 
 func (t GkeProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return t.nodes[0].GetLabels()["cloud.google.com/gke-container-runtime"] != ""
 }
 func (t GkeProviderinterregator) GetProvider() providermodels.ProviderType {
@@ -64,10 +96,9 @@ func (t GkeProviderinterregator) GetRegion() string {
 	return t.nodes[0].GetLabels()["topology.kubernetes.io/region"]
 }
 
-func (t GkeProviderinterregator) GetMachineProvider() string {
-	return t.nodes[0].GetLabels()["kubernetes.azure.com/role"]
+func (t GkeProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeGke
 }
-
-func (t GkeProviderinterregator) GetKubernetesProvider() string {
-	return "GKE"
+func (t GkeProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeGke
 }

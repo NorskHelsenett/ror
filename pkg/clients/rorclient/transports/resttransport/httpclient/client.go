@@ -169,11 +169,16 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 	if err != nil {
 		return err
 	}
-
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
-	}
-	defer res.Body.Close()
+	// Errors shpulød be handled in postflight to ensure that we also capture version information and set retry after status when applicable.
+	//	if res.StatusCode > 399 || res.StatusCode < 200 {
+	//		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
+	//	}
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, out)
 	if err != nil {
@@ -214,7 +219,12 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, out)
 	if err != nil {
@@ -398,7 +408,6 @@ func (t *HttpTransportClient) getRetryAfterHeader(res *http.Response) time.Time 
 //   - error: Formatted error message for non-successful responses, nil for successful responses
 func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 	if res.StatusCode > 399 || res.StatusCode < 200 {
-
 		if res.StatusCode == http.StatusServiceUnavailable || res.StatusCode == http.StatusTooManyRequests {
 			t.Status.RetryAfter = t.getRetryAfterHeader(res)
 			return fmt.Errorf("http error: %s from %s (retry after: %s)", res.Status, res.Request.URL, t.Status.RetryAfter.Format(time.RFC3339))
@@ -442,7 +451,12 @@ func (t *HttpTransportClient) handleResponse(res *http.Response, out any) error 
 	}
 
 	// If no output is expected, return early
-	if out == nil && res.StatusCode == http.StatusNoContent {
+	if out == nil {
+		return nil
+	}
+
+	// If no output is expected, return early
+	if res.StatusCode == http.StatusNoContent {
 		return nil
 	}
 

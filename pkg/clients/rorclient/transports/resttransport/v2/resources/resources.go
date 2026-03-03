@@ -35,6 +35,7 @@ func (c *V2Client) Get(ctx context.Context, query rorresources.ResourceQuery) (*
 		return &res, err
 	}
 	queryString := base64.StdEncoding.EncodeToString(jsonQuery)
+	//TODO: Use new paramsystem instead of query string
 	err = c.Client.GetJSONWithContext(ctx, c.basePath+"?query="+queryString, &res)
 	return &res, err
 }

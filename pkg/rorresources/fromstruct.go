@@ -102,6 +102,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetIngressClass(res.IngressClassResource)
 		r.SetCommonInterface(res.IngressClassResource)
 
+	case "aquasecurity.github.io/v1alpha1, Kind=SbomReport":
+		r.SetSbomReport(res.SbomReportResource)
+		r.SetCommonInterface(res.SbomReportResource)
+
 	case "aquasecurity.github.io/v1alpha1, Kind=VulnerabilityReport":
 		r.SetVulnerabilityReport(res.VulnerabilityReportResource)
 		r.SetCommonInterface(res.VulnerabilityReportResource)

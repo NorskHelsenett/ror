@@ -1,6 +1,7 @@
 package azureproviderinterregator
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/factories/interregatorfactory"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/interregators/interregatortypes/v2"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	v1 "k8s.io/api/core/v1"
@@ -18,10 +19,38 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 	if !interregator.IsTypeOf() {
 		return nil
 	}
-	return interregator
+	return interregatorfactory.NewClusterInterregatorFactory(nodes, interregatorfactory.ClusterInterregatorFactoryConfig{
+		GetProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetProvider()
+		},
+		GetClusterNameFunc: func() string {
+			return interregator.GetClusterName()
+		},
+		GetClusterWorkspaceFunc: func() string {
+			return interregator.GetClusterWorkspace()
+		},
+		GetDatacenterFunc: func() string {
+			return interregator.GetDatacenter()
+		},
+		GetAzFunc: func() string {
+			return interregator.GetAz()
+		},
+		GetRegionFunc: func() string {
+			return interregator.GetRegion()
+		},
+		GetMachineProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetMachineProvider()
+		},
+		GetKubernetesProviderFunc: func() providermodels.ProviderType {
+			return interregator.GetKubernetesProvider()
+		},
+	})
 }
 
 func (t AzureProviderinterregator) IsTypeOf() bool {
+	if len(t.nodes) == 0 {
+		return false
+	}
 	return t.nodes[0].GetLabels()["kubernetes.azure.com/role"] != ""
 }
 
@@ -30,10 +59,6 @@ func (t AzureProviderinterregator) GetProvider() providermodels.ProviderType {
 		return providermodels.ProviderTypeAks
 	}
 	return providermodels.ProviderTypeUnknown
-}
-
-func (t AzureProviderinterregator) GetClusterId() string {
-	return providermodels.UNKNOWN_CLUSTER_ID
 }
 
 func (t AzureProviderinterregator) GetClusterName() string {
@@ -57,10 +82,10 @@ func (t AzureProviderinterregator) GetRegion() string {
 	return t.nodes[0].GetLabels()["topology.kubernetes.io/region"]
 }
 
-func (t AzureProviderinterregator) GetMachineProvider() string {
-	return "AzureVM"
+func (t AzureProviderinterregator) GetMachineProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeAks
 }
 
-func (t AzureProviderinterregator) GetKubernetesProvider() string {
-	return "Azure Kubernetes Service"
+func (t AzureProviderinterregator) GetKubernetesProvider() providermodels.ProviderType {
+	return providermodels.ProviderTypeAks
 }

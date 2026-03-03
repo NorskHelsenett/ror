@@ -127,6 +127,11 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetIngressClass(res)
 		r.SetCommonInterface(res)
 
+	case "aquasecurity.github.io/v1alpha1, Kind=SbomReport":
+		res := newSbomReportFromDynamicClient(input)
+		r.SetSbomReport(res)
+		r.SetCommonInterface(res)
+
 	case "aquasecurity.github.io/v1alpha1, Kind=VulnerabilityReport":
 		res := newVulnerabilityReportFromDynamicClient(input)
 		r.SetVulnerabilityReport(res)
@@ -581,6 +586,26 @@ func newIngressClassFromDynamicClient(obj *unstructured.Unstructured) *rortypes.
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to IngressClass", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newSbomReportFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newSbomReportFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceSbomReport {
+	nr := rortypes.ResourceSbomReport{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to SbomReport", err)
 	}
 
 	// Explicitly free the JSON bytes to help garbage collection

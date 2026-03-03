@@ -213,6 +213,12 @@ func (c *RorClient) CheckHealth(ctx context.Context) []rorhealth.Check {
 			Status:      rorhealth.StatusFail,
 			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
 		})
+	} else {
+		healthChecks = append(healthChecks, rorhealth.Check{
+			ComponentID: "Transport",
+			Status:      rorhealth.StatusPass,
+			Output:      fmt.Sprintf("%s is healthy", c.Transport.GetTransportName()),
+		})
 	}
 	return healthChecks
 }
@@ -225,6 +231,12 @@ func (c *RorClient) CheckHealthWithoutContext() []rorhealth.Check {
 			ComponentID: "Transport",
 			Status:      rorhealth.StatusFail,
 			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
+		})
+	} else {
+		healthChecks = append(healthChecks, rorhealth.Check{
+			ComponentID: "Transport",
+			Status:      rorhealth.StatusPass,
+			Output:      fmt.Sprintf("%s is healthy", c.Transport.GetTransportName()),
 		})
 	}
 	return healthChecks

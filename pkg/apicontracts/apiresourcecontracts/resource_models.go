@@ -62,6 +62,16 @@ type ResourceUpdateModel struct {
 	Resource   any                    `json:"resource"`
 }
 
+type ResourceModelMetadata struct {
+	Owner      ResourceOwnerReference `json:"owner"`
+	ApiVersion string                 `json:"apiVersion"`
+	Kind       string                 `json:"kind"`
+	Uid        string                 `json:"uid"`
+	Hash       string                 `json:"hash"`
+	Internal   bool                   `json:"internal"`
+	Version    ResourceVersion        `json:"version"`
+}
+
 // Generic resourcemodels for single resource.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceModel[T Resourcetypes] struct {
 	Owner      ResourceOwnerReference `json:"owner"`

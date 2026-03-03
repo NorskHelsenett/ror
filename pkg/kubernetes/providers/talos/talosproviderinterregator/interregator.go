@@ -67,5 +67,5 @@ func (t Talostypes) GetRegion(nodes []v1.Node) string {
 }
 
 func (t Talostypes) GetKubernetesProvider(nodes []v1.Node) string {
-	return "Talos"
+	return string(providermodels.ProviderTypeTalos)
 }

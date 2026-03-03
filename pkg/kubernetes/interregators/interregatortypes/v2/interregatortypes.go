@@ -17,6 +17,16 @@ type ClusterInterregator interface {
 	GetDatacenter() string
 	GetAz() string
 	GetRegion() string
-	GetMachineProvider() string
-	GetKubernetesProvider() string
+	GetMachineProvider() providermodels.ProviderType
+	GetKubernetesProvider() providermodels.ProviderType
+	GetCountry() string
+	Nodes() ClusterNodeReport
+}
+
+type ClusterNodeReport interface {
+	Get() []v1.Node
+	GetByName(name string) *v1.Node
+	GetByUid(uid string) *v1.Node
+	GetByHostname(hostname string) *v1.Node
+	GetByMachineProvider(machineProvider providermodels.ProviderType) []v1.Node
 }
