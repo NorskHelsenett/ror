@@ -9,6 +9,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
+	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
@@ -17,6 +18,10 @@ import (
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 var ApiEndpoint = "https://graph.microsoft.com/.default"
@@ -67,6 +72,8 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 // TODO: Implement isExpired
 // TODO: Implement isDisabled...
 func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.GetUser")
+	defer span.End()
 	var ret *identitymodels.User
 	var groupnames []string = []string{}
 	var user models.Userable
@@ -75,13 +82,13 @@ func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymo
 	userChan := make(chan models.Userable)
 	errorChan := make(chan error)
 	queryStart := time.Now()
-	go g.getUser(userId, userChan, errorChan)
-	go g.getGroups(userId, groupsChan, errorChan)
+	go g.getUser(ctx, userId, userChan, errorChan)
+	go g.getGroups(ctx, userId, groupsChan, errorChan)
 
 	for i := 0; i < 2; i++ {
 		select {
 		case returnedgroupids := <-groupsChan:
-			returnedgroups, err := g.getGroupDisplayNames(returnedgroupids, g.GroupCache)
+			returnedgroups, err := g.getGroupDisplayNames(ctx, returnedgroupids, g.GroupCache)
 			if err != nil {
 				return nil, err
 			}
@@ -121,7 +128,9 @@ func addDomainpartToGroups(groupnames *[]string, userId string) {
 }
 
 // getUser gets a user from the graph api
-func (g *MsGraphClient) getUser(userId string, userChan chan<- models.Userable, errorChan chan<- error) {
+func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan chan<- models.Userable, errorChan chan<- error) {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getUser")
+	defer span.End()
 	user, err := g.Client.Users().ByUserId(userId).Get(context.Background(), nil)
 	if err != nil {
 		errorChan <- err
@@ -131,7 +140,9 @@ func (g *MsGraphClient) getUser(userId string, userChan chan<- models.Userable, 
 
 // getGroups gets the groups a user is a member of from the graph api
 // It returns a list of group ids
-func (g *MsGraphClient) getGroups(userId string, groupsChan chan<- []string, errorChan chan<- error) {
+func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan chan<- []string, errorChan chan<- error) {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getGroups")
+	defer span.End()
 	// MS Fu%¤d up, change back if they fix their api
 	//requestBody := graphusers.NewItemGetmembergroupsGetMemberGroupsPostRequestBody()
 	requestBody := graphusers.NewItemGetMemberGroupsPostRequestBody()
@@ -147,11 +158,13 @@ func (g *MsGraphClient) getGroups(userId string, groupsChan chan<- []string, err
 
 // getGroupDisplayNames gets the display names of a list of groups in parallel
 // It returns a list of group names based on the group ids
-func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache kvcachehelper.CacheInterface) ([]string, error) {
+func (g *MsGraphClient) getGroupDisplayNames(ctx context.Context, groups []string, groupCache kvcachehelper.CacheInterface) ([]string, error) {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getGroupDisplayNames")
+	defer span.End()
 	groupsNameChan := make(chan string, len(groups))
 	groupsErrorChan := make(chan error)
 	for _, value := range groups {
-		go g.getGroupDisplayName(value, groupsNameChan, groupsErrorChan, groupCache)
+		go g.getGroupDisplayName(ctx, value, groupsNameChan, groupsErrorChan, groupCache)
 	}
 	groupNames := make([]string, len(groups))
 
@@ -171,21 +184,29 @@ func (g *MsGraphClient) getGroupDisplayNames(groups []string, groupCache kvcache
 // getGroupDisplayName gets the display name of a group
 // If the group is not in the cache, it will fetch it from the graph api
 // and add it to the cache
-func (g *MsGraphClient) getGroupDisplayName(groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error, groupCache kvcachehelper.CacheInterface) {
-	ctx := context.Background()
+func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error, groupCache kvcachehelper.CacheInterface) {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getGroupDisplayNames",
+		trace.WithAttributes(
+			attribute.String("groupId", groupId),
+		))
+	defer span.End()
 	name, cached := groupCache.Get(ctx, groupId)
 	if cached {
+		span.SetStatus(codes.Ok, "Cache hit")
 		groupsNameChan <- name
 		return
 	}
 
 	group, err := g.Client.Groups().ByGroupId(groupId).Get(ctx, nil)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Getting group from graph api failed")
 		groupsErrorChan <- err
 		return
 	}
 	groupCache.Set(ctx, groupId, *group.GetDisplayName())
 	groupsNameChan <- *group.GetDisplayName()
+	span.SetStatus(codes.Ok, "Cache updated with new group name")
 }
 
 func (g *MsGraphClient) CheckHealthWithoutContext() []rorhealth.Check {
