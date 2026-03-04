@@ -1,5 +1,9 @@
 package globalconfig
 
+const (
+	AUTH_USER_ADMIN_GROUP = "cluster-admin@ror.io"
+)
+
 // Lists the argo Projects that will be marked as internal for use in filtering functions
 var InternalAppProjects map[string]bool = map[string]bool{
 	"nhn-tooling": true,
