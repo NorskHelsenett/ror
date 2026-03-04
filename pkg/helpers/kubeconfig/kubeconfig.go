@@ -109,6 +109,45 @@ func (k *KubeConfig) IsExpired(context string) (bool, error) {
 	return false, nil
 }
 
+func (k *KubeConfig) MemberOfGroup(context string, group string) (bool, error) {
+	if k == nil {
+		return true, nil
+	}
+	if errs := k.HandleErrors(); errs != nil {
+		return true, errs
+	}
+
+	if k.Config.Contexts[context] == nil || k.Config.Contexts[context].AuthInfo == "" {
+		return true, nil
+	}
+
+	authInfo, exists := k.Config.AuthInfos[k.Config.Contexts[context].AuthInfo]
+	if !exists {
+		return true, nil
+	}
+
+	if authInfo.Token == "" {
+		// we can't check if the token is expired if it's not set
+		return true, nil
+	}
+	token, _, err := new(jwt.Parser).ParseUnverified(authInfo.Token, jwt.MapClaims{})
+
+	if err != nil {
+		return true, err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	groups := claims["groups"].([]interface{})
+
+	for _, v := range groups {
+		if fmt.Sprintf("%v", v) == group {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 // LoadFromBytes loads the kubeconfig file
 func (k *KubeConfig) MergeYaml(yaml []byte) *KubeConfig {
 
