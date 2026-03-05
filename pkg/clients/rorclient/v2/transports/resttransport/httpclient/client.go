@@ -159,18 +159,11 @@ func (t *HttpTransportClientConfig) GetRole() string {
 	return t.Role
 }
 
-// GetJSON performs a GET request and unmarshals the JSON response into the out parameter.
-// This is a convenience wrapper around GetJSONWithContext using the background context.
-// If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransportClientParams) error {
-	return t.GetJSONWithContext(context.TODO(), path, out, params...)
-}
-
-// GetJSONWithContext performs a GET request with the provided context and unmarshals
+// GetJSON performs a GET request with the provided context and unmarshals
 // the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "httpclient.GetJSONWithContext")
+func (t *HttpTransportClient) GetJSON(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "httpclient.GetJSON")
 	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return err
@@ -206,17 +199,10 @@ func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path strin
 	return nil
 }
 
-// PostJSON performs a POST request with the provided input and unmarshals the JSON response into the out parameter.
-// This is a convenience wrapper around PostJSONWithContext using the background context.
-// If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) PostJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
-	return t.PostJSONWithContext(context.TODO(), path, in, out, params...)
-}
-
-// PostJSONWithContext performs a POST request with the provided context and input,
+// PostJSON performs a POST request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+func (t *HttpTransportClient) PostJSON(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -252,17 +238,10 @@ func (t *HttpTransportClient) PostJSONWithContext(ctx context.Context, path stri
 	return nil
 }
 
-// PutJSON performs a PUT request with the provided input and unmarshals the JSON response into the out parameter.
-// This is a convenience wrapper around PutJSONWithContext using the background context.
-// If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) PutJSON(path string, in any, out any, params ...HttpTransportClientParams) error {
-	return t.PutJSONWithContext(context.TODO(), path, in, out, params...)
-}
-
-// PutJSONWithContext performs a PUT request with the provided context and input,
+// PutJSON performs a PUT request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+func (t *HttpTransportClient) PutJSON(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -292,17 +271,10 @@ func (t *HttpTransportClient) PutJSONWithContext(ctx context.Context, path strin
 	return nil
 }
 
-// Delete performs a DELETE request and unmarshals the JSON response into the out parameter.
-// This is a convenience wrapper around DeleteWithContext using the background context.
-// If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) Delete(path string, out any, params ...HttpTransportClientParams) error {
-	return t.DeleteWithContext(context.TODO(), path, out, params...)
-}
-
-// DeleteWithContext performs a DELETE request with the provided context and
+// Delete performs a DELETE request with the provided context and
 // unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
-func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+func (t *HttpTransportClient) Delete(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -328,16 +300,9 @@ func (t *HttpTransportClient) DeleteWithContext(ctx context.Context, path string
 	return nil
 }
 
-// Head makes a HEAD request with the given path and params.
-// It returns only the header and status code from the result, as HEAD requests have no response body.
-// This is a convenience wrapper around HeadWithContext using the background context.
-func (t *HttpTransportClient) Head(path string, params ...HttpTransportClientParams) (http.Header, int, error) {
-	return t.HeadWithContext(context.TODO(), path, params...)
-}
-
-// HeadWithContext performs a HEAD request with the provided context and returns
+// Head performs a HEAD request with the provided context and returns
 // the response headers and status code.
-func (t *HttpTransportClient) HeadWithContext(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
+func (t *HttpTransportClient) Head(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
 	if err := t.PreflightCheck(); err != nil {
 		return nil, -1, err
 	}
