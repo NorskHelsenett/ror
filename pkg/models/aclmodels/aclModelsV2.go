@@ -61,11 +61,12 @@ func NewAclV2ListItem(group string,
 
 // v2 access model for ror api
 type AclV2ListItemAccess struct {
-	Read   bool `json:"read" validate:"boolean"`   // Read metadata of subject
-	Create bool `json:"create" validate:"boolean"` // Write metadata of subject
-	Update bool `json:"update" validate:"boolean"` // Update metadata of subject
-	Delete bool `json:"delete" validate:"boolean"` // Delete metadata of subject
-	Owner  bool `json:"owner" validate:"boolean"`  // Delete metadata of subject
+	Read            bool `json:"read" validate:"boolean"`            // Read metadata of subject
+	Create          bool `json:"create" validate:"boolean"`          // Write metadata of subject
+	Update          bool `json:"update" validate:"boolean"`          // Update metadata of subject
+	Delete          bool `json:"delete" validate:"boolean"`          // Delete metadata of subject
+	Owner           bool `json:"owner" validate:"boolean"`           // Delete metadata of subject
+	KubernetesLogon bool `json:"kuberneteslogon" validate:"boolean"` // Logon to cluster
 }
 
 // NewAclV2ListItemAccess construct a new AclV2ListItemAccess object.

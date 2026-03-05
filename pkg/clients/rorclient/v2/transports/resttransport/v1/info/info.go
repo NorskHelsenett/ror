@@ -3,7 +3,7 @@ package info
 import (
 	"context"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 	"go.opentelemetry.io/otel"
