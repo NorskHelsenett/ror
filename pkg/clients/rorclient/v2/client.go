@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NorskHelsenett/ror/pkg/clients"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/clientinterface"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/transports/transportinterface"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v1/v1clientset"
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/interfaces/v2/v2clientset"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/clientinterface"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/transports/transportinterface"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/v1clientset"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/v2clientset"
+	"github.com/NorskHelsenett/ror/pkg/clients/v2"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
@@ -56,14 +56,8 @@ func (c *RorClient) V2() clientinterface.RorCommonClientApiInterfaceV2 {
 	return c.v2
 }
 
-// Ping checks the connection to the transport.
-// Old version used error handling, use CheckConnection instead.
-func (c *RorClient) Ping() bool {
-	return c.PingWithContext(context.TODO())
-}
-
-// PingWithContext checks the connection to the transport with a context.
-func (c *RorClient) PingWithContext(ctx context.Context) bool {
+// Pingchecks the connection to the transport with a context.
+func (c *RorClient) Ping(ctx context.Context) bool {
 	return c.Transport.Ping(ctx)
 }
 
@@ -105,19 +99,6 @@ func (c *RorClient) SetOwnerref(ownerref rorresourceowner.RorResourceOwnerRefere
 func (c *RorClient) CheckHealth(ctx context.Context) []rorhealth.Check {
 	healthChecks := []rorhealth.Check{}
 	if !c.Transport.Ping(ctx) {
-		healthChecks = append(healthChecks, rorhealth.Check{
-			ComponentID: "Transport",
-			Status:      rorhealth.StatusFail,
-			Output:      fmt.Sprintf("%s could not be connected", c.Transport.GetTransportName()),
-		})
-	}
-	return healthChecks
-}
-
-// CheckHealthWithoutContext checks the health of the RorClient without a context.
-func (c *RorClient) CheckHealthWithoutContext() []rorhealth.Check {
-	healthChecks := []rorhealth.Check{}
-	if !c.Transport.Ping(context.Background()) {
 		healthChecks = append(healthChecks, rorhealth.Check{
 			ComponentID: "Transport",
 			Status:      rorhealth.StatusFail,
