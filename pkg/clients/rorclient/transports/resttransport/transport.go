@@ -76,11 +76,7 @@ func NewWithCustomHttpClient(config *httpclient.HttpTransportClientConfig, httpC
 }
 
 func newWithHttpClient(config *httpclient.HttpTransportClientConfig, httpClient *http.Client) *RorHttpTransport {
-	client := &httpclient.HttpTransportClient{
-		Client: httpClient,
-		Config: config,
-		Status: httpclient.NewHttpTransportClientStatus(),
-	}
+	client := httpclient.NewHttpTransportClient(httpClient, config, httpclient.NewHttpTransportClientStatus())
 	t := &RorHttpTransport{
 		Client:             client,
 		streamClientV1:     restv1stream.NewV1Client(v1sseclient.NewSSEClient(client)),
