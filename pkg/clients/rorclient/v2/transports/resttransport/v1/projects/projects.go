@@ -1,6 +1,8 @@
 package projects
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
@@ -18,9 +20,9 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 	}
 }
 
-func (c *V1Client) GetById(id string) (*apicontracts.Project, error) {
+func (c *V1Client) GetById(ctx context.Context, id string) (*apicontracts.Project, error) {
 	var project apicontracts.Project
-	err := c.Client.GetJSON(c.basePath+"/"+id, &project)
+	err := c.Client.GetJSON(ctx, c.basePath+"/"+id, &project)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +30,7 @@ func (c *V1Client) GetById(id string) (*apicontracts.Project, error) {
 	return &project, nil
 }
 
-func (c *V1Client) Get(limit int, offset int) (*[]apicontracts.Project, error) {
+func (c *V1Client) Get(ctx context.Context, limit int, offset int) (*[]apicontracts.Project, error) {
 	var projects apicontracts.PaginatedResult[apicontracts.Project]
 
 	filter := apicontracts.Filter{
@@ -42,7 +44,7 @@ func (c *V1Client) Get(limit int, offset int) (*[]apicontracts.Project, error) {
 		},
 	}
 
-	err := c.Client.PostJSON(c.basePath+"/filter", filter, &projects)
+	err := c.Client.PostJSON(ctx, c.basePath+"/filter", filter, &projects)
 	if err != nil {
 		return nil, err
 	}
@@ -50,13 +52,13 @@ func (c *V1Client) Get(limit int, offset int) (*[]apicontracts.Project, error) {
 	return &projects.Data, nil
 }
 
-func (c *V1Client) GetAll() (*[]apicontracts.Project, error) {
+func (c *V1Client) GetAll(ctx context.Context) (*[]apicontracts.Project, error) {
 	paginationLimit := 100
 	nextBatch := 0
 	var projects []apicontracts.Project
 
 	for {
-		batch, err := c.Get(paginationLimit, nextBatch)
+		batch, err := c.Get(ctx, paginationLimit, nextBatch)
 		if err != nil {
 			return nil, err
 		}

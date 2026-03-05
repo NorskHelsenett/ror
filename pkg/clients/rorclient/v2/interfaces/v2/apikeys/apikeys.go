@@ -1,7 +1,11 @@
 package apikeys
 
-import "github.com/NorskHelsenett/ror/pkg/apicontracts/apikeystypes/v2"
+import (
+	"context"
+
+	"github.com/NorskHelsenett/ror/pkg/apicontracts/apikeystypes/v2"
+)
 
 type ApiKeysInterface interface {
-	RegisterAgent(data apikeystypes.RegisterClusterRequest) (apikeystypes.RegisterClusterResponse, error)
+	RegisterAgent(ctx context.Context, data apikeystypes.RegisterClusterRequest) (apikeystypes.RegisterClusterResponse, error)
 }

@@ -1,6 +1,7 @@
 package datacenter
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
@@ -20,10 +21,10 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 	}
 }
 
-func (c *V1Client) Get() (*[]apicontracts.Datacenter, error) {
+func (c *V1Client) Get(ctx context.Context) (*[]apicontracts.Datacenter, error) {
 	var datacenters []apicontracts.Datacenter
 
-	err := c.Client.GetJSON(c.basePath, &datacenters)
+	err := c.Client.GetJSON(ctx, c.basePath, &datacenters)
 	if err != nil {
 		return nil, err
 	}
@@ -31,9 +32,9 @@ func (c *V1Client) Get() (*[]apicontracts.Datacenter, error) {
 	return &datacenters, nil
 }
 
-func (c *V1Client) GetById(id string) (*apicontracts.Datacenter, error) {
+func (c *V1Client) GetById(ctx context.Context, id string) (*apicontracts.Datacenter, error) {
 	var datacenter apicontracts.Datacenter
-	err := c.Client.GetJSON(c.basePath+"/id/"+id, &datacenter)
+	err := c.Client.GetJSON(ctx, c.basePath+"/id/"+id, &datacenter)
 	if err != nil {
 		return nil, err
 	}
@@ -41,9 +42,9 @@ func (c *V1Client) GetById(id string) (*apicontracts.Datacenter, error) {
 	return &datacenter, nil
 }
 
-func (c *V1Client) GetByName(name string) (*apicontracts.Datacenter, error) {
+func (c *V1Client) GetByName(ctx context.Context, name string) (*apicontracts.Datacenter, error) {
 	var datacenter apicontracts.Datacenter
-	err := c.Client.GetJSON(c.basePath+"/"+name, &datacenter)
+	err := c.Client.GetJSON(ctx, c.basePath+"/"+name, &datacenter)
 	if err != nil {
 		return nil, err
 	}
@@ -51,12 +52,12 @@ func (c *V1Client) GetByName(name string) (*apicontracts.Datacenter, error) {
 	return &datacenter, nil
 }
 
-func (c *V1Client) Post(data apicontracts.DatacenterModel) (*apicontracts.Datacenter, error) {
+func (c *V1Client) Post(ctx context.Context, data apicontracts.DatacenterModel) (*apicontracts.Datacenter, error) {
 	// Implement the logic to update an existing datacenter
 	return nil, fmt.Errorf("UpdateDatacenter: not implemented")
 }
 
-func (c *V1Client) Put(id string, data apicontracts.DatacenterModel) (*apicontracts.Datacenter, error) {
+func (c *V1Client) Put(ctx context.Context, id string, data apicontracts.DatacenterModel) (*apicontracts.Datacenter, error) {
 	// Implement the logic to delete a datacenter by ID
 	return nil, fmt.Errorf("DeleteDatacenter: not implemented")
 }

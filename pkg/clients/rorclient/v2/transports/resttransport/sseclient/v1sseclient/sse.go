@@ -3,6 +3,7 @@ package v1sseclient
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -52,7 +53,7 @@ func (s *SSEClient) createRequest() error {
 
 }
 
-func (s *SSEClient) CheckRetry() bool {
+func (s *SSEClient) CheckRetry(ctx context.Context) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if !s.isRetry {
@@ -61,7 +62,7 @@ func (s *SSEClient) CheckRetry() bool {
 	}
 	time.Sleep(time.Second * time.Duration(s.retyrInterval))
 	s.retries++
-	s.callback(stream.NewRorEvent("info", fmt.Sprintf("Retrying, attempt %d of %d", s.retries, s.retryLimit)))
+	s.callback(stream.NewRorEvent(ctx, "info", fmt.Sprintf("Retrying, attempt %d of %d", s.retries, s.retryLimit)))
 	return s.retries < s.retryLimit
 }
 
@@ -149,8 +150,8 @@ func (sse *SSEClient) OpenSSEStreamWithCallback(callback func(stream.RorEvent), 
 				rorEvents, err = sseClient.Listen()
 
 				if err != nil {
-					if !sseClient.CheckRetry() {
-						callback(stream.NewRorEvent("error", "retying failed, closing channel"))
+					if !sseClient.CheckRetry(context.TODO()) {
+						callback(stream.NewRorEvent(context.TODO(), "error", "retying failed, closing channel"))
 						close(cancelCh)
 						return
 					} else {
@@ -164,7 +165,7 @@ func (sse *SSEClient) OpenSSEStreamWithCallback(callback func(stream.RorEvent), 
 				continue
 			}
 			event, open := <-rorEvents
-			if !open && sseClient.CheckRetry() {
+			if !open && sseClient.CheckRetry(context.TODO()) {
 				continue
 			}
 			callback(event)
@@ -204,7 +205,7 @@ func loop(client *SSEClient, reader *bufio.Reader, events chan stream.RorEvent) 
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			events <- stream.NewRorEvent("error", fmt.Sprintf("error during resp.Body read:%s", err))
+			events <- stream.NewRorEvent(context.TODO(), "error", fmt.Sprintf("error during resp.Body read:%s", err))
 			close(events)
 			return
 		}
@@ -256,13 +257,6 @@ func readLine(line []byte) (string, []byte) {
 func hasPrefix(s []byte, prefix string) bool {
 	return bytes.HasPrefix(s, []byte(prefix))
 }
-func hasPostfix(s []byte, postfix string) bool {
-	return bytes.HasSuffix(s, []byte(postfix))
-}
-
-func trimPostfix(s []byte, postfix string) []byte {
-	return bytes.TrimSuffix(s, []byte(postfix))
-}
 
 func removeNewlineFromBytes(s []byte) string {
 	return removeNewline(string(s))
@@ -270,8 +264,4 @@ func removeNewlineFromBytes(s []byte) string {
 
 func removeNewline(s string) string {
 	return strings.TrimSuffix(s, "\n")
-}
-
-func contains(s []byte, contaninsstring string) bool {
-	return bytes.Contains(s, []byte(contaninsstring))
 }

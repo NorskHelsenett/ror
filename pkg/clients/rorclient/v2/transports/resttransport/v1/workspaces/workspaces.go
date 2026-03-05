@@ -1,6 +1,7 @@
 package workspaces
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
@@ -20,9 +21,9 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 	}
 }
 
-func (c *V1Client) GetByName(workspaceName string) (*apicontracts.Workspace, error) {
+func (c *V1Client) GetByName(ctx context.Context, workspaceName string) (*apicontracts.Workspace, error) {
 	var workspace apicontracts.Workspace
-	err := c.Client.GetJSON(c.basePath+"/"+workspaceName, &workspace)
+	err := c.Client.GetJSON(ctx, c.basePath+"/"+workspaceName, &workspace)
 	if err != nil {
 		return nil, err
 	}
@@ -30,9 +31,9 @@ func (c *V1Client) GetByName(workspaceName string) (*apicontracts.Workspace, err
 	return &workspace, nil
 }
 
-func (c *V1Client) GetById(workspaceId string) (*apicontracts.Workspace, error) {
+func (c *V1Client) GetById(ctx context.Context, workspaceId string) (*apicontracts.Workspace, error) {
 	var workspace apicontracts.Workspace
-	err := c.Client.GetJSON(c.basePath+"/id/"+workspaceId, &workspace)
+	err := c.Client.GetJSON(ctx, c.basePath+"/id/"+workspaceId, &workspace)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +41,10 @@ func (c *V1Client) GetById(workspaceId string) (*apicontracts.Workspace, error) 
 	return &workspace, nil
 }
 
-func (c *V1Client) Get() (*[]apicontracts.Workspace, error) {
+func (c *V1Client) Get(ctx context.Context) (*[]apicontracts.Workspace, error) {
 	var workspaces []apicontracts.Workspace
 
-	err := c.Client.GetJSON(c.basePath, &workspaces)
+	err := c.Client.GetJSON(ctx, c.basePath, &workspaces)
 	if err != nil {
 		return nil, err
 	}
@@ -51,11 +52,11 @@ func (c *V1Client) Get() (*[]apicontracts.Workspace, error) {
 	return &workspaces, nil
 }
 
-func (c *V1Client) GetAll() (*[]apicontracts.Workspace, error) {
-	return c.Get()
+func (c *V1Client) GetAll(ctx context.Context) (*[]apicontracts.Workspace, error) {
+	return c.Get(ctx)
 }
 
-func (c *V1Client) GetKubeconfig(workspacename, username, password string) (*apicontracts.ClusterKubeconfig, error) {
+func (c *V1Client) GetKubeconfig(ctx context.Context, workspacename, username, password string) (*apicontracts.ClusterKubeconfig, error) {
 	var kubeconfig apicontracts.ClusterKubeconfig
 
 	if len(workspacename) == 0 {
@@ -70,7 +71,7 @@ func (c *V1Client) GetKubeconfig(workspacename, username, password string) (*api
 		Password: password,
 	}
 
-	err := c.Client.PostJSON(c.basePath+"/"+workspacename+"/login", query, &kubeconfig)
+	err := c.Client.PostJSON(ctx, c.basePath+"/"+workspacename+"/login", query, &kubeconfig)
 	if err != nil {
 		return nil, err
 	}

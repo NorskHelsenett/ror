@@ -33,7 +33,7 @@ func (c *V2Client) Exchange(ctx context.Context, token string, clusterId string,
 
 	tokendata = inn.Token
 
-	err := c.Client.PostJSONWithContext(ctx, c.basePath+"/exchange", inn, &tokendata)
+	err := c.Client.PostJSON(ctx, c.basePath+"/exchange", inn, &tokendata)
 	if err != nil {
 		return "", err
 	}

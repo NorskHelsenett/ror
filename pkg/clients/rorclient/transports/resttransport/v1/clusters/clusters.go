@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 )

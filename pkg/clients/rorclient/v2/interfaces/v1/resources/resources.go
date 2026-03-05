@@ -1,6 +1,8 @@
 package resources
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
@@ -8,32 +10,32 @@ import (
 )
 
 type ResourceInterface interface {
-	Create(resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error
-	Update(resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error
-	Delete(uid string) error
+	Create(ctx context.Context, resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error
+	Update(ctx context.Context, resourceUpdate *apiresourcecontracts.ResourceUpdateModel) error
+	Delete(ctx context.Context, uid string) error
 
-	GetClusterOrderByUid(uid string, ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error)
-	GetClusterOrders(ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error)
-	UpdateClusterOrder(clusterOrder *apiresourcecontracts.ResourceUpdateModel) error
-	GetHashList(ownerref rorresourceowner.RorResourceOwnerReference) (resourcecachehashlist.HashList, error)
-	GetTanzuKubernetesClusterByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceTanzuKubernetesCluster, error)
+	GetClusterOrderByUid(ctx context.Context, uid string, ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error)
+	GetClusterOrders(ctx context.Context, ownerSubject aclmodels.Acl2Subject, scope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error)
+	UpdateClusterOrder(ctx context.Context, clusterOrder *apiresourcecontracts.ResourceUpdateModel) error
+	GetHashList(ctx context.Context, ownerref rorresourceowner.RorResourceOwnerReference) (resourcecachehashlist.HashList, error)
+	GetTanzuKubernetesClusterByUid(ctx context.Context, uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceTanzuKubernetesCluster, error)
 
-	GetApplicationByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceApplication, error)
-	GetPVCByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourcePersistentVolumeClaim, error)
+	GetApplicationByUid(ctx context.Context, uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceApplication, error)
+	GetPVCByUid(ctx context.Context, uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourcePersistentVolumeClaim, error)
 
-	GetVulnerabilityReportByUid(uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceVulnerabilityReport, error)
-	GetVulnerabilityReportsByOwner(owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceVulnerabilityReport, error)
+	GetVulnerabilityReportByUid(ctx context.Context, uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceVulnerabilityReport, error)
+	GetVulnerabilityReportsByOwner(ctx context.Context, owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceVulnerabilityReport, error)
 
-	GetClusterVulnerabilityReportByUid(uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
-	CreateClusterVulnerabilityReport(report *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
-	UpdateClusterVulnerabilityReportByUid(report *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
+	GetClusterVulnerabilityReportByUid(ctx context.Context, uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
+	CreateClusterVulnerabilityReport(ctx context.Context, report *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
+	UpdateClusterVulnerabilityReportByUid(ctx context.Context, report *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceClusterVulnerabilityReport, error)
 
-	GetRoutesByOwner(owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceRoute, error)
+	GetRoutesByOwner(ctx context.Context, owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceRoute, error)
 
-	GetSlackMessageByUid(uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceSlackMessage, error)
-	CreateSlackMessage(sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
-	UpdateSlackMessageByUid(sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
+	GetSlackMessageByUid(ctx context.Context, uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceSlackMessage, error)
+	CreateSlackMessage(ctx context.Context, sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
+	UpdateSlackMessageByUid(ctx context.Context, sm *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceSlackMessage, error)
 
-	GetVulnerabilityEventByUid(uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceVulnerabilityEvent, error)
-	CreateVulnerabilityEvent(u *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceVulnerabilityEvent, error)
+	GetVulnerabilityEventByUid(ctx context.Context, uid, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceVulnerabilityEvent, error)
+	CreateVulnerabilityEvent(ctx context.Context, u *apiresourcecontracts.ResourceUpdateModel) (*apiresourcecontracts.ResourceVulnerabilityEvent, error)
 }

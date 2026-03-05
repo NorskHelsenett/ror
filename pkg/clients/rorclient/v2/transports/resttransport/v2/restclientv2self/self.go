@@ -1,6 +1,8 @@
 package restclientv2self
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/v2/apicontractsv2self"
@@ -18,9 +20,9 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	}
 }
 
-func (c *V2Client) Get() (apicontractsv2self.SelfData, error) {
+func (c *V2Client) Get(ctx context.Context) (apicontractsv2self.SelfData, error) {
 	var selfdata apicontractsv2self.SelfData
-	err := c.Client.GetJSON(c.basePath, &selfdata)
+	err := c.Client.GetJSON(ctx, c.basePath, &selfdata)
 	if err != nil {
 		return apicontractsv2self.SelfData{}, err
 	}

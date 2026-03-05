@@ -1,6 +1,9 @@
 package v2stream
 
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+)
 
 type RorEvent struct {
 	Type string `json:"event"`
@@ -19,14 +22,14 @@ type StreamInterface interface {
 	BroadcastEvent(event RorEvent) error
 }
 
-func NewRorEvent(eventType string, data []byte) RorEvent {
+func NewRorEvent(ctx context.Context, eventType string, data []byte) RorEvent {
 	return RorEvent{
 		Type: eventType,
 		Data: data,
 	}
 }
 
-func NewRorEventAsJSON(eventType string, data string) RorEvent {
+func NewRorEventAsJSON(ctx context.Context, eventType string, data string) RorEvent {
 	event := EventData{
 		Event: eventType,
 		Data:  data,

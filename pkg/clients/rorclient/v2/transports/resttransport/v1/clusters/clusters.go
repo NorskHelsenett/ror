@@ -21,9 +21,9 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 	}
 }
 
-func (c *V1Client) GetSelf() (apicontracts.ClusterSelf, error) {
+func (c *V1Client) GetSelf(ctx context.Context) (apicontracts.ClusterSelf, error) {
 	var selfdata apicontracts.ClusterSelf
-	err := c.Client.GetJSON(c.basePath+"/self", &selfdata)
+	err := c.Client.GetJSON(ctx, c.basePath+"/self", &selfdata)
 	if err != nil {
 		return selfdata, err
 	}
@@ -31,9 +31,9 @@ func (c *V1Client) GetSelf() (apicontracts.ClusterSelf, error) {
 	return selfdata, nil
 }
 
-func (c *V1Client) GetById(id string) (*apicontracts.Cluster, error) {
+func (c *V1Client) GetById(ctx context.Context, id string) (*apicontracts.Cluster, error) {
 	var cluster apicontracts.Cluster
-	err := c.Client.GetJSON(c.basePath+"/"+id, &cluster)
+	err := c.Client.GetJSON(ctx, c.basePath+"/"+id, &cluster)
 	if err != nil {
 		return nil, err
 	}
@@ -41,14 +41,14 @@ func (c *V1Client) GetById(id string) (*apicontracts.Cluster, error) {
 	return &cluster, nil
 }
 
-func (c *V1Client) UpdateById(id string, cluster *apicontracts.Cluster) error {
+func (c *V1Client) UpdateById(ctx context.Context, id string, cluster *apicontracts.Cluster) error {
 	var dummy int
-	return c.Client.PutJSON(c.basePath+"/"+id, cluster, &dummy)
+	return c.Client.PutJSON(ctx, c.basePath+"/"+id, cluster, &dummy)
 }
 
-func (c *V1Client) GetByFilter(filter apicontracts.Filter) (*[]apicontracts.Cluster, error) {
+func (c *V1Client) GetByFilter(ctx context.Context, filter apicontracts.Filter) (*[]apicontracts.Cluster, error) {
 	var clusters apicontracts.PaginatedResult[apicontracts.Cluster]
-	err := c.Client.PostJSON(c.basePath+"/filter", filter, &clusters)
+	err := c.Client.PostJSON(ctx, c.basePath+"/filter", filter, &clusters)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *V1Client) GetByFilter(filter apicontracts.Filter) (*[]apicontracts.Clus
 	return &clusters.Data, nil
 }
 
-func (c *V1Client) Get(limit int, offset int) (*[]apicontracts.Cluster, error) {
+func (c *V1Client) Get(ctx context.Context, limit int, offset int) (*[]apicontracts.Cluster, error) {
 	filter := apicontracts.Filter{
 		Skip:  offset,
 		Limit: limit,
@@ -67,16 +67,16 @@ func (c *V1Client) Get(limit int, offset int) (*[]apicontracts.Cluster, error) {
 			},
 		},
 	}
-	return c.GetByFilter(filter)
+	return c.GetByFilter(ctx, filter)
 }
 
-func (c *V1Client) GetAll() (*[]apicontracts.Cluster, error) {
+func (c *V1Client) GetAll(ctx context.Context) (*[]apicontracts.Cluster, error) {
 	paginationLimit := 100
 	nextBatch := 0
 	var clusters []apicontracts.Cluster
 
 	for {
-		batch, err := c.Get(paginationLimit, nextBatch)
+		batch, err := c.Get(ctx, paginationLimit, nextBatch)
 		if err != nil {
 			return nil, err
 		}
@@ -88,12 +88,7 @@ func (c *V1Client) GetAll() (*[]apicontracts.Cluster, error) {
 	}
 }
 
-func (c *V1Client) GetKubeconfig(clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error) {
-	ctx := context.TODO()
-	return c.GetKubeconfigWithContext(ctx, clusterid, username, password)
-}
-
-func (c *V1Client) GetKubeconfigWithContext(ctx context.Context, clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error) {
+func (c *V1Client) GetKubeconfig(ctx context.Context, clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error) {
 	var kubeconfig apicontracts.ClusterKubeconfig
 
 	if len(clusterid) == 0 {
@@ -108,7 +103,7 @@ func (c *V1Client) GetKubeconfigWithContext(ctx context.Context, clusterid, user
 		Password: password,
 	}
 
-	err := c.Client.PostJSONWithContext(ctx, c.basePath+"/"+clusterid+"/login", query, &kubeconfig)
+	err := c.Client.PostJSON(ctx, c.basePath+"/"+clusterid+"/login", query, &kubeconfig)
 	if err != nil {
 		return nil, err
 	}
@@ -116,9 +111,9 @@ func (c *V1Client) GetKubeconfigWithContext(ctx context.Context, clusterid, user
 	return &kubeconfig, nil
 }
 
-func (c *V1Client) Create(clusterInput apicontracts.Cluster) (string, error) {
+func (c *V1Client) Create(ctx context.Context, clusterInput apicontracts.Cluster) (string, error) {
 	var clusterId string
-	err := c.Client.PostJSON(c.basePath, clusterInput, &clusterId)
+	err := c.Client.PostJSON(ctx, c.basePath, clusterInput, &clusterId)
 	if err != nil {
 		return "", err
 	}
@@ -126,9 +121,9 @@ func (c *V1Client) Create(clusterInput apicontracts.Cluster) (string, error) {
 	return clusterId, nil
 }
 
-func (c *V1Client) Register(data apicontracts.AgentApiKeyModel) (string, error) {
+func (c *V1Client) Register(ctx context.Context, data apicontracts.AgentApiKeyModel) (string, error) {
 	var clusterResponse string
-	err := c.Client.PostJSON(c.basePath+"/register", data, &clusterResponse)
+	err := c.Client.PostJSON(ctx, c.basePath+"/register", data, &clusterResponse)
 	if err != nil {
 		return "", err
 	}
@@ -136,7 +131,7 @@ func (c *V1Client) Register(data apicontracts.AgentApiKeyModel) (string, error) 
 	return clusterResponse, nil
 }
 
-func (c *V1Client) SendHeartbeat(clusterReport apicontracts.Cluster) error {
-	err := c.Client.PostJSON("/v1/cluster/heartbeat", clusterReport, nil)
+func (c *V1Client) SendHeartbeat(ctx context.Context, clusterReport apicontracts.Cluster) error {
+	err := c.Client.PostJSON(ctx, "/v1/cluster/heartbeat", clusterReport, nil)
 	return err
 }

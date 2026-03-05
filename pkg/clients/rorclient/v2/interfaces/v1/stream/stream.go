@@ -1,6 +1,9 @@
 package stream
 
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+)
 
 type RorEvent struct {
 	Type string
@@ -14,11 +17,11 @@ type EventData struct {
 }
 
 type StreamInterface interface {
-	StartEventstream() (<-chan RorEvent, error)
-	StartEventstreamWithCallback(callbackfunc func(RorEvent)) (<-chan struct{}, error)
+	StartEventstream(ctx context.Context) (<-chan RorEvent, error)
+	StartEventstreamWithCallback(ctx context.Context, callbackfunc func(RorEvent)) (<-chan struct{}, error)
 }
 
-func NewRorEvent(eventType string, data string) RorEvent {
+func NewRorEvent(ctx context.Context, eventType string, data string) RorEvent {
 	event := EventData{
 		Event: eventType,
 		Data:  data,

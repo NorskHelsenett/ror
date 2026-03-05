@@ -1,6 +1,8 @@
 package v1stream
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/stream"
 	v1sseclient "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/sseclient/v1sseclient"
 )
@@ -17,7 +19,7 @@ func NewV1Client(client *v1sseclient.SSEClient) *V1Client {
 	}
 }
 
-func (c *V1Client) StartEventstream() (<-chan stream.RorEvent, error) {
+func (c *V1Client) StartEventstream(_ context.Context) (<-chan stream.RorEvent, error) {
 	stream, err := c.Client.OpenSSEStream(c.basePath + "/listen")
 	if err != nil {
 		return nil, err
@@ -26,7 +28,7 @@ func (c *V1Client) StartEventstream() (<-chan stream.RorEvent, error) {
 	return stream, nil
 }
 
-func (c *V1Client) StartEventstreamWithCallback(callback func(stream.RorEvent)) (<-chan struct{}, error) {
+func (c *V1Client) StartEventstreamWithCallback(_ context.Context, callback func(stream.RorEvent)) (<-chan struct{}, error) {
 	cancelCh, err := c.Client.OpenSSEStreamWithCallback(callback, c.basePath+"/listen")
 	if err != nil {
 		return nil, err

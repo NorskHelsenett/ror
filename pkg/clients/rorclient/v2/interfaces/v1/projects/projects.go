@@ -1,9 +1,13 @@
 package projects
 
-import "github.com/NorskHelsenett/ror/pkg/apicontracts"
+import (
+	"context"
+
+	"github.com/NorskHelsenett/ror/pkg/apicontracts"
+)
 
 type ProjectsInterface interface {
-	GetById(id string) (*apicontracts.Project, error)
-	Get(limit int, offset int) (*[]apicontracts.Project, error)
-	GetAll() (*[]apicontracts.Project, error)
+	GetById(ctx context.Context, id string) (*apicontracts.Project, error)
+	Get(ctx context.Context, limit int, offset int) (*[]apicontracts.Project, error)
+	GetAll(ctx context.Context) (*[]apicontracts.Project, error)
 }

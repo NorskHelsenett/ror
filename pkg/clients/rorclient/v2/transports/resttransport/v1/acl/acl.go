@@ -31,7 +31,7 @@ func (c V1Client) GetById(ctx context.Context, id string) (*aclmodels.AclV2ListI
 
 	var acl aclmodels.AclV2ListItem
 
-	err = c.Client.GetJSONWithContext(ctx, url.String(), &acl)
+	err = c.Client.GetJSON(ctx, url.String(), &acl)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (c V1Client) GetByFilter(ctx context.Context, filter apicontracts.Filter) (
 
 	var res apicontracts.PaginatedResult[aclmodels.AclV2ListItem]
 
-	err = c.Client.PostJSONWithContext(ctx, url.String(), filter, &res)
+	err = c.Client.PostJSON(ctx, url.String(), filter, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (c V1Client) Create(ctx context.Context, item aclmodels.AclV2ListItem) erro
 
 	var res aclmodels.AclV2ListItem
 
-	err = c.Client.PostJSONWithContext(ctx, url.String(), item, &res)
+	err = c.Client.PostJSON(ctx, url.String(), item, &res)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (c V1Client) Update(ctx context.Context, id string, item aclmodels.AclV2Lis
 	url = url.JoinPath(id)
 
 	var res aclmodels.AclV2ListItem
-	err = c.Client.PutJSONWithContext(ctx, url.String(), item, &res)
+	err = c.Client.PutJSON(ctx, url.String(), item, &res)
 	if err != nil {
 		return err
 	}
@@ -120,7 +120,7 @@ func (c V1Client) Delete(ctx context.Context, id string) error {
 	url = url.JoinPath(id)
 
 	var res bool
-	err = c.Client.DeleteWithContext(ctx, url.String(), &res)
+	err = c.Client.Delete(ctx, url.String(), &res)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func (c V1Client) CheckAccess(ctx context.Context, scope, subject, access string
 	url = url.JoinPath(subject)
 	url = url.JoinPath(access)
 
-	_, statusCode, err := c.Client.HeadWithContext(ctx, url.String())
+	_, statusCode, err := c.Client.Head(ctx, url.String())
 	if err != nil {
 		return false
 	}

@@ -8,5 +8,5 @@ import (
 
 type MetricsInterface interface {
 	PostReport(ctx context.Context, metricsReport apicontracts.MetricsReport) error
-	CreatePVC(input apicontracts.PersistentVolumeClaimMetric) error
+	CreatePVC(ctx context.Context, input apicontracts.PersistentVolumeClaimMetric) error
 }
