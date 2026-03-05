@@ -68,30 +68,30 @@ func initTracerProvider(ctx context.Context, serviceName string, grpcEndpoint st
 
 func ConnectTracerWithReady(stop chan struct{}, ready chan struct{}, serviceName string, grpcEndpoint string) {
 	ctx := context.Background()
-	rlog.Infoc(ctx, "Connecting to opentelemetry collector...")
+	rlog.Debug("Connecting to opentelemetry collector...")
 	shutdown, err := initTracerProvider(ctx, serviceName, grpcEndpoint)
 	ready <- struct{}{}
 	for err != nil {
 		rlog.Errorc(ctx, "could not connect to opentelemetry", err)
 		if sleepTime <= time.Minute*256 {
-			rlog.Infoc(ctx, fmt.Sprintf("Retrying in %s", sleepTime))
+			rlog.Debug(fmt.Sprintf("Retrying in %s", sleepTime))
 			time.Sleep(sleepTime)
 			sleepTime = 2 * sleepTime
 		} else {
 			break
 		}
-		rlog.Infoc(ctx, "Connecting to opentelemetry collector...")
+		rlog.Debug("Connecting to opentelemetry collector...")
 		shutdown, err = initTracerProvider(ctx, serviceName, grpcEndpoint)
 	}
 	if err == nil {
-		rlog.Infoc(ctx, "Connected successfully to opentelemetry collector on "+GrpcEndpoint)
+		rlog.Debug("Connected successfully to opentelemetry collector on " + GrpcEndpoint)
 	}
 	defer func() {
-		rlog.Infoc(ctx, "Shutting down TracerProvider")
+		rlog.Debug("Shutting down TracerProvider")
 		if err := shutdown(ctx); err != nil {
 			rlog.Errorc(ctx, "failed to shutdown TracerProvider", err)
 		} else {
-			rlog.Infoc(ctx, "TracerProvider shut down successfully")
+			rlog.Debug("TracerProvider shut down successfully")
 		}
 	}()
 	<-stop
@@ -99,29 +99,29 @@ func ConnectTracerWithReady(stop chan struct{}, ready chan struct{}, serviceName
 
 func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) {
 	ctx := context.Background()
-	rlog.Infoc(ctx, "Connecting to opentelemetry collector...")
+	rlog.Debug("Connecting to opentelemetry collector...")
 	shutdown, err := initTracerProvider(ctx, serviceName, grpcEndpoint)
 	for err != nil {
 		rlog.Errorc(ctx, "could not connect to opentelemetry", err)
 		if sleepTime <= time.Minute*256 {
-			rlog.Infoc(ctx, fmt.Sprintf("Retrying in %s", sleepTime))
+			rlog.Debug(fmt.Sprintf("Retrying in %s", sleepTime))
 			time.Sleep(sleepTime)
 			sleepTime = 2 * sleepTime
 		} else {
 			break
 		}
-		rlog.Infoc(ctx, "Connecting to opentelemetry collector...")
+		rlog.Debug("Connecting to opentelemetry collector...")
 		shutdown, err = initTracerProvider(ctx, serviceName, grpcEndpoint)
 	}
 	if err == nil {
-		rlog.Infoc(ctx, "Connected successfully to opentelemetry collector on "+GrpcEndpoint)
+		rlog.Debug("Connected successfully to opentelemetry collector on " + GrpcEndpoint)
 	}
 	defer func() {
-		rlog.Infoc(ctx, "Shutting down TracerProvider")
+		rlog.Debug("Shutting down TracerProvider")
 		if err := shutdown(ctx); err != nil {
 			rlog.Errorc(ctx, "failed to shutdown TracerProvider", err)
 		} else {
-			rlog.Infoc(ctx, "TracerProvider shut down successfully")
+			rlog.Debug("TracerProvider shut down successfully")
 		}
 	}()
 	<-stop
@@ -131,7 +131,7 @@ func StartTracing(stop chan struct{}, cancelChan chan os.Signal, serviceName str
 	go func() {
 		ConnectTracer(stop, serviceName, grpcEndpoint)
 		sig := <-cancelChan
-		rlog.Info("Caught signal", rlog.Any("signal", sig))
+		rlog.Debug("Caught signal", rlog.Any("signal", sig))
 		stop <- struct{}{}
 	}()
 }
