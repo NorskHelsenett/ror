@@ -138,7 +138,15 @@ func (k *KubeConfig) MemberOfGroup(context string, group string) (bool, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 
-	groups := claims["groups"].([]interface{})
+	groupsClaim, ok := claims["groups"]
+	if !ok {
+		return false, nil
+	}
+
+	groups, ok := groupsClaim.([]interface{})
+	if !ok {
+		return false, fmt.Errorf("unexpected type for groups claim")
+	}
 
 	for _, v := range groups {
 		if fmt.Sprintf("%v", v) == group {
