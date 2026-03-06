@@ -21,7 +21,7 @@ type ResourceVirtualMachineVulnerabilitySpec struct {
 
 type CVE struct {
 	Id                 string              `json:"id"`
-	CVSS               string              `json:"csvss"`
+	CVSS               string              `json:"cvss"`
 	Title              string              `json:"title"`
 	Description        string              `json:"description"`
 	References         []string            `json:"references"`
