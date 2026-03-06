@@ -145,7 +145,7 @@ func (k *KubeConfig) MemberOfGroup(context string, group string) (bool, error) {
 
 	groups, ok := groupsClaim.([]interface{})
 	if !ok {
-		return false, fmt.Errorf("unexpected type for groups claim")
+		return false, nil
 	}
 
 	for _, v := range groups {
