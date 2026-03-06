@@ -234,7 +234,7 @@ export interface VulnerableVersion {
 }
 export interface CVE {
   id: string;
-  csvss: string;
+  cvss: string;
   title: string;
   description: string;
   references: string[];
