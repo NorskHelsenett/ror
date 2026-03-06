@@ -95,6 +95,7 @@ func ConnectTracerWithReady(stop chan struct{}, ready chan struct{}, serviceName
 		}
 	}()
 	<-stop
+	shutdown(ctx)
 }
 
 func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) {
