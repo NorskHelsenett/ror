@@ -1,6 +1,7 @@
 package clusters
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
@@ -88,6 +89,11 @@ func (c *V1Client) GetAll() (*[]apicontracts.Cluster, error) {
 }
 
 func (c *V1Client) GetKubeconfig(clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error) {
+	ctx := context.TODO()
+	return c.GetKubeconfigWithContext(ctx, clusterid, username, password)
+}
+
+func (c *V1Client) GetKubeconfigWithContext(ctx context.Context, clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error) {
 	var kubeconfig apicontracts.ClusterKubeconfig
 
 	if len(clusterid) == 0 {
@@ -102,7 +108,7 @@ func (c *V1Client) GetKubeconfig(clusterid, username, password string) (*apicont
 		Password: password,
 	}
 
-	err := c.Client.PostJSON(c.basePath+"/"+clusterid+"/login", query, &kubeconfig)
+	err := c.Client.PostJSONWithContext(ctx, c.basePath+"/"+clusterid+"/login", query, &kubeconfig)
 	if err != nil {
 		return nil, err
 	}

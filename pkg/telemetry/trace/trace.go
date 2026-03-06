@@ -2,8 +2,10 @@ package trace
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
@@ -14,8 +16,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 var (
@@ -37,21 +38,16 @@ func initTracerProvider(ctx context.Context, serviceName string, grpcEndpoint st
 		return nil, fmt.Errorf("failed to create resource: %w", err)
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-	conn, err := grpc.DialContext(
-		ctx,
-		GrpcEndpoint,
-		grpc.WithTransportCredentials(
-			insecure.NewCredentials(),
-		),
-		grpc.WithBlock(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create gRPC connection to collector: %w", err)
+	exporterOpts := []otlptracegrpc.Option{
+		otlptracegrpc.WithEndpoint(GrpcEndpoint),
+	}
+	if strings.HasSuffix(GrpcEndpoint, ":443") {
+		exporterOpts = append(exporterOpts, otlptracegrpc.WithTLSCredentials(credentials.NewTLS(&tls.Config{})))
+	} else {
+		exporterOpts = append(exporterOpts, otlptracegrpc.WithInsecure())
 	}
 
-	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+	traceExporter, err := otlptracegrpc.New(ctx, exporterOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create trace exporter: %w", err)
 	}
@@ -70,31 +66,62 @@ func initTracerProvider(ctx context.Context, serviceName string, grpcEndpoint st
 	return tracerProvider.Shutdown, nil
 }
 
-func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) {
+func ConnectTracerWithReady(stop chan struct{}, ready chan struct{}, serviceName string, grpcEndpoint string) {
 	ctx := context.Background()
-	rlog.Infoc(ctx, "Connecting to opentelemetry collector...")
+	rlog.Debug("Connecting to opentelemetry collector...")
 	shutdown, err := initTracerProvider(ctx, serviceName, grpcEndpoint)
+	ready <- struct{}{}
 	for err != nil {
 		rlog.Errorc(ctx, "could not connect to opentelemetry", err)
 		if sleepTime <= time.Minute*256 {
-			rlog.Infoc(ctx, fmt.Sprintf("Retrying in %s", sleepTime))
+			rlog.Debug(fmt.Sprintf("Retrying in %s", sleepTime))
 			time.Sleep(sleepTime)
 			sleepTime = 2 * sleepTime
 		} else {
 			break
 		}
-		rlog.Infoc(ctx, "Connecting to opentelemetry collector...")
+		rlog.Debug("Connecting to opentelemetry collector...")
 		shutdown, err = initTracerProvider(ctx, serviceName, grpcEndpoint)
 	}
 	if err == nil {
-		rlog.Infoc(ctx, "Connected successfully to opentelemetry collector on "+GrpcEndpoint)
+		rlog.Debug("Connected successfully to opentelemetry collector on " + GrpcEndpoint)
 	}
 	defer func() {
-		rlog.Infoc(ctx, "Shutting down TracerProvider")
+		rlog.Debug("Shutting down TracerProvider")
 		if err := shutdown(ctx); err != nil {
 			rlog.Errorc(ctx, "failed to shutdown TracerProvider", err)
 		} else {
-			rlog.Infoc(ctx, "TracerProvider shut down successfully")
+			rlog.Debug("TracerProvider shut down successfully")
+		}
+	}()
+	<-stop
+}
+
+func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) {
+	ctx := context.Background()
+	rlog.Debug("Connecting to opentelemetry collector...")
+	shutdown, err := initTracerProvider(ctx, serviceName, grpcEndpoint)
+	for err != nil {
+		rlog.Errorc(ctx, "could not connect to opentelemetry", err)
+		if sleepTime <= time.Minute*256 {
+			rlog.Debug(fmt.Sprintf("Retrying in %s", sleepTime))
+			time.Sleep(sleepTime)
+			sleepTime = 2 * sleepTime
+		} else {
+			break
+		}
+		rlog.Debug("Connecting to opentelemetry collector...")
+		shutdown, err = initTracerProvider(ctx, serviceName, grpcEndpoint)
+	}
+	if err == nil {
+		rlog.Debug("Connected successfully to opentelemetry collector on " + GrpcEndpoint)
+	}
+	defer func() {
+		rlog.Debug("Shutting down TracerProvider")
+		if err := shutdown(ctx); err != nil {
+			rlog.Errorc(ctx, "failed to shutdown TracerProvider", err)
+		} else {
+			rlog.Debug("TracerProvider shut down successfully")
 		}
 	}()
 	<-stop
@@ -104,7 +131,7 @@ func StartTracing(stop chan struct{}, cancelChan chan os.Signal, serviceName str
 	go func() {
 		ConnectTracer(stop, serviceName, grpcEndpoint)
 		sig := <-cancelChan
-		rlog.Info("Caught signal", rlog.Any("signal", sig))
+		rlog.Debug("Caught signal", rlog.Any("signal", sig))
 		stop <- struct{}{}
 	}()
 }

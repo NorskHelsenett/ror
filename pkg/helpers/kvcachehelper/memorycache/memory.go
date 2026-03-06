@@ -2,6 +2,7 @@ package memorycache
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"time"
 
@@ -16,7 +17,7 @@ type CacheValue struct {
 	// The cache's expiration time
 	ExpirationTime time.Time
 	// The cache's value
-	Value string
+	Value any
 }
 
 type KvCache struct {
@@ -27,7 +28,6 @@ type KvCache struct {
 	cSchedule *gocron.Scheduler
 	cronJob   *gocron.Job
 }
-type CacheOption map[string]interface{}
 
 // NewKvCache instantiates a new Cache and sets the default values.
 // The default expiration time is set to 6 hours from the current time.
@@ -86,19 +86,35 @@ func (c *KvCache) janitor() {
 
 // Set adds a new key-value pair to the cache.
 // If the key already exists, it will be overwritten.
-func (c *KvCache) Set(ctx context.Context, key string, value string) {
+func (c *KvCache) Set(ctx context.Context, key string, value any, opts ...kvcachehelper.CacheSetOptions) {
+	var expiresIn time.Duration = c.expiresIn
+	var prefix string = c.prefix
+	for _, opt := range opts {
+		if opt.Timeout.Seconds() != 0 {
+			expiresIn = opt.Timeout
+		}
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	c.values[c.prefix+key] = CacheValue{
-		ExpirationTime: time.Now().Add(c.expiresIn),
+	c.values[prefix+key] = CacheValue{
+		ExpirationTime: time.Now().Add(expiresIn),
 		Value:          value,
 	}
 }
 
 // Get retrieves a value from the cache.
 // If the key does not exist or the value has expired, it will return false.
-func (c *KvCache) Get(ctx context.Context, key string) (string, bool) {
-	if val, ok := c.values[c.prefix+key]; ok {
+func (c *KvCache) Get(ctx context.Context, key string, opts ...kvcachehelper.CacheGetOptions) (any, bool) {
+	var prefix string = c.prefix
+	for _, opt := range opts {
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
+	if val, ok := c.values[prefix+key]; ok {
 		if time.Now().After(val.ExpirationTime) {
 			c.lock.Lock()
 			defer c.lock.Unlock()
@@ -116,20 +132,35 @@ func (c *KvCache) Get(ctx context.Context, key string) (string, bool) {
 // The error return value is included for consistency with other methods
 // and to allow for potential future use, even though the current implementation
 // always returns nil.
-func (c *KvCache) Keys(ctx context.Context) ([]string, error) {
+func (c *KvCache) Keys(ctx context.Context, opts ...kvcachehelper.CacheKeysOptions) ([]string, error) {
+	prefix := c.prefix
+	for _, opt := range opts {
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 	keys := make([]string, 0, len(c.values))
 	for k := range c.values {
+		if prefix != "" && !strings.HasPrefix(k, prefix) {
+			continue
+		}
 		keys = append(keys, k)
 	}
 	return keys, nil
 }
 
 // Remove removes a key-value pair from the cache.
-func (c *KvCache) Remove(ctx context.Context, key string) bool {
+func (c *KvCache) Remove(ctx context.Context, key string, opts ...kvcachehelper.CacheRemoveOptions) bool {
+	prefix := c.prefix
+	for _, opt := range opts {
+		if opt.Prefix != "" {
+			prefix = opt.Prefix
+		}
+	}
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	delete(c.values, key)
+	delete(c.values, prefix+key)
 	return true
 }

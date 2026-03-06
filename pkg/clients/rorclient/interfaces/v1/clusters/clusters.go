@@ -1,6 +1,8 @@
 package clusters
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 )
 
@@ -12,6 +14,7 @@ type ClustersInterface interface {
 	Get(limit int, offset int) (*[]apicontracts.Cluster, error)
 	GetAll() (*[]apicontracts.Cluster, error)
 	GetKubeconfig(clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error)
+	GetKubeconfigWithContext(ctx context.Context, clusterid, username, password string) (*apicontracts.ClusterKubeconfig, error)
 	Create(cluster apicontracts.Cluster) (string, error)
 	Register(data apicontracts.AgentApiKeyModel) (string, error)
 	SendHeartbeat(clusterReport apicontracts.Cluster) error

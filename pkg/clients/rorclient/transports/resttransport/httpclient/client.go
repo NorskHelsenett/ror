@@ -18,8 +18,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
 )
 
 // DefaultTimeout defines the default HTTP request timeout duration
@@ -107,7 +110,6 @@ func NewHttpTransportClientStatus() *HttpTransportClientStatus {
 //
 // # Version is the version of the client.
 func NewHttpTransportClientConfig(baseUrl string, authProvider HttpTransportAuthProvider, role string, version rorversion.RorVersion) (*HttpTransportClientConfig, error) {
-
 	config := HttpTransportClientConfig{
 		BaseURL:      baseUrl,
 		AuthProvider: authProvider,
@@ -129,13 +131,27 @@ func (h *HttpTransportClientConfig) ValidateUrl() error {
 }
 
 func NewHttpTransportClient(client *http.Client, config *HttpTransportClientConfig, status *HttpTransportClientStatus) *HttpTransportClient {
+	var httpclient *http.Client
+	if rorconfig.GetBool(rorconfig.ENABLE_TRACING) {
+		rlog.Debug("Tracing enabled, instrumenting HTTP client")
+		httpclient = instrumentClient(client)
+	} else {
+		httpclient = client
+	}
+
 	hClient := HttpTransportClient{
-		Client: client,
+		Client: httpclient,
 		Config: config,
 		Status: status,
 	}
 
 	return &hClient
+}
+
+func instrumentClient(client *http.Client) *http.Client {
+	return &http.Client{
+		Transport: otelhttp.NewTransport(client.Transport),
+	}
 }
 
 // GetRole returns the configured role of the client.
@@ -154,6 +170,8 @@ func (t *HttpTransportClient) GetJSON(path string, out any, params ...HttpTransp
 // the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) GetJSONWithContext(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "httpclient.GetJSONWithContext")
+	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -412,11 +430,11 @@ func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
 			t.Status.RetryAfter = t.getRetryAfterHeader(res)
 			return fmt.Errorf("http error: %s from %s (retry after: %s)", res.Status, res.Request.URL, t.Status.RetryAfter.Format(time.RFC3339))
 		}
-		if res.StatusCode == http.StatusUnauthorized {
+		if res.StatusCode == http.StatusUnauthorized && res.Request.Method != "HEAD" {
 			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for unauthorized
 			return fmt.Errorf("http error: %s from %s (unauthorized, check your authentication) Connection throttled", res.Status, res.Request.URL)
 		}
-		if res.StatusCode == http.StatusForbidden {
+		if res.StatusCode == http.StatusForbidden && res.Request.Method != "HEAD" {
 			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for forbidden
 			return fmt.Errorf("http error: %s from %s (forbidden, check your permissions) Connection throttled", res.Status, res.Request.URL)
 		}
