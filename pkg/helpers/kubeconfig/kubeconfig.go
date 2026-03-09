@@ -111,29 +111,29 @@ func (k *KubeConfig) IsExpired(context string) (bool, error) {
 
 func (k *KubeConfig) MemberOfGroup(context string, group string) (bool, error) {
 	if k == nil {
-		return true, nil
+		return false, nil
 	}
 	if errs := k.HandleErrors(); errs != nil {
-		return true, errs
+		return false, errs
 	}
 
 	if k.Config.Contexts[context] == nil || k.Config.Contexts[context].AuthInfo == "" {
-		return true, nil
+		return false, nil
 	}
 
 	authInfo, exists := k.Config.AuthInfos[k.Config.Contexts[context].AuthInfo]
 	if !exists {
-		return true, nil
+		return false, nil
 	}
 
 	if authInfo.Token == "" {
 		// we can't check if the token is expired if it's not set
-		return true, nil
+		return false, nil
 	}
 	token, _, err := new(jwt.Parser).ParseUnverified(authInfo.Token, jwt.MapClaims{})
 
 	if err != nil {
-		return true, err
+		return false, err
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
