@@ -31,7 +31,6 @@ func (a *AuthProvider) AddAuthHeaders(req *http.Request) {
 
 	case AuthProviderTypeBearer:
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Secret))
-		req.Header.Add("Flow", "device")
 	}
 }
 
