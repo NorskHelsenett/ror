@@ -210,6 +210,10 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetBackupRun(res.BackupRunResource)
 		r.SetCommonInterface(res.BackupRunResource)
 
+	case "machine.ror.internal/v1alpha1, Kind=Machine":
+		r.SetMachine(res.MachineResource)
+		r.SetCommonInterface(res.MachineResource)
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		r.SetUnknown(res.UnknownResource)
 		r.SetCommonInterface(res.UnknownResource)
