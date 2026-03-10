@@ -18,7 +18,7 @@ export interface ResourceUnknown {}
 export interface MachineCondition {
   type?: string;
   status?: string;
-  lastTransitionTime: Time;
+  lastTransitionTime?: Time;
   reason?: string;
   message?: string;
 }
@@ -54,7 +54,7 @@ export interface MachineStatus {
   providerID?: string;
   machineID?: string;
   state?: string;
-  lastUpdated: Time;
+  lastUpdated?: Time;
   provider?: string;
   region?: string;
   zone?: string;
@@ -155,19 +155,19 @@ export interface MachineSpec {
   name?: string;
   machineClass?: string;
   machineType?: string;
-  cpu: MachineCPU;
+  cpu?: MachineCPU;
   memory?: number;
   disks?: MachineSpecDisk[];
-  network: MachineNetwork;
-  os: MachineOS;
-  provider: string;
-  providerConfig: CloudProviderConfig;
+  network?: MachineNetwork;
+  os?: MachineOS;
+  provider?: string;
+  providerConfig?: CloudProviderConfig;
   sshKeys?: string[];
   userData?: string;
   tags?: { [key: string]: string };
   securityGroups?: string[];
   monitoring?: boolean;
-  backup: MachineBackup;
+  backup?: MachineBackup;
   cloudInit?: CloudInitConfig;
 }
 export interface ResourceMachine {
@@ -820,6 +820,7 @@ export interface KubernetesClusterSpecData {
   workspace: string;
   workorder: string;
   environment: string;
+  networkNamespaceName: string;
 }
 export interface KubernetesClusterSpec {
   data: KubernetesClusterSpecData;
