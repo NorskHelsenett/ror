@@ -783,6 +783,24 @@ func (r *ResourceBackupRun) Get() *ResourceBackupRun {
 	return r
 }
 
+// (r *ResourceMachine) GetRorHash calculates the hash of the resource
+//
+// it uses the hashstructure library to calculate the hash of the resource
+// fields can be ignored by adding the tag `hash:"ignore"` to the field
+func (r *ResourceMachine) GetRorHash() string {
+	hash, err := hashstructure.Hash(r, hashstructure.FormatV2, nil)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%d", hash)
+}
+
+// (r ResourceMachine) Get returns a pointer to the resource of type ResourceMachine
+func (r *ResourceMachine) Get() *ResourceMachine {
+	return r
+}
+
 // (r *ResourceUnknown) GetRorHash calculates the hash of the resource
 //
 // it uses the hashstructure library to calculate the hash of the resource

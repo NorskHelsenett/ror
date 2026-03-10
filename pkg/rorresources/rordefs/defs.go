@@ -404,6 +404,15 @@ var Resourcedefs = ApiResources{
 		Versions:   []ApiVersions{ApiVersionV2},
 	}, {
 		TypeMeta: metav1.TypeMeta{
+			Kind:       "Machine",
+			APIVersion: "machine.ror.internal/v1alpha1",
+		},
+		Plural:     "machines",
+		Namespaced: false,
+		Types:      []ApiResourceType{ApiResourceTypeMachineAgent},
+		Versions:   []ApiVersions{ApiVersionV2},
+	}, {
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Unknown",
 			APIVersion: "unknown.ror.internal/v1",
 		},

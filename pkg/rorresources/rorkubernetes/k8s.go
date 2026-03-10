@@ -262,6 +262,11 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetBackupRun(res)
 		r.SetCommonInterface(res)
 
+	case "machine.ror.internal/v1alpha1, Kind=Machine":
+		res := newMachineFromDynamicClient(input)
+		r.SetMachine(res)
+		r.SetCommonInterface(res)
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		res := newUnknownFromDynamicClient(input)
 		r.SetUnknown(res)
@@ -1126,6 +1131,26 @@ func newBackupRunFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Res
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to BackupRun", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newMachineFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newMachineFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceMachine {
+	nr := rortypes.ResourceMachine{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Machine", err)
 	}
 
 	// Explicitly free the JSON bytes to help garbage collection

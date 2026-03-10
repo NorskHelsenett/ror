@@ -18,12 +18,13 @@ const (
 type ApiResourceType string
 
 const (
-	ApiResourceTypeUnknown     ApiResourceType = ""
-	ApiResourceTypeAgent       ApiResourceType = "Agent"
-	ApiResourceTypeVmAgent     ApiResourceType = "VmAgent"
-	ApiResourceTypeTanzuAgent  ApiResourceType = "TanzuAgent"
-	ApiResourceTypeInternal    ApiResourceType = "Internal"
-	ApiResourceTypeBackupAgent ApiResourceType = "BackupAgent"
+	ApiResourceTypeUnknown      ApiResourceType = ""
+	ApiResourceTypeAgent        ApiResourceType = "Agent"
+	ApiResourceTypeVmAgent      ApiResourceType = "VmAgent"
+	ApiResourceTypeTanzuAgent   ApiResourceType = "TanzuAgent"
+	ApiResourceTypeInternal     ApiResourceType = "Internal"
+	ApiResourceTypeBackupAgent  ApiResourceType = "BackupAgent"
+	ApiResourceTypeMachineAgent ApiResourceType = "MachineAgent"
 )
 
 // ApiResources
