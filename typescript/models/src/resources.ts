@@ -77,6 +77,9 @@ export interface MachineStatus {
   failureReason?: string;
   failureMessage?: string;
 }
+export interface ResourceMachineStatus {
+  providerStatus: MachineStatus;
+}
 export interface CloudInitConfigMapRef {
   name: string;
   key?: string;
@@ -170,9 +173,12 @@ export interface MachineSpec {
   backup?: MachineBackup;
   cloudInit?: CloudInitConfig;
 }
+export interface ResourceMachineSpec {
+  providerSpec: MachineSpec;
+}
 export interface ResourceMachine {
-  spec: MachineSpec;
-  status: MachineStatus;
+  spec: ResourceMachineSpec;
+  status: ResourceMachineStatus;
 }
 export interface ResourceBackupRunSpec {
   delete: boolean;
