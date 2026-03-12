@@ -259,6 +259,11 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetBackupRun(res)
 		r.SetCommonInterface(res)
 
+	case "machine.ror.internal/v1alpha1, Kind=Machine":
+		res := newMachineFromMapInterface(input)
+		r.SetMachine(res)
+		r.SetCommonInterface(res)
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		res := newUnknownFromMapInterface(input)
 		r.SetUnknown(res)
@@ -867,6 +872,20 @@ func newBackupRunFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceBackupRun", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newMachineFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newMachineFromMapInterface(input map[string]interface{}) *rortypes.ResourceMachine {
+	result := rortypes.ResourceMachine{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceMachine", err)
 		return nil
 	}
 

@@ -56,6 +56,7 @@ type Resource struct {
 	DatacenterResource                      *rortypes.ResourceDatacenter                      `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
 	BackupJobResource                       *rortypes.ResourceBackupJob                       `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
+	MachineResource                         *rortypes.ResourceMachine                         `json:"machine,omitempty" bson:"machine,omitempty"`
 	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
@@ -691,6 +692,10 @@ func (r *Resource) SetBackupRun(res *rortypes.ResourceBackupRun) {
 	r.BackupRunResource = res
 }
 
+func (r *Resource) SetMachine(res *rortypes.ResourceMachine) {
+	r.MachineResource = res
+}
+
 func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
 	r.UnknownResource = res
 }
@@ -908,6 +913,11 @@ func (r *Resource) BackupJob() rortypes.BackupJobinterface {
 // BackupRun is a wrapper for the underlying resource, it provides a BackupRuninterface to work with backupruns
 func (r *Resource) BackupRun() rortypes.BackupRuninterface {
 	return r.BackupRunResource
+}
+
+// Machine is a wrapper for the underlying resource, it provides a Machineinterface to work with machines
+func (r *Resource) Machine() rortypes.Machineinterface {
+	return r.MachineResource
 }
 
 // Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns

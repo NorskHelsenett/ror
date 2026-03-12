@@ -476,7 +476,7 @@ func (t *HttpTransportClient) AddAuthHeaders(req *http.Request) {
 
 // AddCommonHeaders adds common headers to the request
 func (t *HttpTransportClient) AddCommonHeaders(req *http.Request) {
-	req.Header.Set("User-Agent", fmt.Sprintf("%s - v%s (%s)", t.Config.Role, t.Config.Version.GetVersion(), t.Config.Version.GetCommit()))
+	req.Header.Set("User-Agent", fmt.Sprintf("%s - %s (%s)", t.Config.Role, t.Config.Version.GetVersion(), t.Config.Version.GetCommit()))
 	req.Header.Add("Accept", `application/json`)
 	req.Header.Add("Content-Type", `application/json`)
 }

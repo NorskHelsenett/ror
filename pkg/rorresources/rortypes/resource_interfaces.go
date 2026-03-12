@@ -267,6 +267,12 @@ type BackupRuninterface interface {
 	Get() *ResourceBackupRun
 }
 
+// Machineinterface represents the interface for resources of the type machine
+type Machineinterface interface {
+	CommonResourceInterface
+	Get() *ResourceMachine
+}
+
 // Unknowninterface represents the interface for resources of the type unknown
 type Unknowninterface interface {
 	CommonResourceInterface
