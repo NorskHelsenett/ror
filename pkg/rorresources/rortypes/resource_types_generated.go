@@ -266,6 +266,12 @@ var (
 		Kind:    "BackupRun",
 	}
 
+	ResourceMachineGVK = schema.GroupVersionKind{
+		Group:   "machine.ror.internal",
+		Version: "v1alpha1",
+		Kind:    "Machine",
+	}
+
 	ResourceUnknownGVK = schema.GroupVersionKind{
 		Group:   "unknown.ror.internal",
 		Version: "v1",

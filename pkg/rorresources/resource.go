@@ -500,6 +500,16 @@ func NewRorBackupRunResource() *Resource {
 	return &r
 }
 
+// NewRorMachineResource provides a empty resource of a given kind/apiversion
+func NewRorMachineResource() *Resource {
+	r := Resource{}
+	r.Kind = "Machine"
+	r.APIVersion = "machine.ror.internal/v1alpha1"
+	r.MachineResource = &rortypes.ResourceMachine{}
+	r.common = r.MachineResource
+	return &r
+}
+
 // NewRorUnknownResource provides a empty resource of a given kind/apiversion
 func NewRorUnknownResource() *Resource {
 	r := Resource{}
