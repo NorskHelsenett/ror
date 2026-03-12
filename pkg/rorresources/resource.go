@@ -314,7 +314,7 @@ func NewRorVirtualMachineClassResource() *Resource {
 func NewRorKubernetesClusterResource() *Resource {
 	r := Resource{}
 	r.Kind = "KubernetesCluster"
-	r.APIVersion = "vitistack.io/v1alpha1"
+	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.KubernetesClusterResource = &rortypes.ResourceKubernetesCluster{}
 	r.common = r.KubernetesClusterResource
 	return &r

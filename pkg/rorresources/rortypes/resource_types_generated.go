@@ -153,7 +153,7 @@ var (
 	}
 
 	ResourceKubernetesClusterGVK = schema.GroupVersionKind{
-		Group:   "vitistack.io",
+		Group:   "general.ror.internal",
 		Version: "v1alpha1",
 		Kind:    "KubernetesCluster",
 	}

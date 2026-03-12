@@ -230,7 +230,7 @@ var Resourcedefs = ApiResources{
 	}, {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "KubernetesCluster",
-			APIVersion: "vitistack.io/v1alpha1",
+			APIVersion: "general.ror.internal/v1alpha1",
 		},
 		Plural:     "kubernetesclusters",
 		Namespaced: true,
