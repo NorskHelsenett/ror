@@ -5,9 +5,7 @@ package rorresources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
-
 )
-
 
 // The Resource struct represents one resource in ror.
 // 
@@ -21,6 +19,7 @@ type Resource struct {
 	common     rortypes.CommonResourceInterface
 }
 
+
 // NewRorResource provides a empty resource of a given kind/apiversion
 func NewRorResource (kind string, apiversion string) *Resource {
 	r := Resource{}
@@ -28,6 +27,19 @@ func NewRorResource (kind string, apiversion string) *Resource {
 	r.APIVersion = apiversion
 	return &r
 }
+{{ range .}}
+// NewRor{{.Kind}}Resource provides a empty resource of a given kind/apiversion
+func NewRor{{.Kind}}Resource () *Resource {
+	r := Resource{}
+	r.Kind = {{.Kind | quote}}
+	r.APIVersion = {{.APIVersion | quote}}
+	r.{{.Kind}}Resource = &rortypes.Resource{{.Kind}}{}
+	r.common = r.{{.Kind}}Resource
+	return &r
+}
+{{end}}
+
+
 
 // SetCommonResource sets the common resource of the resource, the common resource implements common metadata of the resource
 func (r *Resource) SetCommonResource(common rortypes.CommonResource) {
