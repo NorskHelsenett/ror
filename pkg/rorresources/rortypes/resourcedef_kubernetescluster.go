@@ -6,8 +6,22 @@ import (
 
 // ResourceKubernetesCluster uses the external types from vitistack/common
 type ResourceKubernetesCluster struct {
-	Spec   vitiv1alpha1.KubernetesClusterSpec   `json:"spec"`
-	Status vitiv1alpha1.KubernetesClusterStatus `json:"status,omitempty"`
+	Spec   ResourceKubernetesClusterSpec   `json:"spec"`
+	Status ResourceKubernetesClusterStatus `json:"status"`
+}
+
+type ResourceKubernetesClusterSpec struct {
+	SlackChannels []string              `json:"slackChannels"`
+	VitiSpec      KubernetesClusterSpec `json:"vitiSpec,omitzero" bson:"vitispec,omitempty"`
+}
+
+type ResourceKubernetesClusterStatus struct {
+	ProviderStatus KubernetesClusterStatus      `json:"providerstatus,omitzero" bson:"providerstatus,omitempty"`
+	AgentStatus    KubernetesClusterAgentStatus `json:"agentstatus,omitzero" bson:"agentstatus,omitempty"`
+}
+
+type KubernetesClusterAgentStatus struct {
+	Connected bool `json:"connected"`
 }
 
 // Type aliases for convenience and backward compatibility
