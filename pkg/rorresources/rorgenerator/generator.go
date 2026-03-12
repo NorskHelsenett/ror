@@ -2,12 +2,12 @@ package rorgenerator
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"os"
 	"os/exec"
 	"path"
 	"strings"
+	"text/template"
 )
 
 type Generator struct {
@@ -57,6 +57,7 @@ func (g Generator) TemplateToFile(filepath string, templatePath string, data any
 	}
 	funcMap := template.FuncMap{
 		"lower": strings.ToLower,
+		"quote": func(s string) string { return fmt.Sprintf("\"%s\"", s) },
 	}
 	tmpl, err := template.New("Template").Funcs(funcMap).Parse(string(t))
 	if err != nil {

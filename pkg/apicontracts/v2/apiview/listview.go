@@ -26,6 +26,8 @@ const (
 	ViewFieldTypeDateTime ViewFieldType = "datetime"
 	ViewFieldTypeBoolean  ViewFieldType = "boolean"
 	ViewFieldTypeEnum     ViewFieldType = "enum"
+	ViewFieldTypeArray    ViewFieldType = "array"
+	ViewFieldTypeObject   ViewFieldType = "object"
 )
 
 type View struct {
@@ -34,10 +36,10 @@ type View struct {
 	Rows    []ViewRow    `json:"rows,omitempty"`
 }
 
-type ViewRow []ViewValue
+type ViewRow map[string]ViewValue
 
 type ViewColumn struct {
-	Name             string          `json:"name"`
+	Name             string          `json:"name"` // name of the column, used as a key in the rows, must be unique within a view
 	Description      string          `json:"description,omitempty"`
 	Order            int             `json:"order"` // order of the column in the view, it may be holes and duplicates in the order
 	Default          bool            `json:"default"`
@@ -49,8 +51,7 @@ type ViewColumn struct {
 }
 
 type ViewValue struct {
-	FieldName   string `json:"fieldName"` // must match the column name
-	FieldValue  string `json:"fieldValue"`
+	FieldValue  any    `json:"fieldValue"`
 	Description string `json:"description,omitempty"`
 	ResourceUid string `json:"resourceUid,omitempty"`
 }

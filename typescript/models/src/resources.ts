@@ -682,6 +682,9 @@ export interface ResourceWorkspace {
   status: ResourceWorkspaceStatus;
 }
 export interface ResourceProvider {}
+export interface KubernetesClusterAgentStatus {
+  connected: boolean;
+}
 export interface KubernetesClusterCondition {
   type: string;
   status: string;
@@ -760,6 +763,10 @@ export interface KubernetesClusterStatus {
   phase: string;
   conditions: KubernetesClusterCondition[];
 }
+export interface ResourceKubernetesClusterStatus {
+  providerstatus: KubernetesClusterStatus;
+  agentstatus: KubernetesClusterAgentStatus;
+}
 export interface KubernetesClusterTaint {
   key: string;
   value: string;
@@ -826,9 +833,13 @@ export interface KubernetesClusterSpec {
   data: KubernetesClusterSpecData;
   topology: KubernetesClusterSpecTopology;
 }
+export interface ResourceKubernetesClusterSpec {
+  slackChannels: string[];
+  vitiSpec: KubernetesClusterSpec;
+}
 export interface ResourceKubernetesCluster {
-  spec: KubernetesClusterSpec;
-  status?: KubernetesClusterStatus;
+  spec: ResourceKubernetesClusterSpec;
+  status: ResourceKubernetesClusterStatus;
 }
 export interface ResourceVirtualMachineClassSpecHardwareInstanceStorage {
   storageClass: string;

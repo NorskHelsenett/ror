@@ -70,6 +70,456 @@ func NewRorResource(kind string, apiversion string) *Resource {
 	return &r
 }
 
+// NewRorNamespaceResource provides a empty resource of a given kind/apiversion
+func NewRorNamespaceResource() *Resource {
+	r := Resource{}
+	r.Kind = "Namespace"
+	r.APIVersion = "v1"
+	r.NamespaceResource = &rortypes.ResourceNamespace{}
+	r.common = r.NamespaceResource
+	return &r
+}
+
+// NewRorNodeResource provides a empty resource of a given kind/apiversion
+func NewRorNodeResource() *Resource {
+	r := Resource{}
+	r.Kind = "Node"
+	r.APIVersion = "v1"
+	r.NodeResource = &rortypes.ResourceNode{}
+	r.common = r.NodeResource
+	return &r
+}
+
+// NewRorPersistentVolumeClaimResource provides a empty resource of a given kind/apiversion
+func NewRorPersistentVolumeClaimResource() *Resource {
+	r := Resource{}
+	r.Kind = "PersistentVolumeClaim"
+	r.APIVersion = "v1"
+	r.PersistentVolumeClaimResource = &rortypes.ResourcePersistentVolumeClaim{}
+	r.common = r.PersistentVolumeClaimResource
+	return &r
+}
+
+// NewRorDeploymentResource provides a empty resource of a given kind/apiversion
+func NewRorDeploymentResource() *Resource {
+	r := Resource{}
+	r.Kind = "Deployment"
+	r.APIVersion = "apps/v1"
+	r.DeploymentResource = &rortypes.ResourceDeployment{}
+	r.common = r.DeploymentResource
+	return &r
+}
+
+// NewRorStorageClassResource provides a empty resource of a given kind/apiversion
+func NewRorStorageClassResource() *Resource {
+	r := Resource{}
+	r.Kind = "StorageClass"
+	r.APIVersion = "storage.k8s.io/v1"
+	r.StorageClassResource = &rortypes.ResourceStorageClass{}
+	r.common = r.StorageClassResource
+	return &r
+}
+
+// NewRorPolicyReportResource provides a empty resource of a given kind/apiversion
+func NewRorPolicyReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "PolicyReport"
+	r.APIVersion = "wgpolicyk8s.io/v1alpha2"
+	r.PolicyReportResource = &rortypes.ResourcePolicyReport{}
+	r.common = r.PolicyReportResource
+	return &r
+}
+
+// NewRorApplicationResource provides a empty resource of a given kind/apiversion
+func NewRorApplicationResource() *Resource {
+	r := Resource{}
+	r.Kind = "Application"
+	r.APIVersion = "argoproj.io/v1alpha1"
+	r.ApplicationResource = &rortypes.ResourceApplication{}
+	r.common = r.ApplicationResource
+	return &r
+}
+
+// NewRorAppProjectResource provides a empty resource of a given kind/apiversion
+func NewRorAppProjectResource() *Resource {
+	r := Resource{}
+	r.Kind = "AppProject"
+	r.APIVersion = "argoproj.io/v1alpha1"
+	r.AppProjectResource = &rortypes.ResourceAppProject{}
+	r.common = r.AppProjectResource
+	return &r
+}
+
+// NewRorCertificateResource provides a empty resource of a given kind/apiversion
+func NewRorCertificateResource() *Resource {
+	r := Resource{}
+	r.Kind = "Certificate"
+	r.APIVersion = "cert-manager.io/v1"
+	r.CertificateResource = &rortypes.ResourceCertificate{}
+	r.common = r.CertificateResource
+	return &r
+}
+
+// NewRorServiceResource provides a empty resource of a given kind/apiversion
+func NewRorServiceResource() *Resource {
+	r := Resource{}
+	r.Kind = "Service"
+	r.APIVersion = "v1"
+	r.ServiceResource = &rortypes.ResourceService{}
+	r.common = r.ServiceResource
+	return &r
+}
+
+// NewRorPodResource provides a empty resource of a given kind/apiversion
+func NewRorPodResource() *Resource {
+	r := Resource{}
+	r.Kind = "Pod"
+	r.APIVersion = "v1"
+	r.PodResource = &rortypes.ResourcePod{}
+	r.common = r.PodResource
+	return &r
+}
+
+// NewRorReplicaSetResource provides a empty resource of a given kind/apiversion
+func NewRorReplicaSetResource() *Resource {
+	r := Resource{}
+	r.Kind = "ReplicaSet"
+	r.APIVersion = "apps/v1"
+	r.ReplicaSetResource = &rortypes.ResourceReplicaSet{}
+	r.common = r.ReplicaSetResource
+	return &r
+}
+
+// NewRorStatefulSetResource provides a empty resource of a given kind/apiversion
+func NewRorStatefulSetResource() *Resource {
+	r := Resource{}
+	r.Kind = "StatefulSet"
+	r.APIVersion = "apps/v1"
+	r.StatefulSetResource = &rortypes.ResourceStatefulSet{}
+	r.common = r.StatefulSetResource
+	return &r
+}
+
+// NewRorDaemonSetResource provides a empty resource of a given kind/apiversion
+func NewRorDaemonSetResource() *Resource {
+	r := Resource{}
+	r.Kind = "DaemonSet"
+	r.APIVersion = "apps/v1"
+	r.DaemonSetResource = &rortypes.ResourceDaemonSet{}
+	r.common = r.DaemonSetResource
+	return &r
+}
+
+// NewRorIngressResource provides a empty resource of a given kind/apiversion
+func NewRorIngressResource() *Resource {
+	r := Resource{}
+	r.Kind = "Ingress"
+	r.APIVersion = "networking.k8s.io/v1"
+	r.IngressResource = &rortypes.ResourceIngress{}
+	r.common = r.IngressResource
+	return &r
+}
+
+// NewRorIngressClassResource provides a empty resource of a given kind/apiversion
+func NewRorIngressClassResource() *Resource {
+	r := Resource{}
+	r.Kind = "IngressClass"
+	r.APIVersion = "networking.k8s.io/v1"
+	r.IngressClassResource = &rortypes.ResourceIngressClass{}
+	r.common = r.IngressClassResource
+	return &r
+}
+
+// NewRorSbomReportResource provides a empty resource of a given kind/apiversion
+func NewRorSbomReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "SbomReport"
+	r.APIVersion = "aquasecurity.github.io/v1alpha1"
+	r.SbomReportResource = &rortypes.ResourceSbomReport{}
+	r.common = r.SbomReportResource
+	return &r
+}
+
+// NewRorVulnerabilityReportResource provides a empty resource of a given kind/apiversion
+func NewRorVulnerabilityReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "VulnerabilityReport"
+	r.APIVersion = "aquasecurity.github.io/v1alpha1"
+	r.VulnerabilityReportResource = &rortypes.ResourceVulnerabilityReport{}
+	r.common = r.VulnerabilityReportResource
+	return &r
+}
+
+// NewRorExposedSecretReportResource provides a empty resource of a given kind/apiversion
+func NewRorExposedSecretReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "ExposedSecretReport"
+	r.APIVersion = "aquasecurity.github.io/v1alpha1"
+	r.ExposedSecretReportResource = &rortypes.ResourceExposedSecretReport{}
+	r.common = r.ExposedSecretReportResource
+	return &r
+}
+
+// NewRorConfigAuditReportResource provides a empty resource of a given kind/apiversion
+func NewRorConfigAuditReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "ConfigAuditReport"
+	r.APIVersion = "aquasecurity.github.io/v1alpha1"
+	r.ConfigAuditReportResource = &rortypes.ResourceConfigAuditReport{}
+	r.common = r.ConfigAuditReportResource
+	return &r
+}
+
+// NewRorRbacAssessmentReportResource provides a empty resource of a given kind/apiversion
+func NewRorRbacAssessmentReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "RbacAssessmentReport"
+	r.APIVersion = "aquasecurity.github.io/v1alpha1"
+	r.RbacAssessmentReportResource = &rortypes.ResourceRbacAssessmentReport{}
+	r.common = r.RbacAssessmentReportResource
+	return &r
+}
+
+// NewRorTanzuKubernetesClusterResource provides a empty resource of a given kind/apiversion
+func NewRorTanzuKubernetesClusterResource() *Resource {
+	r := Resource{}
+	r.Kind = "TanzuKubernetesCluster"
+	r.APIVersion = "run.tanzu.vmware.com/v1alpha3"
+	r.TanzuKubernetesClusterResource = &rortypes.ResourceTanzuKubernetesCluster{}
+	r.common = r.TanzuKubernetesClusterResource
+	return &r
+}
+
+// NewRorTanzuKubernetesReleaseResource provides a empty resource of a given kind/apiversion
+func NewRorTanzuKubernetesReleaseResource() *Resource {
+	r := Resource{}
+	r.Kind = "TanzuKubernetesRelease"
+	r.APIVersion = "run.tanzu.vmware.com/v1alpha3"
+	r.TanzuKubernetesReleaseResource = &rortypes.ResourceTanzuKubernetesRelease{}
+	r.common = r.TanzuKubernetesReleaseResource
+	return &r
+}
+
+// NewRorVirtualMachineClassResource provides a empty resource of a given kind/apiversion
+func NewRorVirtualMachineClassResource() *Resource {
+	r := Resource{}
+	r.Kind = "VirtualMachineClass"
+	r.APIVersion = "vmoperator.vmware.com/v1alpha2"
+	r.VirtualMachineClassResource = &rortypes.ResourceVirtualMachineClass{}
+	r.common = r.VirtualMachineClassResource
+	return &r
+}
+
+// NewRorKubernetesClusterResource provides a empty resource of a given kind/apiversion
+func NewRorKubernetesClusterResource() *Resource {
+	r := Resource{}
+	r.Kind = "KubernetesCluster"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.KubernetesClusterResource = &rortypes.ResourceKubernetesCluster{}
+	r.common = r.KubernetesClusterResource
+	return &r
+}
+
+// NewRorProviderResource provides a empty resource of a given kind/apiversion
+func NewRorProviderResource() *Resource {
+	r := Resource{}
+	r.Kind = "Provider"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.ProviderResource = &rortypes.ResourceProvider{}
+	r.common = r.ProviderResource
+	return &r
+}
+
+// NewRorWorkspaceResource provides a empty resource of a given kind/apiversion
+func NewRorWorkspaceResource() *Resource {
+	r := Resource{}
+	r.Kind = "Workspace"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.WorkspaceResource = &rortypes.ResourceWorkspace{}
+	r.common = r.WorkspaceResource
+	return &r
+}
+
+// NewRorKubernetesMachineClassResource provides a empty resource of a given kind/apiversion
+func NewRorKubernetesMachineClassResource() *Resource {
+	r := Resource{}
+	r.Kind = "KubernetesMachineClass"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.KubernetesMachineClassResource = &rortypes.ResourceKubernetesMachineClass{}
+	r.common = r.KubernetesMachineClassResource
+	return &r
+}
+
+// NewRorClusterOrderResource provides a empty resource of a given kind/apiversion
+func NewRorClusterOrderResource() *Resource {
+	r := Resource{}
+	r.Kind = "ClusterOrder"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.ClusterOrderResource = &rortypes.ResourceClusterOrder{}
+	r.common = r.ClusterOrderResource
+	return &r
+}
+
+// NewRorProjectResource provides a empty resource of a given kind/apiversion
+func NewRorProjectResource() *Resource {
+	r := Resource{}
+	r.Kind = "Project"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.ProjectResource = &rortypes.ResourceProject{}
+	r.common = r.ProjectResource
+	return &r
+}
+
+// NewRorConfigurationResource provides a empty resource of a given kind/apiversion
+func NewRorConfigurationResource() *Resource {
+	r := Resource{}
+	r.Kind = "Configuration"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.ConfigurationResource = &rortypes.ResourceConfiguration{}
+	r.common = r.ConfigurationResource
+	return &r
+}
+
+// NewRorClusterComplianceReportResource provides a empty resource of a given kind/apiversion
+func NewRorClusterComplianceReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "ClusterComplianceReport"
+	r.APIVersion = "aquasecurity.github.io/v1alpha1"
+	r.ClusterComplianceReportResource = &rortypes.ResourceClusterComplianceReport{}
+	r.common = r.ClusterComplianceReportResource
+	return &r
+}
+
+// NewRorClusterVulnerabilityReportResource provides a empty resource of a given kind/apiversion
+func NewRorClusterVulnerabilityReportResource() *Resource {
+	r := Resource{}
+	r.Kind = "ClusterVulnerabilityReport"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.ClusterVulnerabilityReportResource = &rortypes.ResourceClusterVulnerabilityReport{}
+	r.common = r.ClusterVulnerabilityReportResource
+	return &r
+}
+
+// NewRorRouteResource provides a empty resource of a given kind/apiversion
+func NewRorRouteResource() *Resource {
+	r := Resource{}
+	r.Kind = "Route"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.RouteResource = &rortypes.ResourceRoute{}
+	r.common = r.RouteResource
+	return &r
+}
+
+// NewRorSlackMessageResource provides a empty resource of a given kind/apiversion
+func NewRorSlackMessageResource() *Resource {
+	r := Resource{}
+	r.Kind = "SlackMessage"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.SlackMessageResource = &rortypes.ResourceSlackMessage{}
+	r.common = r.SlackMessageResource
+	return &r
+}
+
+// NewRorVulnerabilityEventResource provides a empty resource of a given kind/apiversion
+func NewRorVulnerabilityEventResource() *Resource {
+	r := Resource{}
+	r.Kind = "VulnerabilityEvent"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.VulnerabilityEventResource = &rortypes.ResourceVulnerabilityEvent{}
+	r.common = r.VulnerabilityEventResource
+	return &r
+}
+
+// NewRorVirtualMachineResource provides a empty resource of a given kind/apiversion
+func NewRorVirtualMachineResource() *Resource {
+	r := Resource{}
+	r.Kind = "VirtualMachine"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.VirtualMachineResource = &rortypes.ResourceVirtualMachine{}
+	r.common = r.VirtualMachineResource
+	return &r
+}
+
+// NewRorVirtualMachineVulnerabilityInfoResource provides a empty resource of a given kind/apiversion
+func NewRorVirtualMachineVulnerabilityInfoResource() *Resource {
+	r := Resource{}
+	r.Kind = "VirtualMachineVulnerabilityInfo"
+	r.APIVersion = "general.ror.internal/v1alpha1"
+	r.VirtualMachineVulnerabilityInfoResource = &rortypes.ResourceVirtualMachineVulnerabilityInfo{}
+	r.common = r.VirtualMachineVulnerabilityInfoResource
+	return &r
+}
+
+// NewRorEndpointsResource provides a empty resource of a given kind/apiversion
+func NewRorEndpointsResource() *Resource {
+	r := Resource{}
+	r.Kind = "Endpoints"
+	r.APIVersion = "v1"
+	r.EndpointsResource = &rortypes.ResourceEndpoints{}
+	r.common = r.EndpointsResource
+	return &r
+}
+
+// NewRorNetworkPolicyResource provides a empty resource of a given kind/apiversion
+func NewRorNetworkPolicyResource() *Resource {
+	r := Resource{}
+	r.Kind = "NetworkPolicy"
+	r.APIVersion = "networking.k8s.io/v1"
+	r.NetworkPolicyResource = &rortypes.ResourceNetworkPolicy{}
+	r.common = r.NetworkPolicyResource
+	return &r
+}
+
+// NewRorDatacenterResource provides a empty resource of a given kind/apiversion
+func NewRorDatacenterResource() *Resource {
+	r := Resource{}
+	r.Kind = "Datacenter"
+	r.APIVersion = "infrastructure.ror.internal/v1alpha1"
+	r.DatacenterResource = &rortypes.ResourceDatacenter{}
+	r.common = r.DatacenterResource
+	return &r
+}
+
+// NewRorBackupJobResource provides a empty resource of a given kind/apiversion
+func NewRorBackupJobResource() *Resource {
+	r := Resource{}
+	r.Kind = "BackupJob"
+	r.APIVersion = "backup.ror.internal/v1alpha1"
+	r.BackupJobResource = &rortypes.ResourceBackupJob{}
+	r.common = r.BackupJobResource
+	return &r
+}
+
+// NewRorBackupRunResource provides a empty resource of a given kind/apiversion
+func NewRorBackupRunResource() *Resource {
+	r := Resource{}
+	r.Kind = "BackupRun"
+	r.APIVersion = "backup.ror.internal/v1alpha1"
+	r.BackupRunResource = &rortypes.ResourceBackupRun{}
+	r.common = r.BackupRunResource
+	return &r
+}
+
+// NewRorMachineResource provides a empty resource of a given kind/apiversion
+func NewRorMachineResource() *Resource {
+	r := Resource{}
+	r.Kind = "Machine"
+	r.APIVersion = "machine.ror.internal/v1alpha1"
+	r.MachineResource = &rortypes.ResourceMachine{}
+	r.common = r.MachineResource
+	return &r
+}
+
+// NewRorUnknownResource provides a empty resource of a given kind/apiversion
+func NewRorUnknownResource() *Resource {
+	r := Resource{}
+	r.Kind = "Unknown"
+	r.APIVersion = "unknown.ror.internal/v1"
+	r.UnknownResource = &rortypes.ResourceUnknown{}
+	r.common = r.UnknownResource
+	return &r
+}
+
 // SetCommonResource sets the common resource of the resource, the common resource implements common metadata of the resource
 func (r *Resource) SetCommonResource(common rortypes.CommonResource) {
 	r.CommonResource = common
