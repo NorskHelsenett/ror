@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongodbQuery []bson.M
@@ -109,11 +109,7 @@ func (rc MongodbCon) InsertOne(ctx context.Context, col string, input interface{
 func (rc MongodbCon) UpsertOne(ctx context.Context, col string, filter bson.M, update interface{}) (mongo.UpdateResult, error) {
 	db := rc.GetMongoDb()
 
-	upsert := true
-	opts := &options.UpdateOptions{
-		Upsert: &upsert,
-	}
-	updateResult, err := db.Collection(col).UpdateOne(ctx, filter, update, opts)
+	updateResult, err := db.Collection(col).UpdateOne(ctx, filter, update, options.UpdateOne().SetUpsert(true))
 
 	if err != nil {
 		return mongo.UpdateResult{}, fmt.Errorf("could not updateOne object: %v", err)
