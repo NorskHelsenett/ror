@@ -37,6 +37,12 @@ func (m MongodbQuery) PrettyPrint() {
 }
 
 func (m MongodbQuery) MongoshPrint(collection string) {
+	if rlog.GetLogLevel() == "debug" {
+		fmt.Print(m.MongoshString(collection))
+	}
+}
+
+func (m MongodbQuery) MongoshString(collection string) string {
 	var prettyDocs []bson.M
 	for _, doc := range m {
 		bsonDoc, err := bson.Marshal(doc)
@@ -54,9 +60,7 @@ func (m MongodbQuery) MongoshPrint(collection string) {
 	if err != nil {
 		rlog.Error("error marshalling json", err)
 	}
-	if rlog.GetLogLevel() == "debug" {
-		fmt.Printf("db.%s.aggregate(%s)", collection, string(prettyJSON))
-	}
+	return fmt.Sprintf("db.%s.aggregate(%s)", collection, string(prettyJSON))
 }
 
 func NewMongodbQuery(input []bson.M) MongodbQuery {
