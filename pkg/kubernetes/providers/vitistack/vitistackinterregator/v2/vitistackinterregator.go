@@ -19,6 +19,7 @@ const (
 	KubernetesProviderKey = vitiv1alpha1.KubernetesProviderAnnotation // The Kubernetes provider of the cluster
 	ClusterIdKey          = vitiv1alpha1.ClusterIdAnnotation          // The ID of the cluster, this is the uuid in ror
 	CountryKey            = vitiv1alpha1.CountryAnnotation            // The country of the cluster
+	EnvironmentKey        = vitiv1alpha1.EnvironmentAnnotation        // The environment of the cluster
 )
 
 var (
@@ -47,6 +48,7 @@ type VitistackProviderinterregator struct {
 	kubernetesprovider string
 	clusterId          string
 	country            string
+	environment        string
 }
 
 func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.ClusterInterregator {
@@ -88,6 +90,9 @@ func (i Interregator) NewInterregator(nodes []v1.Node) interregatortypes.Cluster
 		GetKubernetesProviderFunc: func() providermodels.ProviderType {
 			return interregator.GetKubernetesProvider()
 		},
+		GetEnvironmentFunc: func() string {
+			return interregator.GetEnv()
+		},
 	})
 
 }
@@ -100,7 +105,6 @@ func (v *VitistackProviderinterregator) MustInitialize() bool {
 	if v.initialized {
 		return false
 	}
-
 	for _, node := range v.nodes {
 		if v.checkIfValid(&node) {
 			v.clustername, _ = getValueByKey(&node, ClusterNameKey)
@@ -111,6 +115,8 @@ func (v *VitistackProviderinterregator) MustInitialize() bool {
 			v.kubernetesprovider, _ = getValueByKey(&node, KubernetesProviderKey)
 			v.clusterId, _ = getValueByKey(&node, ClusterIdKey)
 			v.country, _ = getValueByKey(&node, CountryKey)
+			v.environment = getValueByKeyWithDefault(&node, EnvironmentKey, providermodels.UNKNOWN_ENVIRONMENT)
+
 			v.isOfType = true
 			v.initialized = true
 			return true
@@ -135,6 +141,15 @@ func (v VitistackProviderinterregator) checkIfValid(node *v1.Node) bool {
 func checkIfKeyPresent(node *v1.Node, key string) bool {
 	return metadatahelper.CheckAnnotationOrLabel(node.ObjectMeta, key)
 }
+
+func getValueByKeyWithDefault(node *v1.Node, key string, def string) string {
+	res, ok := metadatahelper.GetAnnotationOrLabel(node.ObjectMeta, key)
+	if !ok {
+		return def
+	}
+	return res
+}
+
 func getValueByKey(node *v1.Node, key string) (string, bool) {
 	return metadatahelper.GetAnnotationOrLabel(node.ObjectMeta, key)
 }
@@ -229,4 +244,12 @@ func (v VitistackProviderinterregator) GetKubernetesProvider() providermodels.Pr
 		return providermodels.ProviderTypeUnknown
 	}
 	return providermodels.ProviderType(v.kubernetesprovider)
+}
+
+// GetRegion returns the region of the cluster.
+func (v VitistackProviderinterregator) GetEnv() string {
+	if !v.MustInitialize() {
+		return providermodels.UNKNOWN_ENVIRONMENT
+	}
+	return v.environment
 }

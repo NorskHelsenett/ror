@@ -31,9 +31,9 @@ type ClusterInterregator interface {
 	GetClusterId() string
 	GetClusterName() string
 	GetClusterWorkspace() string
-	GetDatacenter() string
 	GetAz() string
 	GetRegion() string
+	GetDatacenter() string
 	GetVMProvider() string
 	GetKubernetesProvider() string
 }

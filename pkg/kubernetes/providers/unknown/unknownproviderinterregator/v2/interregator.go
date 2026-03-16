@@ -54,3 +54,6 @@ func (t UnknownProviderinterregator) GetKubernetesProvider() providermodels.Prov
 func (t UnknownProviderinterregator) Nodes() interregatortypes.ClusterNodeReport {
 	return nodereportfactory.NodeReportNotImplemented{}
 }
+func (t UnknownProviderinterregator) GetEnvironment() string {
+	return providermodels.UNKNOWN_UNDEFINED
+}

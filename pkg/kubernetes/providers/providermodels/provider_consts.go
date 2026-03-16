@@ -20,6 +20,7 @@ const (
 	UNKNOWN_CLUSTER             string = "unknown-cluster"
 	UNKNOWN_CLUSTER_ID          string = "unknown-cluster-id"
 	UNKNOWN_AZ                  string = "unknown-az"
+	UNKNOWN_ENVIRONMENT         string = "unknown-environment"
 
 	ProviderTypeUnknown   ProviderType = "unknown"
 	ProviderTypeTanzu     ProviderType = "tanzu"

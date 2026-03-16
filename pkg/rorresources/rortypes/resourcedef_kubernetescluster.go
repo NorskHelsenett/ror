@@ -1,6 +1,9 @@
 package rortypes
 
 import (
+	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	vitiv1alpha1 "github.com/vitistack/common/pkg/v1alpha1"
 )
 
@@ -21,7 +24,19 @@ type ResourceKubernetesClusterStatus struct {
 }
 
 type KubernetesClusterAgentStatus struct {
-	Connected bool `json:"connected"`
+	ClusterId          string                      `json:"clusterId"`
+	ClusterName        string                      `json:"clusterName"`
+	KubernetesProvider providermodels.ProviderType `json:"kubernetesProvider"`
+	Az                 string                      `json:"az"`
+	Region             string                      `json:"region"`
+	Country            string                      `json:"country"`
+	Workspace          string                      `json:"workspaceId"`
+	Environment        string                      `json:"environment"`
+	Datacenter         string                      `json:"datacenter"`
+	Nodes              int                         `json:"nodes"`
+	Versions           map[string]string           `json:"versions"`
+	CreatedAt          time.Time                   `json:"createdAt"`
+	LastSeen           time.Time                   `json:"lastSeen"`
 }
 
 // Type aliases for convenience and backward compatibility
