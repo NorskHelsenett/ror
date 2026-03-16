@@ -21,6 +21,7 @@ type ClusterInterregator interface {
 	GetKubernetesProvider() providermodels.ProviderType
 	GetCountry() string
 	Nodes() ClusterNodeReport
+	GetEnvironment() string
 }
 
 type ClusterNodeReport interface {

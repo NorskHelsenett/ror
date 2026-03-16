@@ -24,6 +24,7 @@ type ClusterInterregatorFactoryConfig struct {
 	GetAzFunc                 func() string
 	GetRegionFunc             func() string
 	GetCountryFunc            func() string
+	GetEnvironmentFunc        func() string
 	GetMachineProviderFunc    func() providermodels.ProviderType
 	GetKubernetesProviderFunc func() providermodels.ProviderType
 	NodesFunc                 func() interregatortypes.ClusterNodeReport
@@ -117,4 +118,11 @@ func (c *ClusterInterregatorFactory) Nodes() interregatortypes.ClusterNodeReport
 		c.defaultNodesFunc = nodereportfactory.NewClusterNodeReport(c.nodes)
 	}
 	return c.defaultNodesFunc
+}
+
+func (c ClusterInterregatorFactory) GetEnvironment() string {
+	if c.config.GetEnvironmentFunc != nil {
+		return c.config.GetEnvironmentFunc()
+	}
+	return c.unknowninterregator.GetEnvironment()
 }
