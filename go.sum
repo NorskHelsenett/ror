@@ -421,8 +421,8 @@ go.opentelemetry.io/contrib/bridges/prometheus v0.66.0 h1:nQlJkSnoq/O+z7Az1CjwM+
 go.opentelemetry.io/contrib/bridges/prometheus v0.66.0/go.mod h1:U87nfzwzcfDvqTeRnI+dBHMAmHGQf9AWqvTC2dAv8as=
 go.opentelemetry.io/contrib/exporters/autoexport v0.66.0 h1:xFeFWaleVRvR9eUwh5ew+1+LYkTnqs7lvcj55TX9EbQ=
 go.opentelemetry.io/contrib/exporters/autoexport v0.66.0/go.mod h1:OQHzrGFKcMdMgY646FZ0wqc9fbMlHd7h6AjU1dDqEI0=
-go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.65.0 h1:waMzyshwz475eKwaglg3lasw2T0s6+qMxwCm0OmVR30=
-go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.65.0/go.mod h1:3hFqlqTz9v/eb0t9QAjgIsSwnx0LWcfTcr62PY22K54=
+go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.67.0 h1:X0H+vhyjOczVijlJqIz2kqq0H3O/y3iwKgAKYTII7yU=
+go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.67.0/go.mod h1:hg41UE3tzwcEqMZD7xT4EjISCFFS5fgPbBsW37twGNs=
 go.opentelemetry.io/contrib/instrumentation/host v0.66.0 h1:pBgjY2mZxTJj0HM/2C9wzxSFk6OCN1AtiIvW43Qkieo=
 go.opentelemetry.io/contrib/instrumentation/host v0.66.0/go.mod h1:IXlyFIbmeXaZuag9iZDVDrS09r87arjeIMVimvX8Q6U=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0 h1:7iP2uCb7sGddAr30RRS6xjKy7AZ2JtTOPA3oolgVSw8=
