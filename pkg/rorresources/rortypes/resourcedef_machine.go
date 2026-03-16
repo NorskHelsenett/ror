@@ -10,9 +10,9 @@ type ResourceMachine struct {
 }
 
 type ResourceMachineSpec struct {
-	ProviderSpec v1alpha1.MachineSpec `json:"providerSpec"`
+	ProviderSpec *v1alpha1.MachineSpec `json:"providerSpec"`
 }
 
 type ResourceMachineStatus struct {
-	ProviderStatus v1alpha1.MachineStatus `json:"providerStatus"`
+	ProviderStatus *v1alpha1.MachineStatus `json:"providerStatus"`
 }
