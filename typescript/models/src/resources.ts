@@ -78,7 +78,7 @@ export interface MachineStatus {
   failureMessage?: string;
 }
 export interface ResourceMachineStatus {
-  providerStatus: MachineStatus;
+  providerStatus?: MachineStatus;
 }
 export interface CloudInitConfigMapRef {
   name: string;
@@ -174,7 +174,7 @@ export interface MachineSpec {
   cloudInit?: CloudInitConfig;
 }
 export interface ResourceMachineSpec {
-  providerSpec: MachineSpec;
+  providerSpec?: MachineSpec;
 }
 export interface ResourceMachine {
   spec: ResourceMachineSpec;
