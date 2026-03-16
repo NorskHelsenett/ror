@@ -108,7 +108,15 @@ func (mdb MongodbCon) ping(ctx context.Context) bool {
 
 func (mdb *MongodbCon) connect() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().SetMonitor(otelmongo.NewMonitor()).ApplyURI(mdb.getConnectionstring()).SetServerAPIOptions(serverAPI).SetMaxPoolSize(100).SetMinPoolSize(10)
+	opts := options.Client().
+		SetMonitor(otelmongo.NewMonitor()).
+		ApplyURI(mdb.getConnectionstring()).
+		SetServerAPIOptions(serverAPI).
+		SetMaxPoolSize(100).
+		SetMinPoolSize(10).
+		SetBSONOptions(&options.BSONOptions{
+			ObjectIDAsHexString: true,
+		})
 
 	cli, err := mongo.Connect(opts)
 	if err != nil {
