@@ -9,11 +9,11 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
-	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
+	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo"
 )
 
 var mongodb MongodbCon
@@ -110,7 +110,7 @@ func (mdb *MongodbCon) connect() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().SetMonitor(otelmongo.NewMonitor()).ApplyURI(mdb.getConnectionstring()).SetServerAPIOptions(serverAPI).SetMaxPoolSize(100).SetMinPoolSize(10)
 
-	cli, err := mongo.Connect(mdb.Context, opts)
+	cli, err := mongo.Connect(opts)
 	if err != nil {
 		rlog.Fatal("could not connect to Mongodb", err)
 	}

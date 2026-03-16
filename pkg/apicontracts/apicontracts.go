@@ -6,7 +6,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 // Input models, for Creating and updating with validation
@@ -490,9 +490,9 @@ type Filter struct {
 }
 
 type Task struct {
-	Id     primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name   string             `json:"name" validate:"required"`
-	Config TaskSpec           `json:"config" validate:"required"`
+	Id     bson.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name   string        `json:"name" validate:"required"`
+	Config TaskSpec      `json:"config" validate:"required"`
 }
 
 type TaskCollection struct {
