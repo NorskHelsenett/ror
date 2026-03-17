@@ -688,8 +688,21 @@ export interface ResourceWorkspace {
   status: ResourceWorkspaceStatus;
 }
 export interface ResourceProvider {}
+export interface Time {}
 export interface KubernetesClusterAgentStatus {
-  connected: boolean;
+  clusterId: string;
+  clusterName: string;
+  kubernetesProvider: string;
+  az: string;
+  region: string;
+  country: string;
+  workspaceId: string;
+  environment: string;
+  datacenter: string;
+  nodes: number;
+  versions: { [key: string]: string };
+  createdAt: Time;
+  lastSeen: Time;
 }
 export interface KubernetesClusterCondition {
   type: string;

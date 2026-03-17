@@ -9,6 +9,7 @@ const (
 	Acl2ScopeProject        Acl2Scope = "project"
 	Acl2ScopeDatacenter     Acl2Scope = "datacenter"
 	Acl2ScopeVirtualMachine Acl2Scope = "virtualmachine"
+	Acl2ScopeMachine        Acl2Scope = "machine"
 	Acl2ScopeBackup         Acl2Scope = "backup"
 )
 
@@ -24,6 +25,8 @@ func (s Acl2Scope) IsValid() bool {
 	case Acl2ScopeDatacenter:
 		return true
 	case Acl2ScopeVirtualMachine:
+		return true
+	case Acl2ScopeMachine:
 		return true
 	case Acl2ScopeBackup:
 		return true
@@ -41,5 +44,6 @@ func GetScopes() []Acl2Scope {
 		Acl2ScopeVirtualMachine,
 		Acl2ScopeBackup,
 		Acl2ScopeProject,
+		Acl2ScopeMachine,
 	}
 }
