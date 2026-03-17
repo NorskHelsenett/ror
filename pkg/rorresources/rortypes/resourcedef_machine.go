@@ -5,6 +5,14 @@ import (
 )
 
 type ResourceMachine struct {
-	Spec   v1alpha1.MachineSpec   `json:"spec"`
-	Status v1alpha1.MachineStatus `json:"status"`
+	Spec   ResourceMachineSpec   `json:"spec"`
+	Status ResourceMachineStatus `json:"status"`
+}
+
+type ResourceMachineSpec struct {
+	ProviderSpec *v1alpha1.MachineSpec `json:"providerSpec"`
+}
+
+type ResourceMachineStatus struct {
+	ProviderStatus *v1alpha1.MachineStatus `json:"providerStatus"`
 }
