@@ -19,7 +19,6 @@ import (
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
 )
 
 var ApiEndpoint = "https://graph.microsoft.com/.default"
@@ -186,7 +185,7 @@ func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan cha
 	if cached {
 		cachedUser, ok := cachedValue.(models.Userable)
 		if ok && cachedUser != nil {
-			span.SetStatus(codes.Ok, "Cache hit")
+			rortracer.SpanOk(span)
 			select {
 			case userChan <- cachedUser:
 			case <-ctx.Done():
@@ -196,7 +195,7 @@ func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan cha
 	}
 	fetchedUser, err := g.Client.Users().ByUserId(userId).Get(ctx, nil)
 	if err != nil {
-		span.RecordError(err)
+		rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -206,7 +205,7 @@ func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan cha
 
 	if fetchedUser == nil {
 		err := fmt.Errorf("msgraph returned nil user for userId: %s", userId)
-		span.RecordError(err)
+		rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -257,7 +256,7 @@ func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan
 	if cached {
 		cachedUserGroups, ok := cachedValue.([]string)
 		if ok && cachedUserGroups != nil {
-			span.SetStatus(codes.Ok, "Cache hit")
+			rortracer.SpanOk(span)
 			select {
 			case groupsChan <- cachedUserGroups:
 			case <-ctx.Done():
@@ -268,7 +267,7 @@ func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan
 
 	fetchedUserGroups, err := g.Client.Users().ByUserId(userId).GetMemberGroups().Post(ctx, requestBody, nil)
 	if err != nil {
-		span.RecordError(err)
+		rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -278,7 +277,7 @@ func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan
 
 	if fetchedUserGroups == nil {
 		err := fmt.Errorf("msgraph returned nil user for userId: %s", userId)
-		span.RecordError(err)
+		rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -320,7 +319,7 @@ func (g *MsGraphClient) getGroupDisplayNames(ctx context.Context, groups []strin
 	span.SetAttributes(
 		attribute.Int("numberOfGroups", len(groupNames)),
 	)
-	span.SetStatus(codes.Ok, "Got group display names")
+	rortracer.SpanOk(span)
 	return groupNames, nil
 }
 
