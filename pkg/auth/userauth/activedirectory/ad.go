@@ -13,12 +13,11 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
-	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 	"github.com/go-ldap/ldap/v3"
-	"go.opentelemetry.io/otel"
 )
 
 var DefaultTimeout = 10 * time.Second
@@ -163,7 +162,7 @@ func (l *AdClient) search(basedn, filter string, attributes []string) (*ldap.Sea
 }
 
 func (l *AdClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "activedirectory.AdClient.GetUser")
+	ctx, span := rortracer.StartSpan(ctx, "activedirectory.AdClient.GetUser")
 	defer span.End()
 	userpart, domainpart, err := authtools.SplitUserId(userId)
 	if err != nil {

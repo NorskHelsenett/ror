@@ -9,16 +9,15 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
-	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	graphusers "github.com/microsoftgraph/msgraph-sdk-go/users"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
@@ -71,7 +70,7 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 // TODO: Implement isExpired
 // TODO: Implement isDisabled...
 func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.GetUser")
+	ctx, span := rortracer.StartSpan(ctx, "msgraph.MsGraphClient.GetUser")
 	defer span.End()
 	if g == nil {
 		return nil, fmt.Errorf("msgraph client is nil")
@@ -161,7 +160,7 @@ func addDomainpartToGroups(groupnames *[]string, userId string) {
 
 // getUser gets a user from the graph api
 func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan chan<- models.Userable, errorChan chan<- error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getUser")
+	ctx, span := rortracer.StartSpan(ctx, "msgraph.MsGraphClient.getUser")
 	defer span.End()
 	if g == nil {
 		err := fmt.Errorf("msgraph client is nil")
@@ -227,7 +226,7 @@ func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan cha
 // getGroups gets the groups a user is a member of from the graph api
 // It returns a list of group ids
 func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan chan<- []string, errorChan chan<- error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getGroups")
+	ctx, span := rortracer.StartSpan(ctx, "msgraph.MsGraphClient.getGroups")
 	defer span.End()
 	if g == nil {
 		err := fmt.Errorf("msgraph client is nil")
@@ -297,7 +296,7 @@ func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan
 // getGroupDisplayNames gets the display names of a list of groups in parallel
 // It returns a list of group names based on the group ids
 func (g *MsGraphClient) getGroupDisplayNames(ctx context.Context, groups []string) ([]string, error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getGroupDisplayNames")
+	ctx, span := rortracer.StartSpan(ctx, "msgraph.MsGraphClient.getGroupDisplayNames")
 	defer span.End()
 	if len(groups) == 0 {
 		return []string{}, nil
