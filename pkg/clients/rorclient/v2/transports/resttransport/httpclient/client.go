@@ -21,8 +21,8 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel"
 )
 
 // DefaultTimeout defines the default HTTP request timeout duration
@@ -163,7 +163,7 @@ func (t *HttpTransportClientConfig) GetRole() string {
 // the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) GetJSON(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "httpclient.GetJSON")
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.GetJSON")
 	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return err

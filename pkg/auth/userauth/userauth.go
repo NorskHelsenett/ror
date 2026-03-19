@@ -11,10 +11,9 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/ldaps"
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
 	"github.com/NorskHelsenett/ror/pkg/clients"
-	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
-	"go.opentelemetry.io/otel"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 )
 
 type DomainResolverConfigs struct {
@@ -39,7 +38,7 @@ type DomainResolvers struct {
 }
 
 func (d DomainResolvers) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "userauth.DomainResolvers.GetUser")
+	ctx, span := rortracer.StartSpan(ctx, "userauth.DomainResolvers.GetUser")
 	defer span.End()
 	_, domain, err := authtools.SplitUserId(userId)
 	if err != nil {

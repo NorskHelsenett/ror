@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpclient"
-	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
-	"go.opentelemetry.io/otel"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 )
 
 type V1Client struct {
@@ -22,7 +21,7 @@ func NewV1Client(client *httpclient.HttpTransportClient) *V1Client {
 }
 
 func (c *V1Client) GetVersion(ctx context.Context) (string, error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "info.GetVersion")
+	ctx, span := rortracer.StartSpan(ctx, "info.GetVersion")
 	defer span.End()
 	var versiondata rorversion.RorVersion
 
