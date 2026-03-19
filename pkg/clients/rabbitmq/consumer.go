@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"context"
 
-	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/amqptrace"
 	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -113,7 +113,7 @@ consumeLoop:
 
 			// We extract trace headers from the delivery. If no trace headers are found this
 			// is a No-Op.
-			ctx = trace.ExtractAMQPHeaders(ctx, delivery.Headers)
+			ctx = amqptrace.ExtractAMQPHeaders(ctx, delivery.Headers)
 			err = c.handler(ctx, delivery)
 			if err != nil {
 				c.logger.ErrorContext(ctx, "failed to handle message", "error", err)

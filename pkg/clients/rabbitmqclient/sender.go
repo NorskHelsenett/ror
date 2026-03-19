@@ -6,8 +6,7 @@ import (
 	"errors"
 	"maps"
 
-	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
-
+	"github.com/NorskHelsenett/ror/pkg/telemetry/amqptrace"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -37,7 +36,7 @@ func (rc rabbitmqcon) SendMessage(ctx context.Context, message any, routing stri
 	defer span5.End()
 
 	mandatory = true
-	headers := trace.InjectAMQPHeaders(ctx)
+	headers := amqptrace.InjectAMQPHeaders(ctx)
 	maps.Copy(headers, extraheaders)
 
 	err = rc.RabbitMqChannel.PublishWithContext(context.TODO(), rc.SenderQueName, routing, mandatory, false, amqp.Publishing{
