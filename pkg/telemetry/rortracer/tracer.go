@@ -101,10 +101,13 @@ func Shutdown(ctx context.Context) error {
 // service name and OPENTELEMETRY_COLLECTOR_ENDPOINT as the endpoint.
 // Additional options can be passed to override defaults.
 func InitWithDefault(ctx context.Context, opts ...Option) error {
-	serviceName := rorconfig.GetString(rorconfig.ROLE)
-	endpoint := rorconfig.GetString(rorconfig.OPENTELEMETRY_COLLECTOR_ENDPOINT)
-	if endpoint != "" {
-		opts = append([]Option{WithEndpoint(endpoint)}, opts...)
+	if rorconfig.GetBool(rorconfig.ENABLE_TRACING) {
+		serviceName := rorconfig.GetString(rorconfig.ROLE)
+		endpoint := rorconfig.GetString(rorconfig.OPENTELEMETRY_COLLECTOR_ENDPOINT)
+		if endpoint != "" {
+			opts = append([]Option{WithEndpoint(endpoint)}, opts...)
+		}
+		return Init(ctx, serviceName, opts...)
 	}
-	return Init(ctx, serviceName, opts...)
+	return nil
 }
