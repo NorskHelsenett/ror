@@ -25,12 +25,16 @@ func StartSpan(ctx context.Context, name string, opts ...oteltrace.SpanStartOpti
 // and returns the original error for convenient inline use:
 //
 //	return trace.SpanError(span, err)
-func SpanError(span oteltrace.Span, err error) error {
+func SpanError(span oteltrace.Span, err error, description ...string) error {
 	if err == nil || span == nil {
 		return err
 	}
 	span.RecordError(err)
-	span.SetStatus(codes.Error, err.Error())
+	if len(description) > 0 {
+		span.SetStatus(codes.Error, description[0])
+	} else {
+		span.SetStatus(codes.Error, err.Error())
+	}
 	return err
 }
 
