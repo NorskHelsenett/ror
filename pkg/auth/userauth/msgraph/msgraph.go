@@ -21,7 +21,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 )
 
 var ApiEndpoint = "https://graph.microsoft.com/.default"
@@ -319,7 +318,10 @@ func (g *MsGraphClient) getGroupDisplayNames(ctx context.Context, groups []strin
 		}
 
 	}
-
+	span.SetAttributes(
+		attribute.Int("numberOfGroups", len(groupNames)),
+	)
+	span.SetStatus(codes.Ok, "Got group display names")
 	return groupNames, nil
 }
 
@@ -327,11 +329,6 @@ func (g *MsGraphClient) getGroupDisplayNames(ctx context.Context, groups []strin
 // If the group is not in the cache, it will fetch it from the graph api
 // and add it to the cache
 func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string, groupsNameChan chan<- string, groupsErrorChan chan<- error) {
-	ctx, span := otel.GetTracerProvider().Tracer(rorconfig.GetString(rorconfig.TRACER_ID)).Start(ctx, "msgraph.MsGraphClient.getGroupDisplayNames",
-		trace.WithAttributes(
-			attribute.String("groupId", groupId),
-		))
-	defer span.End()
 	if g == nil {
 		err := fmt.Errorf("msgraph client is nil")
 		select {
@@ -356,7 +353,6 @@ func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string,
 	if cached {
 		cachedName, ok := name.(string)
 		if ok {
-			span.SetStatus(codes.Ok, "Cache hit")
 			select {
 			case groupsNameChan <- cachedName:
 			case <-ctx.Done():
@@ -367,8 +363,6 @@ func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string,
 
 	group, err := g.Client.Groups().ByGroupId(groupId).Get(ctx, nil)
 	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "Getting group from graph api failed")
 		select {
 		case groupsErrorChan <- err:
 		case <-ctx.Done():
@@ -377,8 +371,6 @@ func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string,
 	}
 	if group == nil {
 		err := fmt.Errorf("msgraph returned nil group for groupId: %s", groupId)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "Getting group from graph api failed")
 		select {
 		case groupsErrorChan <- err:
 		case <-ctx.Done():
@@ -388,8 +380,6 @@ func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string,
 	groupDisplayName := group.GetDisplayName()
 	if groupDisplayName == nil {
 		err := fmt.Errorf("msgraph returned nil group display name for groupId: %s", groupId)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "Getting group from graph api failed")
 		select {
 		case groupsErrorChan <- err:
 		case <-ctx.Done():
@@ -401,7 +391,6 @@ func (g *MsGraphClient) getGroupDisplayName(ctx context.Context, groupId string,
 	case groupsNameChan <- *groupDisplayName:
 	case <-ctx.Done():
 	}
-	span.SetStatus(codes.Ok, "Cache updated with new group name")
 }
 
 func (g *MsGraphClient) CheckHealthWithoutContext() []rorhealth.Check {
