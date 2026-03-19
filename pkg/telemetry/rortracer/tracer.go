@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
-	oteltrace "go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -26,7 +26,7 @@ var (
 
 type tracer struct {
 	provider *sdktrace.TracerProvider
-	tracer   oteltrace.Tracer
+	tracer   trace.Tracer
 }
 
 // Init initializes the global tracer singleton. It is safe to call multiple
