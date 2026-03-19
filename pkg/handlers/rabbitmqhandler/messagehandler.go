@@ -6,8 +6,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rabbitmqclient"
 	"github.com/NorskHelsenett/ror/pkg/messagebuscontracts"
-
-	"github.com/NorskHelsenett/ror/pkg/telemetry/trace"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/amqptrace"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
@@ -162,7 +161,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 
 	go func() {
 		for message := range messages {
-			ctx := trace.ExtractAMQPHeaders(context.Background(), message.Headers)
+			ctx := amqptrace.ExtractAMQPHeaders(context.Background(), message.Headers)
 
 			err := r.Handler.HandleMessage(ctx, message)
 			if err != nil {
