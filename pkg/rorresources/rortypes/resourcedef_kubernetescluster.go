@@ -41,8 +41,6 @@ type KubernetesClusterAgentStatus struct {
 }
 
 type KubernetesClusterAgentStatusNodes struct {
-	NodeCount     int                                               `json:"nodecount,omitempty" bson:"nodecount,omitempty"`
-	NodePoolCount int                                               `json:"nodepoolcount,omitempty" bson:"nodepoolcount,omitempty"`
 	ControllPlane []KubernetesClusterAgentStatusNodesNodepoolsNodes `json:"controlPlane,omitzero" bson:"controlplane,omitempty"`
 	Nodepools     []KubernetesClusterAgentStatusNodesNodepools      `json:"nodepools,omitzero" bson:"nodepools,omitempty"`
 }
@@ -59,16 +57,10 @@ type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
 }
 
 func (r *KubernetesClusterAgentStatus) GetNodepoolCount() int {
-	if r.Nodes.NodePoolCount != 0 {
-		return r.Nodes.NodePoolCount
-	}
 	return len(r.Nodes.Nodepools)
 }
 
 func (r *KubernetesClusterAgentStatus) GetNodeCount() int {
-	if r.Nodes.NodeCount != 0 {
-		return r.Nodes.NodeCount
-	}
 	nodeCount := 0
 	for _, nodepool := range r.Nodes.Nodepools {
 		nodeCount += len(nodepool.Nodes)
