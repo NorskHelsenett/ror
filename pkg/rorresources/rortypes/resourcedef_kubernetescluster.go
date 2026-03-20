@@ -1,6 +1,7 @@
 package rortypes
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
@@ -52,7 +53,7 @@ type KubernetesClusterAgentStatusNodesNodepools struct {
 type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
 	Name              string `json:"name,omitempty" bson:"name,omitempty"`
 	Cpu               int    `json:"cpu,omitempty" bson:"cpu,omitempty"`
-	Memory            int    `json:"memory,omitempty" bson:"memory,omitempty"`
+	Memory            int64  `json:"memory,omitempty" bson:"memory,omitempty"`
 	Architecture      string `json:"architecture,omitempty" bson:"architecture,omitempty"`
 	KubernetesVersion string `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
 }
@@ -96,6 +97,47 @@ func (r *KubernetesClusterAgentStatus) GetStatus() string {
 		return "warning"
 	} else {
 		return "error"
+	}
+}
+
+func (r *KubernetesClusterAgentStatus) GetCpu() int {
+	cpu := 0
+	for _, nodepool := range r.Nodes.Nodepools {
+		for _, node := range nodepool.Nodes {
+			cpu += node.Cpu
+		}
+	}
+	return cpu
+}
+
+func (r *KubernetesClusterAgentStatus) GetMemory() string {
+	var memory int64 = 0
+	for _, nodepool := range r.Nodes.Nodepools {
+		for _, node := range nodepool.Nodes {
+			memory += node.Memory
+		}
+	}
+	return formatMemory(memory)
+}
+
+func formatMemory(bytes int64) string {
+	const (
+		KiB = 1024
+		MiB = 1024 * KiB
+		GiB = 1024 * MiB
+		TiB = 1024 * GiB
+	)
+	switch {
+	case bytes >= TiB:
+		return fmt.Sprintf("%.1f TiB", float64(bytes)/float64(TiB))
+	case bytes >= GiB:
+		return fmt.Sprintf("%.1f GiB", float64(bytes)/float64(GiB))
+	case bytes >= MiB:
+		return fmt.Sprintf("%.1f MiB", float64(bytes)/float64(MiB))
+	case bytes >= KiB:
+		return fmt.Sprintf("%.1f KiB", float64(bytes)/float64(KiB))
+	default:
+		return fmt.Sprintf("%d B", bytes)
 	}
 }
 
