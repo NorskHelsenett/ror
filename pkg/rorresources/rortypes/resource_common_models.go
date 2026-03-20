@@ -12,9 +12,10 @@ import (
 type ResourceAction string
 
 const (
-	K8sActionAdd    ResourceAction = "Add"
-	K8sActionDelete ResourceAction = "Delete"
-	K8sActionUpdate ResourceAction = "Update"
+	K8sActionAdd      ResourceAction = "Add"
+	K8sActionDelete   ResourceAction = "Delete"
+	K8sActionUpdate   ResourceAction = "Update"
+	TAG_SLACK_CHANNEL string         = "SlackChannelId"
 )
 
 var (
@@ -64,6 +65,24 @@ type ResourceTag struct {
 	Key        string                           `json:"key"`
 	Value      string                           `json:"value"`
 	Properties map[ResourceTagProperties]string `json:"properties" ts_type:"{ [key: string]: string }"`
+}
+
+func (t ResourceRorMeta) GetTagValueByKey(key string) (string, bool) {
+	for _, tag := range t.Tags {
+		if tag.Key == key {
+			return tag.Value, true
+		}
+	}
+	return "", false
+}
+
+func (t ResourceRorMeta) GetTagByKey(key string) (ResourceTag, bool) {
+	for _, tag := range t.Tags {
+		if tag.Key == key {
+			return tag, true
+		}
+	}
+	return ResourceTag{}, false
 }
 
 // The RorResourceOwnerReference or ownereref references the owner og a resource.
