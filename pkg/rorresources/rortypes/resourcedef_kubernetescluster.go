@@ -24,19 +24,37 @@ type ResourceKubernetesClusterStatus struct {
 }
 
 type KubernetesClusterAgentStatus struct {
-	ClusterId          string                      `json:"clusterId,omitempty" bson:"clusterid,omitempty"`
-	ClusterName        string                      `json:"clusterName,omitempty" bson:"clustername,omitempty"`
-	KubernetesProvider providermodels.ProviderType `json:"kubernetesProvider,omitempty" bson:"kubernetesprovider,omitempty"`
-	Az                 string                      `json:"az,omitempty" bson:"az,omitempty"`
-	Region             string                      `json:"region,omitempty" bson:"region,omitempty"`
-	Country            string                      `json:"country,omitempty" bson:"country,omitempty"`
-	Workspace          string                      `json:"workspaceId,omitempty" bson:"workspaceid,omitempty"`
-	Environment        string                      `json:"environment,omitempty" bson:"environment,omitempty"`
-	Datacenter         string                      `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
-	Nodes              int                         `json:"nodes,omitempty" bson:"nodes,omitempty"`
-	Versions           map[string]string           `json:"versions,omitempty" bson:"versions,omitempty"`
-	CreatedAt          time.Time                   `json:"createdAt,omitempty" bson:"createdat,omitempty"`
-	LastSeen           time.Time                   `json:"lastSeen,omitempty" bson:"lastseen,omitempty"`
+	ClusterId          string                            `json:"clusterId,omitempty" bson:"clusterid,omitempty"`
+	ClusterName        string                            `json:"clusterName,omitempty" bson:"clustername,omitempty"`
+	KubernetesProvider providermodels.ProviderType       `json:"kubernetesProvider,omitempty" bson:"kubernetesprovider,omitempty"`
+	Az                 string                            `json:"az,omitempty" bson:"az,omitempty"`
+	Region             string                            `json:"region,omitempty" bson:"region,omitempty"`
+	Country            string                            `json:"country,omitempty" bson:"country,omitempty"`
+	Workspace          string                            `json:"workspaceId,omitempty" bson:"workspaceid,omitempty"`
+	Environment        string                            `json:"environment,omitempty" bson:"environment,omitempty"`
+	Datacenter         string                            `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
+	Nodes              KubernetesClusterAgentStatusNodes `json:"nodes,omitzero" bson:"nodes,omitempty"`
+	Versions           map[string]string                 `json:"versions,omitempty" bson:"versions,omitempty"`
+	CreatedAt          time.Time                         `json:"createdAt,omitempty" bson:"createdat,omitempty"`
+	LastSeen           time.Time                         `json:"lastSeen,omitempty" bson:"lastseen,omitempty"`
+}
+
+type KubernetesClusterAgentStatusNodes struct {
+	NodeCount     int                                               `json:"nodecount,omitempty" bson:"nodecount,omitempty"`
+	NodePoolCount int                                               `json:"nodepoolcount,omitempty" bson:"nodepoolcount,omitempty"`
+	ControllPlane []KubernetesClusterAgentStatusNodesNodepoolsNodes `json:"controlPlane,omitzero" bson:"controlplane,omitempty"`
+	Nodepools     []KubernetesClusterAgentStatusNodesNodepools      `json:"nodepools,omitzero" bson:"nodepools,omitempty"`
+}
+type KubernetesClusterAgentStatusNodesNodepools struct {
+	Name  string                                            `json:"name,omitempty" bson:"name,omitempty"`
+	Nodes []KubernetesClusterAgentStatusNodesNodepoolsNodes `json:"nodes,omitzero" bson:"nodes,omitempty"`
+}
+type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
+	Name              string `json:"name,omitempty" bson:"name,omitempty"`
+	Cpu               int    `json:"cpu,omitempty" bson:"cpu,omitempty"`
+	Memory            int    `json:"memory,omitempty" bson:"memory,omitempty"`
+	Architecture      string `json:"architecture,omitempty" bson:"architecture,omitempty"`
+	KubernetesVersion string `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
 }
 
 // Type aliases for convenience and backward compatibility
