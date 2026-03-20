@@ -57,6 +57,31 @@ type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
 	KubernetesVersion string `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
 }
 
+func (r *KubernetesClusterAgentStatus) GetNodepoolCount() int {
+	if r.Nodes.NodePoolCount != 0 {
+		return r.Nodes.NodePoolCount
+	}
+	return len(r.Nodes.Nodepools)
+}
+
+func (r *KubernetesClusterAgentStatus) GetNodeCount() int {
+	if r.Nodes.NodeCount != 0 {
+		return r.Nodes.NodeCount
+	}
+	nodeCount := 0
+	for _, nodepool := range r.Nodes.Nodepools {
+		nodeCount += len(nodepool.Nodes)
+	}
+	return nodeCount
+}
+
+func (r *KubernetesClusterAgentStatus) GetKubernetesVersion() string {
+	if len(r.Nodes.ControllPlane) > 0 && r.Nodes.ControllPlane[0].KubernetesVersion != "" {
+		return r.Nodes.ControllPlane[0].KubernetesVersion
+	}
+	return "Unknown"
+}
+
 // Type aliases for convenience and backward compatibility
 type KubernetesClusterSpec = vitiv1alpha1.KubernetesClusterSpec
 type KubernetesClusterSpecData = vitiv1alpha1.KubernetesClusterSpecData
