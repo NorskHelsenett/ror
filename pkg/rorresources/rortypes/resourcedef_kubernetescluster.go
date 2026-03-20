@@ -36,6 +36,7 @@ type KubernetesClusterAgentStatus struct {
 	Datacenter         string                            `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
 	Nodes              KubernetesClusterAgentStatusNodes `json:"nodes,omitzero" bson:"nodes,omitempty"`
 	Versions           map[string]string                 `json:"versions,omitempty" bson:"versions,omitempty"`
+	Urls               map[string]string                 `json:"urls,omitempty" bson:"urls,omitempty"`
 	CreatedAt          time.Time                         `json:"createdAt,omitempty" bson:"createdat,omitempty"`
 	LastSeen           time.Time                         `json:"lastSeen,omitempty" bson:"lastseen,omitempty"`
 }
@@ -77,6 +78,13 @@ func (r *KubernetesClusterAgentStatus) GetKubernetesVersion() string {
 func (r *KubernetesClusterAgentStatus) GetVersionByKey(key string) string {
 	if version, ok := r.Versions[key]; ok {
 		return version
+	}
+	return "Unknown"
+}
+
+func (r *KubernetesClusterAgentStatus) GetUrlByKey(key string) string {
+	if url, ok := r.Urls[key]; ok {
+		return url
 	}
 	return "Unknown"
 }
