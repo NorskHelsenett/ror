@@ -18,7 +18,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
 	"github.com/NorskHelsenett/ror/pkg/config/rorversion"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
@@ -131,27 +130,15 @@ func (h *HttpTransportClientConfig) ValidateUrl() error {
 }
 
 func NewHttpTransportClient(client *http.Client, config *HttpTransportClientConfig, status *HttpTransportClientStatus) *HttpTransportClient {
-	var httpclient *http.Client
-	if rorconfig.GetBool(rorconfig.ENABLE_TRACING) {
-		rlog.Debug("Tracing enabled, instrumenting HTTP client")
-		httpclient = instrumentClient(client)
-	} else {
-		httpclient = client
-	}
+	client.Transport = otelhttp.NewTransport(client.Transport)
 
 	hClient := HttpTransportClient{
-		Client: httpclient,
+		Client: client,
 		Config: config,
 		Status: status,
 	}
 
 	return &hClient
-}
-
-func instrumentClient(client *http.Client) *http.Client {
-	return &http.Client{
-		Transport: otelhttp.NewTransport(client.Transport),
-	}
 }
 
 // GetRole returns the configured role of the client.
