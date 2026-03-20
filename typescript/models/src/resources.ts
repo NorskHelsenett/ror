@@ -689,20 +689,35 @@ export interface ResourceWorkspace {
 }
 export interface ResourceProvider {}
 export interface Time {}
+export interface KubernetesClusterAgentStatusNodesNodepools {
+  name?: string;
+  nodes: KubernetesClusterAgentStatusNodesNodepoolsNodes[];
+}
+export interface KubernetesClusterAgentStatusNodesNodepoolsNodes {
+  name?: string;
+  cpu?: number;
+  memory?: number;
+  architecture?: string;
+  kubernetesVersion?: string;
+}
+export interface KubernetesClusterAgentStatusNodes {
+  controlPlane: KubernetesClusterAgentStatusNodesNodepoolsNodes[];
+  nodepools: KubernetesClusterAgentStatusNodesNodepools[];
+}
 export interface KubernetesClusterAgentStatus {
-  clusterId: string;
-  clusterName: string;
-  kubernetesProvider: string;
-  az: string;
-  region: string;
-  country: string;
-  workspaceId: string;
-  environment: string;
-  datacenter: string;
-  nodes: number;
-  versions: { [key: string]: string };
-  createdAt: Time;
-  lastSeen: Time;
+  clusterId?: string;
+  clusterName?: string;
+  kubernetesProvider?: string;
+  az?: string;
+  region?: string;
+  country?: string;
+  workspaceId?: string;
+  environment?: string;
+  datacenter?: string;
+  nodes: KubernetesClusterAgentStatusNodes;
+  versions?: { [key: string]: string };
+  createdAt?: Time;
+  lastSeen?: Time;
 }
 export interface KubernetesClusterCondition {
   type: string;

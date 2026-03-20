@@ -2,6 +2,7 @@ package rorresources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
@@ -40,6 +41,9 @@ func NewResourceFromStruct(res Resource) *Resource {
 {{ range .}}
 
 		case "{{.GroupVersionKind.String }}":
+			if res.{{.Kind}}Resource == nil {
+				res.{{.Kind}}Resource = &rortypes.Resource{{.Kind}}{}
+			}
 			r.Set{{.Kind}}(res.{{.Kind}}Resource)
 			r.SetCommonInterface(res.{{.Kind}}Resource)
 {{end}}
