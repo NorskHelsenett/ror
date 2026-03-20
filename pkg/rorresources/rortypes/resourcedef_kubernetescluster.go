@@ -88,6 +88,17 @@ func (r *KubernetesClusterAgentStatus) GetVersionByKey(key string) string {
 	return "Unknown"
 }
 
+func (r *KubernetesClusterAgentStatus) GetStatus() string {
+	diff := time.Since(r.LastSeen)
+	if diff < 5*time.Minute {
+		return "ok"
+	} else if diff < 15*time.Minute {
+		return "warning"
+	} else {
+		return "error"
+	}
+}
+
 // Type aliases for convenience and backward compatibility
 type KubernetesClusterSpec = vitiv1alpha1.KubernetesClusterSpec
 type KubernetesClusterSpecData = vitiv1alpha1.KubernetesClusterSpecData
