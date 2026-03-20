@@ -24,19 +24,19 @@ type ResourceKubernetesClusterStatus struct {
 }
 
 type KubernetesClusterAgentStatus struct {
-	ClusterId          string                      `json:"clusterId"`
-	ClusterName        string                      `json:"clusterName"`
-	KubernetesProvider providermodels.ProviderType `json:"kubernetesProvider"`
-	Az                 string                      `json:"az"`
-	Region             string                      `json:"region"`
-	Country            string                      `json:"country"`
-	Workspace          string                      `json:"workspaceId"`
-	Environment        string                      `json:"environment"`
-	Datacenter         string                      `json:"datacenter"`
-	Nodes              int                         `json:"nodes"`
-	Versions           map[string]string           `json:"versions"`
-	CreatedAt          time.Time                   `json:"createdAt"`
-	LastSeen           time.Time                   `json:"lastSeen"`
+	ClusterId          string                      `json:"clusterId,omitempty" bson:"clusterid,omitempty"`
+	ClusterName        string                      `json:"clusterName,omitempty" bson:"clustername,omitempty"`
+	KubernetesProvider providermodels.ProviderType `json:"kubernetesProvider,omitempty" bson:"kubernetesprovider,omitempty"`
+	Az                 string                      `json:"az,omitempty" bson:"az,omitempty"`
+	Region             string                      `json:"region,omitempty" bson:"region,omitempty"`
+	Country            string                      `json:"country,omitempty" bson:"country,omitempty"`
+	Workspace          string                      `json:"workspaceId,omitempty" bson:"workspaceid,omitempty"`
+	Environment        string                      `json:"environment,omitempty" bson:"environment,omitempty"`
+	Datacenter         string                      `json:"datacenter,omitempty" bson:"datacenter,omitempty"`
+	Nodes              int                         `json:"nodes,omitempty" bson:"nodes,omitempty"`
+	Versions           map[string]string           `json:"versions,omitempty" bson:"versions,omitempty"`
+	CreatedAt          time.Time                   `json:"createdAt,omitempty" bson:"createdat,omitempty"`
+	LastSeen           time.Time                   `json:"lastSeen,omitempty" bson:"lastseen,omitempty"`
 }
 
 // Type aliases for convenience and backward compatibility
