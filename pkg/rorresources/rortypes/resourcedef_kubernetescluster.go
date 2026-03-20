@@ -81,6 +81,12 @@ func (r *KubernetesClusterAgentStatus) GetKubernetesVersion() string {
 	}
 	return "Unknown"
 }
+func (r *KubernetesClusterAgentStatus) GetVersionByKey(key string) string {
+	if version, ok := r.Versions[key]; ok {
+		return version
+	}
+	return "Unknown"
+}
 
 // Type aliases for convenience and backward compatibility
 type KubernetesClusterSpec = vitiv1alpha1.KubernetesClusterSpec
