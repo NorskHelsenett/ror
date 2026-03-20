@@ -190,6 +190,8 @@ func (t *HttpTransportClient) GetJSON(ctx context.Context, path string, out any,
 // then unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PostJSON(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.PostJSON")
+	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -229,6 +231,8 @@ func (t *HttpTransportClient) PostJSON(ctx context.Context, path string, in any,
 // then unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) PutJSON(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.PutJSON")
+	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -262,6 +266,8 @@ func (t *HttpTransportClient) PutJSON(ctx context.Context, path string, in any, 
 // unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
 func (t *HttpTransportClient) Delete(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.Delete")
+	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return err
 	}
@@ -290,6 +296,8 @@ func (t *HttpTransportClient) Delete(ctx context.Context, path string, out any, 
 // Head performs a HEAD request with the provided context and returns
 // the response headers and status code.
 func (t *HttpTransportClient) Head(ctx context.Context, path string, params ...HttpTransportClientParams) (http.Header, int, error) {
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.Head")
+	defer span.End()
 	if err := t.PreflightCheck(); err != nil {
 		return nil, -1, err
 	}
