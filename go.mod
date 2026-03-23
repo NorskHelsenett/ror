@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.13.1
 	github.com/coreos/go-oidc/v3 v3.17.0
-	github.com/dotse/go-health v1.0.1
+	github.com/dotse/go-health v1.0.2
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-co-op/gocron v1.37.0
 	github.com/go-git/go-billy/v5 v5.7.0
@@ -33,7 +33,7 @@ require (
 	github.com/vitistack/common v0.8.48
 	go.mongodb.org/mongo-driver/v2 v2.5.0
 	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo v0.0.0-20260316083141-e92a00df8617
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.66.0
 	go.opentelemetry.io/otel v1.42.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.42.0
 	go.opentelemetry.io/otel/exporters/prometheus v0.64.0
@@ -44,7 +44,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.42.0
 	go.opentelemetry.io/otel/trace v1.42.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/exp v0.0.0-20251125195548-87e1e737ad39
+	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa
 	golang.org/x/text v0.35.0
 	google.golang.org/grpc v1.79.3
 	k8s.io/api v0.35.2
