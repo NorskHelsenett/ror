@@ -52,7 +52,7 @@ func GetMongodbConnection() *MongodbCon {
 }
 
 func (rc MongodbCon) GetMongoDb() *mongo.Database {
-	mongoClient := rc.getDbConnectionWithReconnect().Database(mongodb.Database)
+	mongoClient := rc.getDbConnectionWithReconnect().Database(rc.Database)
 	return mongoClient
 }
 
