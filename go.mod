@@ -47,11 +47,11 @@ require (
 	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa
 	golang.org/x/text v0.35.0
 	google.golang.org/grpc v1.79.3
-	k8s.io/api v0.35.2
+	k8s.io/api v0.35.3
 	k8s.io/apimachinery v0.35.3
 	k8s.io/cli-runtime v0.35.2
-	k8s.io/client-go v0.35.2
-	k8s.io/metrics v0.35.2
+	k8s.io/client-go v0.35.3
+	k8s.io/metrics v0.35.3
 	sigs.k8s.io/controller-runtime v0.23.3
 )
 
