@@ -6,6 +6,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	vitiv1alpha1 "github.com/vitistack/common/pkg/v1alpha1"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 // ResourceKubernetesCluster uses the external types from vitistack/common
@@ -50,11 +51,11 @@ type KubernetesClusterAgentStatusNodesNodepools struct {
 	Nodes []KubernetesClusterAgentStatusNodesNodepoolsNodes `json:"nodes,omitzero" bson:"nodes,omitempty"`
 }
 type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
-	Name              string `json:"name,omitempty" bson:"name,omitempty"`
-	Cpu               int    `json:"cpu,omitempty" bson:"cpu,omitempty"`
-	Memory            int64  `json:"memory,omitempty" bson:"memory,omitempty"`
-	Architecture      string `json:"architecture,omitempty" bson:"architecture,omitempty"`
-	KubernetesVersion string `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
+	Name              string   `json:"name,omitempty" bson:"name,omitempty"`
+	Cpu               Quantity `json:"cpu,omitzero" bson:"cpu,omitempty"`
+	Memory            Quantity `json:"memory,omitzero" bson:"memory,omitempty"`
+	Architecture      string   `json:"architecture,omitempty" bson:"architecture,omitempty"`
+	KubernetesVersion string   `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
 }
 
 func (r *KubernetesClusterAgentStatus) GetNodepoolCount() int {
@@ -76,10 +77,20 @@ func (r *KubernetesClusterAgentStatus) GetKubernetesVersion() string {
 	return "Unknown"
 }
 func (r *KubernetesClusterAgentStatus) GetVersionByKey(key string) string {
-	if version, ok := r.Versions[key]; ok {
-		return version
+	version, _ := r.Versions[key]
+	return nomalizeVersion(version)
+}
+
+// nomalizeVersion returns "Unknown" if the version string is empty, otherwise it returns the version string ensuring it starts with a v
+
+func nomalizeVersion(version string) string {
+	if version == "" {
+		return "Unknown"
 	}
-	return "Unknown"
+	if version[0] != 'v' && version[0] != 'V' {
+		return "v" + version
+	}
+	return version
 }
 
 func (r *KubernetesClusterAgentStatus) GetUrlByKey(key string) string {
@@ -100,44 +111,71 @@ func (r *KubernetesClusterAgentStatus) GetStatus() string {
 	}
 }
 
-func (r *KubernetesClusterAgentStatus) GetCpu() int {
-	cpu := 0
+func (r *KubernetesClusterAgentStatus) GetCpu() *resource.Quantity {
+	var cpu *resource.Quantity = resource.NewQuantity(0, resource.DecimalSI)
 	for _, nodepool := range r.Nodes.Nodepools {
 		for _, node := range nodepool.Nodes {
-			cpu += node.Cpu
+			cpu.Add(node.Cpu.Quantity)
 		}
 	}
 	return cpu
 }
 
-func (r *KubernetesClusterAgentStatus) GetMemory() string {
-	var memory int64 = 0
+func (r *KubernetesClusterAgentStatus) GetMemory() *resource.Quantity {
+	var memory *resource.Quantity = resource.NewQuantity(0, resource.BinarySI)
 	for _, nodepool := range r.Nodes.Nodepools {
 		for _, node := range nodepool.Nodes {
-			memory += node.Memory
+			memory.Add(node.Memory.Quantity)
 		}
 	}
-	return formatMemory(memory)
+	return memory
 }
 
-func formatMemory(bytes int64) string {
-	const (
-		KiB = 1024
-		MiB = 1024 * KiB
-		GiB = 1024 * MiB
-		TiB = 1024 * GiB
-	)
+type BinarySIUnit string
+
+const (
+	BinarySIUnitB  BinarySIUnit = "B"
+	BinarySIUnitKi BinarySIUnit = "Ki"
+	BinarySIUnitMi BinarySIUnit = "Mi"
+	BinarySIUnitGi BinarySIUnit = "Gi"
+	BinarySIUnitTi BinarySIUnit = "Ti"
+	BinarySIUnitPi BinarySIUnit = "Pi"
+)
+
+var binarySIUnitDivisors = map[BinarySIUnit]int64{
+	BinarySIUnitB:  1,
+	BinarySIUnitKi: 1024,
+	BinarySIUnitMi: 1024 * 1024,
+	BinarySIUnitGi: 1024 * 1024 * 1024,
+	BinarySIUnitTi: 1024 * 1024 * 1024 * 1024,
+	BinarySIUnitPi: 1024 * 1024 * 1024 * 1024 * 1024,
+}
+
+// GetMemoryAs returns the total cluster memory as an integer in the specified binary SI unit.
+func (r *KubernetesClusterAgentStatus) GetMemoryAs(unit BinarySIUnit) int64 {
+	divisor, ok := binarySIUnitDivisors[unit]
+	if !ok {
+		divisor = 1
+	}
+	return r.GetMemory().Value() / divisor
+}
+
+// GetMemoryString returns the total cluster memory formatted at the highest fitting binary SI unit.
+func (r *KubernetesClusterAgentStatus) GetMemoryString() string {
+	bytes := r.GetMemory().Value()
 	switch {
-	case bytes >= TiB:
-		return fmt.Sprintf("%.1f TiB", float64(bytes)/float64(TiB))
-	case bytes >= GiB:
-		return fmt.Sprintf("%.1f GiB", float64(bytes)/float64(GiB))
-	case bytes >= MiB:
-		return fmt.Sprintf("%.1f MiB", float64(bytes)/float64(MiB))
-	case bytes >= KiB:
-		return fmt.Sprintf("%.1f KiB", float64(bytes)/float64(KiB))
+	case bytes >= binarySIUnitDivisors[BinarySIUnitPi]:
+		return fmt.Sprintf("%dPiB", bytes/binarySIUnitDivisors[BinarySIUnitPi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitTi]:
+		return fmt.Sprintf("%dTiB", bytes/binarySIUnitDivisors[BinarySIUnitTi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitGi]:
+		return fmt.Sprintf("%dGiB", bytes/binarySIUnitDivisors[BinarySIUnitGi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitMi]:
+		return fmt.Sprintf("%dMiB", bytes/binarySIUnitDivisors[BinarySIUnitMi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitKi]:
+		return fmt.Sprintf("%dKiB", bytes/binarySIUnitDivisors[BinarySIUnitKi])
 	default:
-		return fmt.Sprintf("%d B", bytes)
+		return fmt.Sprintf("%dB", bytes)
 	}
 }
 
