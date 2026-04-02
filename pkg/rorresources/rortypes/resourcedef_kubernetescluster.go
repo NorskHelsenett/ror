@@ -1,12 +1,10 @@
 package rortypes
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	vitiv1alpha1 "github.com/vitistack/common/pkg/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 // ResourceKubernetesCluster uses the external types from vitistack/common
@@ -112,40 +110,39 @@ func (r *KubernetesClusterAgentStatus) GetStatus() string {
 }
 
 // GetTotalCpu returns the total CPU resources of the cluster by summing the CPU of all nodes in the control plane and node pools.
-func (r *KubernetesClusterAgentStatus) GetTotalCpu() *resource.Quantity {
-	cpu := resource.NewQuantity(0, resource.DecimalSI)
-	cpu.Add(*r.GetControlPlaneCpu())
-	cpu.Add(*r.GetNodePoolCpu())
+func (r *KubernetesClusterAgentStatus) GetTotalCpu() *Quantity {
+	cpu := &Quantity{}
+	cpu.Add(r.GetControlPlaneCpu().Quantity)
+	cpu.Add(r.GetNodePoolCpu().Quantity)
 	return cpu
 }
 
 // GetTotalMemory returns the total memory resources of the cluster by summing the memory of all nodes in the control plane and node pools.
-func (r *KubernetesClusterAgentStatus) GetTotalMemory() *resource.Quantity {
-	memory := resource.NewQuantity(0, resource.BinarySI)
-	memory.Add(*r.GetControlPlaneMemory())
-	memory.Add(*r.GetNodePoolMemory())
+func (r *KubernetesClusterAgentStatus) GetTotalMemory() *Quantity {
+	memory := &Quantity{}
+	memory.Add(r.GetControlPlaneMemory().Quantity)
+	memory.Add(r.GetNodePoolMemory().Quantity)
 	return memory
 }
 
-func (r *KubernetesClusterAgentStatus) GetControlPlaneCpu() *resource.Quantity {
-	var cpu *resource.Quantity = resource.NewQuantity(0, resource.DecimalSI)
+func (r *KubernetesClusterAgentStatus) GetControlPlaneCpu() *Quantity {
+	cpu := &Quantity{}
 	for _, node := range r.Nodes.ControllPlane {
 		cpu.Add(node.Cpu.Quantity)
 	}
 	return cpu
 }
 
-func (r *KubernetesClusterAgentStatus) GetControlPlaneMemory() *resource.Quantity {
-	var memory *resource.Quantity = resource.NewQuantity(0, resource.BinarySI)
+func (r *KubernetesClusterAgentStatus) GetControlPlaneMemory() *Quantity {
+	memory := &Quantity{}
 	for _, node := range r.Nodes.ControllPlane {
 		memory.Add(node.Memory.Quantity)
 	}
-
 	return memory
 }
 
-func (r *KubernetesClusterAgentStatus) GetNodePoolCpu() *resource.Quantity {
-	var cpu *resource.Quantity = resource.NewQuantity(0, resource.DecimalSI)
+func (r *KubernetesClusterAgentStatus) GetNodePoolCpu() *Quantity {
+	cpu := &Quantity{}
 	for _, nodepool := range r.Nodes.Nodepools {
 		for _, node := range nodepool.Nodes {
 			cpu.Add(node.Cpu.Quantity)
@@ -154,62 +151,14 @@ func (r *KubernetesClusterAgentStatus) GetNodePoolCpu() *resource.Quantity {
 	return cpu
 }
 
-func (r *KubernetesClusterAgentStatus) GetNodePoolMemory() *resource.Quantity {
-	var memory *resource.Quantity = resource.NewQuantity(0, resource.BinarySI)
+func (r *KubernetesClusterAgentStatus) GetNodePoolMemory() *Quantity {
+	memory := &Quantity{}
 	for _, nodepool := range r.Nodes.Nodepools {
 		for _, node := range nodepool.Nodes {
 			memory.Add(node.Memory.Quantity)
 		}
 	}
 	return memory
-}
-
-type BinarySIUnit string
-
-const (
-	BinarySIUnitB  BinarySIUnit = "B"
-	BinarySIUnitKi BinarySIUnit = "Ki"
-	BinarySIUnitMi BinarySIUnit = "Mi"
-	BinarySIUnitGi BinarySIUnit = "Gi"
-	BinarySIUnitTi BinarySIUnit = "Ti"
-	BinarySIUnitPi BinarySIUnit = "Pi"
-)
-
-var binarySIUnitDivisors = map[BinarySIUnit]int64{
-	BinarySIUnitB:  1,
-	BinarySIUnitKi: 1024,
-	BinarySIUnitMi: 1024 * 1024,
-	BinarySIUnitGi: 1024 * 1024 * 1024,
-	BinarySIUnitTi: 1024 * 1024 * 1024 * 1024,
-	BinarySIUnitPi: 1024 * 1024 * 1024 * 1024 * 1024,
-}
-
-// GetMemoryAs returns the total cluster memory as an integer in the specified binary SI unit.
-func (r *KubernetesClusterAgentStatus) GetMemoryAs(unit BinarySIUnit) int64 {
-	divisor, ok := binarySIUnitDivisors[unit]
-	if !ok {
-		divisor = 1
-	}
-	return r.GetNodePoolMemory().Value() / divisor
-}
-
-// GetMemoryString returns the total cluster memory formatted at the highest fitting binary SI unit.
-func (r *KubernetesClusterAgentStatus) GetMemoryString() string {
-	bytes := r.GetNodePoolMemory().Value()
-	switch {
-	case bytes >= binarySIUnitDivisors[BinarySIUnitPi]:
-		return fmt.Sprintf("%dPiB", bytes/binarySIUnitDivisors[BinarySIUnitPi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitTi]:
-		return fmt.Sprintf("%dTiB", bytes/binarySIUnitDivisors[BinarySIUnitTi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitGi]:
-		return fmt.Sprintf("%dGiB", bytes/binarySIUnitDivisors[BinarySIUnitGi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitMi]:
-		return fmt.Sprintf("%dMiB", bytes/binarySIUnitDivisors[BinarySIUnitMi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitKi]:
-		return fmt.Sprintf("%dKiB", bytes/binarySIUnitDivisors[BinarySIUnitKi])
-	default:
-		return fmt.Sprintf("%dB", bytes)
-	}
 }
 
 // Type aliases for convenience and backward compatibility

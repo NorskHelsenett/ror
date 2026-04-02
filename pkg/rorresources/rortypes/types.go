@@ -32,3 +32,51 @@ func (q *Quantity) UnmarshalBSONValue(t byte, data []byte) error {
 	q.Quantity = rq
 	return nil
 }
+
+type BinarySIUnit string
+
+const (
+	BinarySIUnitB  BinarySIUnit = "B"
+	BinarySIUnitKi BinarySIUnit = "Ki"
+	BinarySIUnitMi BinarySIUnit = "Mi"
+	BinarySIUnitGi BinarySIUnit = "Gi"
+	BinarySIUnitTi BinarySIUnit = "Ti"
+	BinarySIUnitPi BinarySIUnit = "Pi"
+)
+
+var binarySIUnitDivisors = map[BinarySIUnit]int64{
+	BinarySIUnitB:  1,
+	BinarySIUnitKi: 1024,
+	BinarySIUnitMi: 1024 * 1024,
+	BinarySIUnitGi: 1024 * 1024 * 1024,
+	BinarySIUnitTi: 1024 * 1024 * 1024 * 1024,
+	BinarySIUnitPi: 1024 * 1024 * 1024 * 1024 * 1024,
+}
+
+// GetMemoryAs returns the quantity as an integer in the specified binary SI unit.
+func (q *Quantity) GetMemoryAs(unit BinarySIUnit) int64 {
+	divisor, ok := binarySIUnitDivisors[unit]
+	if !ok {
+		divisor = 1
+	}
+	return q.Value() / divisor
+}
+
+// GetMemoryString returns the quantity formatted at the highest fitting binary SI unit.
+func (q *Quantity) GetMemoryString() string {
+	bytes := q.Value()
+	switch {
+	case bytes >= binarySIUnitDivisors[BinarySIUnitPi]:
+		return fmt.Sprintf("%dPiB", bytes/binarySIUnitDivisors[BinarySIUnitPi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitTi]:
+		return fmt.Sprintf("%dTiB", bytes/binarySIUnitDivisors[BinarySIUnitTi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitGi]:
+		return fmt.Sprintf("%dGiB", bytes/binarySIUnitDivisors[BinarySIUnitGi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitMi]:
+		return fmt.Sprintf("%dMiB", bytes/binarySIUnitDivisors[BinarySIUnitMi])
+	case bytes >= binarySIUnitDivisors[BinarySIUnitKi]:
+		return fmt.Sprintf("%dKiB", bytes/binarySIUnitDivisors[BinarySIUnitKi])
+	default:
+		return fmt.Sprintf("%dB", bytes)
+	}
+}
