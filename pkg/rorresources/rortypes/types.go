@@ -2,6 +2,7 @@ package rortypes
 
 import (
 	"fmt"
+	"math"
 
 	"go.mongodb.org/mongo-driver/v2/x/bsonx/bsoncore"
 	kubernetesresource "k8s.io/apimachinery/pkg/api/resource"
@@ -54,12 +55,17 @@ var binarySIUnitDivisors = map[BinarySIUnit]int64{
 }
 
 // GetMemoryAs returns the quantity as an integer in the specified binary SI unit.
-func (q *Quantity) GetMemoryAs(unit BinarySIUnit) int64 {
+func (q *Quantity) GetMemoryAs(unit BinarySIUnit, decimals int) float64 {
 	divisor, ok := binarySIUnitDivisors[unit]
 	if !ok {
 		divisor = 1
 	}
-	return q.Value() / divisor
+	return getRoundedValue(float64(q.Value())/float64(divisor), decimals)
+}
+
+func getRoundedValue(value float64, decimals int) float64 {
+	multiplier := math.Pow(10, float64(decimals))
+	return math.Round(value*multiplier) / multiplier
 }
 
 // GetMemoryString returns the quantity formatted at the highest fitting binary SI unit.
