@@ -52,6 +52,7 @@ type ViewColumn struct {
 
 type ViewValue struct {
 	FieldValue  any    `json:"fieldValue"`
+	FieldUnit   string `json:"fieldUnit,omitempty"`
 	Description string `json:"description,omitempty"`
 	ResourceUid string `json:"resourceUid,omitempty"`
 }

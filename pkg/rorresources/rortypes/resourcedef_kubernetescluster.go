@@ -1,12 +1,10 @@
 package rortypes
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
 	vitiv1alpha1 "github.com/vitistack/common/pkg/v1alpha1"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 // ResourceKubernetesCluster uses the external types from vitistack/common
@@ -51,11 +49,23 @@ type KubernetesClusterAgentStatusNodesNodepools struct {
 	Nodes []KubernetesClusterAgentStatusNodesNodepoolsNodes `json:"nodes,omitzero" bson:"nodes,omitempty"`
 }
 type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
-	Name              string   `json:"name,omitempty" bson:"name,omitempty"`
-	Cpu               Quantity `json:"cpu,omitzero" bson:"cpu,omitempty"`
-	Memory            Quantity `json:"memory,omitzero" bson:"memory,omitempty"`
-	Architecture      string   `json:"architecture,omitempty" bson:"architecture,omitempty"`
-	KubernetesVersion string   `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
+	Name              string                                                  `json:"name,omitempty" bson:"name,omitempty"`
+	Cpu               KubernetesClusterAgentStatusNodesNodepoolsNodesResource `json:"cpu,omitzero" bson:"cpu,omitempty"`
+	Memory            KubernetesClusterAgentStatusNodesNodepoolsNodesResource `json:"memory,omitzero" bson:"memory,omitempty"`
+	Architecture      string                                                  `json:"architecture,omitempty" bson:"architecture,omitempty"`
+	KubernetesVersion string                                                  `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
+}
+
+type KubernetesClusterAgentStatusNodesNodepoolsNodesResource struct {
+	Capacity Quantity `json:"capacity,omitzero" bson:"capacity,omitempty"`
+	Used     Quantity `json:"allocated,omitzero" bson:"allocated,omitempty"`
+}
+
+func (r *KubernetesClusterAgentStatusNodesNodepoolsNodesResource) UsedPercent() float64 {
+	if r.Capacity.Value() == 0 {
+		return 0
+	}
+	return getRoundedValue((float64(r.Used.Value())/float64(r.Capacity.Value()))*100, 2)
 }
 
 func (r *KubernetesClusterAgentStatus) GetNodepoolCount() int {
@@ -111,72 +121,180 @@ func (r *KubernetesClusterAgentStatus) GetStatus() string {
 	}
 }
 
-func (r *KubernetesClusterAgentStatus) GetCpu() *resource.Quantity {
-	var cpu *resource.Quantity = resource.NewQuantity(0, resource.DecimalSI)
+// GetTotalCpu returns the total CPU resources of the cluster by summing the CPU of all nodes in the control plane and node pools.
+func (r *KubernetesClusterAgentStatus) GetTotalCpu() *Quantity {
+	cpu := &Quantity{}
+	cpu.Add(r.GetControlPlaneCpu().Quantity)
+	cpu.Add(r.GetNodePoolCpu().Quantity)
+	return cpu
+}
+
+// GetTotalMemory returns the total memory resources of the cluster by summing the memory of all nodes in the control plane and node pools.
+func (r *KubernetesClusterAgentStatus) GetTotalMemory() *Quantity {
+	memory := &Quantity{}
+	memory.Add(r.GetControlPlaneMemory().Quantity)
+	memory.Add(r.GetNodePoolMemory().Quantity)
+	return memory
+}
+
+func (r *KubernetesClusterAgentStatus) GetControlPlaneCpu() *Quantity {
+	cpu := &Quantity{}
+	for _, node := range r.Nodes.ControllPlane {
+		cpu.Add(node.Cpu.Capacity.Quantity)
+	}
+	return cpu
+}
+
+func (r *KubernetesClusterAgentStatus) GetControlPlaneMemory() *Quantity {
+	memory := &Quantity{}
+	for _, node := range r.Nodes.ControllPlane {
+		memory.Add(node.Memory.Capacity.Quantity)
+	}
+	return memory
+}
+
+func (r *KubernetesClusterAgentStatus) GetNodePoolCpu() *Quantity {
+	cpu := &Quantity{}
 	for _, nodepool := range r.Nodes.Nodepools {
 		for _, node := range nodepool.Nodes {
-			cpu.Add(node.Cpu.Quantity)
+			cpu.Add(node.Cpu.Capacity.Quantity)
 		}
 	}
 	return cpu
 }
 
-func (r *KubernetesClusterAgentStatus) GetMemory() *resource.Quantity {
-	var memory *resource.Quantity = resource.NewQuantity(0, resource.BinarySI)
+func (r *KubernetesClusterAgentStatus) GetNodePoolMemory() *Quantity {
+	memory := &Quantity{}
 	for _, nodepool := range r.Nodes.Nodepools {
 		for _, node := range nodepool.Nodes {
-			memory.Add(node.Memory.Quantity)
+			memory.Add(node.Memory.Capacity.Quantity)
 		}
 	}
 	return memory
 }
 
-type BinarySIUnit string
-
-const (
-	BinarySIUnitB  BinarySIUnit = "B"
-	BinarySIUnitKi BinarySIUnit = "Ki"
-	BinarySIUnitMi BinarySIUnit = "Mi"
-	BinarySIUnitGi BinarySIUnit = "Gi"
-	BinarySIUnitTi BinarySIUnit = "Ti"
-	BinarySIUnitPi BinarySIUnit = "Pi"
-)
-
-var binarySIUnitDivisors = map[BinarySIUnit]int64{
-	BinarySIUnitB:  1,
-	BinarySIUnitKi: 1024,
-	BinarySIUnitMi: 1024 * 1024,
-	BinarySIUnitGi: 1024 * 1024 * 1024,
-	BinarySIUnitTi: 1024 * 1024 * 1024 * 1024,
-	BinarySIUnitPi: 1024 * 1024 * 1024 * 1024 * 1024,
+// GetControlPlaneUsedCpu returns the total used CPU across the control plane.
+func (r *KubernetesClusterAgentStatus) GetControlPlaneUsedCpu() *Quantity {
+	cpu := &Quantity{}
+	for _, node := range r.Nodes.ControllPlane {
+		cpu.Add(node.Cpu.Used.Quantity)
+	}
+	return cpu
 }
 
-// GetMemoryAs returns the total cluster memory as an integer in the specified binary SI unit.
-func (r *KubernetesClusterAgentStatus) GetMemoryAs(unit BinarySIUnit) int64 {
-	divisor, ok := binarySIUnitDivisors[unit]
-	if !ok {
-		divisor = 1
+// GetNodePoolUsedCpu returns the total used CPU across all node pools.
+func (r *KubernetesClusterAgentStatus) GetNodePoolUsedCpu() *Quantity {
+	cpu := &Quantity{}
+	for _, nodepool := range r.Nodes.Nodepools {
+		for _, node := range nodepool.Nodes {
+			cpu.Add(node.Cpu.Used.Quantity)
+		}
 	}
-	return r.GetMemory().Value() / divisor
+	return cpu
 }
 
-// GetMemoryString returns the total cluster memory formatted at the highest fitting binary SI unit.
-func (r *KubernetesClusterAgentStatus) GetMemoryString() string {
-	bytes := r.GetMemory().Value()
-	switch {
-	case bytes >= binarySIUnitDivisors[BinarySIUnitPi]:
-		return fmt.Sprintf("%dPiB", bytes/binarySIUnitDivisors[BinarySIUnitPi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitTi]:
-		return fmt.Sprintf("%dTiB", bytes/binarySIUnitDivisors[BinarySIUnitTi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitGi]:
-		return fmt.Sprintf("%dGiB", bytes/binarySIUnitDivisors[BinarySIUnitGi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitMi]:
-		return fmt.Sprintf("%dMiB", bytes/binarySIUnitDivisors[BinarySIUnitMi])
-	case bytes >= binarySIUnitDivisors[BinarySIUnitKi]:
-		return fmt.Sprintf("%dKiB", bytes/binarySIUnitDivisors[BinarySIUnitKi])
-	default:
-		return fmt.Sprintf("%dB", bytes)
+// GetTotalUsedCpu returns the total used CPU across the control plane and all node pools.
+func (r *KubernetesClusterAgentStatus) GetTotalUsedCpu() *Quantity {
+	cpu := &Quantity{}
+	cpu.Add(r.GetControlPlaneUsedCpu().Quantity)
+	cpu.Add(r.GetNodePoolUsedCpu().Quantity)
+	return cpu
+}
+
+// GetControlPlaneUsedMemory returns the total used memory across the control plane.
+func (r *KubernetesClusterAgentStatus) GetControlPlaneUsedMemory() *Quantity {
+	memory := &Quantity{}
+	for _, node := range r.Nodes.ControllPlane {
+		memory.Add(node.Memory.Used.Quantity)
 	}
+	return memory
+}
+
+// GetNodePoolUsedMemory returns the total used memory across all node pools.
+func (r *KubernetesClusterAgentStatus) GetNodePoolUsedMemory() *Quantity {
+	memory := &Quantity{}
+	for _, nodepool := range r.Nodes.Nodepools {
+		for _, node := range nodepool.Nodes {
+			memory.Add(node.Memory.Used.Quantity)
+		}
+	}
+	return memory
+}
+
+// GetTotalUsedMemory returns the total used memory across the control plane and all node pools.
+func (r *KubernetesClusterAgentStatus) GetTotalUsedMemory() *Quantity {
+	memory := &Quantity{}
+	memory.Add(r.GetControlPlaneUsedMemory().Quantity)
+	memory.Add(r.GetNodePoolUsedMemory().Quantity)
+	return memory
+}
+
+// GetControlPlaneCpuResource returns the aggregate CPU resource (capacity + used) for the control plane.
+func (r *KubernetesClusterAgentStatus) GetControlPlaneCpuResource() *KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+	res := &KubernetesClusterAgentStatusNodesNodepoolsNodesResource{}
+	for _, node := range r.Nodes.ControllPlane {
+		res.Capacity.Add(node.Cpu.Capacity.Quantity)
+		res.Used.Add(node.Cpu.Used.Quantity)
+	}
+	return res
+}
+
+// GetNodePoolCpuResource returns the aggregate CPU resource (capacity + used) for all node pools.
+func (r *KubernetesClusterAgentStatus) GetNodePoolCpuResource() *KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+	res := &KubernetesClusterAgentStatusNodesNodepoolsNodesResource{}
+	for _, nodepool := range r.Nodes.Nodepools {
+		for _, node := range nodepool.Nodes {
+			res.Capacity.Add(node.Cpu.Capacity.Quantity)
+			res.Used.Add(node.Cpu.Used.Quantity)
+		}
+	}
+	return res
+}
+
+// GetCpuResource returns an aggregate CPU resource (capacity + used) across the control plane and all node pools.
+func (r *KubernetesClusterAgentStatus) GetCpuResource() *KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+	res := &KubernetesClusterAgentStatusNodesNodepoolsNodesResource{}
+	cp := r.GetControlPlaneCpuResource()
+	np := r.GetNodePoolCpuResource()
+	res.Capacity.Add(cp.Capacity.Quantity)
+	res.Used.Add(cp.Used.Quantity)
+	res.Capacity.Add(np.Capacity.Quantity)
+	res.Used.Add(np.Used.Quantity)
+	return res
+}
+
+// GetControlPlaneMemoryResource returns the aggregate memory resource (capacity + used) for the control plane.
+func (r *KubernetesClusterAgentStatus) GetControlPlaneMemoryResource() *KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+	res := &KubernetesClusterAgentStatusNodesNodepoolsNodesResource{}
+	for _, node := range r.Nodes.ControllPlane {
+		res.Capacity.Add(node.Memory.Capacity.Quantity)
+		res.Used.Add(node.Memory.Used.Quantity)
+	}
+	return res
+}
+
+// GetNodePoolMemoryResource returns the aggregate memory resource (capacity + used) for all node pools.
+func (r *KubernetesClusterAgentStatus) GetNodePoolMemoryResource() *KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+	res := &KubernetesClusterAgentStatusNodesNodepoolsNodesResource{}
+	for _, nodepool := range r.Nodes.Nodepools {
+		for _, node := range nodepool.Nodes {
+			res.Capacity.Add(node.Memory.Capacity.Quantity)
+			res.Used.Add(node.Memory.Used.Quantity)
+		}
+	}
+	return res
+}
+
+// GetMemoryResource returns an aggregate memory resource (capacity + used) across the control plane and all node pools.
+func (r *KubernetesClusterAgentStatus) GetMemoryResource() *KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+	res := &KubernetesClusterAgentStatusNodesNodepoolsNodesResource{}
+	cp := r.GetControlPlaneMemoryResource()
+	np := r.GetNodePoolMemoryResource()
+	res.Capacity.Add(cp.Capacity.Quantity)
+	res.Used.Add(cp.Used.Quantity)
+	res.Capacity.Add(np.Capacity.Quantity)
+	res.Used.Add(np.Used.Quantity)
+	return res
 }
 
 // Type aliases for convenience and backward compatibility
