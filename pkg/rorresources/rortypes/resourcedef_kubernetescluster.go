@@ -111,6 +111,22 @@ func (r *KubernetesClusterAgentStatus) GetStatus() string {
 	}
 }
 
+// GetTotalCpu returns the total CPU resources of the cluster by summing the CPU of all nodes in the control plane and node pools.
+func (r *KubernetesClusterAgentStatus) GetTotalCpu() *resource.Quantity {
+	cpu := resource.NewQuantity(0, resource.DecimalSI)
+	cpu.Add(*r.GetControlPlaneCpu())
+	cpu.Add(*r.GetNodePoolCpu())
+	return cpu
+}
+
+// GetTotalMemory returns the total memory resources of the cluster by summing the memory of all nodes in the control plane and node pools.
+func (r *KubernetesClusterAgentStatus) GetTotalMemory() *resource.Quantity {
+	memory := resource.NewQuantity(0, resource.BinarySI)
+	memory.Add(*r.GetControlPlaneMemory())
+	memory.Add(*r.GetNodePoolMemory())
+	return memory
+}
+
 func (r *KubernetesClusterAgentStatus) GetControlPlaneCpu() *resource.Quantity {
 	var cpu *resource.Quantity = resource.NewQuantity(0, resource.DecimalSI)
 	for _, node := range r.Nodes.ControllPlane {
