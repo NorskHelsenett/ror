@@ -39,6 +39,7 @@ const (
 	OIDC_CLIENT_ID          ConfigConst = "OIDC_CLIENT_ID"
 	OIDC_DEVICE_CLIENT_ID   ConfigConst = "OIDC_DEVICE_CLIENT_ID"
 	OIDC_SKIP_ISSUER_VERIFY ConfigConst = "OIDC_SKIP_ISSUER_VERIFY"
+	OIDC_ISSUERS            ConfigConst = "OIDC_ISSUERS"
 
 	VAULT_URL ConfigConst = "VAULT_URL"
 
