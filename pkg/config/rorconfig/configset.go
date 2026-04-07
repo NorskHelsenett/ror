@@ -185,6 +185,175 @@ func (rc *rorConfigSet) assignTaggedValue(tag string, field reflect.Value, struc
 	return nil
 }
 
+// ExportToStruct creates a new instance of T and populates its fields from
+// the configuration store. Fields must be tagged with `rorconfig:"KEY"` to be
+// populated. Untagged struct fields are recursed into. Supports the same set
+// of types as ImportStruct: string, bool, int*, uint*, float*, time.Time,
+// time.Duration, and pointers to any of these.
+func ExportToStruct[T any](rc *rorConfigSet) (*T, error) {
+	return exportToStruct[T](rc, nil)
+}
+
+// exportToStructFiltered is like ExportToStruct but skips config keys whose
+// source is in excludeSources. Used by SaveToFile to omit env/flag overrides.
+func exportToStructFiltered[T any](rc *rorConfigSet, excludeSources []ConfigSource) (*T, error) {
+	return exportToStruct[T](rc, excludeSources)
+}
+
+func exportToStruct[T any](rc *rorConfigSet, excludeSources []ConfigSource) (*T, error) {
+	cfg := new(T)
+	if err := rc.exportToValue(reflect.ValueOf(cfg), excludeSources); err != nil {
+		return nil, err
+	}
+	return cfg, nil
+}
+
+func (rc *rorConfigSet) exportToValue(value reflect.Value, excludeSources []ConfigSource) error {
+	// Dereference pointers to reach the struct.
+	for value.Kind() == reflect.Pointer {
+		if value.IsNil() {
+			return fmt.Errorf("rorconfig: cannot export to nil pointer")
+		}
+		value = value.Elem()
+	}
+
+	if value.Kind() != reflect.Struct {
+		return fmt.Errorf("rorconfig: target must be a struct or pointer to struct")
+	}
+
+	typ := value.Type()
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)
+		structField := typ.Field(i)
+
+		if !field.CanSet() {
+			continue
+		}
+
+		tag := structField.Tag.Get("rorconfig")
+		if tag == "" {
+			// Recurse into untagged struct / pointer-to-struct fields.
+			if err := rc.exportRecurseUntagged(field, excludeSources); err != nil {
+				return err
+			}
+			continue
+		}
+
+		if !rc.configs.IsSet(tag) {
+			continue
+		}
+
+		cd := rc.getValue(tag)
+		if isExcludedSource(cd.source, excludeSources) {
+			continue
+		}
+		if err := setFieldFromConfigData(field, cd); err != nil {
+			return fmt.Errorf("rorconfig: field %s: %w", structField.Name, err)
+		}
+	}
+
+	return nil
+}
+
+func isExcludedSource(source ConfigSource, excluded []ConfigSource) bool {
+	for _, e := range excluded {
+		if source == e {
+			return true
+		}
+	}
+	return false
+}
+
+func (rc *rorConfigSet) exportRecurseUntagged(field reflect.Value, excludeSources []ConfigSource) error {
+	switch field.Kind() {
+	case reflect.Struct:
+		return rc.exportToValue(field.Addr(), excludeSources)
+	case reflect.Pointer:
+		if field.Type().Elem().Kind() != reflect.Struct {
+			return nil
+		}
+		// Only allocate a nil pointer-to-struct when the store actually
+		// holds at least one non-excluded value for its tagged fields.
+		// This avoids producing empty YAML sections on save.
+		if field.IsNil() {
+			if !rc.hasAnyTaggedKey(field.Type().Elem(), excludeSources) {
+				return nil
+			}
+			field.Set(reflect.New(field.Type().Elem()))
+		}
+		return rc.exportToValue(field, excludeSources)
+	default:
+		return nil
+	}
+}
+
+// hasAnyTaggedKey reports whether the store contains a value for at least one
+// rorconfig-tagged field in the given struct type (recursing into untagged
+// nested structs).
+func (rc *rorConfigSet) hasAnyTaggedKey(t reflect.Type, excludeSources []ConfigSource) bool {
+	for i := 0; i < t.NumField(); i++ {
+		sf := t.Field(i)
+		tag := sf.Tag.Get("rorconfig")
+		if tag != "" {
+			if rc.configs.IsSet(tag) && !isExcludedSource(rc.configs.Get(tag).source, excludeSources) {
+				return true
+			}
+			continue
+		}
+		// Recurse into untagged struct / pointer-to-struct fields.
+		ft := sf.Type
+		for ft.Kind() == reflect.Pointer {
+			ft = ft.Elem()
+		}
+		if ft.Kind() == reflect.Struct && rc.hasAnyTaggedKey(ft, excludeSources) {
+			return true
+		}
+	}
+	return false
+}
+
+// setFieldFromConfigData sets a reflect.Value from a ConfigData string,
+// performing the reverse conversion of assignTaggedValue.
+func setFieldFromConfigData(field reflect.Value, cd ConfigData) error {
+	// Handle pointer fields: allocate and set the inner value.
+	if field.Kind() == reflect.Pointer {
+		inner := reflect.New(field.Type().Elem())
+		if err := setFieldFromConfigData(inner.Elem(), cd); err != nil {
+			return err
+		}
+		field.Set(inner)
+		return nil
+	}
+
+	switch field.Kind() {
+	case reflect.String:
+		field.SetString(cd.String())
+	case reflect.Bool:
+		field.SetBool(cd.Bool())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if field.Type() == reflect.TypeFor[time.Duration]() {
+			field.Set(reflect.ValueOf(cd.TimeDuration()))
+			return nil
+		}
+		field.SetInt(cd.Int64())
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		field.SetUint(cd.Uint64())
+	case reflect.Float32:
+		field.Set(reflect.ValueOf(cd.Float32()))
+	case reflect.Float64:
+		field.SetFloat(cd.Float64())
+	case reflect.Struct:
+		if field.Type() == reflect.TypeFor[time.Time]() {
+			field.Set(reflect.ValueOf(cd.Time()))
+			return nil
+		}
+		return fmt.Errorf("unsupported struct type %s", field.Type())
+	default:
+		return fmt.Errorf("unsupported kind %s", field.Kind())
+	}
+	return nil
+}
+
 func (rc *rorConfigSet) AutoLoadAllEnv(local ...string) {
 	if len(local) > 0 {
 		for _, data := range local {

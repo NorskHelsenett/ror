@@ -64,6 +64,13 @@ func SetConfigFromStruct(source any) error {
 	return config.ImportStruct(source)
 }
 
+// GetConfigToStruct creates a new instance of T and populates its rorconfig-tagged
+// fields from the configuration store. This is the inverse of SetConfigFromStruct
+// and enables a full round-trip: file → store → struct → file.
+func GetConfigToStruct[T any]() (*T, error) {
+	return ExportToStruct[T](&config)
+}
+
 // AutomaticEnv loads configuration values from environment variables for all registered string(key)s.
 // This is called internally by InitConfig and typically doesn't need to be called directly.
 func AutomaticEnv() {
