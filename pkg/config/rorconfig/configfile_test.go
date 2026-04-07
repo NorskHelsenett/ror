@@ -216,6 +216,71 @@ func TestSaveToFileOmitsRuntimeOnlyKeys(t *testing.T) {
 	}
 }
 
+func TestSaveToFileOmitsEnvAndFlagSources(t *testing.T) {
+	origConfig := config
+	config = rorConfigSet{configs: make(configsMap)}
+	t.Cleanup(func() { config = origConfig })
+
+	// Simulate a config file value — should be saved.
+	config.configs.Set("FILE_HOST", "from-file", ConfigSourceConfigFile)
+	config.configs.Set("FILE_PORT", 3000, ConfigSourceDefault)
+	// Simulate env override and flag — should NOT be saved.
+	config.configs.Set("FILE_VERBOSE", true, ConfigSourceEnv)
+
+	dir := t.TempDir()
+	path := filepath.Join(dir, "out.yaml")
+
+	if err := SaveToFile[fileConfig](path); err != nil {
+		t.Fatalf("SaveToFile() error: %v", err)
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+
+	content := string(data)
+	if !contains(content, "host: from-file") {
+		t.Fatalf("expected configfile-sourced value in output:\n%s", content)
+	}
+	if !contains(content, "port: 3000") {
+		t.Fatalf("expected default-sourced value in output:\n%s", content)
+	}
+	// verbose was set via env — must not appear as true.
+	if contains(content, "verbose: true") {
+		t.Fatalf("env-sourced value leaked to file:\n%s", content)
+	}
+}
+
+func TestSaveToFileOmitsFlagSource(t *testing.T) {
+	origConfig := config
+	config = rorConfigSet{configs: make(configsMap)}
+	t.Cleanup(func() { config = origConfig })
+
+	config.configs.Set("FILE_HOST", "from-flag", ConfigSourceFlag)
+	config.configs.Set("FILE_PORT", 9090, ConfigSourceConfigFile)
+
+	dir := t.TempDir()
+	path := filepath.Join(dir, "out.yaml")
+
+	if err := SaveToFile[fileConfig](path); err != nil {
+		t.Fatalf("SaveToFile() error: %v", err)
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+
+	content := string(data)
+	if contains(content, "from-flag") {
+		t.Fatalf("flag-sourced value leaked to file:\n%s", content)
+	}
+	if !contains(content, "port: 9090") {
+		t.Fatalf("expected configfile-sourced value in output:\n%s", content)
+	}
+}
+
 // ---- ExportToStruct tests ----
 
 func TestExportToStructBasic(t *testing.T) {

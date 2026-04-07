@@ -34,8 +34,13 @@ func LoadFromFile[T any](path string) error {
 // given path with 0600 permissions. Only struct fields participate in the
 // marshal, so runtime-only keys that live only in the store are never
 // persisted, and fields removed from the struct type are automatically pruned.
+// fileSaveExcludeSources lists the config sources that should never be
+// written to a config file. Env overrides and CLI flags are transient
+// and must not leak into persisted YAML.
+var fileSaveExcludeSources = []ConfigSource{ConfigSourceEnv, ConfigSourceFlag}
+
 func SaveToFile[T any](path string) error {
-	cfg, err := ExportToStruct[T](&config)
+	cfg, err := exportToStructFiltered[T](&config, fileSaveExcludeSources)
 	if err != nil {
 		return fmt.Errorf("rorconfig: exporting to struct: %w", err)
 	}
