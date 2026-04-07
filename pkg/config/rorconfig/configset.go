@@ -250,14 +250,44 @@ func (rc *rorConfigSet) exportRecurseUntagged(field reflect.Value) error {
 		if field.Type().Elem().Kind() != reflect.Struct {
 			return nil
 		}
-		// Allocate the nested struct if the pointer is nil.
+		// Only allocate a nil pointer-to-struct when the store actually
+		// holds at least one value for its tagged fields. This avoids
+		// producing empty YAML sections on save.
 		if field.IsNil() {
+			if !rc.hasAnyTaggedKey(field.Type().Elem()) {
+				return nil
+			}
 			field.Set(reflect.New(field.Type().Elem()))
 		}
 		return rc.exportToValue(field)
 	default:
 		return nil
 	}
+}
+
+// hasAnyTaggedKey reports whether the store contains a value for at least one
+// rorconfig-tagged field in the given struct type (recursing into untagged
+// nested structs).
+func (rc *rorConfigSet) hasAnyTaggedKey(t reflect.Type) bool {
+	for i := 0; i < t.NumField(); i++ {
+		sf := t.Field(i)
+		tag := sf.Tag.Get("rorconfig")
+		if tag != "" {
+			if rc.configs.IsSet(tag) {
+				return true
+			}
+			continue
+		}
+		// Recurse into untagged struct / pointer-to-struct fields.
+		ft := sf.Type
+		for ft.Kind() == reflect.Pointer {
+			ft = ft.Elem()
+		}
+		if ft.Kind() == reflect.Struct && rc.hasAnyTaggedKey(ft) {
+			return true
+		}
+	}
+	return false
 }
 
 // setFieldFromConfigData sets a reflect.Value from a ConfigData string,

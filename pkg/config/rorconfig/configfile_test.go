@@ -295,6 +295,21 @@ func TestExportToStructNestedStruct(t *testing.T) {
 	}
 }
 
+func TestExportToStructNilPointerWhenNoKeys(t *testing.T) {
+	rc := rorConfigSet{configs: make(configsMap)}
+	// Only set Database keys — Cache has no keys in the store.
+	rc.Set("NEST_DB_HOST", "db.example")
+
+	cfg, err := ExportToStruct[nestedExportConfig](&rc)
+	if err != nil {
+		t.Fatalf("ExportToStruct() error: %v", err)
+	}
+
+	if cfg.Cache != nil {
+		t.Fatalf("Cache = %+v, want nil (no keys set for it)", cfg.Cache)
+	}
+}
+
 func TestExportToStructMissingKeys(t *testing.T) {
 	rc := rorConfigSet{configs: make(configsMap)}
 	// Only set one of the fields.
