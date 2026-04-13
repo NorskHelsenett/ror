@@ -423,8 +423,8 @@ go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo
 go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo v0.0.0-20260316083141-e92a00df8617/go.mod h1:OZOX11jwS23yHFC9Ci3YJvpBASH6lvLbA68QoNnOyvM=
 go.opentelemetry.io/contrib/instrumentation/host v0.66.0 h1:pBgjY2mZxTJj0HM/2C9wzxSFk6OCN1AtiIvW43Qkieo=
 go.opentelemetry.io/contrib/instrumentation/host v0.66.0/go.mod h1:IXlyFIbmeXaZuag9iZDVDrS09r87arjeIMVimvX8Q6U=
-go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 h1:OyrsyzuttWTSur2qN/Lm0m2a8yqyIjUVBZcxFPuXq2o=
-go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0/go.mod h1:C2NGBr+kAB4bk3xtMXfZ94gqFDtg/GkI7e9zqGh5Beg=
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.68.0 h1:CqXxU8VOmDefoh0+ztfGaymYbhdB/tT3zs79QaZTNGY=
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.68.0/go.mod h1:BuhAPThV8PBHBvg8ZzZ/Ok3idOdhWIodywz2xEcRbJo=
 go.opentelemetry.io/contrib/instrumentation/runtime v0.66.0 h1:JruBNmrPELWjR+PU3fsQBFQRYtsMLQ/zPfbvwDz9I/w=
 go.opentelemetry.io/contrib/instrumentation/runtime v0.66.0/go.mod h1:vwNrfL6w1uAE3qX48KFii2Qoqf+NEDP5wNjus+RHz8Y=
 go.opentelemetry.io/contrib/propagators/autoprop v0.66.0 h1:gy5EF1w9wU6uUTaaWNa335yWn41jxkFg6OM9JXkbOxw=
