@@ -56,6 +56,10 @@ func initTracer(ctx context.Context, serviceName string, opts ...Option) error {
 
 	exporterOpts := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(cfg.endpoint),
+		otlptracegrpc.WithTimeout(cfg.timeout),
+	}
+	if cfg.retry != nil {
+		exporterOpts = append(exporterOpts, otlptracegrpc.WithRetry(*cfg.retry))
 	}
 	if cfg.isInsecure() {
 		exporterOpts = append(exporterOpts, otlptracegrpc.WithInsecure())

@@ -2,7 +2,9 @@ package rortracer
 
 import (
 	"strings"
+	"time"
 
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -10,11 +12,20 @@ type traceConfig struct {
 	endpoint string
 	insecure *bool // nil = auto-detect from endpoint
 	sampler  sdktrace.Sampler
+	timeout  time.Duration
+	retry    *otlptracegrpc.RetryConfig
 }
 
 func defaultConfig() traceConfig {
 	return traceConfig{
 		sampler: sdktrace.ParentBased(sdktrace.AlwaysSample()),
+		timeout: 2 * time.Second,
+		retry: &otlptracegrpc.RetryConfig{
+			Enabled:         true,
+			InitialInterval: 1 * time.Second,
+			MaxInterval:     5 * time.Second,
+			MaxElapsedTime:  20 * time.Second,
+		},
 	}
 }
 
@@ -48,5 +59,20 @@ func WithInsecure() Option {
 func WithSampler(sampler sdktrace.Sampler) Option {
 	return func(c *traceConfig) {
 		c.sampler = sampler
+	}
+}
+
+// WithTimeout overrides the default export timeout (2s).
+func WithTimeout(d time.Duration) Option {
+	return func(c *traceConfig) {
+		c.timeout = d
+	}
+}
+
+// WithRetry overrides the default retry configuration.
+// Pass nil to disable retries.
+func WithRetry(cfg *otlptracegrpc.RetryConfig) Option {
+	return func(c *traceConfig) {
+		c.retry = cfg
 	}
 }
