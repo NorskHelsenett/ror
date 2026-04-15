@@ -114,15 +114,18 @@ func (c *KvCache) Get(ctx context.Context, key string, opts ...kvcachehelper.Cac
 			prefix = opt.Prefix
 		}
 	}
-	if val, ok := c.values[prefix+key]; ok {
+
+	c.lock.RLock()
+	val, ok := c.values[prefix+key]
+	c.lock.RUnlock()
+
+	if ok {
 		if time.Now().After(val.ExpirationTime) {
 			c.lock.Lock()
-			defer c.lock.Unlock()
-			delete(c.values, key)
+			delete(c.values, prefix+key)
+			c.lock.Unlock()
 			return "", false
 		}
-		c.lock.RLock()
-		defer c.lock.RUnlock()
 		return val.Value, true
 	}
 	return "", false
