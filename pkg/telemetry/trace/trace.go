@@ -40,6 +40,13 @@ func initTracerProvider(ctx context.Context, serviceName string, grpcEndpoint st
 
 	exporterOpts := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(GrpcEndpoint),
+		otlptracegrpc.WithTimeout(2 * time.Second),
+		otlptracegrpc.WithRetry(otlptracegrpc.RetryConfig{
+			Enabled:         true,
+			InitialInterval: 1 * time.Second,
+			MaxInterval:     10 * time.Second,
+			MaxElapsedTime:  30 * time.Second,
+		}),
 	}
 	if strings.HasSuffix(GrpcEndpoint, ":443") {
 		exporterOpts = append(exporterOpts, otlptracegrpc.WithTLSCredentials(credentials.NewTLS(&tls.Config{})))
@@ -95,7 +102,6 @@ func ConnectTracerWithReady(stop chan struct{}, ready chan struct{}, serviceName
 		}
 	}()
 	<-stop
-	shutdown(ctx)
 }
 
 func ConnectTracer(stop chan struct{}, serviceName string, grpcEndpoint string) {
