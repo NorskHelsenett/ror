@@ -19,6 +19,7 @@ require (
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/joho/godotenv v1.5.1
 	github.com/lestrrat-go/jwx/v2 v2.1.6
+	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/microsoftgraph/msgraph-sdk-go v1.96.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/nitishm/go-rejson/v4 v4.2.0
