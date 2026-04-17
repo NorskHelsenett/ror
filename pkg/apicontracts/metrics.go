@@ -75,6 +75,16 @@ type NodeMetric struct {
 	MemoryUsage      int64     `json:"memory"`
 	MemoryAllocated  int64     `json:"memoryallocated,omitempty"`
 	MemoryPercentage float64   `json:"memorypercentage,omitempty"`
+
+	// Node exporter fields (populated from Prometheus node_exporter, omitted when zero)
+	DiskUsageBytes int64   `json:"diskUsageBytes,omitempty" bson:"diskUsageBytes,omitempty"`
+	DiskTotalBytes int64   `json:"diskTotalBytes,omitempty" bson:"diskTotalBytes,omitempty"`
+	DiskPercent    float64 `json:"diskPercent,omitempty" bson:"diskPercent,omitempty"`
+	NetworkRxBytes float64 `json:"networkRxBytes,omitempty" bson:"networkRxBytes,omitempty"`
+	NetworkTxBytes float64 `json:"networkTxBytes,omitempty" bson:"networkTxBytes,omitempty"`
+	Load1          float64 `json:"load1,omitempty" bson:"load1,omitempty"`
+	Load5          float64 `json:"load5,omitempty" bson:"load5,omitempty"`
+	Load15         float64 `json:"load15,omitempty" bson:"load15,omitempty"`
 }
 
 type MetricsReport struct {
