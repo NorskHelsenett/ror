@@ -53,7 +53,7 @@ require (
 	k8s.io/apimachinery v0.36.0
 	k8s.io/cli-runtime v0.36.0
 	k8s.io/client-go v0.36.0
-	k8s.io/metrics v0.35.3
+	k8s.io/metrics v0.36.0
 	sigs.k8s.io/controller-runtime v0.23.3
 )
 
