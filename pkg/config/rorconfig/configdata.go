@@ -68,7 +68,10 @@ func (cd ConfigData) Float32() float32 {
 	return float32(f)
 }
 func (cd ConfigData) Uint() uint {
-	u, _ := strconv.ParseUint(cd.Value, 10, 64)
+	u, err := strconv.ParseUint(cd.Value, 10, 64)
+	if err != nil || u > math.MaxUint {
+		return 0
+	}
 	return uint(u)
 }
 func (cd ConfigData) Uint64() uint64 {
