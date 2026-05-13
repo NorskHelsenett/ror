@@ -36,6 +36,7 @@ var (
 		Acl2RorSubjectPrice,
 		Acl2RorSubjectVirtualMachine,
 		Acl2RorSubjectBackup,
+		Acl2RorSubjectAll,
 	}
 )
 
