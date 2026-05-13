@@ -19,6 +19,8 @@ const (
 	Acl2RorSubjectPrice          Acl2Subject = "price"
 	Acl2RorSubjectVirtualMachine Acl2Subject = "virtualmachine"
 	Acl2RorSubjectBackup         Acl2Subject = "backup"
+	Acl2RorSubjectAll            Acl2Subject = "all"
+	Acl2SpamSubjectGit           Acl2Subject = "spamgit"
 )
 
 // Deprecated: Use function GetAcl2RorValidSubjects() as dropin replacement instead.
@@ -49,6 +51,7 @@ func GetAcl2RorValidSubjects() []Acl2Subject {
 		Acl2RorSubjectPrice,
 		Acl2RorSubjectVirtualMachine,
 		Acl2RorSubjectBackup,
+		Acl2RorSubjectAll,
 	}
 }
 
