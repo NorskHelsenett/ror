@@ -8,8 +8,8 @@ require (
 	github.com/dotse/go-health v1.0.2
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-co-op/gocron v1.37.0
-	github.com/go-git/go-billy/v5 v5.8.0
-	github.com/go-git/go-git/v5 v5.18.0
+	github.com/go-git/go-billy/v5 v5.9.0
+	github.com/go-git/go-git/v5 v5.19.0
 	github.com/go-ldap/ldap/v3 v3.4.12
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.3.1
@@ -45,7 +45,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
 	go.uber.org/zap v1.28.0
-	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa
+	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f
 	golang.org/x/text v0.36.0
 	google.golang.org/grpc v1.80.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -145,7 +145,7 @@ require (
 	github.com/monochromegane/go-gitignore v0.0.0-20200626010858-205db1a8cc00 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
-	github.com/pjbgf/sha1cd v0.5.0 // indirect
+	github.com/pjbgf/sha1cd v0.6.0 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
@@ -205,7 +205,6 @@ require (
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/term v0.42.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260427160629-7cedc36a6bc4 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260427160629-7cedc36a6bc4 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
