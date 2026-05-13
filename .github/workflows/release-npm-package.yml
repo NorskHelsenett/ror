@@ -3,7 +3,7 @@ name: Release ROR resource models to npm
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 env:
   PACKAGE_NAME: ror-resources
@@ -19,7 +19,7 @@ jobs:
       rorversion: ${{ steps.env.outputs.ROR_VERSION }}
       shortsha: ${{ steps.env.outputs.SHA_SHORT }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - id: env
         name: Set env
         run: |
@@ -40,14 +40,14 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Install jq
         uses: dcarbone/install-jq-action@v3.0.1
 
       - name: Use node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
+          node-version: "22.x"
       - name: Build package
         run: |
           export VERSION=${ROR_VERSION#v*}
@@ -61,4 +61,3 @@ jobs:
           npm publish --access public
         env:
           ROR_VERSION: ${{ needs.setenv.outputs.rorversion }}
-         

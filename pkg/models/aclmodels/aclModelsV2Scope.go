@@ -11,6 +11,8 @@ const (
 	Acl2ScopeVirtualMachine Acl2Scope = "virtualmachine"
 	Acl2ScopeMachine        Acl2Scope = "machine"
 	Acl2ScopeBackup         Acl2Scope = "backup"
+	Acl2ScopeAll            Acl2Scope = "all"
+	Acl2ScopeSpam           Acl2Scope = "spam"
 )
 
 // IsValid validates the scope
@@ -32,6 +34,10 @@ func (s Acl2Scope) IsValid() bool {
 		return true
 	case Acl2ScopeUnknown:
 		return false
+	case Acl2ScopeAll:
+		return true
+	case Acl2ScopeSpam:
+		return true
 	default:
 		return false
 	}
@@ -45,5 +51,8 @@ func GetScopes() []Acl2Scope {
 		Acl2ScopeBackup,
 		Acl2ScopeProject,
 		Acl2ScopeMachine,
+		Acl2ScopeDatacenter,
+		Acl2ScopeAll,
+		Acl2ScopeSpam,
 	}
 }

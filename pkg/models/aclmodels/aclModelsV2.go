@@ -80,6 +80,50 @@ func NewAclV2ListItemAccess(read, create, update, delete, owner bool) AclV2ListI
 	}
 }
 
+func ParseAcl2AccessType(access string) (AccessType, bool) {
+	switch access {
+	case string(AccessTypeRead):
+		return AccessTypeRead, true
+	case string(AccessTypeCreate):
+		return AccessTypeCreate, true
+	case "write":
+		return AccessTypeCreate, true
+	case string(AccessTypeUpdate):
+		return AccessTypeUpdate, true
+	case string(AccessTypeDelete):
+		return AccessTypeDelete, true
+	case string(AccessTypeOwner):
+		return AccessTypeOwner, true
+	case string(AccessTypeRorMetadata):
+		return AccessTypeRorMetadata, true
+	case string(AccessTypeRorVulnerability):
+		return AccessTypeRorVulnerability, true
+	case string(AccessTypeClusterLogon):
+		return AccessTypeClusterLogon, true
+	default:
+		return "", false
+	}
+}
+
+func (a AclV2ListItemAccess) HasAccessType(at AccessType) bool {
+	switch at {
+	case AccessTypeRead:
+		return a.Read
+	case AccessTypeCreate:
+		return a.Create
+	case AccessTypeUpdate:
+		return a.Update
+	case AccessTypeDelete:
+		return a.Delete
+	case AccessTypeOwner:
+		return a.Owner
+	case AccessTypeClusterLogon:
+		return a.KubernetesLogon
+	default:
+		return false
+	}
+}
+
 // NewAclV2ListItemAccessReadOnly gives you Read access.
 func NewAclV2ListItemAccessReadOnly() AclV2ListItemAccess {
 	return NewAclV2ListItemAccess(true, false, false, false, false)
@@ -113,4 +157,12 @@ func NewAclV2ListItemAccessAll() AclV2ListItemAccess {
 // v2 access model for kubernetes
 type AclV2ListItemKubernetes struct {
 	Logon bool `json:"logon,omitempty" validate:"boolean" v3:"kubernetes:logon"` // Logon to subject if 'cluster'
+}
+
+type AclLookupResponse struct {
+	Scopes map[Acl2Scope]AclLookupResponseScope `json:"scopes"`
+}
+
+type AclLookupResponseScope struct {
+	Subject map[Acl2Subject]AclV2ListItemAccess `json:"subject"`
 }
