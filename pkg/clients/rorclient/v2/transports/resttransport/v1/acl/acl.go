@@ -150,3 +150,34 @@ func (c V1Client) CheckAccess(ctx context.Context, scope, subject, access string
 
 	return false
 }
+
+func (c V1Client) Lookup(ctx context.Context, scope, subject, access string) (*aclmodels.AclLookupResponse, error) {
+	u, err := url.Parse(c.BasePath)
+	if err != nil {
+		return nil, err
+	}
+
+	u = u.JoinPath("lookup")
+
+	query := make(map[string]string)
+	if scope != "" {
+		query["scope"] = scope
+	}
+	if subject != "" {
+		query["subject"] = subject
+	}
+	if access != "" {
+		query["access"] = access
+	}
+
+	var res aclmodels.AclLookupResponse
+	err = c.Client.GetJSON(ctx, u.String(), &res, httpclient.HttpTransportClientParams{
+		Key:   httpclient.HttpTransportClientOptsQuery,
+		Value: query,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
