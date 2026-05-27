@@ -50,3 +50,8 @@ type ResourceEndpointSpecSubsetsPorts struct {
 	Port        int32  `json:"port,omitempty"`
 	Protocol    string `json:"protocol,omitempty"`
 }
+
+// (r ResourceEndpoints) Get returns a pointer to the resource of type ResourceEndpoints
+func (r *ResourceEndpoints) Get() *ResourceEndpoints {
+	return r
+}

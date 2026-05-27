@@ -78,3 +78,8 @@ func (r *ResourceIngress) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceIngress) Get returns a pointer to the resource of type ResourceIngress
+func (r *ResourceIngress) Get() *ResourceIngress {
+	return r
+}

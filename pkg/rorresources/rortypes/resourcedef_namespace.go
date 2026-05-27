@@ -16,3 +16,8 @@ func (r *ResourceNamespace) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceNamespace) Get returns a pointer to the resource of type ResourceNamespace
+func (r *ResourceNamespace) Get() *ResourceNamespace {
+	return r
+}

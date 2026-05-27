@@ -34,3 +34,8 @@ func (r *ResourceRbacAssessmentReport) ApplyInputFilter(cr *CommonResource) erro
 	}
 	return nil
 }
+
+// (r ResourceRbacAssessmentReport) Get returns a pointer to the resource of type ResourceRbacAssessmentReport
+func (r *ResourceRbacAssessmentReport) Get() *ResourceRbacAssessmentReport {
+	return r
+}

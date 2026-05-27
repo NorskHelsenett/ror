@@ -19,3 +19,8 @@ func (r *ResourceConfigAuditReport) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceConfigAuditReport) Get returns a pointer to the resource of type ResourceConfigAuditReport
+func (r *ResourceConfigAuditReport) Get() *ResourceConfigAuditReport {
+	return r
+}

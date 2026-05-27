@@ -22,3 +22,8 @@ type ResourceRouteReceiver struct {
 type ResourceRouteSlackReceiver struct {
 	ChannelId string `json:"channelId"`
 }
+
+// (r ResourceRoute) Get returns a pointer to the resource of type ResourceRoute
+func (r *ResourceRoute) Get() *ResourceRoute {
+	return r
+}

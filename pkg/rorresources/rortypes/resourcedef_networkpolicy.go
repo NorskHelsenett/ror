@@ -70,3 +70,8 @@ type ResourceNetworkPolicyCondition struct {
 	Status             string `json:"status"`
 	Type               string `json:"type"`
 }
+
+// (r ResourceNetworkPolicy) Get returns a pointer to the resource of type ResourceNetworkPolicy
+func (r *ResourceNetworkPolicy) Get() *ResourceNetworkPolicy {
+	return r
+}

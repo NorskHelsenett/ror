@@ -34,3 +34,8 @@ func (r *ResourcePersistentVolumeClaim) ApplyInputFilter(cr *CommonResource) err
 	}
 	return nil
 }
+
+// (r ResourcePersistentVolumeClaim) Get returns a pointer to the resource of type ResourcePersistentVolumeClaim
+func (r *ResourcePersistentVolumeClaim) Get() *ResourcePersistentVolumeClaim {
+	return r
+}

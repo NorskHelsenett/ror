@@ -46,3 +46,8 @@ type ResourceBackupStorage struct {
 	// Physical data written to the backup system
 	PhysicalSize int `json:"physicalSize"`
 }
+
+// (r ResourceBackupRun) Get returns a pointer to the resource of type ResourceBackupRun
+func (r *ResourceBackupRun) Get() *ResourceBackupRun {
+	return r
+}

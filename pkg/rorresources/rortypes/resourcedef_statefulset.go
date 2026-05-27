@@ -23,3 +23,8 @@ func (r *ResourceStatefulSet) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceStatefulSet) Get returns a pointer to the resource of type ResourceStatefulSet
+func (r *ResourceStatefulSet) Get() *ResourceStatefulSet {
+	return r
+}

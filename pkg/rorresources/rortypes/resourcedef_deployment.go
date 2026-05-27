@@ -22,3 +22,8 @@ func (r *ResourceDeployment) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceDeployment) Get returns a pointer to the resource of type ResourceDeployment
+func (r *ResourceDeployment) Get() *ResourceDeployment {
+	return r
+}

@@ -100,3 +100,8 @@ type ResourceSbomReportsComponentDep struct {
 	Ref       string   `json:"ref,omitempty"`
 	DependsOn []string `json:"dependsOn,omitempty"`
 }
+
+// (r ResourceSbomReport) Get returns a pointer to the resource of type ResourceSbomReport
+func (r *ResourceSbomReport) Get() *ResourceSbomReport {
+	return r
+}

@@ -86,3 +86,7 @@ type ResourceVirtualMachineClassSpecHardwareInstanceStorage struct {
 
 // type ResourceVirtualMachineClassSpecPoliciesResourcesRequests struct {
 // }
+// (r ResourceVirtualMachineClass) Get returns a pointer to the resource of type ResourceVirtualMachineClass
+func (r *ResourceVirtualMachineClass) Get() *ResourceVirtualMachineClass {
+	return r
+}

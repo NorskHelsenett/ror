@@ -39,3 +39,8 @@ func (r *ResourceService) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceService) Get returns a pointer to the resource of type ResourceService
+func (r *ResourceService) Get() *ResourceService {
+	return r
+}

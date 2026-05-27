@@ -100,3 +100,8 @@ type ResourceKubernetesClusterOrderStatusCondition struct {
 	Reason             string `json:"reason"`
 	Message            string `json:"message"`
 }
+
+// (r ResourceClusterOrder) Get returns a pointer to the resource of type ResourceClusterOrder
+func (r *ResourceClusterOrder) Get() *ResourceClusterOrder {
+	return r
+}

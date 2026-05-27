@@ -321,3 +321,8 @@ type KubernetesClusterControlPlaneStatus = vitiv1alpha1.KubernetesClusterControl
 type KubernetesClusterNodePoolStatus = vitiv1alpha1.KubernetesClusterNodePoolStatus
 type KubernetesClusterVersion = vitiv1alpha1.KubernetesClusterVersion
 type KubernetesClusterCondition = vitiv1alpha1.KubernetesClusterCondition
+
+// (r ResourceKubernetesCluster) Get returns a pointer to the resource of type ResourceKubernetesCluster
+func (r *ResourceKubernetesCluster) Get() *ResourceKubernetesCluster {
+	return r
+}

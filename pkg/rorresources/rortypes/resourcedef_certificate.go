@@ -44,3 +44,8 @@ func (r *ResourceCertificate) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceCertificate) Get returns a pointer to the resource of type ResourceCertificate
+func (r *ResourceCertificate) Get() *ResourceCertificate {
+	return r
+}

@@ -25,3 +25,8 @@ func (r *ResourceDaemonSet) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceDaemonSet) Get returns a pointer to the resource of type ResourceDaemonSet
+func (r *ResourceDaemonSet) Get() *ResourceDaemonSet {
+	return r
+}

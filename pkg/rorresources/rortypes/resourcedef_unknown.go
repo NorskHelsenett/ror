@@ -4,3 +4,8 @@ package rortypes
 
 type ResourceUnknown struct {
 }
+
+// (r ResourceUnknown) Get returns a pointer to the resource of type ResourceUnknown
+func (r *ResourceUnknown) Get() *ResourceUnknown {
+	return r
+}

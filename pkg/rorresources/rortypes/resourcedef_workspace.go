@@ -29,3 +29,8 @@ type ResourceWorkspaceMachineClass struct {
 type ResourceWorkspaceStorageClass struct {
 	Name string `json:"name"`
 }
+
+// (r ResourceWorkspace) Get returns a pointer to the resource of type ResourceWorkspace
+func (r *ResourceWorkspace) Get() *ResourceWorkspace {
+	return r
+}

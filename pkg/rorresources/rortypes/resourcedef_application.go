@@ -82,3 +82,8 @@ func (r *ResourceApplication) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceApplication) Get returns a pointer to the resource of type ResourceApplication
+func (r *ResourceApplication) Get() *ResourceApplication {
+	return r
+}

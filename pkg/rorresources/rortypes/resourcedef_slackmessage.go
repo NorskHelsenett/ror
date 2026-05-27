@@ -30,3 +30,8 @@ const (
 func (r *ResourceSlackMessage) ApplyInputFilter(cr *CommonResource) error {
 	return nil
 }
+
+// (r ResourceSlackMessage) Get returns a pointer to the resource of type ResourceSlackMessage
+func (r *ResourceSlackMessage) Get() *ResourceSlackMessage {
+	return r
+}

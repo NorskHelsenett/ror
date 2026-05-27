@@ -32,3 +32,8 @@ type VulnerableVersion struct {
 	Version     string `json:"version"`
 	PackageName string `json:"packageName"`
 }
+
+// (r ResourceVirtualMachineVulnerabilityInfo) Get returns a pointer to the resource of type ResourceVirtualMachineVulnerabilityInfo
+func (r *ResourceVirtualMachineVulnerabilityInfo) Get() *ResourceVirtualMachineVulnerabilityInfo {
+	return r
+}

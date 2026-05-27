@@ -41,3 +41,8 @@ func (r *ResourcePod) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourcePod) Get returns a pointer to the resource of type ResourcePod
+func (r *ResourcePod) Get() *ResourcePod {
+	return r
+}

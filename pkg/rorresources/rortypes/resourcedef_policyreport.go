@@ -46,3 +46,8 @@ func (r *ResourcePolicyReport) ApplyInputFilter(cr *CommonResource) error {
 
 	return nil
 }
+
+// (r ResourcePolicyReport) Get returns a pointer to the resource of type ResourcePolicyReport
+func (r *ResourcePolicyReport) Get() *ResourcePolicyReport {
+	return r
+}

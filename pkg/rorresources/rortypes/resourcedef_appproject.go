@@ -21,3 +21,8 @@ func (r *ResourceAppProject) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceAppProject) Get returns a pointer to the resource of type ResourceAppProject
+func (r *ResourceAppProject) Get() *ResourceAppProject {
+	return r
+}

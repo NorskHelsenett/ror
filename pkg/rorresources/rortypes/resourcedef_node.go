@@ -60,3 +60,8 @@ type ResourceNodeStatusNodeinfo struct {
 	OsImage                 string `json:"osImage"`
 	SystemUUID              string `json:"systemUUID"`
 }
+
+// (r ResourceNode) Get returns a pointer to the resource of type ResourceNode
+func (r *ResourceNode) Get() *ResourceNode {
+	return r
+}

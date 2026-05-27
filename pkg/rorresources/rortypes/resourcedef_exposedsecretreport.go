@@ -19,3 +19,8 @@ func (r *ResourceExposedSecretReport) ApplyInputFilter(cr *CommonResource) error
 	}
 	return nil
 }
+
+// (r ResourceExposedSecretReport) Get returns a pointer to the resource of type ResourceExposedSecretReport
+func (r *ResourceExposedSecretReport) Get() *ResourceExposedSecretReport {
+	return r
+}

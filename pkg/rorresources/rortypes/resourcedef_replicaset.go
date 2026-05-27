@@ -38,3 +38,8 @@ func (r *ResourceReplicaSet) ApplyInputFilter(cr *CommonResource) error {
 	}
 	return nil
 }
+
+// (r ResourceReplicaSet) Get returns a pointer to the resource of type ResourceReplicaSet
+func (r *ResourceReplicaSet) Get() *ResourceReplicaSet {
+	return r
+}
