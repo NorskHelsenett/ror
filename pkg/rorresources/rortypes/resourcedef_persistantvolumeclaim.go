@@ -1,5 +1,9 @@
 package rortypes
 
+import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
+)
+
 // K8s PersistentVolumeClaim struct
 type ResourcePersistentVolumeClaim struct {
 	Spec   ResourcePersistentVolumeClaimSpec   `json:"spec"`
@@ -21,4 +25,12 @@ type ResourcePersistentVolumeClaimStatus struct {
 	AaccessModes []string          `json:"accessModes"`
 	Capacity     map[string]string `json:"capacity"`
 	Phase        string            `json:"phase"`
+}
+
+// (r *ResourcePersistentVolumeClaim) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourcePersistentVolumeClaim) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
 }

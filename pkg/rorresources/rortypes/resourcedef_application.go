@@ -1,5 +1,9 @@
 package rortypes
 
+import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
+)
+
 // K8s application struct used with ArgoCD
 type ResourceApplication struct {
 	Spec   ResourceApplicationSpec   `json:"spec"`
@@ -69,4 +73,12 @@ type ResourceApplicationSpecSyncpolicyRetryBackoff struct {
 	Duration    string `json:"duration"`
 	Factor      int    `json:"factor"`
 	MaxDuration string `json:"maxDuration"`
+}
+
+// (r *ResourceApplication) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceApplication) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalAppProjects[r.Spec.Project] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
 }

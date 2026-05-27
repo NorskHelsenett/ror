@@ -1,5 +1,9 @@
 package rortypes
 
+import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
+)
+
 // ResourcePod
 // K8s namepace struct
 type ResourcePod struct {
@@ -28,4 +32,12 @@ type ResourcePodStatus struct {
 	Phase     string `json:"phase,omitempty"`
 	Reason    string `json:"reason,omitempty"`
 	StartTime string `json:"startTime,omitempty"`
+}
+
+// (r *ResourcePod) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourcePod) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
 }

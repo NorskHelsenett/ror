@@ -25,3 +25,8 @@ const (
 	SLACK_MESSAGE_ERROR
 	SLACK_MESSAGE_UNKNOWN
 )
+
+// (r *ResourceSlackMessage) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceSlackMessage) ApplyInputFilter(cr *CommonResource) error {
+	return nil
+}
