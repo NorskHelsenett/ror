@@ -51,7 +51,7 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 	case "{{.GroupVersionKind.String }}":
 		res := new{{.Kind}}FromDynamicClient(input)
 		r.Set{{.Kind}}(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 	{{end}}
 	default:
 		rlog.Warn("could not create ResourceSet")

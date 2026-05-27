@@ -39,6 +39,7 @@ type ApiResource struct {
 	Namespaced      bool
 	Types           []ApiResourceType
 	Versions        []ApiVersions
+	resource        any
 }
 
 // GetApiVersion

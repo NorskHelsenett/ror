@@ -34,7 +34,7 @@ func NewRor{{.Kind}}Resource () *Resource {
 	r.Kind = {{.Kind | quote}}
 	r.APIVersion = {{.APIVersion | quote}}
 	r.{{.Kind}}Resource = &rortypes.Resource{{.Kind}}{}
-	r.common = r.{{.Kind}}Resource
+	r.common = rortypes.NewCommonFactory(r.{{.Kind}}Resource)
 	return &r
 }
 {{end}}

@@ -76,7 +76,7 @@ func NewRorNamespaceResource() *Resource {
 	r.Kind = "Namespace"
 	r.APIVersion = "v1"
 	r.NamespaceResource = &rortypes.ResourceNamespace{}
-	r.common = r.NamespaceResource
+	r.common = rortypes.NewCommonFactory(r.NamespaceResource)
 	return &r
 }
 
@@ -86,7 +86,7 @@ func NewRorNodeResource() *Resource {
 	r.Kind = "Node"
 	r.APIVersion = "v1"
 	r.NodeResource = &rortypes.ResourceNode{}
-	r.common = r.NodeResource
+	r.common = rortypes.NewCommonFactory(r.NodeResource)
 	return &r
 }
 
@@ -96,7 +96,7 @@ func NewRorPersistentVolumeClaimResource() *Resource {
 	r.Kind = "PersistentVolumeClaim"
 	r.APIVersion = "v1"
 	r.PersistentVolumeClaimResource = &rortypes.ResourcePersistentVolumeClaim{}
-	r.common = r.PersistentVolumeClaimResource
+	r.common = rortypes.NewCommonFactory(r.PersistentVolumeClaimResource)
 	return &r
 }
 
@@ -106,7 +106,7 @@ func NewRorDeploymentResource() *Resource {
 	r.Kind = "Deployment"
 	r.APIVersion = "apps/v1"
 	r.DeploymentResource = &rortypes.ResourceDeployment{}
-	r.common = r.DeploymentResource
+	r.common = rortypes.NewCommonFactory(r.DeploymentResource)
 	return &r
 }
 
@@ -116,7 +116,7 @@ func NewRorStorageClassResource() *Resource {
 	r.Kind = "StorageClass"
 	r.APIVersion = "storage.k8s.io/v1"
 	r.StorageClassResource = &rortypes.ResourceStorageClass{}
-	r.common = r.StorageClassResource
+	r.common = rortypes.NewCommonFactory(r.StorageClassResource)
 	return &r
 }
 
@@ -126,7 +126,7 @@ func NewRorPolicyReportResource() *Resource {
 	r.Kind = "PolicyReport"
 	r.APIVersion = "wgpolicyk8s.io/v1alpha2"
 	r.PolicyReportResource = &rortypes.ResourcePolicyReport{}
-	r.common = r.PolicyReportResource
+	r.common = rortypes.NewCommonFactory(r.PolicyReportResource)
 	return &r
 }
 
@@ -136,7 +136,7 @@ func NewRorApplicationResource() *Resource {
 	r.Kind = "Application"
 	r.APIVersion = "argoproj.io/v1alpha1"
 	r.ApplicationResource = &rortypes.ResourceApplication{}
-	r.common = r.ApplicationResource
+	r.common = rortypes.NewCommonFactory(r.ApplicationResource)
 	return &r
 }
 
@@ -146,7 +146,7 @@ func NewRorAppProjectResource() *Resource {
 	r.Kind = "AppProject"
 	r.APIVersion = "argoproj.io/v1alpha1"
 	r.AppProjectResource = &rortypes.ResourceAppProject{}
-	r.common = r.AppProjectResource
+	r.common = rortypes.NewCommonFactory(r.AppProjectResource)
 	return &r
 }
 
@@ -156,7 +156,7 @@ func NewRorCertificateResource() *Resource {
 	r.Kind = "Certificate"
 	r.APIVersion = "cert-manager.io/v1"
 	r.CertificateResource = &rortypes.ResourceCertificate{}
-	r.common = r.CertificateResource
+	r.common = rortypes.NewCommonFactory(r.CertificateResource)
 	return &r
 }
 
@@ -166,7 +166,7 @@ func NewRorServiceResource() *Resource {
 	r.Kind = "Service"
 	r.APIVersion = "v1"
 	r.ServiceResource = &rortypes.ResourceService{}
-	r.common = r.ServiceResource
+	r.common = rortypes.NewCommonFactory(r.ServiceResource)
 	return &r
 }
 
@@ -176,7 +176,7 @@ func NewRorPodResource() *Resource {
 	r.Kind = "Pod"
 	r.APIVersion = "v1"
 	r.PodResource = &rortypes.ResourcePod{}
-	r.common = r.PodResource
+	r.common = rortypes.NewCommonFactory(r.PodResource)
 	return &r
 }
 
@@ -186,7 +186,7 @@ func NewRorReplicaSetResource() *Resource {
 	r.Kind = "ReplicaSet"
 	r.APIVersion = "apps/v1"
 	r.ReplicaSetResource = &rortypes.ResourceReplicaSet{}
-	r.common = r.ReplicaSetResource
+	r.common = rortypes.NewCommonFactory(r.ReplicaSetResource)
 	return &r
 }
 
@@ -196,7 +196,7 @@ func NewRorStatefulSetResource() *Resource {
 	r.Kind = "StatefulSet"
 	r.APIVersion = "apps/v1"
 	r.StatefulSetResource = &rortypes.ResourceStatefulSet{}
-	r.common = r.StatefulSetResource
+	r.common = rortypes.NewCommonFactory(r.StatefulSetResource)
 	return &r
 }
 
@@ -206,7 +206,7 @@ func NewRorDaemonSetResource() *Resource {
 	r.Kind = "DaemonSet"
 	r.APIVersion = "apps/v1"
 	r.DaemonSetResource = &rortypes.ResourceDaemonSet{}
-	r.common = r.DaemonSetResource
+	r.common = rortypes.NewCommonFactory(r.DaemonSetResource)
 	return &r
 }
 
@@ -216,7 +216,7 @@ func NewRorIngressResource() *Resource {
 	r.Kind = "Ingress"
 	r.APIVersion = "networking.k8s.io/v1"
 	r.IngressResource = &rortypes.ResourceIngress{}
-	r.common = r.IngressResource
+	r.common = rortypes.NewCommonFactory(r.IngressResource)
 	return &r
 }
 
@@ -226,7 +226,7 @@ func NewRorIngressClassResource() *Resource {
 	r.Kind = "IngressClass"
 	r.APIVersion = "networking.k8s.io/v1"
 	r.IngressClassResource = &rortypes.ResourceIngressClass{}
-	r.common = r.IngressClassResource
+	r.common = rortypes.NewCommonFactory(r.IngressClassResource)
 	return &r
 }
 
@@ -236,7 +236,7 @@ func NewRorSbomReportResource() *Resource {
 	r.Kind = "SbomReport"
 	r.APIVersion = "aquasecurity.github.io/v1alpha1"
 	r.SbomReportResource = &rortypes.ResourceSbomReport{}
-	r.common = r.SbomReportResource
+	r.common = rortypes.NewCommonFactory(r.SbomReportResource)
 	return &r
 }
 
@@ -246,7 +246,7 @@ func NewRorVulnerabilityReportResource() *Resource {
 	r.Kind = "VulnerabilityReport"
 	r.APIVersion = "aquasecurity.github.io/v1alpha1"
 	r.VulnerabilityReportResource = &rortypes.ResourceVulnerabilityReport{}
-	r.common = r.VulnerabilityReportResource
+	r.common = rortypes.NewCommonFactory(r.VulnerabilityReportResource)
 	return &r
 }
 
@@ -256,7 +256,7 @@ func NewRorExposedSecretReportResource() *Resource {
 	r.Kind = "ExposedSecretReport"
 	r.APIVersion = "aquasecurity.github.io/v1alpha1"
 	r.ExposedSecretReportResource = &rortypes.ResourceExposedSecretReport{}
-	r.common = r.ExposedSecretReportResource
+	r.common = rortypes.NewCommonFactory(r.ExposedSecretReportResource)
 	return &r
 }
 
@@ -266,7 +266,7 @@ func NewRorConfigAuditReportResource() *Resource {
 	r.Kind = "ConfigAuditReport"
 	r.APIVersion = "aquasecurity.github.io/v1alpha1"
 	r.ConfigAuditReportResource = &rortypes.ResourceConfigAuditReport{}
-	r.common = r.ConfigAuditReportResource
+	r.common = rortypes.NewCommonFactory(r.ConfigAuditReportResource)
 	return &r
 }
 
@@ -276,7 +276,7 @@ func NewRorRbacAssessmentReportResource() *Resource {
 	r.Kind = "RbacAssessmentReport"
 	r.APIVersion = "aquasecurity.github.io/v1alpha1"
 	r.RbacAssessmentReportResource = &rortypes.ResourceRbacAssessmentReport{}
-	r.common = r.RbacAssessmentReportResource
+	r.common = rortypes.NewCommonFactory(r.RbacAssessmentReportResource)
 	return &r
 }
 
@@ -286,7 +286,7 @@ func NewRorTanzuKubernetesClusterResource() *Resource {
 	r.Kind = "TanzuKubernetesCluster"
 	r.APIVersion = "run.tanzu.vmware.com/v1alpha3"
 	r.TanzuKubernetesClusterResource = &rortypes.ResourceTanzuKubernetesCluster{}
-	r.common = r.TanzuKubernetesClusterResource
+	r.common = rortypes.NewCommonFactory(r.TanzuKubernetesClusterResource)
 	return &r
 }
 
@@ -296,7 +296,7 @@ func NewRorTanzuKubernetesReleaseResource() *Resource {
 	r.Kind = "TanzuKubernetesRelease"
 	r.APIVersion = "run.tanzu.vmware.com/v1alpha3"
 	r.TanzuKubernetesReleaseResource = &rortypes.ResourceTanzuKubernetesRelease{}
-	r.common = r.TanzuKubernetesReleaseResource
+	r.common = rortypes.NewCommonFactory(r.TanzuKubernetesReleaseResource)
 	return &r
 }
 
@@ -306,7 +306,7 @@ func NewRorVirtualMachineClassResource() *Resource {
 	r.Kind = "VirtualMachineClass"
 	r.APIVersion = "vmoperator.vmware.com/v1alpha2"
 	r.VirtualMachineClassResource = &rortypes.ResourceVirtualMachineClass{}
-	r.common = r.VirtualMachineClassResource
+	r.common = rortypes.NewCommonFactory(r.VirtualMachineClassResource)
 	return &r
 }
 
@@ -316,7 +316,7 @@ func NewRorKubernetesClusterResource() *Resource {
 	r.Kind = "KubernetesCluster"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.KubernetesClusterResource = &rortypes.ResourceKubernetesCluster{}
-	r.common = r.KubernetesClusterResource
+	r.common = rortypes.NewCommonFactory(r.KubernetesClusterResource)
 	return &r
 }
 
@@ -326,7 +326,7 @@ func NewRorProviderResource() *Resource {
 	r.Kind = "Provider"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.ProviderResource = &rortypes.ResourceProvider{}
-	r.common = r.ProviderResource
+	r.common = rortypes.NewCommonFactory(r.ProviderResource)
 	return &r
 }
 
@@ -336,7 +336,7 @@ func NewRorWorkspaceResource() *Resource {
 	r.Kind = "Workspace"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.WorkspaceResource = &rortypes.ResourceWorkspace{}
-	r.common = r.WorkspaceResource
+	r.common = rortypes.NewCommonFactory(r.WorkspaceResource)
 	return &r
 }
 
@@ -346,7 +346,7 @@ func NewRorKubernetesMachineClassResource() *Resource {
 	r.Kind = "KubernetesMachineClass"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.KubernetesMachineClassResource = &rortypes.ResourceKubernetesMachineClass{}
-	r.common = r.KubernetesMachineClassResource
+	r.common = rortypes.NewCommonFactory(r.KubernetesMachineClassResource)
 	return &r
 }
 
@@ -356,7 +356,7 @@ func NewRorClusterOrderResource() *Resource {
 	r.Kind = "ClusterOrder"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.ClusterOrderResource = &rortypes.ResourceClusterOrder{}
-	r.common = r.ClusterOrderResource
+	r.common = rortypes.NewCommonFactory(r.ClusterOrderResource)
 	return &r
 }
 
@@ -366,7 +366,7 @@ func NewRorProjectResource() *Resource {
 	r.Kind = "Project"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.ProjectResource = &rortypes.ResourceProject{}
-	r.common = r.ProjectResource
+	r.common = rortypes.NewCommonFactory(r.ProjectResource)
 	return &r
 }
 
@@ -376,7 +376,7 @@ func NewRorConfigurationResource() *Resource {
 	r.Kind = "Configuration"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.ConfigurationResource = &rortypes.ResourceConfiguration{}
-	r.common = r.ConfigurationResource
+	r.common = rortypes.NewCommonFactory(r.ConfigurationResource)
 	return &r
 }
 
@@ -386,7 +386,7 @@ func NewRorClusterComplianceReportResource() *Resource {
 	r.Kind = "ClusterComplianceReport"
 	r.APIVersion = "aquasecurity.github.io/v1alpha1"
 	r.ClusterComplianceReportResource = &rortypes.ResourceClusterComplianceReport{}
-	r.common = r.ClusterComplianceReportResource
+	r.common = rortypes.NewCommonFactory(r.ClusterComplianceReportResource)
 	return &r
 }
 
@@ -396,7 +396,7 @@ func NewRorClusterVulnerabilityReportResource() *Resource {
 	r.Kind = "ClusterVulnerabilityReport"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.ClusterVulnerabilityReportResource = &rortypes.ResourceClusterVulnerabilityReport{}
-	r.common = r.ClusterVulnerabilityReportResource
+	r.common = rortypes.NewCommonFactory(r.ClusterVulnerabilityReportResource)
 	return &r
 }
 
@@ -406,7 +406,7 @@ func NewRorRouteResource() *Resource {
 	r.Kind = "Route"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.RouteResource = &rortypes.ResourceRoute{}
-	r.common = r.RouteResource
+	r.common = rortypes.NewCommonFactory(r.RouteResource)
 	return &r
 }
 
@@ -416,7 +416,7 @@ func NewRorSlackMessageResource() *Resource {
 	r.Kind = "SlackMessage"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.SlackMessageResource = &rortypes.ResourceSlackMessage{}
-	r.common = r.SlackMessageResource
+	r.common = rortypes.NewCommonFactory(r.SlackMessageResource)
 	return &r
 }
 
@@ -426,7 +426,7 @@ func NewRorVulnerabilityEventResource() *Resource {
 	r.Kind = "VulnerabilityEvent"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.VulnerabilityEventResource = &rortypes.ResourceVulnerabilityEvent{}
-	r.common = r.VulnerabilityEventResource
+	r.common = rortypes.NewCommonFactory(r.VulnerabilityEventResource)
 	return &r
 }
 
@@ -436,7 +436,7 @@ func NewRorVirtualMachineResource() *Resource {
 	r.Kind = "VirtualMachine"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.VirtualMachineResource = &rortypes.ResourceVirtualMachine{}
-	r.common = r.VirtualMachineResource
+	r.common = rortypes.NewCommonFactory(r.VirtualMachineResource)
 	return &r
 }
 
@@ -446,7 +446,7 @@ func NewRorVirtualMachineVulnerabilityInfoResource() *Resource {
 	r.Kind = "VirtualMachineVulnerabilityInfo"
 	r.APIVersion = "general.ror.internal/v1alpha1"
 	r.VirtualMachineVulnerabilityInfoResource = &rortypes.ResourceVirtualMachineVulnerabilityInfo{}
-	r.common = r.VirtualMachineVulnerabilityInfoResource
+	r.common = rortypes.NewCommonFactory(r.VirtualMachineVulnerabilityInfoResource)
 	return &r
 }
 
@@ -456,7 +456,7 @@ func NewRorEndpointsResource() *Resource {
 	r.Kind = "Endpoints"
 	r.APIVersion = "v1"
 	r.EndpointsResource = &rortypes.ResourceEndpoints{}
-	r.common = r.EndpointsResource
+	r.common = rortypes.NewCommonFactory(r.EndpointsResource)
 	return &r
 }
 
@@ -466,7 +466,7 @@ func NewRorNetworkPolicyResource() *Resource {
 	r.Kind = "NetworkPolicy"
 	r.APIVersion = "networking.k8s.io/v1"
 	r.NetworkPolicyResource = &rortypes.ResourceNetworkPolicy{}
-	r.common = r.NetworkPolicyResource
+	r.common = rortypes.NewCommonFactory(r.NetworkPolicyResource)
 	return &r
 }
 
@@ -476,7 +476,7 @@ func NewRorDatacenterResource() *Resource {
 	r.Kind = "Datacenter"
 	r.APIVersion = "infrastructure.ror.internal/v1alpha1"
 	r.DatacenterResource = &rortypes.ResourceDatacenter{}
-	r.common = r.DatacenterResource
+	r.common = rortypes.NewCommonFactory(r.DatacenterResource)
 	return &r
 }
 
@@ -486,7 +486,7 @@ func NewRorBackupJobResource() *Resource {
 	r.Kind = "BackupJob"
 	r.APIVersion = "backup.ror.internal/v1alpha1"
 	r.BackupJobResource = &rortypes.ResourceBackupJob{}
-	r.common = r.BackupJobResource
+	r.common = rortypes.NewCommonFactory(r.BackupJobResource)
 	return &r
 }
 
@@ -496,7 +496,7 @@ func NewRorBackupRunResource() *Resource {
 	r.Kind = "BackupRun"
 	r.APIVersion = "backup.ror.internal/v1alpha1"
 	r.BackupRunResource = &rortypes.ResourceBackupRun{}
-	r.common = r.BackupRunResource
+	r.common = rortypes.NewCommonFactory(r.BackupRunResource)
 	return &r
 }
 
@@ -506,7 +506,7 @@ func NewRorMachineResource() *Resource {
 	r.Kind = "Machine"
 	r.APIVersion = "machine.ror.internal/v1alpha1"
 	r.MachineResource = &rortypes.ResourceMachine{}
-	r.common = r.MachineResource
+	r.common = rortypes.NewCommonFactory(r.MachineResource)
 	return &r
 }
 
@@ -516,7 +516,7 @@ func NewRorUnknownResource() *Resource {
 	r.Kind = "Unknown"
 	r.APIVersion = "unknown.ror.internal/v1"
 	r.UnknownResource = &rortypes.ResourceUnknown{}
-	r.common = r.UnknownResource
+	r.common = rortypes.NewCommonFactory(r.UnknownResource)
 	return &r
 }
 

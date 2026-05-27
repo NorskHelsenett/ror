@@ -45,7 +45,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 				res.{{.Kind}}Resource = &rortypes.Resource{{.Kind}}{}
 			}
 			r.Set{{.Kind}}(res.{{.Kind}}Resource)
-			r.SetCommonInterface(res.{{.Kind}}Resource)
+			r.common = rortypes.NewCommonFactory(res.{{.Kind}}Resource)
 {{end}}
 		default:
 			rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))

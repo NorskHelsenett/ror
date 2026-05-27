@@ -7,274 +7,248 @@ package rortypes
 type CommonResourceInterface interface {
 	GetRorHash() string
 	ApplyInputFilter(cr *CommonResource) error
+	ApplyOutputFilter(cr *CommonResource) error
 }
 
 // Namespaceinterface represents the interface for resources of the type namespace
 type Namespaceinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceNamespace
 }
 
 // Nodeinterface represents the interface for resources of the type node
 type Nodeinterface interface {
-	CommonResourceInterface
 	Get() *ResourceNode
 }
 
 // PersistentVolumeClaiminterface represents the interface for resources of the type persistentvolumeclaim
 type PersistentVolumeClaiminterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourcePersistentVolumeClaim
 }
 
 // Deploymentinterface represents the interface for resources of the type deployment
 type Deploymentinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceDeployment
 }
 
 // StorageClassinterface represents the interface for resources of the type storageclass
 type StorageClassinterface interface {
-	CommonResourceInterface
 	Get() *ResourceStorageClass
 }
 
 // PolicyReportinterface represents the interface for resources of the type policyreport
 type PolicyReportinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourcePolicyReport
 }
 
 // Applicationinterface represents the interface for resources of the type application
 type Applicationinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceApplication
 }
 
 // AppProjectinterface represents the interface for resources of the type appproject
 type AppProjectinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceAppProject
 }
 
 // Certificateinterface represents the interface for resources of the type certificate
 type Certificateinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceCertificate
 }
 
 // Serviceinterface represents the interface for resources of the type service
 type Serviceinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceService
 }
 
 // Podinterface represents the interface for resources of the type pod
 type Podinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourcePod
 }
 
 // ReplicaSetinterface represents the interface for resources of the type replicaset
 type ReplicaSetinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceReplicaSet
 }
 
 // StatefulSetinterface represents the interface for resources of the type statefulset
 type StatefulSetinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceStatefulSet
 }
 
 // DaemonSetinterface represents the interface for resources of the type daemonset
 type DaemonSetinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceDaemonSet
 }
 
 // Ingressinterface represents the interface for resources of the type ingress
 type Ingressinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceIngress
 }
 
 // IngressClassinterface represents the interface for resources of the type ingressclass
 type IngressClassinterface interface {
-	CommonResourceInterface
 	Get() *ResourceIngressClass
 }
 
 // SbomReportinterface represents the interface for resources of the type sbomreport
 type SbomReportinterface interface {
-	CommonResourceInterface
 	Get() *ResourceSbomReport
 }
 
 // VulnerabilityReportinterface represents the interface for resources of the type vulnerabilityreport
 type VulnerabilityReportinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceVulnerabilityReport
 }
 
 // ExposedSecretReportinterface represents the interface for resources of the type exposedsecretreport
 type ExposedSecretReportinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceExposedSecretReport
 }
 
 // ConfigAuditReportinterface represents the interface for resources of the type configauditreport
 type ConfigAuditReportinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceConfigAuditReport
 }
 
 // RbacAssessmentReportinterface represents the interface for resources of the type rbacassessmentreport
 type RbacAssessmentReportinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceRbacAssessmentReport
 }
 
 // TanzuKubernetesClusterinterface represents the interface for resources of the type tanzukubernetescluster
 type TanzuKubernetesClusterinterface interface {
-	CommonResourceInterface
 	Get() *ResourceTanzuKubernetesCluster
 }
 
 // TanzuKubernetesReleaseinterface represents the interface for resources of the type tanzukubernetesrelease
 type TanzuKubernetesReleaseinterface interface {
-	CommonResourceInterface
 	Get() *ResourceTanzuKubernetesRelease
 }
 
 // VirtualMachineClassinterface represents the interface for resources of the type virtualmachineclass
 type VirtualMachineClassinterface interface {
-	CommonResourceInterface
 	Get() *ResourceVirtualMachineClass
 }
 
 // KubernetesClusterinterface represents the interface for resources of the type kubernetescluster
 type KubernetesClusterinterface interface {
-	CommonResourceInterface
 	Get() *ResourceKubernetesCluster
 }
 
 // Providerinterface represents the interface for resources of the type provider
 type Providerinterface interface {
-	CommonResourceInterface
 	Get() *ResourceProvider
 }
 
 // Workspaceinterface represents the interface for resources of the type workspace
 type Workspaceinterface interface {
-	CommonResourceInterface
 	Get() *ResourceWorkspace
 }
 
 // KubernetesMachineClassinterface represents the interface for resources of the type kubernetesmachineclass
 type KubernetesMachineClassinterface interface {
-	CommonResourceInterface
 	Get() *ResourceKubernetesMachineClass
 }
 
 // ClusterOrderinterface represents the interface for resources of the type clusterorder
 type ClusterOrderinterface interface {
-	CommonResourceInterface
 	Get() *ResourceClusterOrder
 }
 
 // Projectinterface represents the interface for resources of the type project
 type Projectinterface interface {
-	CommonResourceInterface
 	Get() *ResourceProject
 }
 
 // Configurationinterface represents the interface for resources of the type configuration
 type Configurationinterface interface {
-	CommonResourceInterface
 	Get() *ResourceConfiguration
 }
 
 // ClusterComplianceReportinterface represents the interface for resources of the type clustercompliancereport
 type ClusterComplianceReportinterface interface {
-	CommonResourceInterface
 	Get() *ResourceClusterComplianceReport
 }
 
 // ClusterVulnerabilityReportinterface represents the interface for resources of the type clustervulnerabilityreport
 type ClusterVulnerabilityReportinterface interface {
-	CommonResourceInterface
 	Get() *ResourceClusterVulnerabilityReport
 }
 
 // Routeinterface represents the interface for resources of the type route
 type Routeinterface interface {
-	CommonResourceInterface
 	Get() *ResourceRoute
 }
 
 // SlackMessageinterface represents the interface for resources of the type slackmessage
 type SlackMessageinterface interface {
-	CommonResourceInterface
+	ApplyInputFilter(cr *CommonResource) error
 	Get() *ResourceSlackMessage
 }
 
 // VulnerabilityEventinterface represents the interface for resources of the type vulnerabilityevent
 type VulnerabilityEventinterface interface {
-	CommonResourceInterface
 	Get() *ResourceVulnerabilityEvent
 }
 
 // VirtualMachineinterface represents the interface for resources of the type virtualmachine
 type VirtualMachineinterface interface {
-	CommonResourceInterface
 	Get() *ResourceVirtualMachine
 }
 
 // VirtualMachineVulnerabilityInfointerface represents the interface for resources of the type virtualmachinevulnerabilityinfo
 type VirtualMachineVulnerabilityInfointerface interface {
-	CommonResourceInterface
 	Get() *ResourceVirtualMachineVulnerabilityInfo
 }
 
 // Endpointsinterface represents the interface for resources of the type endpoints
 type Endpointsinterface interface {
-	CommonResourceInterface
 	Get() *ResourceEndpoints
 }
 
 // NetworkPolicyinterface represents the interface for resources of the type networkpolicy
 type NetworkPolicyinterface interface {
-	CommonResourceInterface
 	Get() *ResourceNetworkPolicy
 }
 
 // Datacenterinterface represents the interface for resources of the type datacenter
 type Datacenterinterface interface {
-	CommonResourceInterface
 	Get() *ResourceDatacenter
 }
 
 // BackupJobinterface represents the interface for resources of the type backupjob
 type BackupJobinterface interface {
-	CommonResourceInterface
 	Get() *ResourceBackupJob
 }
 
 // BackupRuninterface represents the interface for resources of the type backuprun
 type BackupRuninterface interface {
-	CommonResourceInterface
 	Get() *ResourceBackupRun
 }
 
 // Machineinterface represents the interface for resources of the type machine
 type Machineinterface interface {
-	CommonResourceInterface
 	Get() *ResourceMachine
 }
 
 // Unknowninterface represents the interface for resources of the type unknown
 type Unknowninterface interface {
-	CommonResourceInterface
 	Get() *ResourceUnknown
 }

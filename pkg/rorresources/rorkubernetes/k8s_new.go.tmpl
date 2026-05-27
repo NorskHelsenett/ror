@@ -50,7 +50,7 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 	case "{{.GroupVersionKind.String }}":
 		res := new{{.Kind}}FromMapInterface(input)
 		r.Set{{.Kind}}(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 	{{end}}
 	default:
 		rlog.Warn("could not create ResourceSet")

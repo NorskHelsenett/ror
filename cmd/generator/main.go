@@ -53,7 +53,8 @@ func main() {
 	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_new.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	// Removed, should include interface in the resource definitions if needed
+	//generator.TemplateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rortypes/resource_types_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 

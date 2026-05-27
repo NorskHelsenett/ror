@@ -693,10 +693,17 @@ export interface KubernetesClusterAgentStatusNodesNodepools {
   name?: string;
   nodes: KubernetesClusterAgentStatusNodesNodepoolsNodes[];
 }
+export interface Quantity {
+  Format: string;
+}
+export interface KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+  capacity: Quantity;
+  allocated: Quantity;
+}
 export interface KubernetesClusterAgentStatusNodesNodepoolsNodes {
   name?: string;
-  cpu?: number;
-  memory?: number;
+  cpu: KubernetesClusterAgentStatusNodesNodepoolsNodesResource;
+  memory: KubernetesClusterAgentStatusNodesNodepoolsNodesResource;
   architecture?: string;
   kubernetesVersion?: string;
 }
@@ -716,6 +723,7 @@ export interface KubernetesClusterAgentStatus {
   datacenter?: string;
   nodes: KubernetesClusterAgentStatusNodes;
   versions?: { [key: string]: string };
+  urls?: { [key: string]: string };
   createdAt?: Time;
   lastSeen?: Time;
 }
