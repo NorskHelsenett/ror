@@ -22,3 +22,8 @@ type ResourceIngressClassSpecParameters struct {
 func (r *ResourceIngressClass) Get() *ResourceIngressClass {
 	return r
 }
+
+// IngressClassinterface represents the interface for resources of the type ingressclass
+type IngressClassinterface interface {
+	Get() *ResourceIngressClass
+}

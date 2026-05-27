@@ -83,3 +83,9 @@ func (r *ResourceIngress) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceIngress) Get() *ResourceIngress {
 	return r
 }
+
+// Ingressinterface represents the interface for resources of the type ingress
+type Ingressinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceIngress
+}

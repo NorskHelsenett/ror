@@ -209,3 +209,8 @@ type ResourceTanzuKubernetesClusterStatusAddonsConditions struct {
 func (r *ResourceTanzuKubernetesCluster) Get() *ResourceTanzuKubernetesCluster {
 	return r
 }
+
+// TanzuKubernetesClusterinterface represents the interface for resources of the type tanzukubernetescluster
+type TanzuKubernetesClusterinterface interface {
+	Get() *ResourceTanzuKubernetesCluster
+}

@@ -75,3 +75,8 @@ type ResourceNetworkPolicyCondition struct {
 func (r *ResourceNetworkPolicy) Get() *ResourceNetworkPolicy {
 	return r
 }
+
+// NetworkPolicyinterface represents the interface for resources of the type networkpolicy
+type NetworkPolicyinterface interface {
+	Get() *ResourceNetworkPolicy
+}

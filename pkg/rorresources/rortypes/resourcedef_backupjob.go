@@ -131,3 +131,8 @@ type ResourceBackupScheduleRetention struct {
 func (r *ResourceBackupJob) Get() *ResourceBackupJob {
 	return r
 }
+
+// BackupJobinterface represents the interface for resources of the type backupjob
+type BackupJobinterface interface {
+	Get() *ResourceBackupJob
+}

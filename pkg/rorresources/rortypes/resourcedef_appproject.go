@@ -26,3 +26,9 @@ func (r *ResourceAppProject) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceAppProject) Get() *ResourceAppProject {
 	return r
 }
+
+// AppProjectinterface represents the interface for resources of the type appproject
+type AppProjectinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceAppProject
+}

@@ -43,3 +43,9 @@ func (r *ResourceReplicaSet) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceReplicaSet) Get() *ResourceReplicaSet {
 	return r
 }
+
+// ReplicaSetinterface represents the interface for resources of the type replicaset
+type ReplicaSetinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceReplicaSet
+}

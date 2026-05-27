@@ -39,3 +39,9 @@ func (r *ResourceRbacAssessmentReport) ApplyInputFilter(cr *CommonResource) erro
 func (r *ResourceRbacAssessmentReport) Get() *ResourceRbacAssessmentReport {
 	return r
 }
+
+// RbacAssessmentReportinterface represents the interface for resources of the type rbacassessmentreport
+type RbacAssessmentReportinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceRbacAssessmentReport
+}

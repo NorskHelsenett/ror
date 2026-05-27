@@ -9,3 +9,8 @@ type ResourceUnknown struct {
 func (r *ResourceUnknown) Get() *ResourceUnknown {
 	return r
 }
+
+// Unknowninterface represents the interface for resources of the type unknown
+type Unknowninterface interface {
+	Get() *ResourceUnknown
+}

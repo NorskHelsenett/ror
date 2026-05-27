@@ -7,3 +7,8 @@ type ResourceProvider struct {
 func (r *ResourceProvider) Get() *ResourceProvider {
 	return r
 }
+
+// Providerinterface represents the interface for resources of the type provider
+type Providerinterface interface {
+	Get() *ResourceProvider
+}

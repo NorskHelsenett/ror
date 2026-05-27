@@ -34,3 +34,8 @@ type ResourceWorkspaceStorageClass struct {
 func (r *ResourceWorkspace) Get() *ResourceWorkspace {
 	return r
 }
+
+// Workspaceinterface represents the interface for resources of the type workspace
+type Workspaceinterface interface {
+	Get() *ResourceWorkspace
+}

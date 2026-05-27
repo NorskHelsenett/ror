@@ -8,3 +8,8 @@ type ResourceClusterComplianceReport struct {
 func (r *ResourceClusterComplianceReport) Get() *ResourceClusterComplianceReport {
 	return r
 }
+
+// ClusterComplianceReportinterface represents the interface for resources of the type clustercompliancereport
+type ClusterComplianceReportinterface interface {
+	Get() *ResourceClusterComplianceReport
+}

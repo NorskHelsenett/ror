@@ -55,3 +55,8 @@ type ResourceEndpointSpecSubsetsPorts struct {
 func (r *ResourceEndpoints) Get() *ResourceEndpoints {
 	return r
 }
+
+// Endpointsinterface represents the interface for resources of the type endpoints
+type Endpointsinterface interface {
+	Get() *ResourceEndpoints
+}

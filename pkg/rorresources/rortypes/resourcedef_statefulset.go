@@ -28,3 +28,9 @@ func (r *ResourceStatefulSet) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceStatefulSet) Get() *ResourceStatefulSet {
 	return r
 }
+
+// StatefulSetinterface represents the interface for resources of the type statefulset
+type StatefulSetinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceStatefulSet
+}

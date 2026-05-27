@@ -14,3 +14,8 @@ type ResourceConfigurationSpec struct {
 func (r *ResourceConfiguration) Get() *ResourceConfiguration {
 	return r
 }
+
+// Configurationinterface represents the interface for resources of the type configuration
+type Configurationinterface interface {
+	Get() *ResourceConfiguration
+}

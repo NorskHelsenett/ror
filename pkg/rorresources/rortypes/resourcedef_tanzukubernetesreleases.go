@@ -86,3 +86,8 @@ type ResourceTanzuKubernetesReleaseStatusCondition struct {
 func (r *ResourceTanzuKubernetesRelease) Get() *ResourceTanzuKubernetesRelease {
 	return r
 }
+
+// TanzuKubernetesReleaseinterface represents the interface for resources of the type tanzukubernetesrelease
+type TanzuKubernetesReleaseinterface interface {
+	Get() *ResourceTanzuKubernetesRelease
+}

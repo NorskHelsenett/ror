@@ -23,3 +23,8 @@ type ResourceKubernetesMachineClassStatus struct {
 func (r *ResourceKubernetesMachineClass) Get() *ResourceKubernetesMachineClass {
 	return r
 }
+
+// KubernetesMachineClassinterface represents the interface for resources of the type kubernetesmachineclass
+type KubernetesMachineClassinterface interface {
+	Get() *ResourceKubernetesMachineClass
+}

@@ -90,3 +90,8 @@ type ResourceVirtualMachineClassSpecHardwareInstanceStorage struct {
 func (r *ResourceVirtualMachineClass) Get() *ResourceVirtualMachineClass {
 	return r
 }
+
+// VirtualMachineClassinterface represents the interface for resources of the type virtualmachineclass
+type VirtualMachineClassinterface interface {
+	Get() *ResourceVirtualMachineClass
+}

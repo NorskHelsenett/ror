@@ -105,3 +105,8 @@ type ResourceKubernetesClusterOrderStatusCondition struct {
 func (r *ResourceClusterOrder) Get() *ResourceClusterOrder {
 	return r
 }
+
+// ClusterOrderinterface represents the interface for resources of the type clusterorder
+type ClusterOrderinterface interface {
+	Get() *ResourceClusterOrder
+}

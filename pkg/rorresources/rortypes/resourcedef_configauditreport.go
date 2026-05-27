@@ -24,3 +24,9 @@ func (r *ResourceConfigAuditReport) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceConfigAuditReport) Get() *ResourceConfigAuditReport {
 	return r
 }
+
+// ConfigAuditReportinterface represents the interface for resources of the type configauditreport
+type ConfigAuditReportinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceConfigAuditReport
+}

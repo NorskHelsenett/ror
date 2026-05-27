@@ -326,3 +326,8 @@ type KubernetesClusterCondition = vitiv1alpha1.KubernetesClusterCondition
 func (r *ResourceKubernetesCluster) Get() *ResourceKubernetesCluster {
 	return r
 }
+
+// KubernetesClusterinterface represents the interface for resources of the type kubernetescluster
+type KubernetesClusterinterface interface {
+	Get() *ResourceKubernetesCluster
+}

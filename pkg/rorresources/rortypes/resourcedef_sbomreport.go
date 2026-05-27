@@ -105,3 +105,8 @@ type ResourceSbomReportsComponentDep struct {
 func (r *ResourceSbomReport) Get() *ResourceSbomReport {
 	return r
 }
+
+// SbomReportinterface represents the interface for resources of the type sbomreport
+type SbomReportinterface interface {
+	Get() *ResourceSbomReport
+}

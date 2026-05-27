@@ -51,3 +51,8 @@ type ResourceBackupStorage struct {
 func (r *ResourceBackupRun) Get() *ResourceBackupRun {
 	return r
 }
+
+// BackupRuninterface represents the interface for resources of the type backuprun
+type BackupRuninterface interface {
+	Get() *ResourceBackupRun
+}

@@ -87,3 +87,9 @@ func (r *ResourceApplication) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceApplication) Get() *ResourceApplication {
 	return r
 }
+
+// Applicationinterface represents the interface for resources of the type application
+type Applicationinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceApplication
+}

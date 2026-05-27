@@ -49,3 +49,9 @@ func (r *ResourceCertificate) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceCertificate) Get() *ResourceCertificate {
 	return r
 }
+
+// Certificateinterface represents the interface for resources of the type certificate
+type Certificateinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceCertificate
+}

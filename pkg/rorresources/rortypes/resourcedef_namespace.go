@@ -21,3 +21,9 @@ func (r *ResourceNamespace) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceNamespace) Get() *ResourceNamespace {
 	return r
 }
+
+// Namespaceinterface represents the interface for resources of the type namespace
+type Namespaceinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceNamespace
+}

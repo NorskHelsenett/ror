@@ -44,3 +44,8 @@ type Workspace struct {
 func (r *ResourceDatacenter) Get() *ResourceDatacenter {
 	return r
 }
+
+// Datacenterinterface represents the interface for resources of the type datacenter
+type Datacenterinterface interface {
+	Get() *ResourceDatacenter
+}

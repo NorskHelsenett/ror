@@ -37,3 +37,8 @@ type VulnerableVersion struct {
 func (r *ResourceVirtualMachineVulnerabilityInfo) Get() *ResourceVirtualMachineVulnerabilityInfo {
 	return r
 }
+
+// VirtualMachineVulnerabilityInfointerface represents the interface for resources of the type virtualmachinevulnerabilityinfo
+type VirtualMachineVulnerabilityInfointerface interface {
+	Get() *ResourceVirtualMachineVulnerabilityInfo
+}

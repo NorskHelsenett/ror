@@ -21,3 +21,8 @@ type ResourceMachineStatus struct {
 func (r *ResourceMachine) Get() *ResourceMachine {
 	return r
 }
+
+// Machineinterface represents the interface for resources of the type machine
+type Machineinterface interface {
+	Get() *ResourceMachine
+}

@@ -27,3 +27,9 @@ func (r *ResourceDeployment) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceDeployment) Get() *ResourceDeployment {
 	return r
 }
+
+// Deploymentinterface represents the interface for resources of the type deployment
+type Deploymentinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceDeployment
+}

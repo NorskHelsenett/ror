@@ -35,3 +35,9 @@ func (r *ResourceSlackMessage) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceSlackMessage) Get() *ResourceSlackMessage {
 	return r
 }
+
+// SlackMessageinterface represents the interface for resources of the type slackmessage
+type SlackMessageinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceSlackMessage
+}

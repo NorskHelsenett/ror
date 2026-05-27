@@ -28,3 +28,8 @@ type ResourceProjectSpecRole struct {
 func (r *ResourceProject) Get() *ResourceProject {
 	return r
 }
+
+// Projectinterface represents the interface for resources of the type project
+type Projectinterface interface {
+	Get() *ResourceProject
+}

@@ -39,3 +39,9 @@ func (r *ResourcePersistentVolumeClaim) ApplyInputFilter(cr *CommonResource) err
 func (r *ResourcePersistentVolumeClaim) Get() *ResourcePersistentVolumeClaim {
 	return r
 }
+
+// PersistentVolumeClaiminterface represents the interface for resources of the type persistentvolumeclaim
+type PersistentVolumeClaiminterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourcePersistentVolumeClaim
+}

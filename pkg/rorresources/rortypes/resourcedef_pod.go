@@ -46,3 +46,9 @@ func (r *ResourcePod) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourcePod) Get() *ResourcePod {
 	return r
 }
+
+// Podinterface represents the interface for resources of the type pod
+type Podinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourcePod
+}

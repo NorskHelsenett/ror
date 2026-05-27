@@ -12,3 +12,8 @@ type ResourceStorageClass struct {
 func (r *ResourceStorageClass) Get() *ResourceStorageClass {
 	return r
 }
+
+// StorageClassinterface represents the interface for resources of the type storageclass
+type StorageClassinterface interface {
+	Get() *ResourceStorageClass
+}

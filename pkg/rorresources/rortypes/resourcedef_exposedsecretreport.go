@@ -24,3 +24,9 @@ func (r *ResourceExposedSecretReport) ApplyInputFilter(cr *CommonResource) error
 func (r *ResourceExposedSecretReport) Get() *ResourceExposedSecretReport {
 	return r
 }
+
+// ExposedSecretReportinterface represents the interface for resources of the type exposedsecretreport
+type ExposedSecretReportinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceExposedSecretReport
+}

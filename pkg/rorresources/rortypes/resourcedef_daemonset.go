@@ -30,3 +30,9 @@ func (r *ResourceDaemonSet) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceDaemonSet) Get() *ResourceDaemonSet {
 	return r
 }
+
+// DaemonSetinterface represents the interface for resources of the type daemonset
+type DaemonSetinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceDaemonSet
+}

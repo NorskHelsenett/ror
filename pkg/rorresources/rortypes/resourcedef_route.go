@@ -27,3 +27,8 @@ type ResourceRouteSlackReceiver struct {
 func (r *ResourceRoute) Get() *ResourceRoute {
 	return r
 }
+
+// Routeinterface represents the interface for resources of the type route
+type Routeinterface interface {
+	Get() *ResourceRoute
+}

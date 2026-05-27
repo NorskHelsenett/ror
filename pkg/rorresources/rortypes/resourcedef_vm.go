@@ -110,3 +110,8 @@ type ResourceVirtualMachineTag struct {
 func (r *ResourceVirtualMachine) Get() *ResourceVirtualMachine {
 	return r
 }
+
+// VirtualMachineinterface represents the interface for resources of the type virtualmachine
+type VirtualMachineinterface interface {
+	Get() *ResourceVirtualMachine
+}

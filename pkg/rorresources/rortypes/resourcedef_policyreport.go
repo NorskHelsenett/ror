@@ -51,3 +51,9 @@ func (r *ResourcePolicyReport) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourcePolicyReport) Get() *ResourcePolicyReport {
 	return r
 }
+
+// PolicyReportinterface represents the interface for resources of the type policyreport
+type PolicyReportinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourcePolicyReport
+}

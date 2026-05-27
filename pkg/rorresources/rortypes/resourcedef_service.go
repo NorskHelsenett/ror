@@ -44,3 +44,9 @@ func (r *ResourceService) ApplyInputFilter(cr *CommonResource) error {
 func (r *ResourceService) Get() *ResourceService {
 	return r
 }
+
+// Serviceinterface represents the interface for resources of the type service
+type Serviceinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceService
+}

@@ -65,3 +65,8 @@ type ResourceNodeStatusNodeinfo struct {
 func (r *ResourceNode) Get() *ResourceNode {
 	return r
 }
+
+// Nodeinterface represents the interface for resources of the type node
+type Nodeinterface interface {
+	Get() *ResourceNode
+}
