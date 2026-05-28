@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/stretchr/testify/assert"
@@ -319,4 +320,221 @@ func TestResolver_ResolveAccess_ManyGroups(t *testing.T) {
 	access, err := resolver.ResolveAccess(context.Background(), groups, "KubernetesCluster", "cluster-1")
 	assert.NoError(t, err)
 	assert.Len(t, access, 50)
+}
+
+// --- ScopeExpander tests ---
+
+// mockExpander implements aclmodels.ScopeExpander for testing.
+type mockExpander struct {
+	expansions map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref
+	calls      int
+}
+
+func (m *mockExpander) ExpandScope(_ context.Context, scope aclmodels.Acl3Scope, subject aclmodels.Acl3Subject) ([]aclmodels.AclV3Ownerref, error) {
+	m.calls++
+	key := aclmodels.AclV3Ownerref{Scope: scope, Subject: subject}
+	return m.expansions[key], nil
+}
+
+func TestResolver_ResolveOwnerrefs_WithExpander_ProjectExpands(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "Project",
+			Subject: "proj-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	expander := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{
+			{Scope: "Project", Subject: "proj-1"}: {
+				{Scope: "Workspace", Subject: "ws-dev"},
+				{Scope: "KubernetesCluster", Subject: "cluster-abc"},
+				{Scope: "KubernetesCluster", Subject: "cluster-def"},
+			},
+		},
+	}
+	resolver := aclmodels.NewAclV3Resolver(store, aclmodels.WithScopeExpander(expander))
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	assert.NoError(t, err)
+	// Original + 3 descendants
+	assert.Len(t, refs, 4)
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "Project", Subject: "proj-1"})
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "Workspace", Subject: "ws-dev"})
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-abc"})
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-def"})
+}
+
+func TestResolver_ResolveOwnerrefs_WithExpander_LeafScope_NoExpansion(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	expander := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{},
+	}
+	resolver := aclmodels.NewAclV3Resolver(store, aclmodels.WithScopeExpander(expander))
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Len(t, refs, 1)
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
+}
+
+func TestResolver_ResolveOwnerrefs_WithExpander_DeduplicatesAcrossEntries(t *testing.T) {
+	// Two ACL entries that expand to overlapping clusters
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "Workspace",
+			Subject: "ws-dev",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-abc",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	expander := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{
+			{Scope: "Workspace", Subject: "ws-dev"}: {
+				{Scope: "KubernetesCluster", Subject: "cluster-abc"}, // overlaps with direct entry
+				{Scope: "KubernetesCluster", Subject: "cluster-def"},
+			},
+		},
+	}
+	resolver := aclmodels.NewAclV3Resolver(store, aclmodels.WithScopeExpander(expander))
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	assert.NoError(t, err)
+	// ws-dev + cluster-abc (deduped) + cluster-def
+	assert.Len(t, refs, 3)
+}
+
+func TestResolver_ResolveOwnerrefs_WithExpander_GlobalStillReturnsNil(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "admins",
+			Scope:   "all",
+			Subject: "All",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	expander := &mockExpander{}
+	resolver := aclmodels.NewAclV3Resolver(store, aclmodels.WithScopeExpander(expander))
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Nil(t, refs) // nil = unrestricted, expander should not be called
+	assert.Equal(t, 0, expander.calls)
+}
+
+func TestResolver_ResolveOwnerrefs_WithoutExpander_BackwardsCompatible(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "Project",
+			Subject: "proj-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	// No expander — old behavior
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Len(t, refs, 1)
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "Project", Subject: "proj-1"})
+}
+
+// --- CachedScopeExpander tests ---
+
+func TestCachedScopeExpander_CachesResult(t *testing.T) {
+	backend := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{
+			{Scope: "Project", Subject: "proj-1"}: {
+				{Scope: "Workspace", Subject: "ws-dev"},
+			},
+		},
+	}
+	cached := aclmodels.NewCachedScopeExpander(backend, 5*time.Minute)
+
+	// First call — hits backend
+	refs, err := cached.ExpandScope(context.Background(), "Project", "proj-1")
+	assert.NoError(t, err)
+	assert.Len(t, refs, 1)
+	assert.Equal(t, 1, backend.calls)
+
+	// Second call — from cache
+	refs, err = cached.ExpandScope(context.Background(), "Project", "proj-1")
+	assert.NoError(t, err)
+	assert.Len(t, refs, 1)
+	assert.Equal(t, 1, backend.calls) // still 1
+}
+
+func TestCachedScopeExpander_Invalidate(t *testing.T) {
+	backend := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{
+			{Scope: "Project", Subject: "proj-1"}: {
+				{Scope: "Workspace", Subject: "ws-dev"},
+			},
+		},
+	}
+	cached := aclmodels.NewCachedScopeExpander(backend, 5*time.Minute)
+
+	_, _ = cached.ExpandScope(context.Background(), "Project", "proj-1")
+	assert.Equal(t, 1, backend.calls)
+
+	cached.Invalidate("Project", "proj-1")
+
+	_, _ = cached.ExpandScope(context.Background(), "Project", "proj-1")
+	assert.Equal(t, 2, backend.calls) // re-fetched
+}
+
+func TestCachedScopeExpander_InvalidateAll(t *testing.T) {
+	backend := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{
+			{Scope: "Project", Subject: "proj-1"}: {
+				{Scope: "Workspace", Subject: "ws-dev"},
+			},
+			{Scope: "Workspace", Subject: "ws-dev"}: {
+				{Scope: "KubernetesCluster", Subject: "cluster-1"},
+			},
+		},
+	}
+	cached := aclmodels.NewCachedScopeExpander(backend, 5*time.Minute)
+
+	_, _ = cached.ExpandScope(context.Background(), "Project", "proj-1")
+	_, _ = cached.ExpandScope(context.Background(), "Workspace", "ws-dev")
+	assert.Equal(t, 2, backend.calls)
+
+	cached.InvalidateAll()
+
+	_, _ = cached.ExpandScope(context.Background(), "Project", "proj-1")
+	_, _ = cached.ExpandScope(context.Background(), "Workspace", "ws-dev")
+	assert.Equal(t, 4, backend.calls)
+}
+
+func TestCachedScopeExpander_NilExpansion_Cached(t *testing.T) {
+	backend := &mockExpander{
+		expansions: map[aclmodels.AclV3Ownerref][]aclmodels.AclV3Ownerref{},
+	}
+	cached := aclmodels.NewCachedScopeExpander(backend, 5*time.Minute)
+
+	// Leaf scope — nil expansion
+	refs, err := cached.ExpandScope(context.Background(), "KubernetesCluster", "cluster-1")
+	assert.NoError(t, err)
+	assert.Nil(t, refs)
+	assert.Equal(t, 1, backend.calls)
+
+	// Should be cached
+	_, _ = cached.ExpandScope(context.Background(), "KubernetesCluster", "cluster-1")
+	assert.Equal(t, 1, backend.calls)
 }

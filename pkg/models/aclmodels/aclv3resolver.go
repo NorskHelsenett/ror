@@ -7,13 +7,32 @@ import (
 
 // AclV3Resolver resolves access for a set of groups using an AclV3Store.
 // It loads all entries in one batch call, then compiles access in-memory.
+// An optional ScopeExpander enables hierarchical scope resolution:
+// if a user has access to a Project, the expander resolves all descendant
+// ownerrefs (Workspaces, Clusters, etc.) so they are included in the result.
 type AclV3Resolver struct {
-	store AclV3Store
+	store    AclV3Store
+	expander ScopeExpander
 }
 
 // NewAclV3Resolver creates a new resolver with the given store backend.
-func NewAclV3Resolver(store AclV3Store) *AclV3Resolver {
-	return &AclV3Resolver{store: store}
+// Use WithScopeExpander to enable hierarchical scope resolution.
+func NewAclV3Resolver(store AclV3Store, opts ...AclV3ResolverOption) *AclV3Resolver {
+	r := &AclV3Resolver{store: store}
+	for _, opt := range opts {
+		opt(r)
+	}
+	return r
+}
+
+// AclV3ResolverOption configures an AclV3Resolver.
+type AclV3ResolverOption func(*AclV3Resolver)
+
+// WithScopeExpander enables hierarchical scope resolution.
+func WithScopeExpander(expander ScopeExpander) AclV3ResolverOption {
+	return func(r *AclV3Resolver) {
+		r.expander = expander
+	}
 }
 
 // ResolveAccess loads ACL entries for all given groups (single round-trip) and returns
@@ -44,6 +63,8 @@ func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scop
 
 // ResolveOwnerrefs returns all scope+subject pairs the groups have access to for the given access type.
 // Returns nil (meaning unrestricted) if any entry grants global/all access.
+// When a ScopeExpander is configured, non-leaf scopes (e.g. Project, Workspace) are expanded
+// to include all descendant ownerrefs alongside the original entry.
 func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requiredAccess AccessTypeV3) ([]AclV3Ownerref, error) {
 	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
@@ -52,6 +73,13 @@ func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, r
 
 	refs := make([]AclV3Ownerref, 0)
 	seen := make(map[AclV3Ownerref]struct{})
+
+	addRef := func(ref AclV3Ownerref) {
+		if _, ok := seen[ref]; !ok {
+			seen[ref] = struct{}{}
+			refs = append(refs, ref)
+		}
+	}
 
 	for _, entries := range entriesByGroup {
 		for _, entry := range entries {
@@ -62,10 +90,19 @@ func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, r
 			if entry.Scope == Acl3Scope(Acl2ScopeAll) || entry.Subject == Acl3Subject(Acl2RorSubjectAll) {
 				return nil, nil
 			}
+
 			ref := AclV3Ownerref{Scope: entry.Scope, Subject: entry.Subject}
-			if _, ok := seen[ref]; !ok {
-				seen[ref] = struct{}{}
-				refs = append(refs, ref)
+			addRef(ref)
+
+			// Expand to descendants if expander is available
+			if r.expander != nil {
+				descendants, err := r.expander.ExpandScope(ctx, entry.Scope, entry.Subject)
+				if err != nil {
+					return nil, err
+				}
+				for _, d := range descendants {
+					addRef(d)
+				}
 			}
 		}
 	}
