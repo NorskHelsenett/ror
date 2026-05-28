@@ -3,6 +3,7 @@ package vaultclient
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
@@ -124,6 +125,22 @@ func (vc VaultClient) GetSecretValue(secretPath string, key string) (string, err
 	}
 
 	return "", nil
+}
+
+func (vc VaultClient) GetSecretValueFromPath(secretPath string) (string, error) {
+	path, key := parsePathAndKeyFromSecretPath(secretPath)
+	return vc.GetSecretValue(path, key)
+}
+
+func parsePathAndKeyFromSecretPath(secretPath string) (string, string) {
+	// Assuming the secretPath is in the format "path/to/secret/key"
+	parts := strings.Split(secretPath, "/")
+	if len(parts) < 2 {
+		return secretPath, ""
+	}
+	path := strings.Join(parts[:len(parts)-1], "/")
+	key := parts[len(parts)-1]
+	return path, key
 }
 
 func (vc VaultClient) SetSecret(secretPath string, value []byte) (bool, error) {

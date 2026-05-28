@@ -1,10 +1,8 @@
 package rortypes
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"text/template"
 
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
 	"github.com/NorskHelsenett/ror/pkg/services/configservice"
@@ -31,13 +29,18 @@ func (r *ResourceConfig) Get() *ResourceConfig {
 }
 
 func (r *ResourceConfig) ApplyOutputFilter(cr *CommonResource, ctx context.Context) error {
-
-	res, err := configservice.ConfigService(r, ctx)
-	if err != nil {
-		return fmt.Errorf("failed to apply config service: %w", err)
+	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
+	for i, data := range r.Spec.Data {
+		if data.Filter != string(identity.Type) {
+			continue
+		}
+		res, err := configservice.Template(data.Value, ctx)
+		if err != nil {
+			return fmt.Errorf("failed to apply config service: %w", err)
+		}
+		r.Spec.Data[i].Value = res
 	}
-
-
+	return nil
 
 }
 

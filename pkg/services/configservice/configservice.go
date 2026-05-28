@@ -4,49 +4,115 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"html/template"
+	"os"
+	"strings"
+	"text/template"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/vaultclient"
 	"github.com/NorskHelsenett/ror/pkg/context/rorcontext"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
-func ConfigService(resourceConfig *ResourceConfig, ctx context.Context) (*ResourceConfig, error) {
+var (
+	Loaders = ConfigLoaders{}
+)
 
-	identity := rorcontext.GetIdentityFromRorContext(ctx)
-	id := identity.GetId()
-
-	var filtered []ResourceConfigData
-
-	for _, data := range r.Spec.Data {
-		if data.Filter != string(identity.Type) {
-			continue
-		}
-		tmpl, err := template.New("value").Delims("{{", "}}").Parse(data.Value)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse template %q: %w", data.Value, err)
-		}
-
-		var buf bytes.Buffer
-		if err := tmpl.Execute(&buf, map[string]string{"id": id}); err != nil {
-			return nil, fmt.Errorf("failed to execute template %q: %w", data.Value, err)
-		}
-		data.Value = buf.String()
-
-		var noe map[string]interface{}
-
-		switch data.Source {
-		 case "vault":
-			// get from vault
-			// for now we just set it to a dummy value
-		default:
-			// if no source is specified, we just use the value from the template
-			
-		
-
-
-		filtered = append(filtered, data)
-	}
-	r.Spec.Data = filtered
-
-	return r, nil
+func init() {
+	Loaders.AddLoader("env", NewEnvConfigLoader())
 }
 
+type ConfigLoaders map[string]ConfigLoaderInterface
+
+type ConfigLoaderInterface interface {
+	Load(key string) (string, error)
+}
+
+func (cl ConfigLoaders) AddLoader(source string, loader ConfigLoaderInterface) {
+	cl[source] = loader
+}
+
+func (cl ConfigLoaders) GetLoader(source string) ConfigLoaderInterface {
+	loader, ok := cl[source]
+	if !ok {
+		return nil
+	}
+	return loader
+}
+
+type VaultConfigLoader struct {
+	client *vaultclient.VaultClient
+}
+
+func (vcl VaultConfigLoader) Load(key string) (string, error) {
+	return vcl.client.GetSecretValueFromPath(key)
+}
+
+func NewVaultConfigLoader(client *vaultclient.VaultClient, err error) VaultConfigLoader {
+	if err != nil {
+		rlog.Error("failed to create vault client for VaultConfigLoader", err)
+	}
+	return VaultConfigLoader{client: client}
+}
+
+type EnvConfigLoader struct{}
+
+func (ecl EnvConfigLoader) Load(key string) (string, error) {
+	return os.Getenv(key), nil
+}
+
+func NewEnvConfigLoader() EnvConfigLoader {
+	return EnvConfigLoader{}
+}
+
+// ConfigService Function loads the configuration for a resource based on the resource config and the context. It filters the config based on the identity in the context and loads the config from the specified source (e.g. vault) if needed.
+// Template functions registered via AddLoader (e.g. "vault", "env") are available in the template and produce the final value directly.
+func Template(templatevalue string, ctx context.Context) (string, error) {
+	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
+
+	data := map[string]string{
+		"id":   identity.GetId(),
+		"test": identity.GetId(), // For testing purposes, can be removed later
+	}
+
+	funcMap := make(template.FuncMap, len(Loaders))
+	for source, loader := range Loaders {
+		loader := loader
+		funcMap[source] = func(key string) (string, error) {
+			resolvedKey, err := renderLoaderKeyTemplate(key, data)
+			if err != nil {
+				return "", err
+			}
+			return loader.Load(resolvedKey)
+		}
+	}
+
+	tmpl, err := template.New("value").Delims("{{", "}}").Funcs(funcMap).Parse(templatevalue)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse template %q: %w", templatevalue, err)
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("failed to execute template %q: %w", templatevalue, err)
+	}
+
+	return buf.String(), nil
+}
+
+func renderLoaderKeyTemplate(key string, data map[string]string) (string, error) {
+	if !strings.Contains(key, "{{") {
+		return key, nil
+	}
+
+	tmpl, err := template.New("loader-key").Delims("{{", "}}").Parse(key)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse loader key %q: %w", key, err)
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("failed to execute loader key %q: %w", key, err)
+	}
+
+	return buf.String(), nil
+}
