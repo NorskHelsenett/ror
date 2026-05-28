@@ -354,6 +354,13 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetUnknown(res.UnknownResource)
 		r.common = rortypes.NewCommonFactory(res.UnknownResource)
 
+	case "ror.internal/v1, Kind=Config":
+		if res.ConfigResource == nil {
+			res.ConfigResource = &rortypes.ResourceConfig{}
+		}
+		r.SetConfig(res.ConfigResource)
+		r.common = rortypes.NewCommonFactory(res.ConfigResource)
+
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
 		return nil

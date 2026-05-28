@@ -58,6 +58,7 @@ type Resource struct {
 	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	MachineResource                         *rortypes.ResourceMachine                         `json:"machine,omitempty" bson:"machine,omitempty"`
 	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
+	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -520,6 +521,16 @@ func NewRorUnknownResource() *Resource {
 	return &r
 }
 
+// NewRorConfigResource provides a empty resource of a given kind/apiversion
+func NewRorConfigResource() *Resource {
+	r := Resource{}
+	r.Kind = "Config"
+	r.APIVersion = "ror.internal/v1"
+	r.ConfigResource = &rortypes.ResourceConfig{}
+	r.common = rortypes.NewCommonFactory(r.ConfigResource)
+	return &r
+}
+
 // SetCommonResource sets the common resource of the resource, the common resource implements common metadata of the resource
 func (r *Resource) SetCommonResource(common rortypes.CommonResource) {
 	r.CommonResource = common
@@ -708,6 +719,10 @@ func (r *Resource) SetMachine(res *rortypes.ResourceMachine) {
 
 func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
 	r.UnknownResource = res
+}
+
+func (r *Resource) SetConfig(res *rortypes.ResourceConfig) {
+	r.ConfigResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -933,6 +948,11 @@ func (r *Resource) Machine() rortypes.Machineinterface {
 // Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
 func (r *Resource) Unknown() rortypes.Unknowninterface {
 	return r.UnknownResource
+}
+
+// Config is a wrapper for the underlying resource, it provides a Configinterface to work with configs
+func (r *Resource) Config() rortypes.Configinterface {
+	return r.ConfigResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

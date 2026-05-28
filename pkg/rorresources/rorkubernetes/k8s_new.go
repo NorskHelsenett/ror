@@ -269,6 +269,11 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 		r.SetUnknown(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
+	case "ror.internal/v1, Kind=Config":
+		res := newConfigFromMapInterface(input)
+		r.SetConfig(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
 	default:
 		rlog.Warn("could not create ResourceSet")
 		return nil
@@ -900,6 +905,20 @@ func newUnknownFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceUnknown", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newConfigFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newConfigFromMapInterface(input map[string]interface{}) *rortypes.ResourceConfig {
+	result := rortypes.ResourceConfig{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceConfig", err)
 		return nil
 	}
 

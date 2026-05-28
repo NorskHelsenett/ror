@@ -14,6 +14,17 @@ export enum VulnerabilityDismissalReason {
 export enum ResourceTagProperties {
   color = 'color',
 }
+export interface ResourceConfigData {
+  value: string;
+  source: string;
+  filter: string;
+}
+export interface ResourceConfigSpec {
+  resourceConfigData: ResourceConfigData[];
+}
+export interface ResourceConfig {
+  spec: ResourceConfigSpec;
+}
 export interface ResourceUnknown {}
 export interface MachineCondition {
   type?: string;
@@ -1665,6 +1676,7 @@ export interface Resource {
   backuprun?: ResourceBackupRun;
   machine?: ResourceMachine;
   unknown?: ResourceUnknown;
+  config?: ResourceConfig;
 }
 export interface ResourceSet {
   resources?: Resource[];
