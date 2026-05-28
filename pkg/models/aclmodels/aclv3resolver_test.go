@@ -1,0 +1,322 @@
+package aclmodels_test
+
+import (
+	"context"
+	"fmt"
+	"testing"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/stretchr/testify/assert"
+)
+
+// mockStore implements aclmodels.AclV3Store for testing.
+type mockStore struct {
+	entries map[string][]aclmodels.AclV3ListItem
+	err     error
+}
+
+func (m *mockStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	result := make(map[string][]aclmodels.AclV3ListItem)
+	for _, g := range groups {
+		if entries, ok := m.entries[g]; ok {
+			result[g] = entries
+		}
+	}
+	return result, nil
+}
+
+func newMockStore(entries ...aclmodels.AclV3ListItem) *mockStore {
+	m := &mockStore{entries: make(map[string][]aclmodels.AclV3ListItem)}
+	for _, e := range entries {
+		m.entries[e.Group] = append(m.entries[e.Group], e)
+	}
+	return m
+}
+
+func TestResolver_ResolveAccess_ExactMatch(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1")
+	assert.NoError(t, err)
+	assert.Len(t, access, 2)
+	assert.Contains(t, access, aclmodels.AccessTypeV3("ror:read"))
+	assert.Contains(t, access, aclmodels.AccessTypeV3("kubernetes:logon"))
+}
+
+func TestResolver_ResolveAccess_NoMatch(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-2")
+	assert.NoError(t, err)
+	assert.Empty(t, access)
+}
+
+func TestResolver_ResolveAccess_MultipleGroups(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+		aclmodels.AclV3ListItem{
+			Group:   "ops-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write", "kubernetes:admin"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team", "ops-team"}, "KubernetesCluster", "cluster-1")
+	assert.NoError(t, err)
+	assert.Len(t, access, 3)
+	assert.Contains(t, access, aclmodels.AccessTypeV3("ror:read"))
+	assert.Contains(t, access, aclmodels.AccessTypeV3("ror:write"))
+	assert.Contains(t, access, aclmodels.AccessTypeV3("kubernetes:admin"))
+}
+
+func TestResolver_ResolveAccess_GlobalScope(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "admins",
+			Scope:   "all",
+			Subject: "All",
+			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write", "ror:owner"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	// Global entry should match any scope+subject
+	access, err := resolver.ResolveAccess(context.Background(), []string{"admins"}, "KubernetesCluster", "random-cluster")
+	assert.NoError(t, err)
+	assert.Len(t, access, 3)
+}
+
+func TestResolver_ResolveAccess_RorScopeWithSubjectAsScope(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "cluster-admins",
+			Scope:   "ror",
+			Subject: "KubernetesCluster",
+			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	// scope=ror, subject=KubernetesCluster should match requests for scope KubernetesCluster
+	access, err := resolver.ResolveAccess(context.Background(), []string{"cluster-admins"}, "KubernetesCluster", "any-cluster")
+	assert.NoError(t, err)
+	assert.Len(t, access, 2)
+}
+
+func TestResolver_ResolveAccess_RorScopeGlobalSubject(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "super-admins",
+			Scope:   "ror",
+			Subject: "globalscope",
+			Access:  []aclmodels.AccessTypeV3{"ror:owner"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	// scope=ror, subject=globalscope should match everything
+	access, err := resolver.ResolveAccess(context.Background(), []string{"super-admins"}, "Project", "my-project")
+	assert.NoError(t, err)
+	assert.Contains(t, access, aclmodels.AccessTypeV3("ror:owner"))
+}
+
+func TestResolver_ResolveAccess_StoreError(t *testing.T) {
+	store := &mockStore{err: fmt.Errorf("connection refused")}
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1")
+	assert.Error(t, err)
+	assert.Nil(t, access)
+}
+
+func TestResolver_ResolveAccess_EmptyGroups(t *testing.T) {
+	store := newMockStore()
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{}, "KubernetesCluster", "cluster-1")
+	assert.NoError(t, err)
+	assert.Empty(t, access)
+}
+
+func TestResolver_HasAccess_True(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	ok, err := resolver.HasAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1", "ror:read")
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
+
+func TestResolver_HasAccess_False(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	ok, err := resolver.HasAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1", "ror:write")
+	assert.NoError(t, err)
+	assert.False(t, ok)
+}
+
+func TestResolver_ResolveOwnerrefs_Basic(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-2",
+			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write"},
+		},
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "Project",
+			Subject: "project-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:write"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Len(t, refs, 2)
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
+	assert.Contains(t, refs, aclmodels.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-2"})
+}
+
+func TestResolver_ResolveOwnerrefs_GlobalReturnsNil(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "admins",
+			Scope:   "all",
+			Subject: "All",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Nil(t, refs) // nil = unrestricted
+}
+
+func TestResolver_ResolveOwnerrefs_Deduplicates(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "team-a",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+		aclmodels.AclV3ListItem{
+			Group:   "team-b",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"team-a", "team-b"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Len(t, refs, 1) // same scope+subject, deduplicated
+}
+
+func TestResolver_ResolveOwnerrefs_NoMatchingAccess(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:write")
+	assert.NoError(t, err)
+	assert.Empty(t, refs)
+	assert.NotNil(t, refs) // empty but not nil — nil means unrestricted
+}
+
+func TestResolver_ResolveOwnerrefs_SubjectAll(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "ops",
+			Scope:   "KubernetesCluster",
+			Subject: "all",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"ops"}, "ror:read")
+	assert.NoError(t, err)
+	assert.Nil(t, refs) // subject=all → unrestricted
+}
+
+func TestResolver_ResolveAccess_ManyGroups(t *testing.T) {
+	// Simulates a user with many groups, each contributing different access
+	var entries []aclmodels.AclV3ListItem
+	for i := range 50 {
+		entries = append(entries, aclmodels.AclV3ListItem{
+			Group:   fmt.Sprintf("group-%d", i),
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{aclmodels.AccessTypeV3(fmt.Sprintf("ror:test%d:read", i))},
+		})
+	}
+	store := newMockStore(entries...)
+	resolver := aclmodels.NewAclV3Resolver(store)
+
+	groups := make([]string, 50)
+	for i := range 50 {
+		groups[i] = fmt.Sprintf("group-%d", i)
+	}
+
+	access, err := resolver.ResolveAccess(context.Background(), groups, "KubernetesCluster", "cluster-1")
+	assert.NoError(t, err)
+	assert.Len(t, access, 50)
+}
