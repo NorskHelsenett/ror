@@ -2,6 +2,7 @@ package vitistackinterregator
 
 import (
 	"context"
+	"encoding/base64"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/kubernetes/metadatahelper"
 	"github.com/NorskHelsenett/ror/pkg/kubernetes/providers/providermodels"
@@ -22,6 +23,7 @@ const (
 	ClusterIdKey          = vitiv1alpha1.ClusterIdAnnotation          // The ID of the cluster, this is the uuid in ror
 	CountryKey            = vitiv1alpha1.CountryAnnotation            // The country of the cluster
 	EnvironmentKey        = vitiv1alpha1.EnvironmentAnnotation        // The environment of the cluster
+	ApiEndpointKey        = vitiv1alpha1.K8sEndpointAnnotation        // The API endpoint of the cluster
 )
 
 var (
@@ -50,6 +52,8 @@ type VitistackProviderinterregator struct {
 	clusterId          string
 	country            string
 	environment        string
+	apiEndpoint        string
+	caCert              string
 }
 
 // Detect creates a VitistackProviderinterregator from a Kubernetes client.
@@ -92,7 +96,7 @@ func (v *VitistackProviderinterregator) DetectProvider() bool {
 			v.clusterId, _ = getValueByKey(&node, ClusterIdKey)
 			v.country, _ = getValueByKey(&node, CountryKey)
 			v.environment = getValueByKeyWithDefault(&node, EnvironmentKey, providermodels.UNKNOWN_ENVIRONMENT)
-
+			v.apiEndpoint, _ = getValueByKey(&node, ApiEndpointKey)
 			v.isOfType = true
 			v.initialized = true
 			return true
@@ -186,4 +190,28 @@ func (v *VitistackProviderinterregator) GetKubernetesProvider() providermodels.P
 // GetEnvironment returns the environment of the cluster.
 func (v *VitistackProviderinterregator) GetEnvironment() string {
 	return v.environment
+}
+
+func (v *VitistackProviderinterregator) GetKubernetesApiServer() string {
+	return v.apiEndpoint
+}
+
+func (v *VitistackProviderinterregator) GetKubernetesCA() string {
+	return v.fetchCACert()
+}
+
+// fetchCACert retrieves the cluster CA certificate from the kube-root-ca.crt ConfigMap.
+func (v *VitistackProviderinterregator) fetchCACert() string {
+	if v.client == nil {
+		return ""
+	}
+	cm, err := v.client.CoreV1().ConfigMaps("default").Get(context.TODO(), "kube-root-ca.crt", v1meta.GetOptions{})
+	if err != nil {
+		return ""
+	}
+	caCert, ok := cm.Data["ca.crt"]
+	if !ok {
+		return ""
+	}
+	return base64.StdEncoding.EncodeToString([]byte(caCert))
 }

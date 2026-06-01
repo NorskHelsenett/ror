@@ -54,3 +54,11 @@ func (t UnknownProviderinterregator) Nodes() interregatortypes.ClusterNodeReport
 func (t UnknownProviderinterregator) GetEnvironment() string {
 	return providermodels.UNKNOWN_UNDEFINED
 }
+
+func (t UnknownProviderinterregator) GetKubernetesApiServer() string {
+	return providermodels.UNKNOWN_UNDEFINED
+}
+
+func (t UnknownProviderinterregator) GetKubernetesCA() string {
+	return providermodels.UNKNOWN_UNDEFINED
+}
