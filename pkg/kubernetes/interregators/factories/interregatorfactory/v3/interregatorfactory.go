@@ -34,6 +34,8 @@ type KubernetesProviderGetter interface {
 type NodesGetter interface {
 	Nodes() interregatortypes.ClusterNodeReport
 }
+type KubernetesApiServerGetter interface{ GetKubernetesApiServer() string }
+type KubernetesCAGetter interface{ GetKubernetesCA() string }
 
 type ClusterInterregatorFactory struct {
 	client              *kubernetes.Clientset
@@ -140,4 +142,18 @@ func (c *ClusterInterregatorFactory) GetEnvironment() string {
 		return p.GetEnvironment()
 	}
 	return c.unknowninterregator.GetEnvironment()
+}
+
+func (c *ClusterInterregatorFactory) GetKubernetesApiServer() string {
+	if p, ok := c.provider.(KubernetesApiServerGetter); ok {
+		return p.GetKubernetesApiServer()
+	}
+	return c.unknowninterregator.GetKubernetesApiServer()
+}
+
+func (c *ClusterInterregatorFactory) GetKubernetesCA() string {
+	if p, ok := c.provider.(KubernetesCAGetter); ok {
+		return p.GetKubernetesCA()
+	}
+	return c.unknowninterregator.GetKubernetesCA()
 }
