@@ -27,6 +27,8 @@ type ClusterMetadata interface {
 	GetKubernetesProvider() providermodels.ProviderType
 	GetCountry() string
 	GetEnvironment() string
+	GetKubernetesApiServer() string
+	GetKubernetesCA() string
 }
 
 // ClusterNodeLister provides access to cluster node information.
