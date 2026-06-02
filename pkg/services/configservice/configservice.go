@@ -14,11 +14,12 @@ import (
 )
 
 var (
-	Loaders = ConfigLoaders{}
+	Loaders   = ConfigLoaders{}
+	initiated bool
 )
 
 func init() {
-	Loaders.AddLoader("env", NewEnvConfigLoader())
+	InitConfigService()
 }
 
 type ConfigLoaders map[string]ConfigLoaderInterface
@@ -27,11 +28,22 @@ type ConfigLoaderInterface interface {
 	Load(key string) (string, error)
 }
 
+func InitConfigService() {
+	if initiated {
+		Loaders.AddLoader("env", NewEnvConfigLoader())
+		initiated = true
+	}
+}
+
 func (cl ConfigLoaders) AddLoader(source string, loader ConfigLoaderInterface) {
-	cl[source] = loader
+	InitConfigService()
+	if loader != nil {
+		cl[source] = loader
+	}
 }
 
 func (cl ConfigLoaders) GetLoader(source string) ConfigLoaderInterface {
+	InitConfigService()
 	loader, ok := cl[source]
 	if !ok {
 		return nil
@@ -47,9 +59,13 @@ func (vcl VaultConfigLoader) Load(key string) (string, error) {
 	return vcl.client.GetSecretValueFromPath(key)
 }
 
-func NewVaultConfigLoader(client *vaultclient.VaultClient, err error) VaultConfigLoader {
-	if err != nil {
-		rlog.Error("failed to create vault client for VaultConfigLoader", err)
+// vaultclient, err := vaultclient.New(context.Background(), vaultclient.NewStaticVaultCredsHelper(""), "http://localhost:9200")
+//
+// configservice.Loaders.AddLoader("vault", configservice.NewVaultConfigLoader(apiconnections.Vaultclient))
+func NewVaultConfigLoader(client *vaultclient.VaultClient) ConfigLoaderInterface {
+	if client == nil {
+		rlog.Warn("vault client is nil, vault config loader will not work")
+		return nil
 	}
 	return VaultConfigLoader{client: client}
 }
@@ -64,9 +80,18 @@ func NewEnvConfigLoader() EnvConfigLoader {
 	return EnvConfigLoader{}
 }
 
+func AddLoader(source string, loader ConfigLoaderInterface) {
+	Loaders.AddLoader(source, loader)
+}
+
+func GetLoader(source string) ConfigLoaderInterface {
+	return Loaders.GetLoader(source)
+}
+
 // ConfigService Function loads the configuration for a resource based on the resource config and the context. It filters the config based on the identity in the context and loads the config from the specified source (e.g. vault) if needed.
 // Template functions registered via AddLoader (e.g. "vault", "env") are available in the template and produce the final value directly.
 func Template(templatevalue string, ctx context.Context) (string, error) {
+	InitConfigService()
 	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
 
 	data := map[string]string{
