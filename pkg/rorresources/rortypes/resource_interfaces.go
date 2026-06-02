@@ -3,9 +3,11 @@
 
 package rortypes
 
+import "context"
+
 // CommonResourceInterface represents the minimum interface for all resources
 type CommonResourceInterface interface {
 	GetRorHash() string
 	ApplyInputFilter(cr *CommonResource) error
-	ApplyOutputFilter(cr *CommonResource) error
+	ApplyOutputFilter(ctx context.Context, cr *CommonResource) error
 }

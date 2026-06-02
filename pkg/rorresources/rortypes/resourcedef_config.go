@@ -28,7 +28,7 @@ func (r *ResourceConfig) Get() *ResourceConfig {
 	return r
 }
 
-func (r *ResourceConfig) ApplyOutputFilter(cr *CommonResource, ctx context.Context) error {
+func (r *ResourceConfig) ApplyOutputFilter(ctx context.Context, cr *CommonResource) error {
 	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
 	for i, data := range r.Spec.Data {
 		if data.Filter != string(identity.Type) {
@@ -47,5 +47,5 @@ func (r *ResourceConfig) ApplyOutputFilter(cr *CommonResource, ctx context.Conte
 // Configinterface represents the interface for resources of the type Config
 type Configinterface interface {
 	Get() *ResourceConfig
-	ApplyOutputFilter(cr *CommonResource, ctx context.Context) error
+	ApplyOutputFilter(ctx context.Context, cr *CommonResource) error
 }
