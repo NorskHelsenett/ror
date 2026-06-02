@@ -18,17 +18,13 @@ var (
 	initiated bool
 )
 
-func init() {
-	InitConfigService()
-}
-
 type ConfigLoaders map[string]ConfigLoaderInterface
 
 type ConfigLoaderInterface interface {
 	Load(key string) (string, error)
 }
 
-func InitConfigService() {
+func initConfigService() {
 	if initiated {
 		Loaders.AddLoader("env", NewEnvConfigLoader())
 		initiated = true
@@ -36,14 +32,14 @@ func InitConfigService() {
 }
 
 func (cl ConfigLoaders) AddLoader(source string, loader ConfigLoaderInterface) {
-	InitConfigService()
+	initConfigService()
 	if loader != nil {
 		cl[source] = loader
 	}
 }
 
 func (cl ConfigLoaders) GetLoader(source string) ConfigLoaderInterface {
-	InitConfigService()
+	initConfigService()
 	loader, ok := cl[source]
 	if !ok {
 		return nil
@@ -91,7 +87,7 @@ func GetLoader(source string) ConfigLoaderInterface {
 // ConfigService Function loads the configuration for a resource based on the resource config and the context. It filters the config based on the identity in the context and loads the config from the specified source (e.g. vault) if needed.
 // Template functions registered via AddLoader (e.g. "vault", "env") are available in the template and produce the final value directly.
 func Template(templatevalue string, ctx context.Context) (string, error) {
-	InitConfigService()
+	initConfigService()
 	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
 
 	data := map[string]string{
