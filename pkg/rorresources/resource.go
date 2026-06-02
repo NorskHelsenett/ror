@@ -4,6 +4,8 @@
 package rorresources
 
 import (
+	"context"
+
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 )
 
@@ -968,4 +970,8 @@ func (r *Resource) GenRorHash() {
 
 func (r *Resource) ApplyInputFilter() error {
 	return r.common.ApplyInputFilter(&r.CommonResource)
+}
+
+func (r *Resource) ApplyOutputFilter(ctx context.Context) error {
+	return r.common.ApplyOutputFilter(ctx, &r.CommonResource)
 }
