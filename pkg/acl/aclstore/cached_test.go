@@ -1,4 +1,4 @@
-package aclv3store_test
+package aclstore_test
 
 import (
 	"context"
@@ -7,17 +7,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/acl/aclstore"
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3store"
 
 	"github.com/alicebob/miniredis/v2"
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 
-// mockBackend implements aclv3resolver.AclV3Store as a test backend.
+// mockBackend implements acl.Store as a test backend.
 type mockBackend struct {
 	entries map[string][]aclmodels.AclV3ListItem
 	calls   int // counts how many times GetByGroups was called
@@ -42,13 +42,13 @@ func (m *mockBackend) GetByGroups(ctx context.Context, groups []string) (map[str
 	return result, nil
 }
 
-func setupTest(t *testing.T, entries ...aclmodels.AclV3ListItem) (*aclv3store.CachedAclV3Store, *mockBackend, *miniredis.Miniredis) {
+func setupTest(t *testing.T, entries ...aclmodels.AclV3ListItem) (*aclstore.CachedStore, *mockBackend, *miniredis.Miniredis) {
 	t.Helper()
 	mr := miniredis.RunT(t)
 	rc := goredis.NewClient(&goredis.Options{Addr: mr.Addr()})
 	rdb := redisdb.NewFromClient(rc)
 	backend := newMockBackend(entries...)
-	store := aclv3store.NewCachedAclV3Store(backend, rdb, 5*time.Minute)
+	store := aclstore.NewCachedStore(backend, rdb, 5*time.Minute)
 	return store, backend, mr
 }
 
@@ -224,7 +224,7 @@ func TestCached_CorruptedCache_TreatedAsMiss(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	store := aclv3store.NewCachedAclV3Store(backend, rdb, 5*time.Minute)
+	store := aclstore.NewCachedStore(backend, rdb, 5*time.Minute)
 
 	// Manually put garbage in cache
 	mr.Set("acl:v3:group:dev-team", "not-valid-json{{{")

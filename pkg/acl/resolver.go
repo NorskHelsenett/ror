@@ -1,4 +1,4 @@
-package aclv3resolver
+package acl
 
 import (
 	"context"
@@ -8,45 +8,45 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
-// AclV3Ownerref represents a scope+subject pair that a user has access to.
-type AclV3Ownerref struct {
+// Ownerref represents a scope+subject pair that a user has access to.
+type Ownerref struct {
 	Scope   aclscope.Scope
 	Subject aclscope.Subject
 }
 
-// AclV3Resolver resolves access for a set of groups using an AclV3Store.
+// Resolver resolves access for a set of groups using a Store.
 // It loads all entries in one batch call, then compiles access in-memory.
 // An optional ScopeExpander enables hierarchical scope resolution:
 // if a user has access to a Project, the expander resolves all descendant
 // ownerrefs (Workspaces, Clusters, etc.) so they are included in the result.
-type AclV3Resolver struct {
-	store    AclV3Store
+type Resolver struct {
+	store    Store
 	expander ScopeExpander
 }
 
-// NewAclV3Resolver creates a new resolver with the given store backend.
+// NewResolver creates a new resolver with the given store backend.
 // Use WithScopeExpander to enable hierarchical scope resolution.
-func NewAclV3Resolver(store AclV3Store, opts ...AclV3ResolverOption) *AclV3Resolver {
-	r := &AclV3Resolver{store: store}
+func NewResolver(store Store, opts ...ResolverOption) *Resolver {
+	r := &Resolver{store: store}
 	for _, opt := range opts {
 		opt(r)
 	}
 	return r
 }
 
-// AclV3ResolverOption configures an AclV3Resolver.
-type AclV3ResolverOption func(*AclV3Resolver)
+// ResolverOption configures a Resolver.
+type ResolverOption func(*Resolver)
 
 // WithScopeExpander enables hierarchical scope resolution.
-func WithScopeExpander(expander ScopeExpander) AclV3ResolverOption {
-	return func(r *AclV3Resolver) {
+func WithScopeExpander(expander ScopeExpander) ResolverOption {
+	return func(r *Resolver) {
 		r.expander = expander
 	}
 }
 
 // ResolveAccess loads ACL entries for all given groups (single round-trip) and returns
 // the union of access types that match the given scope and subject.
-func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AccessTypeV3, error) {
+func (r *Resolver) ResolveAccess(ctx context.Context, groups []string, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AccessTypeV3, error) {
 	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
 		return nil, err
@@ -74,16 +74,16 @@ func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scop
 // Returns nil (meaning unrestricted) if any entry grants global/all access.
 // When a ScopeExpander is configured, non-leaf scopes (e.g. Project, Workspace) are expanded
 // to include all descendant ownerrefs alongside the original entry.
-func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requiredAccess aclmodels.AccessTypeV3) ([]AclV3Ownerref, error) {
+func (r *Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requiredAccess aclmodels.AccessTypeV3) ([]Ownerref, error) {
 	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
 		return nil, err
 	}
 
-	refs := make([]AclV3Ownerref, 0)
-	seen := make(map[AclV3Ownerref]struct{})
+	refs := make([]Ownerref, 0)
+	seen := make(map[Ownerref]struct{})
 
-	addRef := func(ref AclV3Ownerref) {
+	addRef := func(ref Ownerref) {
 		if _, ok := seen[ref]; !ok {
 			seen[ref] = struct{}{}
 			refs = append(refs, ref)
@@ -100,7 +100,7 @@ func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, r
 				return nil, nil
 			}
 
-			ref := AclV3Ownerref{Scope: entry.Scope, Subject: entry.Subject}
+			ref := Ownerref{Scope: entry.Scope, Subject: entry.Subject}
 			addRef(ref)
 
 			// Expand to descendants if expander is available
@@ -119,7 +119,7 @@ func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, r
 }
 
 // HasAccess checks if the groups have a specific access type for the given scope+subject.
-func (r *AclV3Resolver) HasAccess(ctx context.Context, groups []string, scope aclscope.Scope, subject aclscope.Subject, requiredAccess aclmodels.AccessTypeV3) (bool, error) {
+func (r *Resolver) HasAccess(ctx context.Context, groups []string, scope aclscope.Scope, subject aclscope.Subject, requiredAccess aclmodels.AccessTypeV3) (bool, error) {
 	access, err := r.ResolveAccess(ctx, groups, scope, subject)
 	if err != nil {
 		return false, err

@@ -1,4 +1,4 @@
-package aclv3store
+package aclstore
 
 import (
 	"context"
@@ -12,19 +12,19 @@ import (
 
 const aclCollectionName = "acl"
 
-// MongoAclV3Store implements aclv3resolver.AclV3Store backed by MongoDB.
+// MongoStore implements acl.Store backed by MongoDB.
 // When Redis caching is added, wrap this store with a caching layer
-// that implements the same AclV3Store interface.
-type MongoAclV3Store struct{}
+// that implements the same acl.Store interface.
+type MongoStore struct{}
 
-// NewMongoAclV3Store creates a new MongoDB-backed V3 ACL store.
-func NewMongoAclV3Store() *MongoAclV3Store {
-	return &MongoAclV3Store{}
+// NewMongoStore creates a new MongoDB-backed V3 ACL store.
+func NewMongoStore() *MongoStore {
+	return &MongoStore{}
 }
 
 // GetByGroups returns all V3 ACL entries for the given groups in a single MongoDB query.
 // Results are returned as a map keyed by group name for cache-friendly consumption.
-func (s *MongoAclV3Store) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
+func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
 	db := mongodb.GetMongoDb()
 	if db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")

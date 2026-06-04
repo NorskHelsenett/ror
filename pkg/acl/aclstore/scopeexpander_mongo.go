@@ -1,12 +1,12 @@
-package aclv3store
+package aclstore
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/clients/mongodb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3resolver"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -14,7 +14,7 @@ import (
 
 const resourceV2Collection = "resourcesv2"
 
-// MongoScopeExpander implements aclv3resolver.ScopeExpander by walking the
+// MongoScopeExpander implements acl.ScopeExpander by walking the
 // ownerref chain in the resourcesv2 collection. No hardcoded hierarchy —
 // the tree is derived entirely from rormeta.ownerref data on each resource.
 type MongoScopeExpander struct{}
@@ -36,14 +36,14 @@ type resourceRefType struct {
 
 // ExpandScope recursively finds all descendant ownerrefs by walking the
 // ownerref chain in resourcesv2. Returns nil if no resources have the given ownerref.
-func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclv3resolver.AclV3Ownerref, error) {
+func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]acl.Ownerref, error) {
 	db := mongodb.GetMongoDb()
 	if db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
-	var result []aclv3resolver.AclV3Ownerref
-	seen := make(map[aclv3resolver.AclV3Ownerref]struct{})
+	var result []acl.Ownerref
+	seen := make(map[acl.Ownerref]struct{})
 
 	// BFS queue: start with the given scope+subject
 	type expandItem struct {
@@ -75,7 +75,7 @@ func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Sco
 		}
 
 		for _, ref := range refs {
-			ownerref := aclv3resolver.AclV3Ownerref{
+			ownerref := acl.Ownerref{
 				Scope:   aclscope.Scope(ref.TypeMeta.Kind),
 				Subject: aclscope.Subject(ref.UID),
 			}

@@ -1,4 +1,4 @@
-package aclv3resolver
+package acl
 
 import (
 	"context"
@@ -22,5 +22,5 @@ import (
 // Returns nil if no resources have the given ownerref (leaf scope).
 // The original scope+subject is NOT included in the result.
 type ScopeExpander interface {
-	ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]AclV3Ownerref, error)
+	ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]Ownerref, error)
 }

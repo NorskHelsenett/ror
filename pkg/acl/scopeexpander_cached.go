@@ -1,4 +1,4 @@
-package aclv3resolver
+package acl
 
 import (
 	"context"
@@ -16,11 +16,11 @@ type CachedScopeExpander struct {
 	ttl     time.Duration
 
 	mu    sync.RWMutex
-	cache map[AclV3Ownerref]cachedExpansion
+	cache map[Ownerref]cachedExpansion
 }
 
 type cachedExpansion struct {
-	refs      []AclV3Ownerref
+	refs      []Ownerref
 	expiresAt time.Time
 }
 
@@ -29,13 +29,13 @@ func NewCachedScopeExpander(backend ScopeExpander, ttl time.Duration) *CachedSco
 	return &CachedScopeExpander{
 		backend: backend,
 		ttl:     ttl,
-		cache:   make(map[AclV3Ownerref]cachedExpansion),
+		cache:   make(map[Ownerref]cachedExpansion),
 	}
 }
 
 // ExpandScope returns cached descendants or falls through to the backend.
-func (c *CachedScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]AclV3Ownerref, error) {
-	key := AclV3Ownerref{Scope: scope, Subject: subject}
+func (c *CachedScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]Ownerref, error) {
+	key := Ownerref{Scope: scope, Subject: subject}
 
 	c.mu.RLock()
 	if entry, ok := c.cache[key]; ok && time.Now().Before(entry.expiresAt) {
@@ -61,7 +61,7 @@ func (c *CachedScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Sc
 
 // Invalidate removes the cached expansion for a specific scope+subject.
 func (c *CachedScopeExpander) Invalidate(scope aclscope.Scope, subject aclscope.Subject) {
-	key := AclV3Ownerref{Scope: scope, Subject: subject}
+	key := Ownerref{Scope: scope, Subject: subject}
 	c.mu.Lock()
 	delete(c.cache, key)
 	c.mu.Unlock()
@@ -70,6 +70,6 @@ func (c *CachedScopeExpander) Invalidate(scope aclscope.Scope, subject aclscope.
 // InvalidateAll clears the entire cache.
 func (c *CachedScopeExpander) InvalidateAll() {
 	c.mu.Lock()
-	c.cache = make(map[AclV3Ownerref]cachedExpansion)
+	c.cache = make(map[Ownerref]cachedExpansion)
 	c.mu.Unlock()
 }

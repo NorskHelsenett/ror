@@ -1,4 +1,4 @@
-package aclv3store
+package aclstore
 
 import (
 	"context"
@@ -6,28 +6,28 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3resolver"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
 const cacheKeyPrefix = "acl:v3:group:"
 
-// CachedAclV3Store wraps an AclV3Store backend with a Redis cache layer.
+// CachedStore wraps an acl.Store backend with a Redis cache layer.
 // Cache is per-group: each group's full ACL entry list is stored as a single JSON blob.
 // On GetByGroups, it does MGET for all groups, backfills misses from the backend,
 // and caches the backfilled results.
 // If Redis is unavailable, it falls through to the backend transparently.
-type CachedAclV3Store struct {
-	backend aclv3resolver.AclV3Store
+type CachedStore struct {
+	backend acl.Store
 	redis   redisdb.RedisDB
 	ttl     time.Duration
 }
 
-// NewCachedAclV3Store creates a cached store wrapping the given backend.
-func NewCachedAclV3Store(backend aclv3resolver.AclV3Store, redis redisdb.RedisDB, ttl time.Duration) *CachedAclV3Store {
-	return &CachedAclV3Store{
+// NewCachedStore creates a cached store wrapping the given backend.
+func NewCachedStore(backend acl.Store, redis redisdb.RedisDB, ttl time.Duration) *CachedStore {
+	return &CachedStore{
 		backend: backend,
 		redis:   redis,
 		ttl:     ttl,
@@ -36,7 +36,7 @@ func NewCachedAclV3Store(backend aclv3resolver.AclV3Store, redis redisdb.RedisDB
 
 // GetByGroups returns ACL entries for all groups, using Redis cache where possible.
 // Cache misses are backfilled from the backend in a single call.
-func (c *CachedAclV3Store) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
+func (c *CachedStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
 	if len(groups) == 0 {
 		return make(map[string][]aclmodels.AclV3ListItem), nil
 	}
@@ -83,14 +83,14 @@ func (c *CachedAclV3Store) GetByGroups(ctx context.Context, groups []string) (ma
 
 // Invalidate removes the cached entries for a group.
 // Call this when ACL entries for the group are created, updated, or deleted.
-func (c *CachedAclV3Store) Invalidate(ctx context.Context, group string) error {
+func (c *CachedStore) Invalidate(ctx context.Context, group string) error {
 	key := cacheKeyPrefix + group
 	return c.redis.Delete(ctx, key)
 }
 
 // mget fetches cached entries for all groups in a single MGET call.
 // Returns hits (group → entries), misses (group names not in cache), and any error.
-func (c *CachedAclV3Store) mget(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, []string, error) {
+func (c *CachedStore) mget(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, []string, error) {
 	keys := make([]string, len(groups))
 	for i, g := range groups {
 		keys[i] = cacheKeyPrefix + g
@@ -131,7 +131,7 @@ func (c *CachedAclV3Store) mget(ctx context.Context, groups []string) (map[strin
 
 // setMany caches entries for the given groups using a Redis pipeline.
 // Groups with no entries in backfilled are cached as empty arrays.
-func (c *CachedAclV3Store) setMany(ctx context.Context, groups []string, backfilled map[string][]aclmodels.AclV3ListItem) {
+func (c *CachedStore) setMany(ctx context.Context, groups []string, backfilled map[string][]aclmodels.AclV3ListItem) {
 	var items []redisdb.SetItem
 
 	for _, group := range groups {

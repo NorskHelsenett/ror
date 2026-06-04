@@ -1,4 +1,4 @@
-package aclv3resolver_test
+package acl_test
 
 import (
 	"context"
@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3resolver"
 	"github.com/stretchr/testify/assert"
 )
 
-// mockStore implements aclv3resolver.AclV3Store for testing.
+// mockStore implements acl.Store for testing.
 type mockStore struct {
 	entries map[string][]aclmodels.AclV3ListItem
 	err     error
@@ -48,7 +48,7 @@ func TestResolver_ResolveAccess_ExactMatch(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1")
 	assert.NoError(t, err)
@@ -66,7 +66,7 @@ func TestResolver_ResolveAccess_NoMatch(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-2")
 	assert.NoError(t, err)
@@ -88,7 +88,7 @@ func TestResolver_ResolveAccess_MultipleGroups(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write", "kubernetes:admin"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team", "ops-team"}, "KubernetesCluster", "cluster-1")
 	assert.NoError(t, err)
@@ -107,7 +107,7 @@ func TestResolver_ResolveAccess_GlobalScope(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write", "ror:owner"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	// Global entry should match any scope+subject
 	access, err := resolver.ResolveAccess(context.Background(), []string{"admins"}, "KubernetesCluster", "random-cluster")
@@ -124,7 +124,7 @@ func TestResolver_ResolveAccess_RorScopeWithSubjectAsScope(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	// scope=ror, subject=KubernetesCluster should match requests for scope KubernetesCluster
 	access, err := resolver.ResolveAccess(context.Background(), []string{"cluster-admins"}, "KubernetesCluster", "any-cluster")
@@ -141,7 +141,7 @@ func TestResolver_ResolveAccess_RorScopeGlobalSubject(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:owner"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	// scope=ror, subject=globalscope should match everything
 	access, err := resolver.ResolveAccess(context.Background(), []string{"super-admins"}, "Project", "my-project")
@@ -151,7 +151,7 @@ func TestResolver_ResolveAccess_RorScopeGlobalSubject(t *testing.T) {
 
 func TestResolver_ResolveAccess_StoreError(t *testing.T) {
 	store := &mockStore{err: fmt.Errorf("connection refused")}
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1")
 	assert.Error(t, err)
@@ -160,7 +160,7 @@ func TestResolver_ResolveAccess_StoreError(t *testing.T) {
 
 func TestResolver_ResolveAccess_EmptyGroups(t *testing.T) {
 	store := newMockStore()
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	access, err := resolver.ResolveAccess(context.Background(), []string{}, "KubernetesCluster", "cluster-1")
 	assert.NoError(t, err)
@@ -176,7 +176,7 @@ func TestResolver_HasAccess_True(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	ok, err := resolver.HasAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1", "ror:read")
 	assert.NoError(t, err)
@@ -192,7 +192,7 @@ func TestResolver_HasAccess_False(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	ok, err := resolver.HasAccess(context.Background(), []string{"dev-team"}, "KubernetesCluster", "cluster-1", "ror:write")
 	assert.NoError(t, err)
@@ -220,13 +220,13 @@ func TestResolver_ResolveOwnerrefs_Basic(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:write"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
 	assert.NoError(t, err)
 	assert.Len(t, refs, 2)
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-2"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-2"})
 }
 
 func TestResolver_ResolveOwnerrefs_GlobalReturnsNil(t *testing.T) {
@@ -238,7 +238,7 @@ func TestResolver_ResolveOwnerrefs_GlobalReturnsNil(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read")
 	assert.NoError(t, err)
@@ -260,7 +260,7 @@ func TestResolver_ResolveOwnerrefs_Deduplicates(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"team-a", "team-b"}, "ror:read")
 	assert.NoError(t, err)
@@ -276,7 +276,7 @@ func TestResolver_ResolveOwnerrefs_NoMatchingAccess(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:write")
 	assert.NoError(t, err)
@@ -293,7 +293,7 @@ func TestResolver_ResolveOwnerrefs_SubjectAll(t *testing.T) {
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"ops"}, "ror:read")
 	assert.NoError(t, err)
@@ -312,7 +312,7 @@ func TestResolver_ResolveAccess_ManyGroups(t *testing.T) {
 		})
 	}
 	store := newMockStore(entries...)
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	groups := make([]string, 50)
 	for i := range 50 {
@@ -326,15 +326,15 @@ func TestResolver_ResolveAccess_ManyGroups(t *testing.T) {
 
 // --- ScopeExpander tests ---
 
-// mockExpander implements aclv3resolver.ScopeExpander for testing.
+// mockExpander implements acl.ScopeExpander for testing.
 type mockExpander struct {
-	expansions map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref
+	expansions map[acl.Ownerref][]acl.Ownerref
 	calls      int
 }
 
-func (m *mockExpander) ExpandScope(_ context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclv3resolver.AclV3Ownerref, error) {
+func (m *mockExpander) ExpandScope(_ context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]acl.Ownerref, error) {
 	m.calls++
-	key := aclv3resolver.AclV3Ownerref{Scope: scope, Subject: subject}
+	key := acl.Ownerref{Scope: scope, Subject: subject}
 	return m.expansions[key], nil
 }
 
@@ -348,7 +348,7 @@ func TestResolver_ResolveOwnerrefs_WithExpander_ProjectExpands(t *testing.T) {
 		},
 	)
 	expander := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{
+		expansions: map[acl.Ownerref][]acl.Ownerref{
 			{Scope: "Project", Subject: "proj-1"}: {
 				{Scope: "Workspace", Subject: "ws-dev"},
 				{Scope: "KubernetesCluster", Subject: "cluster-abc"},
@@ -356,16 +356,16 @@ func TestResolver_ResolveOwnerrefs_WithExpander_ProjectExpands(t *testing.T) {
 			},
 		},
 	}
-	resolver := aclv3resolver.NewAclV3Resolver(store, aclv3resolver.WithScopeExpander(expander))
+	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
 	assert.NoError(t, err)
 	// Original + 3 descendants
 	assert.Len(t, refs, 4)
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "Project", Subject: "proj-1"})
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "Workspace", Subject: "ws-dev"})
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-abc"})
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-def"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "Project", Subject: "proj-1"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "Workspace", Subject: "ws-dev"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-abc"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-def"})
 }
 
 func TestResolver_ResolveOwnerrefs_WithExpander_LeafScope_NoExpansion(t *testing.T) {
@@ -378,14 +378,14 @@ func TestResolver_ResolveOwnerrefs_WithExpander_LeafScope_NoExpansion(t *testing
 		},
 	)
 	expander := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{},
+		expansions: map[acl.Ownerref][]acl.Ownerref{},
 	}
-	resolver := aclv3resolver.NewAclV3Resolver(store, aclv3resolver.WithScopeExpander(expander))
+	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
 	assert.NoError(t, err)
 	assert.Len(t, refs, 1)
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
 }
 
 func TestResolver_ResolveOwnerrefs_WithExpander_DeduplicatesAcrossEntries(t *testing.T) {
@@ -405,14 +405,14 @@ func TestResolver_ResolveOwnerrefs_WithExpander_DeduplicatesAcrossEntries(t *tes
 		},
 	)
 	expander := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{
+		expansions: map[acl.Ownerref][]acl.Ownerref{
 			{Scope: "Workspace", Subject: "ws-dev"}: {
 				{Scope: "KubernetesCluster", Subject: "cluster-abc"}, // overlaps with direct entry
 				{Scope: "KubernetesCluster", Subject: "cluster-def"},
 			},
 		},
 	}
-	resolver := aclv3resolver.NewAclV3Resolver(store, aclv3resolver.WithScopeExpander(expander))
+	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
 	assert.NoError(t, err)
@@ -430,7 +430,7 @@ func TestResolver_ResolveOwnerrefs_WithExpander_GlobalStillReturnsNil(t *testing
 		},
 	)
 	expander := &mockExpander{}
-	resolver := aclv3resolver.NewAclV3Resolver(store, aclv3resolver.WithScopeExpander(expander))
+	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read")
 	assert.NoError(t, err)
@@ -448,25 +448,25 @@ func TestResolver_ResolveOwnerrefs_WithoutExpander_BackwardsCompatible(t *testin
 		},
 	)
 	// No expander — old behavior
-	resolver := aclv3resolver.NewAclV3Resolver(store)
+	resolver := acl.NewResolver(store)
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
 	assert.NoError(t, err)
 	assert.Len(t, refs, 1)
-	assert.Contains(t, refs, aclv3resolver.AclV3Ownerref{Scope: "Project", Subject: "proj-1"})
+	assert.Contains(t, refs, acl.Ownerref{Scope: "Project", Subject: "proj-1"})
 }
 
 // --- CachedScopeExpander tests ---
 
 func TestCachedScopeExpander_CachesResult(t *testing.T) {
 	backend := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{
+		expansions: map[acl.Ownerref][]acl.Ownerref{
 			{Scope: "Project", Subject: "proj-1"}: {
 				{Scope: "Workspace", Subject: "ws-dev"},
 			},
 		},
 	}
-	cached := aclv3resolver.NewCachedScopeExpander(backend, 5*time.Minute)
+	cached := acl.NewCachedScopeExpander(backend, 5*time.Minute)
 
 	// First call — hits backend
 	refs, err := cached.ExpandScope(context.Background(), "Project", "proj-1")
@@ -483,13 +483,13 @@ func TestCachedScopeExpander_CachesResult(t *testing.T) {
 
 func TestCachedScopeExpander_Invalidate(t *testing.T) {
 	backend := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{
+		expansions: map[acl.Ownerref][]acl.Ownerref{
 			{Scope: "Project", Subject: "proj-1"}: {
 				{Scope: "Workspace", Subject: "ws-dev"},
 			},
 		},
 	}
-	cached := aclv3resolver.NewCachedScopeExpander(backend, 5*time.Minute)
+	cached := acl.NewCachedScopeExpander(backend, 5*time.Minute)
 
 	_, _ = cached.ExpandScope(context.Background(), "Project", "proj-1")
 	assert.Equal(t, 1, backend.calls)
@@ -502,7 +502,7 @@ func TestCachedScopeExpander_Invalidate(t *testing.T) {
 
 func TestCachedScopeExpander_InvalidateAll(t *testing.T) {
 	backend := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{
+		expansions: map[acl.Ownerref][]acl.Ownerref{
 			{Scope: "Project", Subject: "proj-1"}: {
 				{Scope: "Workspace", Subject: "ws-dev"},
 			},
@@ -511,7 +511,7 @@ func TestCachedScopeExpander_InvalidateAll(t *testing.T) {
 			},
 		},
 	}
-	cached := aclv3resolver.NewCachedScopeExpander(backend, 5*time.Minute)
+	cached := acl.NewCachedScopeExpander(backend, 5*time.Minute)
 
 	_, _ = cached.ExpandScope(context.Background(), "Project", "proj-1")
 	_, _ = cached.ExpandScope(context.Background(), "Workspace", "ws-dev")
@@ -526,9 +526,9 @@ func TestCachedScopeExpander_InvalidateAll(t *testing.T) {
 
 func TestCachedScopeExpander_NilExpansion_Cached(t *testing.T) {
 	backend := &mockExpander{
-		expansions: map[aclv3resolver.AclV3Ownerref][]aclv3resolver.AclV3Ownerref{},
+		expansions: map[acl.Ownerref][]acl.Ownerref{},
 	}
-	cached := aclv3resolver.NewCachedScopeExpander(backend, 5*time.Minute)
+	cached := acl.NewCachedScopeExpander(backend, 5*time.Minute)
 
 	// Leaf scope — nil expansion
 	refs, err := cached.ExpandScope(context.Background(), "KubernetesCluster", "cluster-1")
