@@ -1,6 +1,10 @@
-package aclmodels
+package aclv3resolver
 
-import "context"
+import (
+	"context"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+)
 
 // ScopeExpander resolves hierarchical scope relationships by walking the
 // ownerref chain in resourcesv2. No business logic or hardcoded hierarchy —
@@ -18,5 +22,5 @@ import "context"
 // Returns nil if no resources have the given ownerref (leaf scope).
 // The original scope+subject is NOT included in the result.
 type ScopeExpander interface {
-	ExpandScope(ctx context.Context, scope Acl3Scope, subject Acl3Subject) ([]AclV3Ownerref, error)
+	ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]AclV3Ownerref, error)
 }

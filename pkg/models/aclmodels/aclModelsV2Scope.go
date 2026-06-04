@@ -1,58 +1,22 @@
 package aclmodels
 
-type Acl2Scope string
+import "github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+
+// Acl2Scope is an alias for backward compatibility. Use aclscope.Scope for new code.
+type Acl2Scope = aclscope.Scope
 
 const (
-	Acl2ScopeUnknown        Acl2Scope = "UNKNOWN" // unknown
-	Acl2ScopeRor            Acl2Scope = "ror"     // ROR
-	Acl2ScopeCluster        Acl2Scope = "cluster"
-	Acl2ScopeProject        Acl2Scope = "project"
-	Acl2ScopeDatacenter     Acl2Scope = "datacenter"
-	Acl2ScopeVirtualMachine Acl2Scope = "virtualmachine"
-	Acl2ScopeMachine        Acl2Scope = "machine"
-	Acl2ScopeBackup         Acl2Scope = "backup"
-	Acl2ScopeAll            Acl2Scope = "all"
-	Acl2ScopeSpam           Acl2Scope = "spam"
+	Acl2ScopeUnknown        = aclscope.ScopeUnknown
+	Acl2ScopeRor            = aclscope.ScopeRor
+	Acl2ScopeCluster        = aclscope.ScopeCluster
+	Acl2ScopeProject        = aclscope.ScopeProject
+	Acl2ScopeDatacenter     = aclscope.ScopeDatacenter
+	Acl2ScopeVirtualMachine = aclscope.ScopeVirtualMachine
+	Acl2ScopeMachine        = aclscope.ScopeMachine
+	Acl2ScopeBackup         = aclscope.ScopeBackup
+	Acl2ScopeAll            = aclscope.ScopeAll
+	Acl2ScopeSpam           = aclscope.ScopeSpam
 )
 
-// IsValid validates the scope
-func (s Acl2Scope) IsValid() bool {
-	switch s {
-	case Acl2ScopeRor:
-		return true
-	case Acl2ScopeCluster:
-		return true
-	case Acl2ScopeProject:
-		return true
-	case Acl2ScopeDatacenter:
-		return true
-	case Acl2ScopeVirtualMachine:
-		return true
-	case Acl2ScopeMachine:
-		return true
-	case Acl2ScopeBackup:
-		return true
-	case Acl2ScopeUnknown:
-		return false
-	case Acl2ScopeAll:
-		return true
-	case Acl2ScopeSpam:
-		return true
-	default:
-		return false
-	}
-}
-
-func GetScopes() []Acl2Scope {
-	return []Acl2Scope{
-		Acl2ScopeRor,
-		Acl2ScopeCluster,
-		Acl2ScopeVirtualMachine,
-		Acl2ScopeBackup,
-		Acl2ScopeProject,
-		Acl2ScopeMachine,
-		Acl2ScopeDatacenter,
-		Acl2ScopeAll,
-		Acl2ScopeSpam,
-	}
-}
+// GetScopes is an alias for backward compatibility. Use aclscope.GetScopes for new code.
+func GetScopes() []Acl2Scope { return aclscope.GetScopes() }

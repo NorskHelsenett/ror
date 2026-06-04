@@ -1,9 +1,11 @@
-package aclmodels
+package aclv3resolver
 
 import (
 	"context"
 	"sync"
 	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 // CachedScopeExpander wraps a ScopeExpander with an in-memory TTL cache.
@@ -32,7 +34,7 @@ func NewCachedScopeExpander(backend ScopeExpander, ttl time.Duration) *CachedSco
 }
 
 // ExpandScope returns cached descendants or falls through to the backend.
-func (c *CachedScopeExpander) ExpandScope(ctx context.Context, scope Acl3Scope, subject Acl3Subject) ([]AclV3Ownerref, error) {
+func (c *CachedScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]AclV3Ownerref, error) {
 	key := AclV3Ownerref{Scope: scope, Subject: subject}
 
 	c.mu.RLock()
@@ -58,7 +60,7 @@ func (c *CachedScopeExpander) ExpandScope(ctx context.Context, scope Acl3Scope, 
 }
 
 // Invalidate removes the cached expansion for a specific scope+subject.
-func (c *CachedScopeExpander) Invalidate(scope Acl3Scope, subject Acl3Subject) {
+func (c *CachedScopeExpander) Invalidate(scope aclscope.Scope, subject aclscope.Subject) {
 	key := AclV3Ownerref{Scope: scope, Subject: subject}
 	c.mu.Lock()
 	delete(c.cache, key)

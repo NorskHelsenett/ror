@@ -8,6 +8,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3resolver"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
@@ -19,13 +20,13 @@ const cacheKeyPrefix = "acl:v3:group:"
 // and caches the backfilled results.
 // If Redis is unavailable, it falls through to the backend transparently.
 type CachedAclV3Store struct {
-	backend aclmodels.AclV3Store
+	backend aclv3resolver.AclV3Store
 	redis   redisdb.RedisDB
 	ttl     time.Duration
 }
 
 // NewCachedAclV3Store creates a cached store wrapping the given backend.
-func NewCachedAclV3Store(backend aclmodels.AclV3Store, redis redisdb.RedisDB, ttl time.Duration) *CachedAclV3Store {
+func NewCachedAclV3Store(backend aclv3resolver.AclV3Store, redis redisdb.RedisDB, ttl time.Duration) *CachedAclV3Store {
 	return &CachedAclV3Store{
 		backend: backend,
 		redis:   redis,

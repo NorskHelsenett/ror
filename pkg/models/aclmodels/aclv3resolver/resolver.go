@@ -1,9 +1,18 @@
-package aclmodels
+package aclv3resolver
 
 import (
 	"context"
 	"slices"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
+
+// AclV3Ownerref represents a scope+subject pair that a user has access to.
+type AclV3Ownerref struct {
+	Scope   aclscope.Scope
+	Subject aclscope.Subject
+}
 
 // AclV3Resolver resolves access for a set of groups using an AclV3Store.
 // It loads all entries in one batch call, then compiles access in-memory.
@@ -37,13 +46,13 @@ func WithScopeExpander(expander ScopeExpander) AclV3ResolverOption {
 
 // ResolveAccess loads ACL entries for all given groups (single round-trip) and returns
 // the union of access types that match the given scope and subject.
-func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scope Acl3Scope, subject Acl3Subject) ([]AccessTypeV3, error) {
+func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AccessTypeV3, error) {
 	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
 		return nil, err
 	}
 
-	seen := make(map[AccessTypeV3]struct{})
+	seen := make(map[aclmodels.AccessTypeV3]struct{})
 	for _, entries := range entriesByGroup {
 		for _, entry := range entries {
 			if matchesScopeSubject(entry, scope, subject) {
@@ -54,7 +63,7 @@ func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scop
 		}
 	}
 
-	result := make([]AccessTypeV3, 0, len(seen))
+	result := make([]aclmodels.AccessTypeV3, 0, len(seen))
 	for k := range seen {
 		result = append(result, k)
 	}
@@ -65,7 +74,7 @@ func (r *AclV3Resolver) ResolveAccess(ctx context.Context, groups []string, scop
 // Returns nil (meaning unrestricted) if any entry grants global/all access.
 // When a ScopeExpander is configured, non-leaf scopes (e.g. Project, Workspace) are expanded
 // to include all descendant ownerrefs alongside the original entry.
-func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requiredAccess AccessTypeV3) ([]AclV3Ownerref, error) {
+func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requiredAccess aclmodels.AccessTypeV3) ([]AclV3Ownerref, error) {
 	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
 		return nil, err
@@ -87,7 +96,7 @@ func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, r
 				continue
 			}
 			// Global access — unrestricted
-			if entry.Scope == Acl3Scope(Acl2ScopeAll) || entry.Subject == Acl3Subject(Acl2RorSubjectAll) {
+			if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll {
 				return nil, nil
 			}
 
@@ -110,7 +119,7 @@ func (r *AclV3Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, r
 }
 
 // HasAccess checks if the groups have a specific access type for the given scope+subject.
-func (r *AclV3Resolver) HasAccess(ctx context.Context, groups []string, scope Acl3Scope, subject Acl3Subject, requiredAccess AccessTypeV3) (bool, error) {
+func (r *AclV3Resolver) HasAccess(ctx context.Context, groups []string, scope aclscope.Scope, subject aclscope.Subject, requiredAccess aclmodels.AccessTypeV3) (bool, error) {
 	access, err := r.ResolveAccess(ctx, groups, scope, subject)
 	if err != nil {
 		return false, err
@@ -118,29 +127,23 @@ func (r *AclV3Resolver) HasAccess(ctx context.Context, groups []string, scope Ac
 	return slices.Contains(access, requiredAccess), nil
 }
 
-// AclV3Ownerref represents a scope+subject pair that a user has access to.
-type AclV3Ownerref struct {
-	Scope   Acl3Scope
-	Subject Acl3Subject
-}
-
 // matchesScopeSubject checks if an ACL entry applies to the given scope+subject.
 // An entry matches if:
 // - scope and subject match exactly, OR
 // - entry has scope "all" or subject "All" (global grant), OR
 // - entry has scope "ror" with subject matching the requested scope or "Global"
-func matchesScopeSubject(entry AclV3ListItem, scope Acl3Scope, subject Acl3Subject) bool {
+func matchesScopeSubject(entry aclmodels.AclV3ListItem, scope aclscope.Scope, subject aclscope.Subject) bool {
 	// Exact match
 	if entry.Scope == scope && entry.Subject == subject {
 		return true
 	}
 	// Global scope
-	if entry.Scope == Acl3Scope(Acl2ScopeAll) || entry.Subject == Acl3Subject(Acl2RorSubjectAll) {
+	if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll {
 		return true
 	}
 	// "ror" scope with subject matching the requested scope or "Global"
-	if entry.Scope == Acl3Scope(Acl2ScopeRor) {
-		if entry.Subject == Acl3Subject(scope) || entry.Subject == Acl3Subject(Acl2RorSubjectGlobal) {
+	if entry.Scope == aclscope.ScopeRor {
+		if entry.Subject == aclscope.Subject(scope) || entry.Subject == aclscope.SubjectGlobal {
 			return true
 		}
 	}

@@ -1,6 +1,10 @@
 package aclmodels
 
-import "time"
+import (
+	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+)
 
 // AccessTypeV3 represents a hierarchical capability string.
 // Format: system:component[:subcomponent...]:verb
@@ -34,15 +38,6 @@ const (
 	AccessVirtualmachineDelete AccessTypeV3 = "virtualmachine:delete"
 )
 
-// Acl3Scope represents the scope of an ACL entry.
-// Valid values are known resource kinds (e.g. "KubernetesCluster", "Project")
-// or system identifiers (e.g. "ror", "all").
-type Acl3Scope Acl2Scope
-
-// Acl3Subject represents the subject of an ACL entry.
-// This is the identifier of the specific object, e.g. a cluster ID, project ID, or "All".
-type Acl3Subject Acl2Subject
-
 // AclV3ListItem is the full ACL v3 model.
 //
 // Scope is a resource kind or system identifier.
@@ -54,12 +49,12 @@ type Acl3Subject Acl2Subject
 //	Group: "dev-team", Scope: "KubernetesCluster", Subject: "prod-cluster-1",
 //	Access: ["ror:read", "ror:write", "kubernetes:logon", "resource:Deployment:read"]
 type AclV3ListItem struct {
-	Id       string         `json:"id" bson:"_id,omitempty"`
-	Version  int            `json:"version" default:"3" validate:"eq=3"`
-	Group    string         `json:"group" validate:"required,min=1,rortext"`
-	Scope    Acl3Scope      `json:"scope" validate:"required,min=1,rortext"`
-	Subject  Acl3Subject    `json:"subject" validate:"required,min=1,rortext"`
-	Access   []AccessTypeV3 `json:"access" bson:"access" validate:"required"`
-	Created  time.Time      `json:"created"`
-	IssuedBy string         `json:"issuedBy,omitempty" validate:"email"`
+	Id       string           `json:"id" bson:"_id,omitempty"`
+	Version  int              `json:"version" default:"3" validate:"eq=3"`
+	Group    string           `json:"group" validate:"required,min=1,rortext"`
+	Scope    aclscope.Scope   `json:"scope" validate:"required,min=1,rortext"`
+	Subject  aclscope.Subject `json:"subject" validate:"required,min=1,rortext"`
+	Access   []AccessTypeV3   `json:"access" bson:"access" validate:"required"`
+	Created  time.Time        `json:"created"`
+	IssuedBy string           `json:"issuedBy,omitempty" validate:"email"`
 }

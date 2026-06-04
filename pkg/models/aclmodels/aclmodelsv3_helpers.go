@@ -3,6 +3,8 @@ package aclmodels
 import (
 	"slices"
 	"strings"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 // HasAccess checks if the given access type is granted in this ACL entry.
@@ -49,7 +51,7 @@ func CanAccessKind(access []AccessTypeV3, kind string, verb string) bool {
 
 // CompileAccess merges access from multiple ACL entries that match the given scope and subject,
 // returning the union of all granted access types.
-func CompileAccess(entries []AclV3ListItem, scope Acl3Scope, subject Acl3Subject) []AccessTypeV3 {
+func CompileAccess(entries []AclV3ListItem, scope aclscope.Scope, subject aclscope.Subject) []AccessTypeV3 {
 	seen := make(map[AccessTypeV3]struct{})
 	for _, entry := range entries {
 		if entry.Scope == scope && entry.Subject == subject {

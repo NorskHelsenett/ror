@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/clients/mongodb"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3resolver"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -13,7 +14,7 @@ import (
 
 const resourceV2Collection = "resourcesv2"
 
-// MongoScopeExpander implements aclmodels.ScopeExpander by walking the
+// MongoScopeExpander implements aclv3resolver.ScopeExpander by walking the
 // ownerref chain in the resourcesv2 collection. No hardcoded hierarchy —
 // the tree is derived entirely from rormeta.ownerref data on each resource.
 type MongoScopeExpander struct{}
@@ -35,19 +36,19 @@ type resourceRefType struct {
 
 // ExpandScope recursively finds all descendant ownerrefs by walking the
 // ownerref chain in resourcesv2. Returns nil if no resources have the given ownerref.
-func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclmodels.Acl3Scope, subject aclmodels.Acl3Subject) ([]aclmodels.AclV3Ownerref, error) {
+func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclv3resolver.AclV3Ownerref, error) {
 	db := mongodb.GetMongoDb()
 	if db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
-	var result []aclmodels.AclV3Ownerref
-	seen := make(map[aclmodels.AclV3Ownerref]struct{})
+	var result []aclv3resolver.AclV3Ownerref
+	seen := make(map[aclv3resolver.AclV3Ownerref]struct{})
 
 	// BFS queue: start with the given scope+subject
 	type expandItem struct {
-		scope   aclmodels.Acl3Scope
-		subject aclmodels.Acl3Subject
+		scope   aclscope.Scope
+		subject aclscope.Subject
 	}
 	queue := []expandItem{{scope: scope, subject: subject}}
 
@@ -74,9 +75,9 @@ func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclmodels.Ac
 		}
 
 		for _, ref := range refs {
-			ownerref := aclmodels.AclV3Ownerref{
-				Scope:   aclmodels.Acl3Scope(ref.TypeMeta.Kind),
-				Subject: aclmodels.Acl3Subject(ref.UID),
+			ownerref := aclv3resolver.AclV3Ownerref{
+				Scope:   aclscope.Scope(ref.TypeMeta.Kind),
+				Subject: aclscope.Subject(ref.UID),
 			}
 			if _, ok := seen[ownerref]; ok {
 				continue

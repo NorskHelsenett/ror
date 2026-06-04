@@ -9,6 +9,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclv3store"
 
 	"github.com/alicebob/miniredis/v2"
@@ -16,7 +17,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// mockBackend implements aclmodels.AclV3Store as a test backend.
+// mockBackend implements aclv3resolver.AclV3Store as a test backend.
 type mockBackend struct {
 	entries map[string][]aclmodels.AclV3ListItem
 	calls   int // counts how many times GetByGroups was called
@@ -284,8 +285,8 @@ func TestCached_PreservesAccessData(t *testing.T) {
 
 	entries := result["dev-team"]
 	assert.Len(t, entries, 1)
-	assert.Equal(t, aclmodels.Acl3Scope("KubernetesCluster"), entries[0].Scope)
-	assert.Equal(t, aclmodels.Acl3Subject("cluster-1"), entries[0].Subject)
+	assert.Equal(t, aclscope.Scope("KubernetesCluster"), entries[0].Scope)
+	assert.Equal(t, aclscope.Subject("cluster-1"), entries[0].Subject)
 	assert.Len(t, entries[0].Access, 3)
 	assert.Contains(t, entries[0].Access, aclmodels.AccessTypeV3("ror:read"))
 	assert.Contains(t, entries[0].Access, aclmodels.AccessTypeV3("kubernetes:logon"))

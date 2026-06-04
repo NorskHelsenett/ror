@@ -12,7 +12,7 @@ import (
 
 const aclCollectionName = "acl"
 
-// MongoAclV3Store implements aclmodels.AclV3Store backed by MongoDB.
+// MongoAclV3Store implements aclv3resolver.AclV3Store backed by MongoDB.
 // When Redis caching is added, wrap this store with a caching layer
 // that implements the same AclV3Store interface.
 type MongoAclV3Store struct{}
