@@ -101,7 +101,7 @@ func ValidateAccess(access AccessTypeV3) error {
 		return fmt.Errorf("unknown path segment %q at position %d in %q", segment, i, access)
 	}
 
-	if !node.Verbs[string(verb)] {
+	if node.Verbs == nil || !node.Verbs[string(verb)] {
 		return fmt.Errorf("verb %q not valid at path %q in %q", verb, cap, access)
 	}
 	return nil
