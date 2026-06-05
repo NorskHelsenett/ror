@@ -43,9 +43,9 @@ func MatchPrefix(access []AccessTypeV3, prefix string) []AccessTypeV3 {
 // CanAccessKind checks if the access list grants the given verb on a resource kind.
 // Returns true if either the wildcard "resource:*:<verb>" or the specific
 // "resource:<kind>:<verb>" is present in the access list.
-func CanAccessKind(access []AccessTypeV3, kind string, verb string) bool {
-	wildcard := AccessTypeV3("resource:*:" + verb)
-	specific := AccessTypeV3("resource:" + kind + ":" + verb)
+func CanAccessKind(access []AccessTypeV3, kind string, verb Verb) bool {
+	wildcard := Capability("resource:*").WithVerb(verb)
+	specific := Capability("resource:" + kind).WithVerb(verb)
 	return slices.Contains(access, wildcard) || slices.Contains(access, specific)
 }
 
@@ -70,21 +70,26 @@ func CompileAccess(entries []AclV3ListItem, scope aclscope.Scope, subject aclsco
 // AllowedKinds extracts all explicitly granted resource kinds for a given verb from the access list.
 // Returns nil if wildcard access is granted (resource:*:<verb>), meaning all kinds are allowed.
 // Returns an empty slice if no resource kind access is granted for the verb.
-func AllowedKinds(access []AccessTypeV3, verb string) []string {
-	wildcardPrefix := "resource:*:" + verb
-	if slices.Contains(access, AccessTypeV3(wildcardPrefix)) {
+func AllowedKinds(access []AccessTypeV3, verb Verb) []string {
+	wildcard := Capability("resource:*").WithVerb(verb)
+	if slices.Contains(access, wildcard) {
 		return nil // nil means all kinds allowed
 	}
 
-	suffix := ":" + verb
 	kinds := make([]string, 0)
 	for _, a := range access {
-		s := string(a)
-		if strings.HasPrefix(s, "resource:") && strings.HasSuffix(s, suffix) {
-			parts := strings.Split(s, ":")
-			if len(parts) == 3 && parts[1] != "*" {
-				kinds = append(kinds, parts[1])
-			}
+		cap, v := a.Parse()
+		if v != verb {
+			continue
+		}
+		capStr := string(cap)
+		if !strings.HasPrefix(capStr, "resource:") {
+			continue
+		}
+		// cap is e.g. "resource:Deployment" — extract the kind
+		parts := strings.SplitN(capStr, ":", 2)
+		if len(parts) == 2 && parts[1] != "*" {
+			kinds = append(kinds, parts[1])
 		}
 	}
 	return kinds

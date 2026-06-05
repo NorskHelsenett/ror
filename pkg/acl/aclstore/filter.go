@@ -3,8 +3,10 @@ package aclstore
 import (
 	"cmp"
 	"slices"
+	"sort"
 
 	"github.com/NorskHelsenett/ror/pkg/acl"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -114,6 +116,68 @@ func ClusterIdentityFilter(clusterID string) bson.M {
 		"$match": bson.M{
 			"rormeta.ownerref.scope":   string(aclscope.ScopeCluster),
 			"rormeta.ownerref.subject": clusterID,
+		},
+	}
+}
+
+// ProtectedResourceTypes maps a Capability (without the verb) to the
+// resource kinds it protects. The verb is appended at check time by
+// ResourceTypeFilter (VerbRead) / ResourceTypeWriteFilter (VerbWrite).
+//
+// Example: CapRorConfig protects "Config".
+// A user needs CapRorConfig.WithVerb(VerbRead) to query them and
+// CapRorConfig.WithVerb(VerbWrite) to mutate them.
+//
+// Resources not listed here are accessible with the standard ror:read / ror:write capabilities.
+var ProtectedResourceTypes = map[aclmodels.Capability][]string{
+	aclmodels.CapRorConfig: {
+		"Config",
+	},
+}
+
+// ResourceTypeFilter builds a MongoDB aggregation pipeline stage that excludes
+// resource kinds the user is not authorized to read.
+//
+// For each entry in ProtectedResourceTypes it checks whether the user has
+// the capability + VerbRead. Missing → those kinds are added to $nin.
+//
+// Behavior:
+//   - user has all protected read capabilities → bson.M{} (no restriction)
+//   - user lacks some capabilities → {"$match": {"typemeta.kind": {"$nin": [...]}}}
+//   - user lacks all capabilities → all protected kinds excluded
+//   - empty/nil access list → all protected kinds excluded
+func ResourceTypeFilter(access []aclmodels.AccessTypeV3) bson.M {
+	return resourceTypeFilterByVerb(access, aclmodels.VerbRead)
+}
+
+// ResourceTypeWriteFilter builds a MongoDB aggregation pipeline stage that excludes
+// resource kinds the user is not authorized to write.
+//
+// Same logic as ResourceTypeFilter but checks capability + VerbWrite.
+func ResourceTypeWriteFilter(access []aclmodels.AccessTypeV3) bson.M {
+	return resourceTypeFilterByVerb(access, aclmodels.VerbWrite)
+}
+
+func resourceTypeFilterByVerb(access []aclmodels.AccessTypeV3, verb aclmodels.Verb) bson.M {
+	var excluded []string
+
+	for cap, kinds := range ProtectedResourceTypes {
+		required := cap.WithVerb(verb)
+		if !slices.Contains(access, required) {
+			excluded = append(excluded, kinds...)
+		}
+	}
+
+	if len(excluded) == 0 {
+		return bson.M{}
+	}
+
+	// Sort for deterministic output
+	sort.Strings(excluded)
+
+	return bson.M{
+		"$match": bson.M{
+			"typemeta.kind": bson.M{"$nin": excluded},
 		},
 	}
 }

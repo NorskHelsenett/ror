@@ -15,6 +15,8 @@ func TestValidateAccess_ValidTypes(t *testing.T) {
 		"ror:metadata:write",
 		"ror:vulnerability:read",
 		"ror:vulnerability:write",
+		"ror:config:read",
+		"ror:config:write",
 		"kubernetes:logon",
 		"kubernetes:admin",
 		"kubernetes:readonly",
@@ -124,18 +126,18 @@ func TestCanAccessKind(t *testing.T) {
 		"resource:Deployment:read",
 		"resource:Pod:read",
 	}
-	assert.True(t, aclmodels.CanAccessKind(access, "Deployment", "read"))
-	assert.True(t, aclmodels.CanAccessKind(access, "Pod", "read"))
-	assert.False(t, aclmodels.CanAccessKind(access, "Service", "read"))
-	assert.False(t, aclmodels.CanAccessKind(access, "Deployment", "write"))
+	assert.True(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbRead))
+	assert.True(t, aclmodels.CanAccessKind(access, "Pod", aclmodels.VerbRead))
+	assert.False(t, aclmodels.CanAccessKind(access, "Service", aclmodels.VerbRead))
+	assert.False(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbWrite))
 }
 
 func TestCanAccessKind_Wildcard(t *testing.T) {
 	access := []aclmodels.AccessTypeV3{"resource:*:read"}
-	assert.True(t, aclmodels.CanAccessKind(access, "Deployment", "read"))
-	assert.True(t, aclmodels.CanAccessKind(access, "Service", "read"))
-	assert.True(t, aclmodels.CanAccessKind(access, "VulnerabilityReport", "read"))
-	assert.False(t, aclmodels.CanAccessKind(access, "Deployment", "write"))
+	assert.True(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbRead))
+	assert.True(t, aclmodels.CanAccessKind(access, "Service", aclmodels.VerbRead))
+	assert.True(t, aclmodels.CanAccessKind(access, "VulnerabilityReport", aclmodels.VerbRead))
+	assert.False(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbWrite))
 }
 
 func TestAllowedKinds(t *testing.T) {
@@ -144,7 +146,7 @@ func TestAllowedKinds(t *testing.T) {
 		"resource:Pod:read",
 		"resource:Service:write",
 	}
-	kinds := aclmodels.AllowedKinds(access, "read")
+	kinds := aclmodels.AllowedKinds(access, aclmodels.VerbRead)
 	assert.Len(t, kinds, 2)
 	assert.Contains(t, kinds, "Deployment")
 	assert.Contains(t, kinds, "Pod")
@@ -152,13 +154,13 @@ func TestAllowedKinds(t *testing.T) {
 
 func TestAllowedKinds_Wildcard(t *testing.T) {
 	access := []aclmodels.AccessTypeV3{"resource:*:read", "resource:Deployment:read"}
-	kinds := aclmodels.AllowedKinds(access, "read")
+	kinds := aclmodels.AllowedKinds(access, aclmodels.VerbRead)
 	assert.Nil(t, kinds) // nil means all kinds allowed
 }
 
 func TestAllowedKinds_NoAccess(t *testing.T) {
 	access := []aclmodels.AccessTypeV3{"ror:read"}
-	kinds := aclmodels.AllowedKinds(access, "read")
+	kinds := aclmodels.AllowedKinds(access, aclmodels.VerbRead)
 	assert.NotNil(t, kinds)
 	assert.Empty(t, kinds)
 }
@@ -236,6 +238,8 @@ func TestAccessTypeV3Constants(t *testing.T) {
 		aclmodels.AccessRorMetadataWrite,
 		aclmodels.AccessRorVulnerabilityRead,
 		aclmodels.AccessRorVulnerabilityWrite,
+		aclmodels.AccessRorConfigRead,
+		aclmodels.AccessRorConfigWrite,
 		aclmodels.AccessKubernetesLogon,
 		aclmodels.AccessKubernetesAdmin,
 		aclmodels.AccessKubernetesReadonly,
@@ -249,4 +253,31 @@ func TestAccessTypeV3Constants(t *testing.T) {
 			assert.NoError(t, aclmodels.ValidateAccess(c))
 		})
 	}
+}
+
+func TestCapabilityWithVerb(t *testing.T) {
+	assert.Equal(t, aclmodels.AccessTypeV3("ror:vulnerability:read"), aclmodels.CapRorVulnerability.WithVerb(aclmodels.VerbRead))
+	assert.Equal(t, aclmodels.AccessTypeV3("kubernetes:argocd:admin"), aclmodels.CapKubernetesArgocd.WithVerb(aclmodels.VerbAdmin))
+	assert.Equal(t, aclmodels.AccessTypeV3("ror:config:write"), aclmodels.CapRorConfig.WithVerb(aclmodels.VerbWrite))
+}
+
+func TestAccessTypeV3Parse(t *testing.T) {
+	cap, verb := aclmodels.AccessRorVulnerabilityRead.Parse()
+	assert.Equal(t, aclmodels.CapRorVulnerability, cap)
+	assert.Equal(t, aclmodels.VerbRead, verb)
+
+	cap, verb = aclmodels.AccessKubernetesArgocdProjectAdmin.Parse()
+	assert.Equal(t, aclmodels.CapKubernetesArgocdProject, cap)
+	assert.Equal(t, aclmodels.VerbAdmin, verb)
+
+	cap, verb = aclmodels.AccessRorRead.Parse()
+	assert.Equal(t, aclmodels.CapRor, cap)
+	assert.Equal(t, aclmodels.VerbRead, verb)
+}
+
+func TestParseWithVerbRoundtrip(t *testing.T) {
+	original := aclmodels.AccessRorConfigWrite
+	cap, verb := original.Parse()
+	roundtripped := cap.WithVerb(verb)
+	assert.Equal(t, original, roundtripped)
 }

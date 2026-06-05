@@ -13,16 +13,16 @@ type AccessNode struct {
 }
 
 // ValidVerbs is the set of all valid verbs that can appear as the last segment of an AccessTypeV3.
-var ValidVerbs = map[string]bool{
-	"read":     true,
-	"write":    true,
-	"create":   true,
-	"update":   true,
-	"delete":   true,
-	"admin":    true,
-	"logon":    true,
-	"owner":    true,
-	"readonly": true,
+var ValidVerbs = map[Verb]bool{
+	VerbRead:     true,
+	VerbWrite:    true,
+	VerbCreate:   true,
+	VerbUpdate:   true,
+	VerbDelete:   true,
+	VerbAdmin:    true,
+	VerbLogon:    true,
+	VerbOwner:    true,
+	VerbReadonly: true,
 }
 
 // accessTree defines the valid access type paths and their allowed verbs.
@@ -36,6 +36,9 @@ var accessTree = &AccessNode{
 					Verbs: map[string]bool{"write": true},
 				},
 				"vulnerability": {
+					Verbs: map[string]bool{"read": true, "write": true},
+				},
+				"config": {
 					Verbs: map[string]bool{"read": true, "write": true},
 				},
 			},
@@ -72,17 +75,16 @@ var accessTree = &AccessNode{
 // ValidateAccess validates that an AccessTypeV3 string follows the system:component:verb
 // convention and that the path and verb are registered in the access tree.
 func ValidateAccess(access AccessTypeV3) error {
-	parts := strings.Split(string(access), ":")
-	if len(parts) < 2 {
+	cap, verb := access.Parse()
+	if verb == "" {
 		return fmt.Errorf("access type must have at least system:verb, got %q", access)
 	}
-
-	verb := parts[len(parts)-1]
-	path := parts[:len(parts)-1]
 
 	if !ValidVerbs[verb] {
 		return fmt.Errorf("unknown verb %q in %q", verb, access)
 	}
+
+	path := strings.Split(string(cap), ":")
 
 	node := accessTree
 	for i, segment := range path {
@@ -99,8 +101,8 @@ func ValidateAccess(access AccessTypeV3) error {
 		return fmt.Errorf("unknown path segment %q at position %d in %q", segment, i, access)
 	}
 
-	if !node.Verbs[verb] {
-		return fmt.Errorf("verb %q not valid at path %q in %q", verb, strings.Join(path, ":"), access)
+	if !node.Verbs[string(verb)] {
+		return fmt.Errorf("verb %q not valid at path %q in %q", verb, cap, access)
 	}
 	return nil
 }
