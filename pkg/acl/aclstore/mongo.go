@@ -4,21 +4,23 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/mongodb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 const aclCollectionName = "acl"
 
 // MongoStore implements acl.Store backed by MongoDB.
 // It queries both V2 and V3 entries and converts to the requested format.
-type MongoStore struct{}
+type MongoStore struct {
+	db *mongo.Database
+}
 
 // NewMongoStore creates a new MongoDB-backed ACL store.
-func NewMongoStore() *MongoStore {
-	return &MongoStore{}
+func NewMongoStore(db *mongo.Database) *MongoStore {
+	return &MongoStore{db: db}
 }
 
 // aclRawEntry is used to decode both V2 and V3 entries from MongoDB.
@@ -29,8 +31,7 @@ type aclRawEntry struct {
 
 // GetByGroups returns all ACL entries as V3 items. V2 entries are converted via aclmodels.V2ToV3.
 func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
-	db := mongodb.GetMongoDb()
-	if db == nil {
+	if s.db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
@@ -39,7 +40,7 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 		"group":   bson.M{"$in": groups},
 	}
 
-	cursor, err := db.Collection(aclCollectionName).Find(ctx, filter)
+	cursor, err := s.db.Collection(aclCollectionName).Find(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query ACL entries: %w", err)
 	}
@@ -76,8 +77,7 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 
 // GetV2ByGroups returns all ACL entries as V2 items. V3 entries are converted via aclmodels.V3ToV2.
 func (s *MongoStore) GetV2ByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV2ListItem, error) {
-	db := mongodb.GetMongoDb()
-	if db == nil {
+	if s.db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
@@ -86,7 +86,7 @@ func (s *MongoStore) GetV2ByGroups(ctx context.Context, groups []string) (map[st
 		"group":   bson.M{"$in": groups},
 	}
 
-	cursor, err := db.Collection(aclCollectionName).Find(ctx, filter)
+	cursor, err := s.db.Collection(aclCollectionName).Find(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query ACL entries: %w", err)
 	}
