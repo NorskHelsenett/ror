@@ -59,8 +59,8 @@ type Resource struct {
 	BackupJobResource                       *rortypes.ResourceBackupJob                       `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	MachineResource                         *rortypes.ResourceMachine                         `json:"machine,omitempty" bson:"machine,omitempty"`
-	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
 	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
+	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }

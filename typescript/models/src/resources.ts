@@ -15,6 +15,7 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceConfigData {
+  key: string;
   value: string;
   source: string;
   filter: string;
@@ -700,6 +701,11 @@ export interface ResourceWorkspace {
 }
 export interface ResourceProvider {}
 export interface Time {}
+export interface KubernetesClusterAgentStatusEndpoint {
+  apiServer?: string;
+  caCert?: string;
+  egress?: string;
+}
 export interface KubernetesClusterAgentStatusNodesNodepools {
   name?: string;
   nodes: KubernetesClusterAgentStatusNodesNodepoolsNodes[];
@@ -735,6 +741,7 @@ export interface KubernetesClusterAgentStatus {
   nodes: KubernetesClusterAgentStatusNodes;
   versions?: { [key: string]: string };
   urls?: { [key: string]: string };
+  endpoint?: KubernetesClusterAgentStatusEndpoint;
   createdAt?: Time;
   lastSeen?: Time;
 }
@@ -814,6 +821,8 @@ export interface KubernetesClusterClusterState {
 export interface KubernetesClusterStatus {
   state: KubernetesClusterClusterState;
   phase: string;
+  message?: string;
+  workers?: number;
   conditions: KubernetesClusterCondition[];
 }
 export interface ResourceKubernetesClusterStatus {

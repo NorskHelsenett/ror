@@ -18,6 +18,7 @@ type ResourceConfigSpec struct {
 }
 
 type ResourceConfigData struct {
+	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Source string `json:"source"`
 	Filter string `json:"filter"`
@@ -31,9 +32,14 @@ func (r *ResourceConfig) Get() *ResourceConfig {
 func (r *ResourceConfig) ApplyOutputFilter(ctx context.Context, cr *CommonResource) error {
 	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
 	for i, data := range r.Spec.Data {
+
+		//make string to lower case to avoid case sensitivity issues
+		// gogo agent
 		if data.Filter != string(identity.Type) {
+			fmt.Println("this is not in cluster")
 			continue
 		}
+		fmt.Println("this is cluster")
 		res, err := configservice.Template(data.Value, ctx)
 		if err != nil {
 			return fmt.Errorf("failed to apply config service: %w", err)
