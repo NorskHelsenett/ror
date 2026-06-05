@@ -30,7 +30,7 @@ var ValidVerbs = map[Verb]bool{
 var accessTree = &AccessNode{
 	Children: map[string]*AccessNode{
 		"ror": {
-			Verbs: map[string]bool{"read": true, "write": true, "owner": true},
+			Verbs: map[string]bool{"read": true, "write": true, "create": true, "update": true, "delete": true, "owner": true},
 			Children: map[string]*AccessNode{
 				"metadata": {
 					Verbs: map[string]bool{"write": true},
