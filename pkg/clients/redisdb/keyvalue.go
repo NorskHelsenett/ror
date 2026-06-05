@@ -39,3 +39,16 @@ func (rc rediscon) Delete(ctx context.Context, key string) error {
 	}
 	return nil
 }
+
+func (rc rediscon) MGet(ctx context.Context, keys ...string) ([]interface{}, error) {
+	return rc.Client.MGet(ctx, keys...).Result()
+}
+
+func (rc rediscon) SetPipelined(ctx context.Context, items []SetItem) error {
+	pipe := rc.Client.Pipeline()
+	for _, item := range items {
+		pipe.Set(ctx, item.Key, item.Value, item.Expiration)
+	}
+	_, err := pipe.Exec(ctx)
+	return err
+}

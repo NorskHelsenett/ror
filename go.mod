@@ -4,6 +4,7 @@ go 1.26.3
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.13.1
+	github.com/alicebob/miniredis/v2 v2.38.0
 	github.com/coreos/go-oidc/v3 v3.18.0
 	github.com/dotse/go-health v1.0.3
 	github.com/evanphx/json-patch/v5 v5.9.11
@@ -173,6 +174,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	gitlab.com/biffen/saute v0.0.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect

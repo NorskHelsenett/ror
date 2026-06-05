@@ -21,7 +21,16 @@ type RedisDB interface {
 	Keys(ctx context.Context) ([]string, error)
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Delete(ctx context.Context, key string) error
+	MGet(ctx context.Context, keys ...string) ([]interface{}, error)
+	SetPipelined(ctx context.Context, items []SetItem) error
 	clients.CommonClient
+}
+
+// SetItem represents a key-value pair with expiration for pipelined SET operations.
+type SetItem struct {
+	Key        string
+	Value      interface{}
+	Expiration time.Duration
 }
 
 var redisdb rediscon
@@ -45,6 +54,12 @@ func New(dbc credshelper.CredHelper, host string, port string) *rediscon {
 	}
 	rc.connect()
 	return &rc
+}
+
+// NewFromClient creates a RedisDB from an existing go-redis client.
+// Useful for testing with miniredis or other pre-configured clients.
+func NewFromClient(client *goredis.Client) RedisDB {
+	return &rediscon{Client: client}
 }
 
 // GetRedis function returns a pointer to the `goredis.Client` instance used to communicate with Redis server.
