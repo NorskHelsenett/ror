@@ -42,6 +42,19 @@ func (m *mockBackend) GetByGroups(ctx context.Context, groups []string) (map[str
 	return result, nil
 }
 
+func (m *mockBackend) GetV2ByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV2ListItem, error) {
+	m.calls++
+	result := make(map[string][]aclmodels.AclV2ListItem)
+	for _, g := range groups {
+		if entries, ok := m.entries[g]; ok {
+			for _, e := range entries {
+				result[g] = append(result[g], aclmodels.V3ToV2(e))
+			}
+		}
+	}
+	return result, nil
+}
+
 func setupTest(t *testing.T, entries ...aclmodels.AclV3ListItem) (*aclstore.CachedStore, *mockBackend, *miniredis.Miniredis) {
 	t.Helper()
 	mr := miniredis.RunT(t)

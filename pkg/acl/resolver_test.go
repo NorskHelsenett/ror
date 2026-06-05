@@ -31,6 +31,21 @@ func (m *mockStore) GetByGroups(ctx context.Context, groups []string) (map[strin
 	return result, nil
 }
 
+func (m *mockStore) GetV2ByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV2ListItem, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	result := make(map[string][]aclmodels.AclV2ListItem)
+	for _, g := range groups {
+		if entries, ok := m.entries[g]; ok {
+			for _, e := range entries {
+				result[g] = append(result[g], aclmodels.V3ToV2(e))
+			}
+		}
+	}
+	return result, nil
+}
+
 func newMockStore(entries ...aclmodels.AclV3ListItem) *mockStore {
 	m := &mockStore{entries: make(map[string][]aclmodels.AclV3ListItem)}
 	for _, e := range entries {

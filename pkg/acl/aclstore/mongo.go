@@ -13,17 +13,21 @@ import (
 const aclCollectionName = "acl"
 
 // MongoStore implements acl.Store backed by MongoDB.
-// When Redis caching is added, wrap this store with a caching layer
-// that implements the same acl.Store interface.
+// It queries both V2 and V3 entries and converts to the requested format.
 type MongoStore struct{}
 
-// NewMongoStore creates a new MongoDB-backed V3 ACL store.
+// NewMongoStore creates a new MongoDB-backed ACL store.
 func NewMongoStore() *MongoStore {
 	return &MongoStore{}
 }
 
-// GetByGroups returns all V3 ACL entries for the given groups in a single MongoDB query.
-// Results are returned as a map keyed by group name for cache-friendly consumption.
+// aclRawEntry is used to decode both V2 and V3 entries from MongoDB.
+// The Version field determines which typed decode to use.
+type aclRawEntry struct {
+	Version int `bson:"version"`
+}
+
+// GetByGroups returns all ACL entries as V3 items. V2 entries are converted via aclmodels.V2ToV3.
 func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
 	db := mongodb.GetMongoDb()
 	if db == nil {
@@ -31,7 +35,7 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 	}
 
 	filter := bson.M{
-		"version": 3,
+		"version": bson.M{"$in": bson.A{2, 3}},
 		"group":   bson.M{"$in": groups},
 	}
 
@@ -41,16 +45,78 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 	}
 	defer cursor.Close(ctx)
 
-	var entries []aclmodels.AclV3ListItem
-	if err := cursor.All(ctx, &entries); err != nil {
-		return nil, fmt.Errorf("failed to decode ACL entries: %w", err)
+	result := make(map[string][]aclmodels.AclV3ListItem, len(groups))
+	for cursor.Next(ctx) {
+		var raw aclRawEntry
+		if err := cursor.Decode(&raw); err != nil {
+			return nil, fmt.Errorf("failed to decode ACL entry version: %w", err)
+		}
+
+		switch raw.Version {
+		case 3:
+			var entry aclmodels.AclV3ListItem
+			if err := cursor.Decode(&entry); err != nil {
+				return nil, fmt.Errorf("failed to decode V3 ACL entry: %w", err)
+			}
+			result[entry.Group] = append(result[entry.Group], entry)
+		case 2:
+			var entry aclmodels.AclV2ListItem
+			if err := cursor.Decode(&entry); err != nil {
+				return nil, fmt.Errorf("failed to decode V2 ACL entry: %w", err)
+			}
+			converted := aclmodels.V2ToV3(entry)
+			result[converted.Group] = append(result[converted.Group], converted)
+		}
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("cursor error reading ACL entries: %w", err)
+	}
+	return result, nil
+}
+
+// GetV2ByGroups returns all ACL entries as V2 items. V3 entries are converted via aclmodels.V3ToV2.
+func (s *MongoStore) GetV2ByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV2ListItem, error) {
+	db := mongodb.GetMongoDb()
+	if db == nil {
+		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
-	// Group results by group name
-	result := make(map[string][]aclmodels.AclV3ListItem, len(groups))
-	for i := range entries {
-		g := entries[i].Group
-		result[g] = append(result[g], entries[i])
+	filter := bson.M{
+		"version": bson.M{"$in": bson.A{2, 3}},
+		"group":   bson.M{"$in": groups},
+	}
+
+	cursor, err := db.Collection(aclCollectionName).Find(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query ACL entries: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	result := make(map[string][]aclmodels.AclV2ListItem, len(groups))
+	for cursor.Next(ctx) {
+		var raw aclRawEntry
+		if err := cursor.Decode(&raw); err != nil {
+			return nil, fmt.Errorf("failed to decode ACL entry version: %w", err)
+		}
+
+		switch raw.Version {
+		case 2:
+			var entry aclmodels.AclV2ListItem
+			if err := cursor.Decode(&entry); err != nil {
+				return nil, fmt.Errorf("failed to decode V2 ACL entry: %w", err)
+			}
+			result[entry.Group] = append(result[entry.Group], entry)
+		case 3:
+			var entry aclmodels.AclV3ListItem
+			if err := cursor.Decode(&entry); err != nil {
+				return nil, fmt.Errorf("failed to decode V3 ACL entry: %w", err)
+			}
+			converted := aclmodels.V3ToV2(entry)
+			result[converted.Group] = append(result[converted.Group], converted)
+		}
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("cursor error reading ACL entries: %w", err)
 	}
 	return result, nil
 }
