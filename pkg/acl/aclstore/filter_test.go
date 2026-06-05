@@ -8,6 +8,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/acl/aclstore"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
 
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -348,13 +349,13 @@ func TestDenyAllFilter_HasImpossibleMatch(t *testing.T) {
 // the production registry.
 var testProtectedTypes = map[aclmodels.Capability][]string{
 	aclmodels.CapRorVulnerability: {
-		"VulnerabilityReport",
-		"ExposedSecretReport",
-		"ConfigAuditReport",
-		"RbacAssessmentReport",
+		rordefs.ResourceVulnerabilityReport.Kind,
+		rordefs.ResourceExposedSecretReport.Kind,
+		rordefs.ResourceConfigAuditReport.Kind,
+		rordefs.ResourceRbacAssessmentReport.Kind,
 	},
 	aclmodels.CapRorConfig: {
-		"Configuration",
+		rordefs.ResourceConfiguration.Kind,
 	},
 }
 

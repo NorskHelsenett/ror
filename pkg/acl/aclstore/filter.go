@@ -8,6 +8,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -124,14 +125,14 @@ func ClusterIdentityFilter(clusterID string) bson.M {
 // resource kinds it protects. The verb is appended at check time by
 // ResourceTypeFilter (VerbRead) / ResourceTypeWriteFilter (VerbWrite).
 //
-// Example: CapRorConfig protects "Config".
+// Example: CapRorConfig protects Configuration resources.
 // A user needs CapRorConfig.WithVerb(VerbRead) to query them and
 // CapRorConfig.WithVerb(VerbWrite) to mutate them.
 //
 // Resources not listed here are accessible with the standard ror:read / ror:write capabilities.
 var ProtectedResourceTypes = map[aclmodels.Capability][]string{
 	aclmodels.CapRorConfig: {
-		"Config",
+		rordefs.ResourceConfiguration.Kind,
 	},
 }
 
