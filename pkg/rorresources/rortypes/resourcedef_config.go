@@ -14,13 +14,11 @@ type ResourceConfig struct {
 }
 
 type ResourceConfigSpec struct {
-	Filter string                                   `json:"filter"`
-	Data   map[ResourceConfigKey]ResourceConfigData `json:"data"` //map of key value pairs, where value can be a template string to be resolved by configservice
-	//[]ResourceConfigData `json:"resourceConfigData"`
+	Filter string                        `json:"filter"`
+	Data   map[string]ResourceConfigData `json:"data"` //map of key value pairs, where value can be a template string to be resolved by configservice
 }
 
 type ResourceConfigData string
-type ResourceConfigKey string
 
 // (r ResourceConfig) Get returns a pointer to the resource of type ResourceConfig
 func (r *ResourceConfig) Get() *ResourceConfig {
