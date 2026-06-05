@@ -219,11 +219,10 @@ func TestValidateACLEntry_InvalidScope(t *testing.T) {
 	assert.Error(t, aclmodels.ValidateACLEntry(entry))
 }
 
-func TestValidateACLEntry_InvalidAccess(t *testing.T) {
 	entry := aclmodels.AclV3ListItem{
 		Group:   "dev-team",
 		Scope:   "ror",
-		Subject: "Global",
+		Subject: aclmodels.Acl2RorSubjectGlobal,
 		Access:  []aclmodels.AccessTypeV3{"ror:read", "invalid:nonsense"},
 	}
 	assert.Error(t, aclmodels.ValidateACLEntry(entry))
