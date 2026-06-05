@@ -131,19 +131,103 @@ aclstore.OwnerrefsToFilter(refs) → bson.M
   • specific → $in query
   │
   ▼
-Appended as pipeline stage to resource query
+aclstore.ResourceTypeFilter(access) → bson.M
+  • Checks ProtectedResourceTypes registry
+  • Excludes protected resource kinds the user lacks capability for
+  • e.g. user without ror:config:read → Configuration kind excluded
+  │
+  ▼
+Both stages appended to resource query pipeline
 ```
+
+## Type System
+
+### AccessTypeV3
+
+The wire/storage type for a capability string. Format: `system:component[:sub...]:verb`
+
+```go
+type AccessTypeV3 string   // e.g. "ror:vulnerability:read"
+```
+
+### Capability and Verb
+
+Decomposed parts of an `AccessTypeV3`. These provide compile-time safety
+when constructing and inspecting access values.
+
+```go
+type Capability string   // e.g. "ror:vulnerability" — path without verb
+type Verb      string   // e.g. "read" — action only
+```
+
+**Composing:**
+
+```go
+access := aclmodels.CapRorConfig.WithVerb(aclmodels.VerbRead)
+// → AccessTypeV3("ror:vulnerability:read")
+```
+
+**Decomposing:**
+
+```go
+cap, verb := access.Parse()
+// cap  = Capability("ror:vulnerability")
+// verb = Verb("read")
+```
+
+**Round-trip:** `cap.WithVerb(verb)` always reproduces the original `AccessTypeV3`.
+
+### Well-known constants
+
+| Capability                   | Verbs                  |
+| ---------------------------- | ---------------------- |
+| `CapRor`                     | read, write, owner     |
+| `CapRorMetadata`             | write                  |
+| `CapRorConfig`               | read, write            |
+| `CapKubernetes`              | logon, admin, readonly |
+| `CapKubernetesArgocd`        | admin                  |
+| `CapKubernetesArgocdProject` | admin                  |
+| `CapKubernetesGrafana`       | admin                  |
+| `CapVirtualmachine`          | delete                 |
+
+Verbs: `VerbRead`, `VerbWrite`, `VerbCreate`, `VerbUpdate`, `VerbDelete`,
+`VerbAdmin`, `VerbLogon`, `VerbOwner`, `VerbReadonly`
+
+### Resource Type Protection
+
+`ProtectedResourceTypes` maps a `Capability` to the resource kinds (from
+`rordefs`) that require that capability. The map values reference named
+resource definitions for compile-time safety:
+
+```go
+var ProtectedResourceTypes = map[aclmodels.Capability][]string{
+    aclmodels.CapRorConfig: {
+        rordefs.ResourceConfiguration.Kind,  // "Configuration"
+    },
+}
+```
+
+`ResourceTypeFilter(access)` checks `VerbRead`; `ResourceTypeWriteFilter(access)`
+checks `VerbWrite`. Both produce a `$match` stage that excludes kinds the
+user lacks capability for.
+
+### Validation
+
+`ValidateAccess(access)` validates against the `accessTree` — a hierarchical
+tree of allowed paths and verbs. It uses `access.Parse()` internally to
+split the capability path from the verb.
 
 ## Package Map
 
-| Package      | Location                         | Purpose                                                        |
-| ------------ | -------------------------------- | -------------------------------------------------------------- |
-| `acl`        | `pkg/acl/`                       | Resolver, Store interface, ScopeExpander, Ownerref type        |
-| `aclstore`   | `pkg/acl/aclstore/`              | MongoStore, CachedStore, MongoScopeExpander, OwnerrefsToFilter |
-| `aclmodels`  | `pkg/models/aclmodels/`          | V2 + V3 types, V2↔V3 converters                                |
-| `aclscope`   | `pkg/models/aclmodels/aclscope/` | Scope + Subject types, shared between V2 and V3                |
-| `rorcontext` | `pkg/context/rorcontext/`        | GetIdentityFromRorContext()                                    |
-| `identity`   | `pkg/models/identity/`           | Identity type, Groups, IsCluster(), GetId()                    |
+| Package      | Location                         | Purpose                                                                            |
+| ------------ | -------------------------------- | ---------------------------------------------------------------------------------- |
+| `acl`        | `pkg/acl/`                       | Resolver, Store interface, ScopeExpander, Ownerref type                            |
+| `aclstore`   | `pkg/acl/aclstore/`              | MongoStore, CachedStore, MongoScopeExpander, OwnerrefsToFilter, ResourceTypeFilter |
+| `aclmodels`  | `pkg/models/aclmodels/`          | V2 + V3 types, Capability/Verb, V2↔V3 converters                                   |
+| `aclscope`   | `pkg/models/aclmodels/aclscope/` | Scope + Subject types, shared between V2 and V3                                    |
+| `rordefs`    | `pkg/rorresources/rordefs/`      | Named resource definitions (ResourceConfiguration, etc.)                           |
+| `rorcontext` | `pkg/context/rorcontext/`        | GetIdentityFromRorContext()                                                        |
+| `identity`   | `pkg/models/identity/`           | Identity type, Groups, IsCluster(), GetId()                                        |
 
 ## V2 ↔ V3 Conversion
 

@@ -12,7 +12,7 @@ import (
 type Capability string
 
 // WithVerb builds a full AccessTypeV3 by appending the verb.
-// Example: CapRorVulnerability.WithVerb(VerbRead) → "ror:vulnerability:read"
+// Example: CapRorConfig.WithVerb(VerbRead) → "ror:config:read"
 func (c Capability) WithVerb(v Verb) AccessTypeV3 {
 	return AccessTypeV3(string(c) + ":" + string(v))
 }
