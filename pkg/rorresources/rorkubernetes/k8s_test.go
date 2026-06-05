@@ -849,13 +849,13 @@ func TestNewResourceSetFromDynamicClientMachine(t *testing.T) {
 	}
 }
 
-func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
+func TestNewResourceSetFromDynamicClientConfig(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
-			"kind":       "Unknown",
-			"apiVersion": "unknown.ror.internal/v1",
+			"kind":       "Config",
+			"apiVersion": "ror.internal/v1",
 			"metadata": map[string]interface{}{
-				"name": "test-unknown",
+				"name": "test-config",
 			},
 		},
 	}
@@ -868,13 +868,13 @@ func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
 	}
 }
 
-func TestNewResourceSetFromDynamicClientConfig(t *testing.T) {
+func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{
-			"kind":       "Config",
-			"apiVersion": "ror.internal/v1",
+			"kind":       "Unknown",
+			"apiVersion": "unknown.ror.internal/v1",
 			"metadata": map[string]interface{}{
-				"name": "test-config",
+				"name": "test-unknown",
 			},
 		},
 	}

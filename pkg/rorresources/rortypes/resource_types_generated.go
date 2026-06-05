@@ -272,15 +272,15 @@ var (
 		Kind:    "Machine",
 	}
 
-	ResourceUnknownGVK = schema.GroupVersionKind{
-		Group:   "unknown.ror.internal",
-		Version: "v1",
-		Kind:    "Unknown",
-	}
-
 	ResourceConfigGVK = schema.GroupVersionKind{
 		Group:   "ror.internal",
 		Version: "v1",
 		Kind:    "Config",
+	}
+
+	ResourceUnknownGVK = schema.GroupVersionKind{
+		Group:   "unknown.ror.internal",
+		Version: "v1",
+		Kind:    "Unknown",
 	}
 )

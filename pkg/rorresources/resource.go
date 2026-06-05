@@ -59,8 +59,8 @@ type Resource struct {
 	BackupJobResource                       *rortypes.ResourceBackupJob                       `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	MachineResource                         *rortypes.ResourceMachine                         `json:"machine,omitempty" bson:"machine,omitempty"`
-	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
 	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
+	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
 }
@@ -513,16 +513,6 @@ func NewRorMachineResource() *Resource {
 	return &r
 }
 
-// NewRorUnknownResource provides a empty resource of a given kind/apiversion
-func NewRorUnknownResource() *Resource {
-	r := Resource{}
-	r.Kind = "Unknown"
-	r.APIVersion = "unknown.ror.internal/v1"
-	r.UnknownResource = &rortypes.ResourceUnknown{}
-	r.common = rortypes.NewCommonFactory(r.UnknownResource)
-	return &r
-}
-
 // NewRorConfigResource provides a empty resource of a given kind/apiversion
 func NewRorConfigResource() *Resource {
 	r := Resource{}
@@ -530,6 +520,16 @@ func NewRorConfigResource() *Resource {
 	r.APIVersion = "ror.internal/v1"
 	r.ConfigResource = &rortypes.ResourceConfig{}
 	r.common = rortypes.NewCommonFactory(r.ConfigResource)
+	return &r
+}
+
+// NewRorUnknownResource provides a empty resource of a given kind/apiversion
+func NewRorUnknownResource() *Resource {
+	r := Resource{}
+	r.Kind = "Unknown"
+	r.APIVersion = "unknown.ror.internal/v1"
+	r.UnknownResource = &rortypes.ResourceUnknown{}
+	r.common = rortypes.NewCommonFactory(r.UnknownResource)
 	return &r
 }
 
@@ -719,12 +719,12 @@ func (r *Resource) SetMachine(res *rortypes.ResourceMachine) {
 	r.MachineResource = res
 }
 
-func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
-	r.UnknownResource = res
-}
-
 func (r *Resource) SetConfig(res *rortypes.ResourceConfig) {
 	r.ConfigResource = res
+}
+
+func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
+	r.UnknownResource = res
 }
 
 // Namespace is a wrapper for the underlying resource, it provides a Namespaceinterface to work with namespaces
@@ -947,14 +947,14 @@ func (r *Resource) Machine() rortypes.Machineinterface {
 	return r.MachineResource
 }
 
-// Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
-func (r *Resource) Unknown() rortypes.Unknowninterface {
-	return r.UnknownResource
-}
-
 // Config is a wrapper for the underlying resource, it provides a Configinterface to work with configs
 func (r *Resource) Config() rortypes.Configinterface {
 	return r.ConfigResource
+}
+
+// Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns
+func (r *Resource) Unknown() rortypes.Unknowninterface {
+	return r.UnknownResource
 }
 
 // (r *Resource) GetRorHash() returns the hash from the common interface

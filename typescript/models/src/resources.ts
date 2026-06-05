@@ -14,14 +14,9 @@ export enum VulnerabilityDismissalReason {
 export enum ResourceTagProperties {
   color = 'color',
 }
-export interface ResourceConfigData {
-  key: string;
-  value: string;
-  source: string;
-  filter: string;
-}
 export interface ResourceConfigSpec {
-  resourceConfigData: ResourceConfigData[];
+  filter: string;
+  data: { [key: ResourceConfigKey]: string };
 }
 export interface ResourceConfig {
   spec: ResourceConfigSpec;

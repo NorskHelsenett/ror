@@ -347,19 +347,19 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetMachine(res.MachineResource)
 		r.common = rortypes.NewCommonFactory(res.MachineResource)
 
-	case "unknown.ror.internal/v1, Kind=Unknown":
-		if res.UnknownResource == nil {
-			res.UnknownResource = &rortypes.ResourceUnknown{}
-		}
-		r.SetUnknown(res.UnknownResource)
-		r.common = rortypes.NewCommonFactory(res.UnknownResource)
-
 	case "ror.internal/v1, Kind=Config":
 		if res.ConfigResource == nil {
 			res.ConfigResource = &rortypes.ResourceConfig{}
 		}
 		r.SetConfig(res.ConfigResource)
 		r.common = rortypes.NewCommonFactory(res.ConfigResource)
+
+	case "unknown.ror.internal/v1, Kind=Unknown":
+		if res.UnknownResource == nil {
+			res.UnknownResource = &rortypes.ResourceUnknown{}
+		}
+		r.SetUnknown(res.UnknownResource)
+		r.common = rortypes.NewCommonFactory(res.UnknownResource)
 
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))

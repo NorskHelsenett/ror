@@ -267,14 +267,14 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetMachine(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
-	case "unknown.ror.internal/v1, Kind=Unknown":
-		res := newUnknownFromDynamicClient(input)
-		r.SetUnknown(res)
-		r.SetCommonInterface(rortypes.NewCommonFactory(res))
-
 	case "ror.internal/v1, Kind=Config":
 		res := newConfigFromDynamicClient(input)
 		r.SetConfig(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
+	case "unknown.ror.internal/v1, Kind=Unknown":
+		res := newUnknownFromDynamicClient(input)
+		r.SetUnknown(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	default:
@@ -1164,26 +1164,6 @@ func newMachineFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resou
 	return &nr
 }
 
-// newUnknownFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
-// by the kubernetes universal client.
-func newUnknownFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceUnknown {
-	nr := rortypes.ResourceUnknown{}
-	nrjson, err := obj.MarshalJSON()
-	if err != nil {
-		rlog.Error("Could not mashal unstructired to json", err)
-	}
-
-	err = json.Unmarshal(nrjson, &nr)
-	if err != nil {
-		rlog.Error("Could not unmarshal json to Unknown", err)
-	}
-
-	// Explicitly free the JSON bytes to help garbage collection
-	nrjson = nil
-
-	return &nr
-}
-
 // newConfigFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
 func newConfigFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceConfig {
@@ -1196,6 +1176,26 @@ func newConfigFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resour
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Config", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newUnknownFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newUnknownFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceUnknown {
+	nr := rortypes.ResourceUnknown{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Unknown", err)
 	}
 
 	// Explicitly free the JSON bytes to help garbage collection
