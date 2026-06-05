@@ -101,7 +101,9 @@ func (c *CachedStore) GetV2ByGroups(ctx context.Context, groups []string) (map[s
 	}
 
 	for group, entries := range hits {
-		result[group] = entries
+		if len(entries) > 0 {
+			result[group] = entries
+		}
 	}
 
 	if len(misses) == 0 {
