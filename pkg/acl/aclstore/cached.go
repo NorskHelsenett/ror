@@ -54,9 +54,11 @@ func (c *CachedStore) GetByGroups(ctx context.Context, groups []string) (map[str
 		return c.backend.GetByGroups(ctx, groups)
 	}
 
-	// Add hits to result
+	// Add hits to result (preserve backend behavior: omit groups with no entries)
 	for group, entries := range hits {
-		result[group] = entries
+		if len(entries) > 0 {
+			result[group] = entries
+		}
 	}
 
 	// No misses — all from cache
