@@ -249,7 +249,7 @@ func TestResolver_ResolveOwnerrefs_GlobalReturnsNil(t *testing.T) {
 		aclmodels.AclV3ListItem{
 			Group:   "admins",
 			Scope:   "all",
-			Subject: "All",
+			Subject: aclscope.SubjectAll,
 			Access:  []aclmodels.AccessTypeV3{"ror:read"},
 		},
 	)
