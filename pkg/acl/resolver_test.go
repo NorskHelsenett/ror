@@ -118,7 +118,7 @@ func TestResolver_ResolveAccess_GlobalScope(t *testing.T) {
 		aclmodels.AclV3ListItem{
 			Group:   "admins",
 			Scope:   "all",
-			Subject: "All",
+			Subject: aclscope.SubjectAll,
 			Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write", "ror:owner"},
 		},
 	)
