@@ -14,20 +14,20 @@ type ResourceConfig struct {
 }
 
 type ResourceConfigSpec struct {
-	Data []ResourceConfigData `json:"resourceConfigData"`
+	Filter string                                   `json:"filter"`
+	Data   map[ResourceConfigKey]ResourceConfigData `json:"data"` //map of key value pairs, where value can be a template string to be resolved by configservice
+	//[]ResourceConfigData `json:"resourceConfigData"`
 }
 
-type ResourceConfigData struct {
-	Key    string `json:"key"`
-	Value  string `json:"value"`
-	Source string `json:"source"`
-	Filter string `json:"filter"`
-}
+type ResourceConfigData string
+type ResourceConfigKey string
 
 // (r ResourceConfig) Get returns a pointer to the resource of type ResourceConfig
 func (r *ResourceConfig) Get() *ResourceConfig {
 	return r
 }
+
+//value: {{arguser: vault(/bla/bla/bla), argopass: vault(/bla/bla/bla)}}
 
 func (r *ResourceConfig) ApplyOutputFilter(ctx context.Context, cr *CommonResource) error {
 	identity := rorcontext.MustGetIdentityFromRorContext(ctx)
@@ -35,16 +35,16 @@ func (r *ResourceConfig) ApplyOutputFilter(ctx context.Context, cr *CommonResour
 
 		//make string to lower case to avoid case sensitivity issues
 		// gogo agent
-		if data.Filter != string(identity.Type) {
+		if r.Spec.Filter != string(identity.Type) {
 			fmt.Println("this is not in cluster")
 			continue
 		}
 		fmt.Println("this is cluster")
-		res, err := configservice.Template(data.Value, ctx)
+		res, err := configservice.Template(string(data), ctx)
 		if err != nil {
 			return fmt.Errorf("failed to apply config service: %w", err)
 		}
-		r.Spec.Data[i].Value = res
+		r.Spec.Data[i] = ResourceConfigData(res)
 	}
 	return nil
 

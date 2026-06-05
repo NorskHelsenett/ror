@@ -497,6 +497,17 @@ var ResourceMachine = ApiResource{
 	Versions:   []ApiVersions{ApiVersionV2},
 }
 
+var ResourceConfig = ApiResource{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "Config",
+		APIVersion: "ror.internal/v1",
+	},
+	Plural:     "configs",
+	Namespaced: false,
+	Types:      []ApiResourceType{ApiResourceTypeInternal},
+	Versions:   []ApiVersions{ApiVersionV2},
+}
+
 var ResourceUnknown = ApiResource{
 	TypeMeta: metav1.TypeMeta{
 		Kind:       "Unknown",
@@ -555,5 +566,6 @@ var Resourcedefs = ApiResources{
 	ResourceBackupJob,
 	ResourceBackupRun,
 	ResourceMachine,
+	ResourceConfig,
 	ResourceUnknown,
 }
