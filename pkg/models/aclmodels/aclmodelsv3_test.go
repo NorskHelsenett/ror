@@ -193,7 +193,7 @@ func TestValidateACLEntry_Valid(t *testing.T) {
 	entry := aclmodels.AclV3ListItem{
 		Group:   "dev-team",
 		Scope:   "ror",
-		Subject: "Global",
+		Subject: aclmodels.Acl2RorSubjectGlobal,
 		Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write"},
 	}
 	assert.NoError(t, aclmodels.ValidateACLEntry(entry))
