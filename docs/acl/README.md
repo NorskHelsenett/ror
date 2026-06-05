@@ -162,10 +162,8 @@ type Verb      string   // e.g. "read" — action only
 
 **Composing:**
 
-```go
 access := aclmodels.CapRorConfig.WithVerb(aclmodels.VerbRead)
-// → AccessTypeV3("ror:vulnerability:read")
-```
+// → AccessTypeV3("ror:config:read")
 
 **Decomposing:**
 
