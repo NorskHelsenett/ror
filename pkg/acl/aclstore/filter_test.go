@@ -320,7 +320,7 @@ func TestClusterIdentityFilter(t *testing.T) {
 
 	expected := bson.M{
 		"$match": bson.M{
-			"rormeta.ownerref.scope":   "cluster",
+			"rormeta.ownerref.scope":   "KubernetesCluster",
 			"rormeta.ownerref.subject": "my-cluster-id",
 		},
 	}
@@ -605,7 +605,7 @@ func TestResourceTypeFilter_ClusterIdentityPlusTypeFilter(t *testing.T) {
 	assert.Len(t, pipeline, 2)
 
 	s1 := pipeline[0].(bson.M)["$match"].(bson.M)
-	assert.Equal(t, "cluster", s1["rormeta.ownerref.scope"])
+	assert.Equal(t, "KubernetesCluster", s1["rormeta.ownerref.scope"])
 	assert.Equal(t, "my-cluster", s1["rormeta.ownerref.subject"])
 
 	s2 := pipeline[1].(bson.M)["$match"].(bson.M)

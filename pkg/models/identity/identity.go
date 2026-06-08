@@ -123,5 +123,6 @@ func (identity *Identity) GetToken() string {
 
 // The type is a representation of a cluster or service identity. May be splited if needed.
 type ServiceIdentity struct {
-	Id string `json:"id"`
+	Id  string `json:"id"`
+	Uid string `json:"uid,omitempty"`
 }

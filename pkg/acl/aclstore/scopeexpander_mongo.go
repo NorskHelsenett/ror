@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/acl"
-	"github.com/NorskHelsenett/ror/pkg/clients/mongodb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
@@ -17,11 +17,13 @@ const resourceV2Collection = "resourcesv2"
 // MongoScopeExpander implements acl.ScopeExpander by walking the
 // ownerref chain in the resourcesv2 collection. No hardcoded hierarchy —
 // the tree is derived entirely from rormeta.ownerref data on each resource.
-type MongoScopeExpander struct{}
+type MongoScopeExpander struct {
+	db *mongo.Database
+}
 
 // NewMongoScopeExpander creates a new MongoDB-backed scope expander.
-func NewMongoScopeExpander() *MongoScopeExpander {
-	return &MongoScopeExpander{}
+func NewMongoScopeExpander(db *mongo.Database) *MongoScopeExpander {
+	return &MongoScopeExpander{db: db}
 }
 
 // resourceRef is a minimal projection of a resourcesv2 document.
@@ -37,8 +39,7 @@ type resourceRefType struct {
 // ExpandScope recursively finds all descendant ownerrefs by walking the
 // ownerref chain in resourcesv2. Returns nil if no resources have the given ownerref.
 func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]acl.Ownerref, error) {
-	db := mongodb.GetMongoDb()
-	if db == nil {
+	if e.db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
@@ -52,7 +53,7 @@ func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Sco
 	}
 	queue := []expandItem{{scope: scope, subject: subject}}
 
-	collection := db.Collection(resourceV2Collection)
+	collection := e.db.Collection(resourceV2Collection)
 	projection := bson.M{"uid": 1, "typemeta.kind": 1, "_id": 0}
 
 	for len(queue) > 0 {

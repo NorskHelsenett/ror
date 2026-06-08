@@ -14,6 +14,7 @@ type SelfData struct {
 
 type SelfUser struct {
 	Name   string   `json:"name,omitempty"`
+	Uid    string   `json:"uid,omitempty"`
 	Email  string   `json:"email,omitempty"`
 	Groups []string `json:"groups,omitempty"`
 }
