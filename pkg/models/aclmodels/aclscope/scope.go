@@ -8,12 +8,12 @@ type Scope string
 const (
 	ScopeUnknown        Scope = "UNKNOWN"
 	ScopeRor            Scope = "ror"
-	ScopeCluster        Scope = "cluster"
-	ScopeProject        Scope = "project"
-	ScopeDatacenter     Scope = "datacenter"
-	ScopeVirtualMachine Scope = "virtualmachine"
-	ScopeMachine        Scope = "machine"
-	ScopeBackup         Scope = "backup"
+	ScopeCluster        Scope = "KubernetesCluster"
+	ScopeProject        Scope = "Project"
+	ScopeDatacenter     Scope = "Datacenter"
+	ScopeVirtualMachine Scope = "VirtualMachine"
+	ScopeMachine        Scope = "Machine"
+	ScopeBackup         Scope = "BackupJob"
 	ScopeAll            Scope = "all"
 	ScopeSpam           Scope = "spam"
 )

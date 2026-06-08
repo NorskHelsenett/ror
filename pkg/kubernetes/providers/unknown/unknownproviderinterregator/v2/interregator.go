@@ -20,7 +20,7 @@ func (t UnknownProviderinterregator) GetProvider() providermodels.ProviderType {
 	return providermodels.ProviderTypeUnknown
 }
 func (t UnknownProviderinterregator) GetClusterId() string {
-	return providermodels.UNKNOWN_UNDEFINED
+	return providermodels.UNKNOWN_CLUSTER_ID
 }
 func (t UnknownProviderinterregator) GetClusterName() string {
 	return providermodels.UNKNOWN_UNDEFINED
