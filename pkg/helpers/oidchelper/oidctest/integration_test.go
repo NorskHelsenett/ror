@@ -2,6 +2,9 @@ package oidctest
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -170,4 +173,54 @@ func TestAddAndRemoveIssuer(t *testing.T) {
 	_, err = validator.ValidateToken(context.Background(), token)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "no OIDC provider found")
+}
+
+func TestDiscoveryURL_DifferentFromIssuerURL(t *testing.T) {
+	// Create the real issuer — its IssuerURL is its own server address
+	// and tokens carry that address as the "iss" claim.
+	issuer, err := NewTestIssuer()
+	require.NoError(t, err)
+	defer issuer.Close()
+
+	// Stand up a proxy server at a different address that forwards
+	// discovery and JWKS requests to the real issuer. This simulates
+	// a Docker-internal hostname (e.g. http://dex:6556) that serves
+	// the same OIDC endpoints.
+	proxy := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		resp, err := http.Get(issuer.IssuerURL + r.URL.Path)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		defer resp.Body.Close()
+		for k, vs := range resp.Header {
+			for _, v := range vs {
+				w.Header().Add(k, v)
+			}
+		}
+		w.WriteHeader(resp.StatusCode)
+		io.Copy(w, resp.Body)
+	}))
+	defer proxy.Close()
+
+	// IssuerURL matches the token's iss claim (the real server).
+	// DiscoveryURL points to the proxy (the Docker-internal address).
+	cfg := oidchelper.IssuerConfig{
+		IssuerURL:    issuer.IssuerURL,
+		DiscoveryURL: proxy.URL,
+		ClientIDs:    []string{DefaultTestClientID},
+		SkipVerify:   true,
+	}
+
+	validator, err := oidchelper.NewMultiIssuerValidator(cfg)
+	require.NoError(t, err)
+
+	claims := DefaultUserClaims("alice@example.com", "admins")
+	token := MustSignToken(t, issuer, claims)
+
+	validated, err := validator.ValidateToken(context.Background(), token)
+	require.NoError(t, err)
+	assert.Equal(t, "alice@example.com", validated.Email)
+	assert.Equal(t, issuer.IssuerURL, validated.Issuer)
+	assert.Equal(t, []string{"admins"}, validated.Groups)
 }

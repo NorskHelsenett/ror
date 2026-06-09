@@ -46,9 +46,16 @@ func (v *MultiIssuerValidator) AddIssuer(cfg IssuerConfig) error {
 	var provider *gooidc.Provider
 	var err error
 
-	if cfg.SkipVerify {
+	discoveryURL := cfg.IssuerURL
+	if cfg.DiscoveryURL != "" {
+		discoveryURL = cfg.DiscoveryURL
+	}
+
+	if cfg.DiscoveryURL != "" || cfg.SkipVerify {
+		// Use InsecureIssuerURLContext so that discovery is performed against
+		// discoveryURL while tokens are validated against cfg.IssuerURL.
 		insecureCtx := gooidc.InsecureIssuerURLContext(ctx, cfg.IssuerURL)
-		provider, err = gooidc.NewProvider(insecureCtx, cfg.IssuerURL)
+		provider, err = gooidc.NewProvider(insecureCtx, discoveryURL)
 	} else {
 		provider, err = gooidc.NewProvider(ctx, cfg.IssuerURL)
 	}
