@@ -1,6 +1,7 @@
 package rortypes
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
@@ -29,4 +30,23 @@ type ResourceServicePorts struct {
 	Port        int                `json:"port"`
 	Protocol    string             `json:"protocol"`
 	TargetPort  intstr.IntOrString `json:"targetPort"`
+}
+
+// (r *ResourceService) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceService) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
+}
+
+// (r ResourceService) Get returns a pointer to the resource of type ResourceService
+func (r *ResourceService) Get() *ResourceService {
+	return r
+}
+
+// Serviceinterface represents the interface for resources of the type service
+type Serviceinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceService
 }

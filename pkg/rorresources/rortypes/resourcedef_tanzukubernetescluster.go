@@ -204,3 +204,13 @@ type ResourceTanzuKubernetesClusterStatusAddonsConditions struct {
 	Status             string `json:"status"`
 	Type               string `json:"type"`
 }
+
+// (r ResourceTanzuKubernetesCluster) Get returns a pointer to the resource of type ResourceTanzuKubernetesCluster
+func (r *ResourceTanzuKubernetesCluster) Get() *ResourceTanzuKubernetesCluster {
+	return r
+}
+
+// TanzuKubernetesClusterinterface represents the interface for resources of the type tanzukubernetescluster
+type TanzuKubernetesClusterinterface interface {
+	Get() *ResourceTanzuKubernetesCluster
+}

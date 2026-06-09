@@ -9,3 +9,13 @@ type ResourceConfigurationSpec struct {
 	B64enc bool   `json:"b64enc"`
 	Data   string `json:"data"`
 }
+
+// (r ResourceConfiguration) Get returns a pointer to the resource of type ResourceConfiguration
+func (r *ResourceConfiguration) Get() *ResourceConfiguration {
+	return r
+}
+
+// Configurationinterface represents the interface for resources of the type configuration
+type Configurationinterface interface {
+	Get() *ResourceConfiguration
+}

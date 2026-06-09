@@ -23,3 +23,13 @@ type ResourceProjectSpecRole struct {
 	Email string `json:"email"`
 	Phone string `json:"phone"`
 }
+
+// (r ResourceProject) Get returns a pointer to the resource of type ResourceProject
+func (r *ResourceProject) Get() *ResourceProject {
+	return r
+}
+
+// Projectinterface represents the interface for resources of the type project
+type Projectinterface interface {
+	Get() *ResourceProject
+}

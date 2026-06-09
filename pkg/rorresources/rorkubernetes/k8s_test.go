@@ -849,6 +849,25 @@ func TestNewResourceSetFromDynamicClientMachine(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientConfig(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       "Config",
+			"apiVersion": "ror.internal/v1",
+			"metadata": map[string]interface{}{
+				"name": "test-config",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]interface{}{

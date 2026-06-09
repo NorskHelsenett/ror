@@ -17,3 +17,13 @@ type ResourceIngressClassSpecParameters struct {
 	Namespace string `json:"namespace"`
 	Scope     string `json:"scope"`
 }
+
+// (r ResourceIngressClass) Get returns a pointer to the resource of type ResourceIngressClass
+func (r *ResourceIngressClass) Get() *ResourceIngressClass {
+	return r
+}
+
+// IngressClassinterface represents the interface for resources of the type ingressclass
+type IngressClassinterface interface {
+	Get() *ResourceIngressClass
+}

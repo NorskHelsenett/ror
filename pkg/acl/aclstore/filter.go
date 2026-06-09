@@ -132,7 +132,7 @@ func ClusterIdentityFilter(clusterID string) bson.M {
 // Resources not listed here are accessible with the standard ror:read / ror:write capabilities.
 var ProtectedResourceTypes = map[aclmodels.Capability][]string{
 	aclmodels.CapRorConfig: {
-		rordefs.ResourceConfiguration.Kind,
+		rordefs.ResourceConfig.Kind,
 	},
 }
 

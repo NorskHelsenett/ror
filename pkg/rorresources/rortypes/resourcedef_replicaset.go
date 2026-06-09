@@ -1,5 +1,9 @@
 package rortypes
 
+import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
+)
+
 // K8s namepace struct
 type ResourceReplicaSet struct {
 	Spec   ResourceReplicaSetSpec   `json:"spec"`
@@ -25,4 +29,23 @@ type ResourceReplicaSetStatus struct {
 	AvailableReplicas int `json:"availableReplicas"`
 	ReadyReplicas     int `json:"readyReplicas"`
 	Replicas          int `json:"replicas"`
+}
+
+// (r *ResourceReplicaSet) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceReplicaSet) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
+}
+
+// (r ResourceReplicaSet) Get returns a pointer to the resource of type ResourceReplicaSet
+func (r *ResourceReplicaSet) Get() *ResourceReplicaSet {
+	return r
+}
+
+// ReplicaSetinterface represents the interface for resources of the type replicaset
+type ReplicaSetinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceReplicaSet
 }

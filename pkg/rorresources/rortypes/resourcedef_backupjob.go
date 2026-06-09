@@ -126,3 +126,13 @@ type ResourceBackupScheduleRetention struct {
 	Duration int    `json:"duration"`
 	Unit     string `json:"unit"`
 }
+
+// (r ResourceBackupJob) Get returns a pointer to the resource of type ResourceBackupJob
+func (r *ResourceBackupJob) Get() *ResourceBackupJob {
+	return r
+}
+
+// BackupJobinterface represents the interface for resources of the type backupjob
+type BackupJobinterface interface {
+	Get() *ResourceBackupJob
+}

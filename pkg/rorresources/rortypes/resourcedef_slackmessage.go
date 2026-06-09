@@ -25,3 +25,19 @@ const (
 	SLACK_MESSAGE_ERROR
 	SLACK_MESSAGE_UNKNOWN
 )
+
+// (r *ResourceSlackMessage) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceSlackMessage) ApplyInputFilter(cr *CommonResource) error {
+	return nil
+}
+
+// (r ResourceSlackMessage) Get returns a pointer to the resource of type ResourceSlackMessage
+func (r *ResourceSlackMessage) Get() *ResourceSlackMessage {
+	return r
+}
+
+// SlackMessageinterface represents the interface for resources of the type slackmessage
+type SlackMessageinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceSlackMessage
+}

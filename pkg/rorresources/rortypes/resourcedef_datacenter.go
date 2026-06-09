@@ -39,3 +39,13 @@ type Workspace struct {
 	DatacenterID string     `json:"datacenterId" bson:"datacenterid,omitempty"`
 	Datacenter   Datacenter `json:"datacenter"`
 }
+
+// (r ResourceDatacenter) Get returns a pointer to the resource of type ResourceDatacenter
+func (r *ResourceDatacenter) Get() *ResourceDatacenter {
+	return r
+}
+
+// Datacenterinterface represents the interface for resources of the type datacenter
+type Datacenterinterface interface {
+	Get() *ResourceDatacenter
+}

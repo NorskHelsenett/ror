@@ -1,5 +1,9 @@
 package rortypes
 
+import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
+)
+
 // K8s namepace struct
 type ResourceIngress struct {
 	Spec   ResourceIngressSpec   `json:"spec"`
@@ -65,4 +69,23 @@ type ResourceIngressStatusLoadBalancer struct {
 type ResourceIngressStatusLoadBalancerIngress struct {
 	Hostname string `json:"hostname"`
 	Ip       string `json:"ip"`
+}
+
+// (r *ResourceIngress) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceIngress) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
+}
+
+// (r ResourceIngress) Get returns a pointer to the resource of type ResourceIngress
+func (r *ResourceIngress) Get() *ResourceIngress {
+	return r
+}
+
+// Ingressinterface represents the interface for resources of the type ingress
+type Ingressinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceIngress
 }

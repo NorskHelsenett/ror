@@ -1,5 +1,9 @@
 package rortypes
 
+import (
+	"github.com/NorskHelsenett/ror/pkg/config/globalconfig"
+)
+
 // K8s certificate struct
 type ResourceCertificate struct {
 	Spec   ResourceCertificateSpec   `json:"spec"`
@@ -31,4 +35,23 @@ type ResourceCertificateStatusCondition struct {
 	Reason             string `json:"reason"`
 	Status             string `json:"status"`
 	Type               string `json:"type"`
+}
+
+// (r *ResourceCertificate) ApplyInputFilter Applies the input filter to the resource
+func (r *ResourceCertificate) ApplyInputFilter(cr *CommonResource) error {
+	if globalconfig.InternalNamespaces[cr.Metadata.Namespace] {
+		cr.RorMeta.Internal = true
+	}
+	return nil
+}
+
+// (r ResourceCertificate) Get returns a pointer to the resource of type ResourceCertificate
+func (r *ResourceCertificate) Get() *ResourceCertificate {
+	return r
+}
+
+// Certificateinterface represents the interface for resources of the type certificate
+type Certificateinterface interface {
+	ApplyInputFilter(cr *CommonResource) error
+	Get() *ResourceCertificate
 }

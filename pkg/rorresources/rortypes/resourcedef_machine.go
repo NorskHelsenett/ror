@@ -16,3 +16,13 @@ type ResourceMachineSpec struct {
 type ResourceMachineStatus struct {
 	ProviderStatus *v1alpha1.MachineStatus `json:"providerStatus"`
 }
+
+// (r ResourceMachine) Get returns a pointer to the resource of type ResourceMachine
+func (r *ResourceMachine) Get() *ResourceMachine {
+	return r
+}
+
+// Machineinterface represents the interface for resources of the type machine
+type Machineinterface interface {
+	Get() *ResourceMachine
+}

@@ -47,227 +47,232 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 	case "/v1, Kind=Namespace":
 		res := newNamespaceFromMapInterface(input)
 		r.SetNamespace(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "/v1, Kind=Node":
 		res := newNodeFromMapInterface(input)
 		r.SetNode(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "/v1, Kind=PersistentVolumeClaim":
 		res := newPersistentVolumeClaimFromMapInterface(input)
 		r.SetPersistentVolumeClaim(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "apps/v1, Kind=Deployment":
 		res := newDeploymentFromMapInterface(input)
 		r.SetDeployment(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "storage.k8s.io/v1, Kind=StorageClass":
 		res := newStorageClassFromMapInterface(input)
 		r.SetStorageClass(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "wgpolicyk8s.io/v1alpha2, Kind=PolicyReport":
 		res := newPolicyReportFromMapInterface(input)
 		r.SetPolicyReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "argoproj.io/v1alpha1, Kind=Application":
 		res := newApplicationFromMapInterface(input)
 		r.SetApplication(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "argoproj.io/v1alpha1, Kind=AppProject":
 		res := newAppProjectFromMapInterface(input)
 		r.SetAppProject(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "cert-manager.io/v1, Kind=Certificate":
 		res := newCertificateFromMapInterface(input)
 		r.SetCertificate(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "/v1, Kind=Service":
 		res := newServiceFromMapInterface(input)
 		r.SetService(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "/v1, Kind=Pod":
 		res := newPodFromMapInterface(input)
 		r.SetPod(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "apps/v1, Kind=ReplicaSet":
 		res := newReplicaSetFromMapInterface(input)
 		r.SetReplicaSet(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "apps/v1, Kind=StatefulSet":
 		res := newStatefulSetFromMapInterface(input)
 		r.SetStatefulSet(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "apps/v1, Kind=DaemonSet":
 		res := newDaemonSetFromMapInterface(input)
 		r.SetDaemonSet(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "networking.k8s.io/v1, Kind=Ingress":
 		res := newIngressFromMapInterface(input)
 		r.SetIngress(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "networking.k8s.io/v1, Kind=IngressClass":
 		res := newIngressClassFromMapInterface(input)
 		r.SetIngressClass(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "aquasecurity.github.io/v1alpha1, Kind=SbomReport":
 		res := newSbomReportFromMapInterface(input)
 		r.SetSbomReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "aquasecurity.github.io/v1alpha1, Kind=VulnerabilityReport":
 		res := newVulnerabilityReportFromMapInterface(input)
 		r.SetVulnerabilityReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ExposedSecretReport":
 		res := newExposedSecretReportFromMapInterface(input)
 		r.SetExposedSecretReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ConfigAuditReport":
 		res := newConfigAuditReportFromMapInterface(input)
 		r.SetConfigAuditReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "aquasecurity.github.io/v1alpha1, Kind=RbacAssessmentReport":
 		res := newRbacAssessmentReportFromMapInterface(input)
 		r.SetRbacAssessmentReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesCluster":
 		res := newTanzuKubernetesClusterFromMapInterface(input)
 		r.SetTanzuKubernetesCluster(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "run.tanzu.vmware.com/v1alpha3, Kind=TanzuKubernetesRelease":
 		res := newTanzuKubernetesReleaseFromMapInterface(input)
 		r.SetTanzuKubernetesRelease(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "vmoperator.vmware.com/v1alpha2, Kind=VirtualMachineClass":
 		res := newVirtualMachineClassFromMapInterface(input)
 		r.SetVirtualMachineClass(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=KubernetesCluster":
 		res := newKubernetesClusterFromMapInterface(input)
 		r.SetKubernetesCluster(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=Provider":
 		res := newProviderFromMapInterface(input)
 		r.SetProvider(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=Workspace":
 		res := newWorkspaceFromMapInterface(input)
 		r.SetWorkspace(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=KubernetesMachineClass":
 		res := newKubernetesMachineClassFromMapInterface(input)
 		r.SetKubernetesMachineClass(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterOrder":
 		res := newClusterOrderFromMapInterface(input)
 		r.SetClusterOrder(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=Project":
 		res := newProjectFromMapInterface(input)
 		r.SetProject(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=Configuration":
 		res := newConfigurationFromMapInterface(input)
 		r.SetConfiguration(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "aquasecurity.github.io/v1alpha1, Kind=ClusterComplianceReport":
 		res := newClusterComplianceReportFromMapInterface(input)
 		r.SetClusterComplianceReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=ClusterVulnerabilityReport":
 		res := newClusterVulnerabilityReportFromMapInterface(input)
 		r.SetClusterVulnerabilityReport(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=Route":
 		res := newRouteFromMapInterface(input)
 		r.SetRoute(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=SlackMessage":
 		res := newSlackMessageFromMapInterface(input)
 		r.SetSlackMessage(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=VulnerabilityEvent":
 		res := newVulnerabilityEventFromMapInterface(input)
 		r.SetVulnerabilityEvent(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=VirtualMachine":
 		res := newVirtualMachineFromMapInterface(input)
 		r.SetVirtualMachine(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "general.ror.internal/v1alpha1, Kind=VirtualMachineVulnerabilityInfo":
 		res := newVirtualMachineVulnerabilityInfoFromMapInterface(input)
 		r.SetVirtualMachineVulnerabilityInfo(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "/v1, Kind=Endpoints":
 		res := newEndpointsFromMapInterface(input)
 		r.SetEndpoints(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "networking.k8s.io/v1, Kind=NetworkPolicy":
 		res := newNetworkPolicyFromMapInterface(input)
 		r.SetNetworkPolicy(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "infrastructure.ror.internal/v1alpha1, Kind=Datacenter":
 		res := newDatacenterFromMapInterface(input)
 		r.SetDatacenter(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "backup.ror.internal/v1alpha1, Kind=BackupJob":
 		res := newBackupJobFromMapInterface(input)
 		r.SetBackupJob(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "backup.ror.internal/v1alpha1, Kind=BackupRun":
 		res := newBackupRunFromMapInterface(input)
 		r.SetBackupRun(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "machine.ror.internal/v1alpha1, Kind=Machine":
 		res := newMachineFromMapInterface(input)
 		r.SetMachine(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
+	case "ror.internal/v1, Kind=Config":
+		res := newConfigFromMapInterface(input)
+		r.SetConfig(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		res := newUnknownFromMapInterface(input)
 		r.SetUnknown(res)
-		r.SetCommonInterface(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
 	default:
 		rlog.Warn("could not create ResourceSet")
@@ -886,6 +891,20 @@ func newMachineFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceMachine", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newConfigFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newConfigFromMapInterface(input map[string]interface{}) *rortypes.ResourceConfig {
+	result := rortypes.ResourceConfig{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceConfig", err)
 		return nil
 	}
 

@@ -28,7 +28,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
@@ -53,16 +52,10 @@ func main() {
 	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_new.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	// Removed, should include interface in the resource definitions if needed
+	//generator.TemplateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	//generator.TemplateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
 	generator.TemplateFile("pkg/rorresources/rortypes/resource_types_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-
-	// Resource models - input filters
-	for _, res := range rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2) {
-		filepath := fmt.Sprintf("pkg/rorresources/rortypes/resource_input_filter_%s.go", res.GetKind())
-		filepath = strings.ToLower(filepath)
-		generator.TemplateFileOnce(filepath, "pkg/rorresources/rortypes/resource_models_input_filter.go.tmpl", res)
-	}
 
 	generateTypescriptModels()
 }

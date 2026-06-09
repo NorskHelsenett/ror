@@ -15,6 +15,13 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceUnknown {}
+export interface ResourceConfigSpec {
+  filter: string;
+  data: { [key: string]: string };
+}
+export interface ResourceConfig {
+  spec: ResourceConfigSpec;
+}
 export interface MachineCondition {
   type?: string;
   status?: string;
@@ -689,14 +696,26 @@ export interface ResourceWorkspace {
 }
 export interface ResourceProvider {}
 export interface Time {}
+export interface KubernetesClusterAgentStatusEndpoint {
+  apiServer?: string;
+  caCert?: string;
+  egress?: string;
+}
 export interface KubernetesClusterAgentStatusNodesNodepools {
   name?: string;
   nodes: KubernetesClusterAgentStatusNodesNodepoolsNodes[];
 }
+export interface Quantity {
+  Format: string;
+}
+export interface KubernetesClusterAgentStatusNodesNodepoolsNodesResource {
+  capacity: Quantity;
+  allocated: Quantity;
+}
 export interface KubernetesClusterAgentStatusNodesNodepoolsNodes {
   name?: string;
-  cpu?: number;
-  memory?: number;
+  cpu: KubernetesClusterAgentStatusNodesNodepoolsNodesResource;
+  memory: KubernetesClusterAgentStatusNodesNodepoolsNodesResource;
   architecture?: string;
   kubernetesVersion?: string;
 }
@@ -716,6 +735,8 @@ export interface KubernetesClusterAgentStatus {
   datacenter?: string;
   nodes: KubernetesClusterAgentStatusNodes;
   versions?: { [key: string]: string };
+  urls?: { [key: string]: string };
+  endpoint?: KubernetesClusterAgentStatusEndpoint;
   createdAt?: Time;
   lastSeen?: Time;
 }
@@ -795,6 +816,8 @@ export interface KubernetesClusterClusterState {
 export interface KubernetesClusterStatus {
   state: KubernetesClusterClusterState;
   phase: string;
+  message?: string;
+  workers?: number;
   conditions: KubernetesClusterCondition[];
 }
 export interface ResourceKubernetesClusterStatus {
@@ -1656,6 +1679,7 @@ export interface Resource {
   backupjob?: ResourceBackupJob;
   backuprun?: ResourceBackupRun;
   machine?: ResourceMachine;
+  config?: ResourceConfig;
   unknown?: ResourceUnknown;
 }
 export interface ResourceSet {

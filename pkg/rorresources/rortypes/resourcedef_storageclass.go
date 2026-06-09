@@ -7,3 +7,13 @@ type ResourceStorageClass struct {
 	ReclaimPolicy        string `json:"reclaimPolicy"`
 	VolumeBindingMode    string `json:"volumeBindingMode"`
 }
+
+// (r ResourceStorageClass) Get returns a pointer to the resource of type ResourceStorageClass
+func (r *ResourceStorageClass) Get() *ResourceStorageClass {
+	return r
+}
+
+// StorageClassinterface represents the interface for resources of the type storageclass
+type StorageClassinterface interface {
+	Get() *ResourceStorageClass
+}
