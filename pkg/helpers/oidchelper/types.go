@@ -10,9 +10,10 @@ import (
 
 // IssuerConfig holds configuration for a single OIDC issuer.
 type IssuerConfig struct {
-	IssuerURL  string   `json:"issuerUrl"`
-	ClientIDs  []string `json:"clientIds"`
-	SkipVerify bool     `json:"skipVerify,omitempty"`
+	IssuerURL    string   `json:"issuerUrl"`
+	DiscoveryURL string   `json:"discoveryUrl,omitempty"`
+	ClientIDs    []string `json:"clientIds"`
+	SkipVerify   bool     `json:"skipVerify,omitempty"`
 }
 
 // TokenClaims represents the claims extracted from a validated token.
