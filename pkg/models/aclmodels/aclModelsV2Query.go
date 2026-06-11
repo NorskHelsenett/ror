@@ -2,7 +2,14 @@ package aclmodels
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/google/uuid"
 )
+
+// ClusterIdToUidResolver is an optional function that resolves a cluster ID
+// (human-readable name) to its UID (UUID). Set this at init time in the
+// application that has database access (e.g. ror-api).
+// Returns the UID string, or empty string if not found.
+var ClusterIdToUidResolver func(clusterID string) string
 
 // v2 querymodel for access
 type AclV2QueryAccessScopeSubject struct {
@@ -47,6 +54,17 @@ func NewAclV2QueryAccessScopeSubject(scope any, subject any) AclV2QueryAccessSco
 	if !returnQuery.IsValid() {
 		returnQuery.Scope = Acl2ScopeUnknown
 		returnQuery.Subject = Acl2Subject("ErrorSubject")
+	}
+
+	if returnQuery.Scope == Acl2ScopeCluster {
+		if _, err := uuid.Parse(string(returnQuery.Subject)); err != nil {
+			// Subject is not a UUID, treat it as a clusterid and resolve to uid
+			if ClusterIdToUidResolver != nil {
+				if uid := ClusterIdToUidResolver(string(returnQuery.Subject)); uid != "" {
+					returnQuery.Subject = Acl2Subject(uid)
+				}
+			}
+		}
 	}
 
 	return returnQuery
