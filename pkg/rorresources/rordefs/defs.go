@@ -196,7 +196,7 @@ var ResourceSbomReport = ApiResource{
 	},
 	Plural:     "sbomreports",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent},
+	Types:      []ApiResourceType{ApiResourceTypeInternal},
 	Versions:   []ApiVersions{ApiVersionV2},
 }
 

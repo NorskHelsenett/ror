@@ -99,6 +99,7 @@ type Workspace struct {
 
 type Cluster struct {
 	ID            string            `json:"id" bson:"_id,omitempty"`
+	Uid           string            `json:"uid" bson:"uid,omitempty"`
 	Identifier    string            `json:"identifier"`
 	ClusterIdOld  string            `json:"clusterIdOld" bson:"clusteridold"`
 	ACL           AccessControlList `json:"acl"`
