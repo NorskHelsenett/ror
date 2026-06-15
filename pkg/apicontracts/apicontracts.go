@@ -506,6 +506,7 @@ type ApiKey struct {
 	Identifier  string     `json:"identifier" validate:"required,min=1,ne='',max=100,rortext"`
 	DisplayName string     `json:"displayName,omitempty" validate:"required,min=3,ne='',max=20,rortext"`
 	Type        ApiKeyType `json:"type" validate:"required,min=1,ne=''"`
+	Uid         string     `json:"uid,omitempty" bson:"uid,omitempty"`
 	ReadOnly    bool       `json:"readOnly"`
 	Expires     time.Time  `json:"expires,omitempty"`
 	Created     time.Time  `json:"created,omitempty"`
