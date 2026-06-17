@@ -25,7 +25,9 @@ func (c *V1Client) GetVersion(ctx context.Context) (string, error) {
 	defer span.End()
 	var versiondata rorversion.RorVersion
 
-	err := c.Client.GetJSON(ctx, c.basePath+"/version", &versiondata, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsNoAuth})
+	err := c.Client.GetJSON(ctx, c.basePath+"/version", &versiondata,
+		httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsNoAuth},
+		httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsSkipPreflight})
 	if err != nil {
 		return "", err
 	}

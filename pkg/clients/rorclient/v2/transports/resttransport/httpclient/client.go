@@ -48,10 +48,11 @@ type HttpTransportClientStatus struct {
 
 // Available client configuration options
 const (
-	HttpTransportClientOptsNoAuth  HttpTransportClientOpts = "NOAUTH"  // Skip authentication for this request
-	HttpTransportClientOptsHeaders HttpTransportClientOpts = "HEADERS" // Add custom headers
-	HttpTransportClientOptsQuery   HttpTransportClientOpts = "QUERY"   // Add query parameters
-	HttpTransportClientTimeout     HttpTransportClientOpts = "TIMEOUT" // Set request timeout
+	HttpTransportClientOptsNoAuth        HttpTransportClientOpts = "NOAUTH"        // Skip authentication for this request
+	HttpTransportClientOptsHeaders       HttpTransportClientOpts = "HEADERS"       // Add custom headers
+	HttpTransportClientOptsQuery         HttpTransportClientOpts = "QUERY"         // Add query parameters
+	HttpTransportClientTimeout           HttpTransportClientOpts = "TIMEOUT"       // Set request timeout
+	HttpTransportClientOptsSkipPreflight HttpTransportClientOpts = "SKIPPREFLIGHT" // Bypass the RetryAfter preflight gate (e.g. for health probes)
 )
 
 // HttpTransportClientConfig defines the configuration for the HTTP transport client.
@@ -152,8 +153,10 @@ func (t *HttpTransportClientConfig) GetRole() string {
 func (t *HttpTransportClient) GetJSON(ctx context.Context, path string, out any, params ...HttpTransportClientParams) error {
 	ctx, span := rortracer.StartSpan(ctx, "httpclient.GetJSON")
 	defer span.End()
-	if err := t.PreflightCheck(); err != nil {
-		return err
+	if !skipPreflight(params...) {
+		if err := t.PreflightCheck(); err != nil {
+			return err
+		}
 	}
 	req, err := http.NewRequestWithContext(ctx, "GET", t.Config.BaseURL+path, nil)
 	if err != nil {
@@ -321,6 +324,18 @@ func (t *HttpTransportClient) Head(ctx context.Context, path string, params ...H
 	}
 
 	return res.Header, res.StatusCode, nil
+}
+
+// skipPreflight reports whether the request params request bypassing the
+// PreflightCheck RetryAfter gate. This is used by health probes so that a
+// throttled resource path does not also block liveness reachability checks.
+func skipPreflight(params ...HttpTransportClientParams) bool {
+	for _, param := range params {
+		if param.Key == HttpTransportClientOptsSkipPreflight {
+			return true
+		}
+	}
+	return false
 }
 
 // PreflightCheck verifies if the client is ready to make a request by checking
