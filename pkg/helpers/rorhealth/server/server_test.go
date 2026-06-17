@@ -1,8 +1,13 @@
 package server
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
 	"net/netip"
 	"testing"
+
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 )
 
 func TestParseServerString(t *testing.T) {
@@ -96,5 +101,79 @@ func TestGetDefaultAddrPort(t *testing.T) {
 	expectedString := "0.0.0.0:9999"
 	if result.String() != expectedString {
 		t.Errorf("getDefaultAddrPort() string = %v, want %v", result.String(), expectedString)
+	}
+}
+
+// failingChecker is a health checker that always reports a failing status.
+type failingChecker struct{}
+
+func (failingChecker) CheckHealth(_ context.Context) []rorhealth.Check {
+	return []rorhealth.Check{{
+		Status: rorhealth.StatusFail,
+		Output: "dependency down",
+	}}
+}
+
+// TestHealthMuxLivenessIgnoresDependencies verifies that the liveness endpoint
+// reports the process as alive (HTTP 200) even when a registered dependency is
+// failing, so that a dependency outage does not trigger a pod restart.
+func TestHealthMuxLivenessIgnoresDependencies(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "test-failing-dep", failingChecker{})
+	defer registered.Deregister()
+
+	mux := newHealthMux()
+
+	req := httptest.NewRequest(http.MethodGet, "/health/live", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("liveness with failing dependency = %d, want %d", rec.Code, http.StatusOK)
+	}
+}
+
+// TestHealthMuxReadinessReflectsDependencies verifies that the readiness
+// endpoint fails (HTTP 500) when a registered dependency is failing, so the pod
+// is taken out of service while remaining alive.
+func TestHealthMuxReadinessReflectsDependencies(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "test-failing-dep", failingChecker{})
+	defer registered.Deregister()
+
+	mux := newHealthMux()
+
+	req := httptest.NewRequest(http.MethodGet, "/health/ready", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("readiness with failing dependency = %d, want %d", rec.Code, http.StatusInternalServerError)
+	}
+}
+
+// TestHealthMuxLivenessMethods verifies the liveness handler's HTTP method
+// handling.
+func TestHealthMuxLivenessMethods(t *testing.T) {
+	mux := newHealthMux()
+
+	tests := []struct {
+		method   string
+		expected int
+	}{
+		{http.MethodGet, http.StatusOK},
+		{http.MethodHead, http.StatusOK},
+		{http.MethodOptions, http.StatusNoContent},
+		{http.MethodPost, http.StatusMethodNotAllowed},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.method, func(t *testing.T) {
+			req := httptest.NewRequest(tt.method, "/health/live", nil)
+			rec := httptest.NewRecorder()
+			mux.ServeHTTP(rec, req)
+
+			if rec.Code != tt.expected {
+				t.Errorf("liveness %s = %d, want %d", tt.method, rec.Code, tt.expected)
+			}
+		})
 	}
 }
