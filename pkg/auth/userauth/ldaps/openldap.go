@@ -55,7 +55,7 @@ func (l *LdapsClient) Connect() error {
 
 	for _, ldapserver := range l.config.Servers {
 		ldapsport, err := strconv.Atoi(ldap.DefaultLdapsPort)
-		rlog.Infof("Trying server %s for domain %s.", ldapserver.Host, l.config.Domain)
+		rlog.Debug("trying LDAP server", rlog.String("host", ldapserver.Host), rlog.String("domain", l.config.Domain))
 		if err != nil {
 			return fmt.Errorf("failed to parse default ldaps port")
 		}
@@ -79,15 +79,16 @@ func (l *LdapsClient) Connect() error {
 		}
 
 		if err != nil {
-			rlog.Error("an error occurred connecting to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port))
+			rlog.Debug("an error occurred connecting to LDAP-host.", rlog.String("error", err.Error()), rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port))
 			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "500").Observe(time.Since(connectionStart).Seconds())
+			continue
 		}
 		err = client.Bind(l.config.BindUser, l.config.BindPassword)
 		if err != nil {
-			rlog.Error("an error occurred authenticating to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
+			rlog.Debug("an error occurred authenticating to LDAP-host.", rlog.String("error", err.Error()), rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
 			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "401").Observe(time.Since(connectionStart).Seconds())
 		} else {
-			rlog.Infof("Connected to server server %s for domain %s.", ldapserver.Host, l.config.Domain)
+			rlog.Infof("Connected to server %s for domain %s.", ldapserver.Host, l.config.Domain)
 			l.config.server = ldapserver.Host
 			authtools.ServerConnectionHistogram.WithLabelValues("openldap", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "200").Observe(time.Since(connectionStart).Seconds())
 			break
