@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/config/rorconfig"
@@ -14,6 +15,13 @@ import (
 )
 
 var vaultClient *VaultClient = &VaultClient{}
+
+const (
+	// vaultInitialBackoff is the wait time before the first connection retry.
+	vaultInitialBackoff = 1 * time.Second
+	// vaultMaxBackoff caps the exponential backoff between connection retries.
+	vaultMaxBackoff = 30 * time.Second
+)
 
 type VaultClient struct {
 	Context context.Context
@@ -44,8 +52,37 @@ func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultC
 		return nil, err
 	}
 
-	rorhealth.Register(ctx, "vault", vaultClient)
 	return &vaultClient, nil
+}
+
+// vaultStartupChecker is a health checker that tracks the vault connection
+// state while it is being established. Before a connection succeeds it reports
+// StatusFail so the health endpoint clearly shows vault as the dependency that
+// is blocking startup. Once a client is set it delegates to the live client's
+// ping so the check reflects the real connection state.
+type vaultStartupChecker struct {
+	mu     sync.RWMutex
+	client *VaultClient
+}
+
+func (c *vaultStartupChecker) setClient(client *VaultClient) {
+	c.mu.Lock()
+	c.client = client
+	c.mu.Unlock()
+}
+
+func (c *vaultStartupChecker) CheckHealth(ctx context.Context) []rorhealth.Check {
+	c.mu.RLock()
+	client := c.client
+	c.mu.RUnlock()
+
+	if client == nil {
+		return []rorhealth.Check{{
+			Status: rorhealth.StatusFail,
+			Output: "Connecting to vault",
+		}}
+	}
+	return client.CheckHealth(ctx)
 }
 
 func getClient(vaultUrl string) (*vault.Client, error) {
@@ -111,27 +148,125 @@ func (v VaultClient) PingWithContext(_ context.Context) (bool, error) {
 // Might be better to migrate to New() a factory function that takes a VaultCredsHelper
 // and a url as arguments.
 // Migth deprecate this function in the future
+//
+// NewVaultClient retries the connection with exponential backoff until it
+// succeeds, blocking until a usable client is returned. It never returns nil.
 func NewVaultClient(role string, url string) *VaultClient {
-	var err error
-	var credsHelper VaultCredsHelper
+	return NewVaultClientWithContext(context.Background(), role, url)
+}
 
-	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 Jest the path to the token file in the secrets engine
-	if _, err := os.Stat(tokenFilePath); err == nil {
-		credsHelper = NewKubernetesVaultCredsHelper(role, 3600)
+// NewVaultClientWithContext creates a vault client, retrying the connection and
+// login with exponential backoff until they succeed or the context is
+// cancelled. Each failed attempt is logged with the vault url, attempt number
+// and underlying error so failures are easy to troubleshoot.
+//
+// On success it returns the connected client. If the context is cancelled
+// before a connection is established it returns a non-nil, unconnected client
+// whose health checks report unhealthy, so callers never receive nil.
+func NewVaultClientWithContext(ctx context.Context, role string, url string) *VaultClient {
+	credsHelper := newVaultCredsHelper(role)
 
-	} else {
-		envtoken := rorconfig.GetString("VAULT_TOKEN")
-		if envtoken == "" {
-			credsHelper = NewStaticVaultCredsHelper("S3cret!")
-		} else {
-			credsHelper = NewStaticVaultCredsHelper(envtoken)
+	// Register a health checker up front so the health endpoint reports vault
+	// as unhealthy ("Connecting to vault") while the retry loop runs, instead of
+	// the dependency being invisible until it finally connects.
+	checker := &vaultStartupChecker{}
+	rorhealth.Register(ctx, "vault", checker)
+
+	backoff := vaultInitialBackoff
+	for attempt := 1; ; attempt++ {
+		client, err := New(ctx, credsHelper, url)
+		if err == nil {
+			if attempt > 1 {
+				rlog.Info("connected to vault",
+					rlog.String("url", url),
+					rlog.Int("attempts", attempt))
+			}
+			checker.setClient(client)
+			return client
+		}
+
+		rlog.Error("could not connect to vault, retrying", err,
+			rlog.String("url", url),
+			rlog.Int("attempt", attempt),
+			rlog.String("retryIn", backoff.String()))
+
+		select {
+		case <-ctx.Done():
+			rlog.Error("giving up connecting to vault: context cancelled", ctx.Err(),
+				rlog.String("url", url),
+				rlog.Int("attempts", attempt))
+			unconnected := &VaultClient{Context: ctx, Url: url}
+			checker.setClient(unconnected)
+			return unconnected
+		case <-time.After(backoff):
+		}
+
+		backoff *= 2
+		if backoff > vaultMaxBackoff {
+			backoff = vaultMaxBackoff
 		}
 	}
+}
 
-	client, err := New(context.Background(), credsHelper, url)
-	if err != nil {
-		rlog.Error("error initializing vault client", err)
-		return nil
+// MustNewVaultClientWithContext behaves like NewVaultClientWithContext but
+// treats a cancelled context as fatal: instead of returning an unconnected
+// client it logs the failure and exits the process. Use this when a vault
+// connection is a hard prerequisite and the process must not continue without
+// it.
+func MustNewVaultClientWithContext(ctx context.Context, role string, url string) *VaultClient {
+	credsHelper := newVaultCredsHelper(role)
+
+	// Register a health checker up front so the health endpoint reports vault
+	// as unhealthy ("Connecting to vault") while the retry loop runs, instead of
+	// the dependency being invisible until it finally connects.
+	checker := &vaultStartupChecker{}
+	rorhealth.Register(ctx, "vault", checker)
+
+	backoff := vaultInitialBackoff
+	for attempt := 1; ; attempt++ {
+		client, err := New(ctx, credsHelper, url)
+		if err == nil {
+			if attempt > 1 {
+				rlog.Info("connected to vault",
+					rlog.String("url", url),
+					rlog.Int("attempts", attempt))
+			}
+			checker.setClient(client)
+			return client
+		}
+
+		rlog.Error("could not connect to vault, retrying", err,
+			rlog.String("url", url),
+			rlog.Int("attempt", attempt),
+			rlog.String("retryIn", backoff.String()))
+
+		select {
+		case <-ctx.Done():
+			rlog.Fatal("could not connect to vault within timeout, giving up", ctx.Err(),
+				rlog.String("url", url),
+				rlog.Int("attempts", attempt))
+		case <-time.After(backoff):
+		}
+
+		backoff *= 2
+		if backoff > vaultMaxBackoff {
+			backoff = vaultMaxBackoff
+		}
 	}
-	return client
+}
+
+// newVaultCredsHelper selects the credentials helper based on the runtime
+// environment: a Kubernetes service account token when running in-cluster,
+// otherwise the VAULT_TOKEN env var (falling back to a development token).
+func newVaultCredsHelper(role string) VaultCredsHelper {
+	tokenFilePath := "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 Jest the path to the token file in the secrets engine
+	if _, err := os.Stat(tokenFilePath); err == nil {
+		return NewKubernetesVaultCredsHelper(role, 3600)
+	}
+
+	envtoken := rorconfig.GetString("VAULT_TOKEN")
+	if envtoken == "" {
+		return NewStaticVaultCredsHelper("S3cret!")
+	}
+	return NewStaticVaultCredsHelper(envtoken)
 }
