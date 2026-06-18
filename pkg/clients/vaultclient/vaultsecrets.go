@@ -19,14 +19,17 @@ func GetSecret(secretPath string) (map[string]interface{}, error) {
 	data, err := vaultClient.Client.Read(vaultClient.Context, secretPath)
 	if err != nil {
 		var vaultError *vault.ResponseError
-		errors.As(err, &vaultError)
-		msg := fmt.Sprintf("Could not get secret, StatusCode: %d", vaultError.StatusCode)
-		if vaultError.StatusCode == 404 {
-			rlog.Info(msg)
-		} else {
-			rlog.Error(msg, err)
+		if errors.As(err, &vaultError) {
+			msg := fmt.Sprintf("Could not get secret, StatusCode: %d", vaultError.StatusCode)
+			if vaultError.StatusCode == 404 {
+				rlog.Info(msg)
+			} else {
+				rlog.Error(msg, err)
+			}
+			return nil, errors.New(msg)
 		}
-		return nil, errors.New(msg)
+		rlog.Error("could not get secret", err)
+		return nil, fmt.Errorf("could not get secret: %w", err)
 	}
 	if data != nil {
 		return data.Data, nil
@@ -44,14 +47,17 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 	data, err := vaultClient.Client.Read(vaultClient.Context, secretPath)
 	if err != nil {
 		var err2 *vault.ResponseError
-		errors.As(err, &err2)
-		msg := fmt.Sprintf("Could not get secret, StatusCode: %d", err2.StatusCode)
-		if err2.StatusCode == 404 {
-			rlog.Info(msg)
-		} else {
-			rlog.Error(msg, err)
+		if errors.As(err, &err2) {
+			msg := fmt.Sprintf("Could not get secret, StatusCode: %d", err2.StatusCode)
+			if err2.StatusCode == 404 {
+				rlog.Info(msg)
+			} else {
+				rlog.Error(msg, err)
+			}
+			return "", errors.New(msg)
 		}
-		return "", errors.New(msg)
+		rlog.Error("could not get secret", err)
+		return "", fmt.Errorf("could not get secret: %w", err)
 	}
 	if data != nil {
 		vaultval, _ := data.Data["data"].(map[string]interface{})
@@ -70,14 +76,17 @@ func (vc VaultClient) GetSecret(secretPath string) (map[string]interface{}, erro
 	data, err := vc.Client.Read(vc.Context, secretPath)
 	if err != nil {
 		var vaultError *vault.ResponseError
-		errors.As(err, &vaultError)
-		msg := fmt.Sprintf("Could not get secret, StatusCode: %d", vaultError.StatusCode)
-		if vaultError.StatusCode == 404 {
-			rlog.Info(msg)
-		} else {
-			rlog.Error(msg, err)
+		if errors.As(err, &vaultError) {
+			msg := fmt.Sprintf("Could not get secret, StatusCode: %d", vaultError.StatusCode)
+			if vaultError.StatusCode == 404 {
+				rlog.Info(msg)
+			} else {
+				rlog.Error(msg, err)
+			}
+			return nil, errors.New(msg)
 		}
-		return nil, errors.New(msg)
+		rlog.Error("could not get secret", err)
+		return nil, fmt.Errorf("could not get secret: %w", err)
 	}
 	if data != nil {
 		return data.Data, nil
@@ -109,14 +118,17 @@ func (vc VaultClient) GetSecretValue(secretPath string, key string) (string, err
 	data, err := vc.Client.Read(vc.Context, secretPath)
 	if err != nil {
 		var err2 *vault.ResponseError
-		errors.As(err, &err2)
-		msg := fmt.Sprintf("Could not get secret, StatusCode: %d", err2.StatusCode)
-		if err2.StatusCode == 404 {
-			rlog.Info(msg)
-		} else {
-			rlog.Error(msg, err)
+		if errors.As(err, &err2) {
+			msg := fmt.Sprintf("Could not get secret, StatusCode: %d", err2.StatusCode)
+			if err2.StatusCode == 404 {
+				rlog.Info(msg)
+			} else {
+				rlog.Error(msg, err)
+			}
+			return "", errors.New(msg)
 		}
-		return "", errors.New(msg)
+		rlog.Error("could not get secret", err)
+		return "", fmt.Errorf("could not get secret: %w", err)
 	}
 	if data != nil {
 		vaultval, _ := data.Data["data"].(map[string]interface{})
