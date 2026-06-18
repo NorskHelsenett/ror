@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	gooidc "github.com/coreos/go-oidc/v3/oidc"
@@ -155,6 +156,62 @@ func (v *MultiIssuerValidator) LoadIssuersAsync(ctx context.Context, configs ...
 				rlog.Error("failed to load OIDC issuer", err, rlog.String("issuer", cfg.IssuerURL))
 				return
 			}
+			rlog.Info("OIDC issuer loaded", rlog.String("issuer", cfg.IssuerURL))
+		}(cfg)
+	}
+}
+
+// oidcStartupChecker gates /health/ready during the initial OIDC issuer load.
+// It reports StatusFail until every expected issuer has loaded or the startup
+// deadline passes, whichever comes first, then reports StatusPass permanently.
+// It only reflects the initial startup load: issuers added later at runtime do
+// not affect it.
+type oidcStartupChecker struct {
+	mu       sync.Mutex
+	expected int
+	loaded   int
+	deadline time.Time
+}
+
+func (c *oidcStartupChecker) markLoaded() {
+	c.mu.Lock()
+	c.loaded++
+	c.mu.Unlock()
+}
+
+func (c *oidcStartupChecker) CheckHealth(_ context.Context) []rorhealth.Check {
+	c.mu.Lock()
+	loaded, expected := c.loaded, c.expected
+	c.mu.Unlock()
+
+	if loaded >= expected || time.Now().After(c.deadline) {
+		return []rorhealth.Check{{Status: rorhealth.StatusPass}}
+	}
+	return []rorhealth.Check{{
+		Status: rorhealth.StatusFail,
+		Output: fmt.Sprintf("Loading OIDC issuers (%d/%d)", loaded, expected),
+	}}
+}
+
+// LoadIssuersForStartup behaves like LoadIssuersAsync but also registers a
+// health check named "oidc" that holds /health/ready unready until all issuers
+// have loaded or readyTimeout elapses, whichever comes first. After that point
+// the check passes permanently. Use this for the initial startup load only;
+// issuers added later via AddIssuerWithRetry do not affect readiness.
+func (v *MultiIssuerValidator) LoadIssuersForStartup(ctx context.Context, readyTimeout time.Duration, configs ...IssuerConfig) {
+	checker := &oidcStartupChecker{
+		expected: len(configs),
+		deadline: time.Now().Add(readyTimeout),
+	}
+	rorhealth.Register(ctx, "oidc", checker)
+
+	for _, cfg := range configs {
+		go func(cfg IssuerConfig) {
+			if err := v.AddIssuerWithRetry(ctx, cfg); err != nil {
+				rlog.Error("failed to load OIDC issuer", err, rlog.String("issuer", cfg.IssuerURL))
+				return
+			}
+			checker.markLoaded()
 			rlog.Info("OIDC issuer loaded", rlog.String("issuer", cfg.IssuerURL))
 		}(cfg)
 	}
