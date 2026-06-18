@@ -206,6 +206,9 @@ func (mdb *MongodbCon) connect() error {
 
 	err = cli.Ping(mdb.Context, nil)
 	if err != nil {
+		// Disconnect the temporary client so a failed attempt does not leak
+		// sockets and goroutines when the caller retries.
+		_ = cli.Disconnect(mdb.Context)
 		return fmt.Errorf("could not ping mongodb: %w", err)
 	}
 

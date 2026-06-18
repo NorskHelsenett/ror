@@ -194,6 +194,10 @@ func (rc *rediscon) connect() error {
 	cli := goredis.NewClient(&goredis.Options{Addr: rc.getAddr(), CredentialsProvider: rc.Credentials.GetCredentials})
 	rc.Client = cli
 	if !rc.Ping() {
+		// Close and clear the client so a failed attempt does not leak the
+		// connection pool when the caller retries.
+		_ = cli.Close()
+		rc.Client = nil
 		return fmt.Errorf("could not ping redis at %s", rc.getAddr())
 	}
 	_ = redisotel.InstrumentMetrics(cli)

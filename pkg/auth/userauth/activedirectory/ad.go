@@ -122,6 +122,11 @@ func (l *AdClient) Connect() error {
 		if err != nil {
 			rlog.Debug("an error occurred authenticating to LDAP-host.", rlog.String("error", err.Error()), rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port), rlog.Any("BindUser", l.config.BindUser))
 			authtools.ServerConnectionHistogram.WithLabelValues("ad", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "401").Observe(time.Since(connectionStart).Seconds())
+			// Close the connection before trying the next server so failed
+			// attempts do not leak open connections/file descriptors.
+			client.Close()
+			client = nil
+			continue
 		} else {
 			rlog.Infof("Connected to server %s for domain %s.", ldapserver.Host, l.config.Domain)
 			l.config.server = ldapserver.Host
