@@ -302,7 +302,7 @@ func (rc *rabbitmqcon) connect() error {
 	connection.NotifyClose(c)
 	rc.RabbitMqChannel = channel
 	rc.Connected = true
-	rlog.Info("connected to RabbitMQ", rlog.Any("Conected", rc.Connected))
+	rlog.Info("connected to RabbitMQ", rlog.Any("Connected", rc.Connected))
 
 	// Runtime reconnect: on connection loss, retry once and keep the previous
 	// fatal-on-failure behaviour for the steady-state path.
