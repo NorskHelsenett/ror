@@ -107,7 +107,7 @@ func Start(opts ...optionFunc) error {
 
 		httpServer = &http.Server{
 			Addr:              cfg.ipPort.String(),
-			Handler:           http.HandlerFunc(newhealth.HandleHTTP),
+			Handler:           newHealthMux(),
 			ReadHeaderTimeout: 0,
 		}
 		go func() {
@@ -119,6 +119,41 @@ func Start(opts ...optionFunc) error {
 		}()
 	}
 	return nil
+}
+
+// newHealthMux builds the HTTP routing for the health server with separate
+// liveness and readiness semantics:
+//
+//   - /health/live  liveness: reports the process is alive. It never runs the
+//     dependency checks, so a dependency outage (e.g. vault unreachable) does
+//     not cause Kubernetes to restart the pod.
+//   - /health/ready readiness: runs all registered dependency checks. A failing
+//     dependency makes the pod NotReady (removed from Service endpoints) while
+//     it stays alive and queryable, allowing background retries to recover.
+//   - /          and  /health  retain the previous behaviour (full dependency
+//     check) for backwards compatibility with existing probes and callers.
+func newHealthMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health/live", livenessHandler)
+	mux.HandleFunc("/health/ready", newhealth.HandleHTTP)
+	// Catch-all preserves the prior behaviour where any path returned the full
+	// health check, including the well-known /health path.
+	mux.HandleFunc("/", newhealth.HandleHTTP)
+	return mux
+}
+
+// livenessHandler reports that the process is alive. It intentionally does not
+// inspect any registered dependency checks: liveness must only fail when the
+// process itself is unhealthy, never because an external dependency is down.
+func livenessHandler(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodGet, http.MethodHead:
+		w.WriteHeader(http.StatusOK)
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusNoContent)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
 }
 
 func MustStart(opts ...optionFunc) {

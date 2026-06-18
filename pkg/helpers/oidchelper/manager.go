@@ -32,7 +32,7 @@ func NewManager(signerIssuer string, storageAdapter tokenstoragehelper.StorageAd
 
 	return &Manager{
 		Validator: validator,
-		Signer:   NewTokenSigner(signingStorage, signerIssuer),
+		Signer:    NewTokenSigner(signingStorage, signerIssuer),
 	}, nil
 }
 
@@ -45,8 +45,19 @@ func NewManagerWithStorage(signerIssuer string, signingStorage tokenstoragehelpe
 
 	return &Manager{
 		Validator: validator,
-		Signer:   NewTokenSigner(signingStorage, signerIssuer),
+		Signer:    NewTokenSigner(signingStorage, signerIssuer),
 	}, nil
+}
+
+// NewManagerWithValidator creates a Manager that reuses an existing validator
+// instead of building its own. This lets a single MultiIssuerValidator be
+// shared between the token service and other consumers (e.g. an auth
+// middleware) so OIDC issuer discovery is performed only once.
+func NewManagerWithValidator(signerIssuer string, signingStorage tokenstoragehelper.SigningTokenKeyStorage, validator *MultiIssuerValidator) *Manager {
+	return &Manager{
+		Validator: validator,
+		Signer:    NewTokenSigner(signingStorage, signerIssuer),
+	}
 }
 
 // ValidateToken delegates to the multi-issuer validator.

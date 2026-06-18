@@ -57,6 +57,9 @@ const (
 
 	KV_HOST ConfigConst = "KV_HOST"
 	KV_PORT ConfigConst = "KV_PORT"
+	// KV_VAULT_ROLE is the vault database role used to issue redis/valkey
+	// credentials. When empty it defaults to "valkey-<ROLE>-role".
+	KV_VAULT_ROLE ConfigConst = "KV_VAULT_ROLE"
 
 	TRACER_ID                        ConfigConst = "TRACER_ID"
 	ENABLE_TRACING                   ConfigConst = "ENABLE_TRACING"
@@ -125,6 +128,7 @@ var ConfigConsts = EnvironmentVariables{
 	{key: "RABBITMQ_CONNECTIONSTRING", deprecated: false, description: ""},
 	{key: "KV_HOST", deprecated: false, description: ""},
 	{key: "KV_PORT", deprecated: false, description: ""},
+	{key: "KV_VAULT_ROLE", deprecated: false, description: ""},
 	{key: "TRACER_ID", deprecated: false, description: ""},
 	{key: "ENABLE_TRACING", deprecated: false, description: ""},
 	{key: "OPENTELEMETRY_COLLECTOR_ENDPOINT", deprecated: false, description: ""},

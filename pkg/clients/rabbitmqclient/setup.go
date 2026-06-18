@@ -3,6 +3,7 @@ package rabbitmqclient
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/clients"
@@ -15,6 +16,13 @@ import (
 	"go.opentelemetry.io/otel/trace/noop"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+)
+
+const (
+	// rabbitmqInitialBackoff is the wait time before the first connection retry.
+	rabbitmqInitialBackoff = 1 * time.Second
+	// rabbitmqMaxBackoff caps the exponential backoff between connection retries.
+	rabbitmqMaxBackoff = 30 * time.Second
 )
 
 type RabbitMQListnerInterface interface {
@@ -45,23 +53,73 @@ type rabbitmqcon struct {
 	SenderQueName      string
 }
 
+// NewRabbitMQConnection creates a rabbitmq connection, retrying with
+// exponential backoff until it succeeds. It blocks until connected.
+//
+// Prefer NewRabbitMQConnectionWithContext or MustNewRabbitMQConnectionWithContext
+// so the connection attempt can be bounded by a context.
 func NewRabbitMQConnection(cp credshelper.CredHelper, host string, port string, broadcastName string) RabbitMQConnection {
+	return NewRabbitMQConnectionWithContext(context.Background(), cp, host, port, broadcastName)
+}
+
+// NewRabbitMQConnectionWithContext creates a rabbitmq connection, retrying with
+// exponential backoff until it succeeds or the context is cancelled. A health
+// checker is registered up front so the health endpoint reports rabbitmq as
+// unhealthy ("Connecting to rabbitmq") while the retry loop runs, instead of the
+// dependency being invisible until it finally connects.
+//
+// If the context is cancelled before a connection is established it returns a
+// non-nil, unconnected connection whose health check reports unhealthy, so
+// callers never receive nil.
+func NewRabbitMQConnectionWithContext(ctx context.Context, cp credshelper.CredHelper, host string, port string, broadcastName string) RabbitMQConnection {
 	rc := getDefaultRabbitMQConnectionConfig()
-	options := []RabbitMQConnectionOption{
+	rc.applyOptions(
 		OptionCredentialsProvider(cp),
 		OptionHost(host),
 		OptionPort(port),
 		OptionBroadcastName(broadcastName),
+	)
+
+	checker := &rabbitmqStartupChecker{conn: rc}
+	rorhealth.Register(ctx, "rabbitmq", checker)
+
+	if err := rc.connectWithRetry(ctx); err == nil {
+		checker.setConnected()
 	}
-	rc.applyOptions(options...)
-	rc.connect()
+	return rc
+}
+
+// MustNewRabbitMQConnectionWithContext behaves like
+// NewRabbitMQConnectionWithContext but treats a cancelled context as fatal: it
+// logs the failure and exits the process. Use this when a rabbitmq connection is
+// a hard prerequisite and the process must not continue without it.
+func MustNewRabbitMQConnectionWithContext(ctx context.Context, cp credshelper.CredHelper, host string, port string, broadcastName string) RabbitMQConnection {
+	rc := getDefaultRabbitMQConnectionConfig()
+	rc.applyOptions(
+		OptionCredentialsProvider(cp),
+		OptionHost(host),
+		OptionPort(port),
+		OptionBroadcastName(broadcastName),
+	)
+
+	checker := &rabbitmqStartupChecker{conn: rc}
+	rorhealth.Register(ctx, "rabbitmq", checker)
+
+	if err := rc.connectWithRetry(ctx); err != nil {
+		rlog.Fatal("could not connect to rabbitmq within timeout, giving up", err,
+			rlog.String("host", host),
+			rlog.String("port", port))
+	}
+	checker.setConnected()
 	return rc
 }
 
 func NewRabbitMQConnectionWithOptions(cfg ...RabbitMQConnectionOption) RabbitMQConnection {
 	rc := getDefaultRabbitMQConnectionConfig()
 	rc.applyOptions(cfg...)
-	rc.connect()
+	if err := rc.connect(); err != nil {
+		rlog.Fatal("could not connect to rabbitmq", err)
+	}
 	return rc
 }
 
@@ -69,8 +127,41 @@ func NewRabbitMQConnectionWithDefaults(cfg ...RabbitMQConnectionOption) RabbitMQ
 	rc := getDefaultRabbitMQConnectionConfig()
 	rc.loadDefaultConfig()
 	rc.applyOptions(cfg...)
-	rc.connect()
+	if err := rc.connect(); err != nil {
+		rlog.Fatal("could not connect to rabbitmq", err)
+	}
 	return rc
+}
+
+// rabbitmqStartupChecker is a health checker that tracks the rabbitmq connection
+// state while it is being established. Before a connection succeeds it reports
+// StatusFail so the health endpoint clearly shows rabbitmq as the dependency
+// that is blocking startup. Once connected it delegates to the live connection's
+// ping so the check reflects the real connection state.
+type rabbitmqStartupChecker struct {
+	mu        sync.RWMutex
+	conn      *rabbitmqcon
+	connected bool
+}
+
+func (c *rabbitmqStartupChecker) setConnected() {
+	c.mu.Lock()
+	c.connected = true
+	c.mu.Unlock()
+}
+
+func (c *rabbitmqStartupChecker) CheckHealth(ctx context.Context) []rorhealth.Check {
+	c.mu.RLock()
+	connected := c.connected
+	c.mu.RUnlock()
+
+	if !connected {
+		return []rorhealth.Check{{
+			Status: rorhealth.StatusFail,
+			Output: "Connecting to rabbitmq",
+		}}
+	}
+	return c.conn.CheckHealth(ctx)
 }
 
 func getDefaultRabbitMQConnectionConfig() *rabbitmqcon {
@@ -132,7 +223,9 @@ func (rc *rabbitmqcon) RegisterHandlerWithTTL(listener RabbitMQListnerInterface,
 
 func (rc rabbitmqcon) GetChannel() *amqp.Channel {
 	if !rc.Connected {
-		rc.connect()
+		if err := rc.connect(); err != nil {
+			rlog.Fatal("cannot connect to rabbitmq", err)
+		}
 	}
 	return rc.RabbitMqChannel
 }
@@ -180,37 +273,87 @@ func (rc *rabbitmqcon) validateConfig() error {
 	return nil
 }
 
-func (rc *rabbitmqcon) connect() {
+// connect establishes a single connection to rabbitmq, opens a channel and
+// starts the reconnect watcher. It returns an error instead of exiting so
+// callers can choose their own retry or failure policy. The reconnect watcher
+// spawned on success keeps the previous fatal-on-failure behaviour for runtime
+// reconnects.
+func (rc *rabbitmqcon) connect() error {
 	err := rc.validateConfig()
 	if err != nil {
-		rlog.Fatal("invalid rabbitmq configuration", err)
+		return fmt.Errorf("invalid rabbitmq configuration: %w", err)
 	}
 	rlog.Debug("Connecting", rlog.String("rabbitmq", rc.getConnectionstringLog()))
+
+	connection, err := amqp.Dial(rc.getConnectionstring())
+	if err != nil {
+		return fmt.Errorf("cannot connect to rabbitmq: %w", err)
+	}
+
+	channel, err := connection.Channel()
+	if err != nil {
+		_ = connection.Close()
+		return fmt.Errorf("failed to open a rabbitmq channel: %w", err)
+	}
+
 	c := make(chan *amqp.Error)
 	rc.CancelChannel = c
+	rc.RabbitMqConnection = connection
+	connection.NotifyClose(c)
+	rc.RabbitMqChannel = channel
+	rc.Connected = true
+	rlog.Info("connected to RabbitMQ", rlog.Any("Connected", rc.Connected))
+
+	// Runtime reconnect: on connection loss, retry once and keep the previous
+	// fatal-on-failure behaviour for the steady-state path.
 	go func(rc *rabbitmqcon) {
 		err := <-rc.CancelChannel
 		rlog.Error("reconnect", err)
 		rc.Connected = false
-		rc.connect()
+		if rerr := rc.connect(); rerr != nil {
+			rlog.Fatal("could not reconnect to rabbitmq", rerr)
+		}
 	}(rc)
-	connection, err := amqp.Dial(rc.getConnectionstring())
-	if err != nil {
-		rlog.Fatal("cannot connect to rabbitmq", err)
-	}
-
-	rc.RabbitMqConnection = connection
-	connection.NotifyClose(c)
-
-	failOnError(err, "Failed to connect to RabbitMQ")
-
-	channel, err := connection.Channel()
-	failOnError(err, "Failed to open a channel")
-	rc.RabbitMqChannel = channel
-	rc.Connected = true
-	rlog.Info("connected to RabbitMQ", rlog.Any("Conected", rc.Connected))
 
 	for _, listner := range rc.Listeners {
 		go listner.Listen(c)
+	}
+	return nil
+}
+
+// connectWithRetry connects to rabbitmq, retrying with exponential backoff until
+// it succeeds or the context is cancelled. Each failed attempt is logged with
+// the host, port, attempt number and underlying error so failures are easy to
+// troubleshoot.
+func (rc *rabbitmqcon) connectWithRetry(ctx context.Context) error {
+	backoff := rabbitmqInitialBackoff
+	for attempt := 1; ; attempt++ {
+		err := rc.connect()
+		if err == nil {
+			if attempt > 1 {
+				rlog.Info("connected to rabbitmq",
+					rlog.String("host", rc.Host),
+					rlog.String("port", rc.Port),
+					rlog.Int("attempts", attempt))
+			}
+			return nil
+		}
+
+		rlog.Error("could not connect to rabbitmq, retrying", err,
+			rlog.String("host", rc.Host),
+			rlog.String("port", rc.Port),
+			rlog.Int("attempt", attempt),
+			rlog.String("retryIn", backoff.String()))
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(backoff):
+		}
+
+		backoff *= 2
+		if backoff > rabbitmqMaxBackoff {
+			backoff = rabbitmqMaxBackoff
+		}
 	}
 }
