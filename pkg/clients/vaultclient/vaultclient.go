@@ -35,15 +35,23 @@ type VaultCredsHelper interface {
 }
 
 // creates a new vault client
+//
+// The connected client stores a long-lived context (context.Background) rather
+// than the caller's ctx. VaultClient.Context is used for the lifetime of the
+// client: runtime secret reads and the background token-renewal goroutine. The
+// caller's ctx is typically a bounded startup context that is cancelled once
+// connection setup completes (e.g. InitConnections' deferred cancel), so
+// storing it would break every later operation with "context canceled". The
+// startup connect/login timeout is instead enforced by the caller's retry loop
+// and the per-request timeout configured on the client.
 func New(ctx context.Context, credsHelper VaultCredsHelper, url string) (*VaultClient, error) {
-
 	client, err := getClient(url)
 	if err != nil {
 		return nil, err
 	}
 
 	vaultClient := VaultClient{
-		Context: ctx,
+		Context: context.Background(),
 		Client:  client,
 	}
 
@@ -195,7 +203,7 @@ func NewVaultClientWithContext(ctx context.Context, role string, url string) *Va
 			rlog.Error("giving up connecting to vault: context cancelled", ctx.Err(),
 				rlog.String("url", url),
 				rlog.Int("attempts", attempt))
-			unconnected := &VaultClient{Context: ctx, Url: url}
+			unconnected := &VaultClient{Context: context.Background(), Url: url}
 			checker.setClient(unconnected)
 			return unconnected
 		case <-time.After(backoff):
