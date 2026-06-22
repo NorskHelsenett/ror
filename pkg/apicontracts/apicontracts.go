@@ -169,9 +169,9 @@ type ClusterMetadata struct {
 }
 
 type ClusterConfig struct {
-	Versions        map[string]interface{} `json:"versions"`
-	Overrides       map[string]interface{} `json:"overrides"`
-	ProjectMetadata ProjectMetadata        `json:"projectMetadata"`
+	Versions        map[string]any  `json:"versions"`
+	Overrides       map[string]any  `json:"overrides"`
+	ProjectMetadata ProjectMetadata `json:"projectMetadata"`
 }
 
 type Versions struct {
@@ -304,25 +304,25 @@ type StatusMessage struct {
 }
 
 type ClusterControlPlaneMetadata struct {
-	ClusterId                interface{}                           `json:"clusterId"`
-	ClusterName              interface{}                           `json:"clusterName"`
-	Environment              interface{}                           `json:"environment"`
-	ProjectName              interface{}                           `json:"projectName"`
+	ClusterId                any                                   `json:"clusterId"`
+	ClusterName              any                                   `json:"clusterName"`
+	Environment              any                                   `json:"environment"`
+	ProjectName              any                                   `json:"projectName"`
 	ControlPlaneEndpoint     ClusterControlPlaneMetadataIp         `json:"controlPlaneEndpoint"`
-	ControlPlaneEndpointPort interface{}                           `json:"controlPlaneEndpointPort"`
+	ControlPlaneEndpointPort any                                   `json:"controlPlaneEndpointPort"`
 	Egress                   ClusterControlPlaneMetadataIp         `json:"egress"`
 	Datacenter               ClusterControlPlaneMetadataDatacenter `json:"datacenter"`
 }
 
 type ClusterControlPlaneMetadataDatacenter struct {
-	Name        interface{} `json:"name"`
-	Provider    interface{} `json:"provider"`
-	ApiEndpoint interface{} `json:"apiEndpoint"`
+	Name        any `json:"name"`
+	Provider    any `json:"provider"`
+	ApiEndpoint any `json:"apiEndpoint"`
 }
 
 type ClusterControlPlaneMetadataIp struct {
-	IpV4 interface{} `json:"ipv4"`
-	IpV6 interface{} `json:"ipv6"`
+	IpV4 any `json:"ipv4"`
+	IpV6 any `json:"ipv6"`
 }
 
 type Metrics struct {
@@ -447,8 +447,8 @@ type Error struct {
 }
 
 type DesiredVersion struct {
-	Key   string      `json:"key" bson:"key"`
-	Value interface{} `json:"value" bson:"value"`
+	Key   string `json:"key" bson:"key"`
+	Value any    `json:"value" bson:"value"`
 }
 
 type User struct {

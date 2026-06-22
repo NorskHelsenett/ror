@@ -29,7 +29,7 @@ const (
 
 // Identity is a representation of the consumers identity kept in the context for authentication
 type Identity struct {
-	Auth            AuthInfo     `json:"auth,omitempty"`
+	Auth            AuthInfo     `json:"auth"`
 	Type            IdentityType `json:"type,omitempty"`
 	User            *User        `json:"user,omitempty"`
 	token           string
@@ -40,7 +40,7 @@ type Identity struct {
 type AuthInfo struct {
 	AuthProvider   IdentityProvider `json:"authProvider,omitempty"`
 	AuthProviderID string           `json:"authProviderId,omitempty"`
-	ExpirationTime time.Time        `json:"expirationTime,omitempty"`
+	ExpirationTime time.Time        `json:"expirationTime"`
 }
 
 // The type is a representation of a user identity.

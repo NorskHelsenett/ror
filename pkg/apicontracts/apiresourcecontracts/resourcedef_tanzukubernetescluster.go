@@ -7,7 +7,7 @@ type ResourceTanzuKubernetesCluster struct {
 	Kind       string                               `json:"kind"`
 	Metadata   ResourceTanuzKuberntesMetadata       `json:"metadata"`
 	Spec       ResourceTanuzKuberntesClusterSpec    `json:"spec"`
-	Status     ResourceTanzuKubernetesClusterStatus `json:"status,omitempty"`
+	Status     ResourceTanzuKubernetesClusterStatus `json:"status"`
 }
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated

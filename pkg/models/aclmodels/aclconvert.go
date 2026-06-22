@@ -59,16 +59,16 @@ var v3TagToV2Field = buildV3TagMap()
 
 func buildV3TagMap() map[AccessTypeV3]string {
 	m := make(map[AccessTypeV3]string)
-	t := reflect.TypeOf(AclV2ListItemAccess{})
-	for i := range t.NumField() {
-		f := t.Field(i)
+	t := reflect.TypeFor[AclV2ListItemAccess]()
+	for f := range t.Fields() {
+		f := f
 		if tag := f.Tag.Get("v3"); tag != "" {
 			m[AccessTypeV3(tag)] = "access." + f.Name
 		}
 	}
-	t = reflect.TypeOf(AclV2ListItemKubernetes{})
-	for i := range t.NumField() {
-		f := t.Field(i)
+	t = reflect.TypeFor[AclV2ListItemKubernetes]()
+	for f := range t.Fields() {
+		f := f
 		if tag := f.Tag.Get("v3"); tag != "" {
 			m[AccessTypeV3(tag)] = "kubernetes." + f.Name
 		}

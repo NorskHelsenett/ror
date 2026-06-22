@@ -91,7 +91,7 @@ func (ti *TestIssuer) Config(clientIDs ...string) oidchelper.IssuerConfig {
 }
 
 func (ti *TestIssuer) handleDiscovery(w http.ResponseWriter, _ *http.Request) {
-	doc := map[string]interface{}{
+	doc := map[string]any{
 		"issuer":                                ti.IssuerURL,
 		"jwks_uri":                              ti.IssuerURL + "/jwks",
 		"subject_types_supported":               []string{"public"},

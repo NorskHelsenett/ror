@@ -19,7 +19,7 @@ func convertUnstructuredToStruct(src map[string]any, dst any) error {
 	}
 
 	dstValue := reflect.ValueOf(dst)
-	if dstValue.Kind() != reflect.Ptr || dstValue.Elem().Kind() != reflect.Struct {
+	if dstValue.Kind() != reflect.Pointer || dstValue.Elem().Kind() != reflect.Struct {
 		rlog.Error("Destination must be a pointer to struct", nil)
 		return nil
 	}
@@ -31,7 +31,7 @@ func convertUnstructuredToStruct(src map[string]any, dst any) error {
 }
 
 // convertMapToStruct recursively converts a map to a struct
-func convertMapToStruct(src map[string]interface{}, dstValue reflect.Value, dstType reflect.Type) error {
+func convertMapToStruct(src map[string]any, dstValue reflect.Value, dstType reflect.Type) error {
 	for i := 0; i < dstType.NumField(); i++ {
 		field := dstType.Field(i)
 		fieldValue := dstValue.Field(i)
@@ -74,7 +74,7 @@ func convertMapToStruct(src map[string]interface{}, dstValue reflect.Value, dstT
 }
 
 // setFieldValue sets a field value from an interface{} value using reflection
-func setFieldValue(fieldValue reflect.Value, srcValue interface{}) error {
+func setFieldValue(fieldValue reflect.Value, srcValue any) error {
 	if srcValue == nil {
 		return nil
 	}
@@ -143,7 +143,7 @@ func setFieldValue(fieldValue reflect.Value, srcValue interface{}) error {
 	case reflect.Struct:
 		if srcVal.Kind() == reflect.Map {
 			// Convert map to struct recursively
-			if srcMap, ok := srcValue.(map[string]interface{}); ok {
+			if srcMap, ok := srcValue.(map[string]any); ok {
 				return convertMapToStruct(srcMap, fieldValue, fieldType)
 			}
 		}
@@ -158,11 +158,11 @@ func setFieldValue(fieldValue reflect.Value, srcValue interface{}) error {
 
 	// Handle pointer types
 
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if fieldType.Elem().Kind() == reflect.Struct {
 			// Handle pointer to struct
 			newStruct := reflect.New(fieldType.Elem())
-			if srcMap, ok := srcValue.(map[string]interface{}); ok {
+			if srcMap, ok := srcValue.(map[string]any); ok {
 				if err := convertMapToStruct(srcMap, newStruct.Elem(), fieldType.Elem()); err != nil {
 					return err
 				}

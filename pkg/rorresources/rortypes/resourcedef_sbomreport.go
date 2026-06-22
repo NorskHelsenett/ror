@@ -8,7 +8,7 @@ type ResourceSbomReport struct {
 type ResourceSbomReportsReport struct {
 	Scanner         AquaReportScanner           `json:"scanner"`
 	Artifact        ResourceSbomReportsArtifact `json:"artifact"`
-	Registry        ResourceSbomReportsRegistry `json:"registry,omitempty"`
+	Registry        ResourceSbomReportsRegistry `json:"registry"`
 	Summary         ResourceSbomReportsSummary  `json:"summary"`
 	Components      ResourceSbomReportsBom      `json:"components"`
 	UpdateTimestamp string                      `json:"updateTimestamp"`
@@ -35,15 +35,15 @@ type ResourceSbomReportsBom struct {
 	SpecVersion  string                            `json:"specVersion"`
 	SerialNumber string                            `json:"serialNumber,omitempty"`
 	Version      int                               `json:"version,omitempty"`
-	Metadata     ResourceSbomReportsBomMetadata    `json:"metadata,omitempty"`
+	Metadata     ResourceSbomReportsBomMetadata    `json:"metadata"`
 	Components   []ResourceSbomReportsComponent    `json:"components,omitempty"`
 	Dependencies []ResourceSbomReportsComponentDep `json:"dependencies,omitempty"`
 }
 
 type ResourceSbomReportsBomMetadata struct {
 	Timestamp string                              `json:"timestamp,omitempty"`
-	Tools     ResourceSbomReportsBomMetadataTools `json:"tools,omitempty"`
-	Component ResourceSbomReportsComponent        `json:"component,omitempty"`
+	Tools     ResourceSbomReportsBomMetadataTools `json:"tools"`
+	Component ResourceSbomReportsComponent        `json:"component"`
 }
 
 type ResourceSbomReportsBomMetadataTools struct {
@@ -60,7 +60,7 @@ type ResourceSbomReportsComponent struct {
 	Hashes     []ResourceSbomReportsComponentHash     `json:"hashes,omitempty"`
 	Licenses   []ResourceSbomReportsComponentLicense  `json:"licenses,omitempty"`
 	Properties []ResourceSbomReportsComponentProperty `json:"properties,omitempty"`
-	Supplier   ResourceSbomReportsComponentSupplier   `json:"supplier,omitempty"`
+	Supplier   ResourceSbomReportsComponentSupplier   `json:"supplier"`
 }
 
 type ResourceSbomReportsComponentHash struct {
@@ -70,7 +70,7 @@ type ResourceSbomReportsComponentHash struct {
 
 type ResourceSbomReportsComponentLicense struct {
 	Expression string                                     `json:"expression,omitempty"`
-	License    ResourceSbomReportsComponentLicenseDetails `json:"license,omitempty"`
+	License    ResourceSbomReportsComponentLicenseDetails `json:"license"`
 }
 
 type ResourceSbomReportsComponentLicenseDetails struct {

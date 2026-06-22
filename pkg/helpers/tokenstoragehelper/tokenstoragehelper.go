@@ -236,7 +236,7 @@ func (k *KeyStorageProvider) Verify(tokenString string) (*jwt.Token, error) {
 		parserOptions = append(parserOptions, jwt.WithValidMethods(algs))
 	}
 
-	keyFunc := func(token *jwt.Token) (interface{}, error) {
+	keyFunc := func(token *jwt.Token) (any, error) {
 		rawKid, ok := token.Header["kid"]
 		if !ok {
 			return nil, errors.New("token missing kid header")

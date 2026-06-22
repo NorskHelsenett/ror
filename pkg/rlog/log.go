@@ -336,7 +336,7 @@ func Uint(key string, value uint) Field {
 //
 // Returns:
 //   - A Field object that can be used in logging functions
-func Any(key string, value interface{}) Field {
+func Any(key string, value any) Field {
 	return zap.Any(key, value)
 }
 

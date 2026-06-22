@@ -16,7 +16,7 @@ func (rc rediscon) Get(ctx context.Context, key string, output *string) error {
 
 }
 
-func (rc rediscon) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+func (rc rediscon) Set(ctx context.Context, key string, value any, expiration time.Duration) error {
 	err := rc.Client.Set(ctx, key, value, expiration).Err()
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (rc rediscon) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
-func (rc rediscon) MGet(ctx context.Context, keys ...string) ([]interface{}, error) {
+func (rc rediscon) MGet(ctx context.Context, keys ...string) ([]any, error) {
 	return rc.Client.MGet(ctx, keys...).Result()
 }
 

@@ -81,7 +81,7 @@ type ResourceKubernetesClusterStatus struct {
 	Phase             string                                       `json:"phase"`
 	Conditions        []ResourceKubernetesClusterStatusCondition   `json:"conditions"`
 	KubernetesVersion string                                       `json:"kubernetesVersion"`
-	ProviderStatus    map[string]interface{}                       `json:"providerStatus"`
+	ProviderStatus    map[string]any                               `json:"providerStatus"`
 	CreatedTime       string                                       `json:"createdTime"`
 	UpdatedTime       string                                       `json:"updatedTime"`
 	LastObservedTime  string                                       `json:"lastObservedTime"`

@@ -26,7 +26,7 @@ import (
 // Vault's key-value secrets engine.
 type vaultClient interface {
 	SetSecret(secretPath string, value []byte) (bool, error)
-	GetSecret(secretPath string) (map[string]interface{}, error)
+	GetSecret(secretPath string) (map[string]any, error)
 }
 
 // ensure the HashiCorp vault client satisfies the interface used by the adapter
@@ -72,8 +72,8 @@ func (v *VaultStorageAdapter) Set(ks *tokenstoragehelper.KeyStorageProvider) err
 		return err
 	}
 
-	data := map[string]interface{}{
-		"data": map[string]interface{}{
+	data := map[string]any{
+		"data": map[string]any{
 			"config": string(payload),
 		},
 	}
@@ -104,7 +104,7 @@ func (v *VaultStorageAdapter) Get() (tokenstoragehelper.KeyStorageProvider, erro
 	if err != nil {
 		return tokenstoragehelper.KeyStorageProvider{}, err
 	}
-	data, ok := secretData["data"].(map[string]interface{})
+	data, ok := secretData["data"].(map[string]any)
 	if !ok {
 		return tokenstoragehelper.KeyStorageProvider{}, errors.New("invalid data format in vault secret")
 	}

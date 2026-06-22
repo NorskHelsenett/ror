@@ -57,7 +57,6 @@ func TestProviderInterregators_EmptyNodes_NewInterregator_DoesNotPanic(t *testin
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			assert.NotPanics(t, func() {
 				tc.fn([]v1core.Node{})

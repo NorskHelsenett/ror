@@ -4,7 +4,7 @@ package rortypes
 // K8s node struct
 type ResourceTanzuKubernetesCluster struct {
 	Spec   ResourceTanuzKuberntesClusterSpec    `json:"spec"`
-	Status ResourceTanzuKubernetesClusterStatus `json:"status,omitempty"`
+	Status ResourceTanzuKubernetesClusterStatus `json:"status"`
 }
 
 type ResourceTanuzKuberntesMetadata struct {

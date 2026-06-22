@@ -15,10 +15,10 @@ import (
 
 func TestNewResourceSetFromDynamicClientNamespace(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Namespace",
 			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-namespace",
 			},
 		},
@@ -34,10 +34,10 @@ func TestNewResourceSetFromDynamicClientNamespace(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientNode(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Node",
 			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-node",
 			},
 		},
@@ -53,10 +53,10 @@ func TestNewResourceSetFromDynamicClientNode(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientPersistentVolumeClaim(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "PersistentVolumeClaim",
 			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-persistentvolumeclaim",
 			},
 		},
@@ -72,10 +72,10 @@ func TestNewResourceSetFromDynamicClientPersistentVolumeClaim(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientDeployment(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Deployment",
 			"apiVersion": "apps/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-deployment",
 			},
 		},
@@ -91,10 +91,10 @@ func TestNewResourceSetFromDynamicClientDeployment(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientStorageClass(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "StorageClass",
 			"apiVersion": "storage.k8s.io/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-storageclass",
 			},
 		},
@@ -110,10 +110,10 @@ func TestNewResourceSetFromDynamicClientStorageClass(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientPolicyReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "PolicyReport",
 			"apiVersion": "wgpolicyk8s.io/v1alpha2",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-policyreport",
 			},
 		},
@@ -129,10 +129,10 @@ func TestNewResourceSetFromDynamicClientPolicyReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientApplication(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Application",
 			"apiVersion": "argoproj.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-application",
 			},
 		},
@@ -148,10 +148,10 @@ func TestNewResourceSetFromDynamicClientApplication(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientAppProject(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "AppProject",
 			"apiVersion": "argoproj.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-appproject",
 			},
 		},
@@ -167,10 +167,10 @@ func TestNewResourceSetFromDynamicClientAppProject(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientCertificate(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Certificate",
 			"apiVersion": "cert-manager.io/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-certificate",
 			},
 		},
@@ -186,10 +186,10 @@ func TestNewResourceSetFromDynamicClientCertificate(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientService(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Service",
 			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-service",
 			},
 		},
@@ -205,10 +205,10 @@ func TestNewResourceSetFromDynamicClientService(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientPod(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Pod",
 			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-pod",
 			},
 		},
@@ -224,10 +224,10 @@ func TestNewResourceSetFromDynamicClientPod(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientReplicaSet(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "ReplicaSet",
 			"apiVersion": "apps/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-replicaset",
 			},
 		},
@@ -243,10 +243,10 @@ func TestNewResourceSetFromDynamicClientReplicaSet(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientStatefulSet(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "StatefulSet",
 			"apiVersion": "apps/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-statefulset",
 			},
 		},
@@ -262,10 +262,10 @@ func TestNewResourceSetFromDynamicClientStatefulSet(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientDaemonSet(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "DaemonSet",
 			"apiVersion": "apps/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-daemonset",
 			},
 		},
@@ -281,10 +281,10 @@ func TestNewResourceSetFromDynamicClientDaemonSet(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientIngress(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Ingress",
 			"apiVersion": "networking.k8s.io/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-ingress",
 			},
 		},
@@ -300,10 +300,10 @@ func TestNewResourceSetFromDynamicClientIngress(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientIngressClass(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "IngressClass",
 			"apiVersion": "networking.k8s.io/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-ingressclass",
 			},
 		},
@@ -319,10 +319,10 @@ func TestNewResourceSetFromDynamicClientIngressClass(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientSbomReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "SbomReport",
 			"apiVersion": "aquasecurity.github.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-sbomreport",
 			},
 		},
@@ -338,10 +338,10 @@ func TestNewResourceSetFromDynamicClientSbomReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientVulnerabilityReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "VulnerabilityReport",
 			"apiVersion": "aquasecurity.github.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-vulnerabilityreport",
 			},
 		},
@@ -357,10 +357,10 @@ func TestNewResourceSetFromDynamicClientVulnerabilityReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientExposedSecretReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "ExposedSecretReport",
 			"apiVersion": "aquasecurity.github.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-exposedsecretreport",
 			},
 		},
@@ -376,10 +376,10 @@ func TestNewResourceSetFromDynamicClientExposedSecretReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientConfigAuditReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "ConfigAuditReport",
 			"apiVersion": "aquasecurity.github.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-configauditreport",
 			},
 		},
@@ -395,10 +395,10 @@ func TestNewResourceSetFromDynamicClientConfigAuditReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientRbacAssessmentReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "RbacAssessmentReport",
 			"apiVersion": "aquasecurity.github.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-rbacassessmentreport",
 			},
 		},
@@ -414,10 +414,10 @@ func TestNewResourceSetFromDynamicClientRbacAssessmentReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientTanzuKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "TanzuKubernetesCluster",
 			"apiVersion": "run.tanzu.vmware.com/v1alpha3",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-tanzukubernetescluster",
 			},
 		},
@@ -433,10 +433,10 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesCluster(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientTanzuKubernetesRelease(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "TanzuKubernetesRelease",
 			"apiVersion": "run.tanzu.vmware.com/v1alpha3",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-tanzukubernetesrelease",
 			},
 		},
@@ -452,10 +452,10 @@ func TestNewResourceSetFromDynamicClientTanzuKubernetesRelease(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientVirtualMachineClass(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "VirtualMachineClass",
 			"apiVersion": "vmoperator.vmware.com/v1alpha2",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-virtualmachineclass",
 			},
 		},
@@ -471,10 +471,10 @@ func TestNewResourceSetFromDynamicClientVirtualMachineClass(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "KubernetesCluster",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-kubernetescluster",
 			},
 		},
@@ -490,10 +490,10 @@ func TestNewResourceSetFromDynamicClientKubernetesCluster(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientProvider(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Provider",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-provider",
 			},
 		},
@@ -509,10 +509,10 @@ func TestNewResourceSetFromDynamicClientProvider(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientWorkspace(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Workspace",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-workspace",
 			},
 		},
@@ -528,10 +528,10 @@ func TestNewResourceSetFromDynamicClientWorkspace(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientKubernetesMachineClass(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "KubernetesMachineClass",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-kubernetesmachineclass",
 			},
 		},
@@ -547,10 +547,10 @@ func TestNewResourceSetFromDynamicClientKubernetesMachineClass(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientClusterOrder(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "ClusterOrder",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-clusterorder",
 			},
 		},
@@ -566,10 +566,10 @@ func TestNewResourceSetFromDynamicClientClusterOrder(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientProject(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Project",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-project",
 			},
 		},
@@ -585,10 +585,10 @@ func TestNewResourceSetFromDynamicClientProject(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientConfiguration(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Configuration",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-configuration",
 			},
 		},
@@ -604,10 +604,10 @@ func TestNewResourceSetFromDynamicClientConfiguration(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientClusterComplianceReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "ClusterComplianceReport",
 			"apiVersion": "aquasecurity.github.io/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-clustercompliancereport",
 			},
 		},
@@ -623,10 +623,10 @@ func TestNewResourceSetFromDynamicClientClusterComplianceReport(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientClusterVulnerabilityReport(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "ClusterVulnerabilityReport",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-clustervulnerabilityreport",
 			},
 		},
@@ -642,10 +642,10 @@ func TestNewResourceSetFromDynamicClientClusterVulnerabilityReport(t *testing.T)
 
 func TestNewResourceSetFromDynamicClientRoute(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Route",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-route",
 			},
 		},
@@ -661,10 +661,10 @@ func TestNewResourceSetFromDynamicClientRoute(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientSlackMessage(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "SlackMessage",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-slackmessage",
 			},
 		},
@@ -680,10 +680,10 @@ func TestNewResourceSetFromDynamicClientSlackMessage(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientVulnerabilityEvent(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "VulnerabilityEvent",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-vulnerabilityevent",
 			},
 		},
@@ -699,10 +699,10 @@ func TestNewResourceSetFromDynamicClientVulnerabilityEvent(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "VirtualMachine",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-virtualmachine",
 			},
 		},
@@ -718,10 +718,10 @@ func TestNewResourceSetFromDynamicClientVirtualMachine(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientVirtualMachineVulnerabilityInfo(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "VirtualMachineVulnerabilityInfo",
 			"apiVersion": "general.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-virtualmachinevulnerabilityinfo",
 			},
 		},
@@ -737,10 +737,10 @@ func TestNewResourceSetFromDynamicClientVirtualMachineVulnerabilityInfo(t *testi
 
 func TestNewResourceSetFromDynamicClientEndpoints(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Endpoints",
 			"apiVersion": "v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-endpoints",
 			},
 		},
@@ -756,10 +756,10 @@ func TestNewResourceSetFromDynamicClientEndpoints(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientNetworkPolicy(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "NetworkPolicy",
 			"apiVersion": "networking.k8s.io/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-networkpolicy",
 			},
 		},
@@ -775,10 +775,10 @@ func TestNewResourceSetFromDynamicClientNetworkPolicy(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientDatacenter(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Datacenter",
 			"apiVersion": "infrastructure.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-datacenter",
 			},
 		},
@@ -794,10 +794,10 @@ func TestNewResourceSetFromDynamicClientDatacenter(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "BackupJob",
 			"apiVersion": "backup.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-backupjob",
 			},
 		},
@@ -813,10 +813,10 @@ func TestNewResourceSetFromDynamicClientBackupJob(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientBackupRun(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "BackupRun",
 			"apiVersion": "backup.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-backuprun",
 			},
 		},
@@ -832,10 +832,10 @@ func TestNewResourceSetFromDynamicClientBackupRun(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientMachine(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Machine",
 			"apiVersion": "machine.ror.internal/v1alpha1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-machine",
 			},
 		},
@@ -851,10 +851,10 @@ func TestNewResourceSetFromDynamicClientMachine(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientConfig(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Config",
 			"apiVersion": "ror.internal/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-config",
 			},
 		},
@@ -870,10 +870,10 @@ func TestNewResourceSetFromDynamicClientConfig(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "Unknown",
 			"apiVersion": "unknown.ror.internal/v1",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-unknown",
 			},
 		},
@@ -889,10 +889,10 @@ func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
 
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "N00b",
 			"apiVersion": "v900",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-wrong",
 			},
 		},

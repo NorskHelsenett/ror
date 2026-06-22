@@ -307,7 +307,7 @@ func (g *MsGraphClient) getGroupDisplayNames(ctx context.Context, groups []strin
 	}
 	groupNames := make([]string, len(groups))
 
-	for i := 0; i < len(groups); i++ {
+	for i := range groups {
 		select {
 		case groupname := <-groupsNameChan:
 			groupNames[i] = groupname

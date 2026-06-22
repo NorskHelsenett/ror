@@ -11,7 +11,7 @@ type ResourceIngress struct {
 }
 
 type ResourceIngressSpec struct {
-	DefaultBackend   ResourceIngressSpecRulesHttpPathsBackend `json:"defaultBackend,omitempty"`
+	DefaultBackend   ResourceIngressSpecRulesHttpPathsBackend `json:"defaultBackend"`
 	IngressClassName string                                   `json:"ingressClassName"`
 	Rules            []ResourceIngressSpecRules               `json:"rules"`
 	Tls              []ResourceIngressSpecTls                 `json:"tls"`
@@ -33,8 +33,8 @@ type ResourceIngressSpecRulesHttpPaths struct {
 }
 
 type ResourceIngressSpecRulesHttpPathsBackend struct {
-	Resource ResourceIngressSpecBackendResource `json:"resource,omitempty"`
-	Service  ResourceIngressSpecBackendService  `json:"service,omitempty"`
+	Resource ResourceIngressSpecBackendResource `json:"resource"`
+	Service  ResourceIngressSpecBackendService  `json:"service"`
 }
 
 type ResourceIngressSpecBackendResource struct {
@@ -45,7 +45,7 @@ type ResourceIngressSpecBackendResource struct {
 
 type ResourceIngressSpecBackendService struct {
 	Name string                                `json:"name,omitempty"`
-	Port ResourceIngressSpecBackendServicePort `json:"port,omitempty"`
+	Port ResourceIngressSpecBackendServicePort `json:"port"`
 }
 
 type ResourceIngressSpecBackendServicePort struct {

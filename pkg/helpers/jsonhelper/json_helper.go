@@ -12,7 +12,7 @@ import (
 // StringToJson converts a string to a json byte array.
 func StringToJson(key string, value string) []byte {
 	keys := strings.Split(key, ".")
-	data := make(map[string]interface{})
+	data := make(map[string]any)
 
 	currentMap := data
 	for i, key := range keys {
@@ -22,7 +22,7 @@ func StringToJson(key string, value string) []byte {
 		if i == len(keys)-1 {
 			currentMap[key] = value
 		} else {
-			newMap := make(map[string]interface{})
+			newMap := make(map[string]any)
 			currentMap[key] = newMap
 			currentMap = newMap
 		}

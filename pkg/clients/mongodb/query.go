@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func Aggregate(ctx context.Context, col string, query []bson.M, value interface{}) error {
+func Aggregate(ctx context.Context, col string, query []bson.M, value any) error {
 	db := GetMongoDb()
 	resourceCollection := db.Collection(col)
 	results, err := resourceCollection.Aggregate(ctx, query)
@@ -38,7 +38,7 @@ func UpdateOne(ctx context.Context, col string, filter bson.M, update bson.M) (m
 	return *updateResult, nil
 }
 
-func InsertOne(ctx context.Context, col string, input interface{}) (mongo.InsertOneResult, error) {
+func InsertOne(ctx context.Context, col string, input any) (mongo.InsertOneResult, error) {
 	db := GetMongoDb()
 	insertResult, err := db.Collection(col).InsertOne(ctx, input)
 	if err != nil {
@@ -48,7 +48,7 @@ func InsertOne(ctx context.Context, col string, input interface{}) (mongo.Insert
 	return *insertResult, nil
 }
 
-func FindOne(ctx context.Context, col string, query bson.M, value interface{}) error {
+func FindOne(ctx context.Context, col string, query bson.M, value any) error {
 	db := GetMongoDb()
 	err := db.Collection(col).FindOne(ctx, query).Decode(value)
 	if err != nil {
@@ -77,7 +77,7 @@ func Count(ctx context.Context, col string) (int64, error) {
 	return count, nil
 }
 
-func CountWithFilter(ctx context.Context, col string, filter interface{}) (int64, error) {
+func CountWithFilter(ctx context.Context, col string, filter any) (int64, error) {
 	db := GetMongoDb()
 	opts := options.Count().SetHint("_id_")
 	count, err := db.Collection(col).CountDocuments(ctx, filter, opts)

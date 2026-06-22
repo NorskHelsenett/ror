@@ -46,7 +46,7 @@ func (p ResourceTagProperties) TSName() string {
 // Commonresource defines the minimum resource definition.
 type CommonResource struct {
 	metav1.TypeMeta `json:",inline"`
-	Metadata        metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+	Metadata        metav1.ObjectMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
 	RorMeta         ResourceRorMeta   `json:"rormeta"`
 }
 
@@ -56,7 +56,7 @@ type ResourceRorMeta struct {
 	LastReported string                                     `json:"lastReported,omitempty"`
 	Internal     bool                                       `json:"internal,omitempty"`
 	Hash         string                                     `json:"hash,omitempty"`
-	Ownerref     rorresourceowner.RorResourceOwnerReference `json:"ownerref,omitempty"`
+	Ownerref     rorresourceowner.RorResourceOwnerReference `json:"ownerref"`
 	Action       ResourceAction                             `json:"action,omitempty"`
 	Tags         []ResourceTag                              `json:"tags,omitempty"`
 }
