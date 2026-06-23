@@ -14,7 +14,7 @@ type ResourceEndpointSpecSubsetsAddresses struct {
 	Hostname  string                                        `json:"hostname,omitempty"`
 	Ip        string                                        `json:"ip,omitempty"`
 	NodeName  string                                        `json:"nodeName,omitempty"`
-	TargetRef ResourceEndpointSpecSubsetsAddressesTargetRef `json:"targetRef,omitempty"`
+	TargetRef ResourceEndpointSpecSubsetsAddressesTargetRef `json:"targetRef"`
 }
 
 type ResourceEndpointSpecSubsetsAddressesTargetRef struct {
@@ -31,7 +31,7 @@ type ResourceEndpointSpecSubsetsNotReadyAddresses struct {
 	Hostname  string                                                `json:"hostname,omitempty"`
 	Ip        string                                                `json:"ip,omitempty"`
 	NodeName  string                                                `json:"nodeName,omitempty"`
-	TargetRef ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef `json:"targetRef,omitempty"`
+	TargetRef ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef `json:"targetRef"`
 }
 
 type ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef struct {

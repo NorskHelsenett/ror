@@ -27,9 +27,9 @@ const (
 type RedisDB interface {
 	Get(ctx context.Context, key string, output *string) error
 	Keys(ctx context.Context) ([]string, error)
-	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Set(ctx context.Context, key string, value any, expiration time.Duration) error
 	Delete(ctx context.Context, key string) error
-	MGet(ctx context.Context, keys ...string) ([]interface{}, error)
+	MGet(ctx context.Context, keys ...string) ([]any, error)
 	SetPipelined(ctx context.Context, items []SetItem) error
 	clients.CommonClient
 }
@@ -37,7 +37,7 @@ type RedisDB interface {
 // SetItem represents a key-value pair with expiration for pipelined SET operations.
 type SetItem struct {
 	Key        string
-	Value      interface{}
+	Value      any
 	Expiration time.Duration
 }
 

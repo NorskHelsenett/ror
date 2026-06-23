@@ -12,7 +12,7 @@ import (
 
 type mockVaultClient struct {
 	setSecretFn func(string, []byte) (bool, error)
-	getSecretFn func(string) (map[string]interface{}, error)
+	getSecretFn func(string) (map[string]any, error)
 }
 
 func (m mockVaultClient) SetSecret(secretPath string, value []byte) (bool, error) {
@@ -22,7 +22,7 @@ func (m mockVaultClient) SetSecret(secretPath string, value []byte) (bool, error
 	return m.setSecretFn(secretPath, value)
 }
 
-func (m mockVaultClient) GetSecret(secretPath string) (map[string]interface{}, error) {
+func (m mockVaultClient) GetSecret(secretPath string) (map[string]any, error) {
 	if m.getSecretFn == nil {
 		panic("unexpected call to GetSecret")
 	}
@@ -39,7 +39,7 @@ func TestSetReturnsErrorWhenMarshalPayloadFails(t *testing.T) {
 	originalMarshal := marshalJSON
 	t.Cleanup(func() { marshalJSON = originalMarshal })
 
-	marshalJSON = func(interface{}) ([]byte, error) {
+	marshalJSON = func(any) ([]byte, error) {
 		return nil, errors.New("marshal payload failure")
 	}
 
@@ -58,7 +58,7 @@ func TestSetReturnsErrorWhenMarshalBodyFails(t *testing.T) {
 	t.Cleanup(func() { marshalJSON = originalMarshal })
 
 	callCount := 0
-	marshalJSON = func(v interface{}) ([]byte, error) {
+	marshalJSON = func(v any) ([]byte, error) {
 		callCount++
 		if callCount == 2 {
 			return nil, errors.New("marshal body failure")
@@ -92,7 +92,7 @@ func TestSetPropagatesVaultError(t *testing.T) {
 func TestSetSucceeds(t *testing.T) {
 	captured := struct {
 		path string
-		body map[string]interface{}
+		body map[string]any
 	}{}
 
 	adapter := NewVaultStorageAdapter(mockVaultClient{
@@ -121,7 +121,7 @@ func TestSetSucceeds(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "secret/path", captured.path)
 
-	configValue, ok := captured.body["data"].(map[string]interface{})
+	configValue, ok := captured.body["data"].(map[string]any)
 	require.True(t, ok)
 	storedConfig, ok := configValue["config"].(string)
 	require.True(t, ok)
@@ -142,7 +142,7 @@ func TestGetReturnsErrorWhenVaultClientNil(t *testing.T) {
 
 func TestGetReturnsErrorWhenVaultClientFails(t *testing.T) {
 	adapter := NewVaultStorageAdapter(mockVaultClient{
-		getSecretFn: func(string) (map[string]interface{}, error) {
+		getSecretFn: func(string) (map[string]any, error) {
 			return nil, errors.New("vault failure")
 		},
 	}, "secret/path")
@@ -153,8 +153,8 @@ func TestGetReturnsErrorWhenVaultClientFails(t *testing.T) {
 
 func TestGetReturnsErrorOnInvalidDataMap(t *testing.T) {
 	adapter := NewVaultStorageAdapter(mockVaultClient{
-		getSecretFn: func(string) (map[string]interface{}, error) {
-			return map[string]interface{}{
+		getSecretFn: func(string) (map[string]any, error) {
+			return map[string]any{
 				"data": "not-a-map",
 			}, nil
 		},
@@ -166,9 +166,9 @@ func TestGetReturnsErrorOnInvalidDataMap(t *testing.T) {
 
 func TestGetReturnsErrorOnInvalidConfigType(t *testing.T) {
 	adapter := NewVaultStorageAdapter(mockVaultClient{
-		getSecretFn: func(string) (map[string]interface{}, error) {
-			return map[string]interface{}{
-				"data": map[string]interface{}{
+		getSecretFn: func(string) (map[string]any, error) {
+			return map[string]any{
+				"data": map[string]any{
 					"config": 123,
 				},
 			}, nil
@@ -181,9 +181,9 @@ func TestGetReturnsErrorOnInvalidConfigType(t *testing.T) {
 
 func TestGetReturnsErrorOnUnmarshalFailure(t *testing.T) {
 	adapter := NewVaultStorageAdapter(mockVaultClient{
-		getSecretFn: func(string) (map[string]interface{}, error) {
-			return map[string]interface{}{
-				"data": map[string]interface{}{
+		getSecretFn: func(string) (map[string]any, error) {
+			return map[string]any{
+				"data": map[string]any{
 					"config": "not-json",
 				},
 			}, nil
@@ -217,9 +217,9 @@ func TestGetSucceeds(t *testing.T) {
 	require.NoError(t, err)
 
 	adapter := NewVaultStorageAdapter(mockVaultClient{
-		getSecretFn: func(string) (map[string]interface{}, error) {
-			return map[string]interface{}{
-				"data": map[string]interface{}{
+		getSecretFn: func(string) (map[string]any, error) {
+			return map[string]any{
+				"data": map[string]any{
 					"config": string(payload),
 				},
 			}, nil

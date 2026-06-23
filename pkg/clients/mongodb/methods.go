@@ -67,7 +67,7 @@ func NewMongodbQuery(input []bson.M) MongodbQuery {
 	return MongodbQuery(input)
 }
 
-func (rc MongodbCon) Aggregate(ctx context.Context, col string, query []bson.M, value interface{}) error {
+func (rc MongodbCon) Aggregate(ctx context.Context, col string, query []bson.M, value any) error {
 	db := rc.GetMongoDb()
 	resourceCollection := db.Collection(col)
 	results, err := resourceCollection.Aggregate(ctx, query)
@@ -96,7 +96,7 @@ func (rc MongodbCon) UpdateOne(ctx context.Context, col string, filter bson.M, u
 	return *updateResult, nil
 }
 
-func (rc MongodbCon) InsertOne(ctx context.Context, col string, input interface{}) (mongo.InsertOneResult, error) {
+func (rc MongodbCon) InsertOne(ctx context.Context, col string, input any) (mongo.InsertOneResult, error) {
 	db := rc.GetMongoDb()
 	insertResult, err := db.Collection(col).InsertOne(ctx, input)
 	if err != nil {
@@ -106,7 +106,7 @@ func (rc MongodbCon) InsertOne(ctx context.Context, col string, input interface{
 	return *insertResult, nil
 }
 
-func (rc MongodbCon) UpsertOne(ctx context.Context, col string, filter bson.M, update interface{}) (mongo.UpdateResult, error) {
+func (rc MongodbCon) UpsertOne(ctx context.Context, col string, filter bson.M, update any) (mongo.UpdateResult, error) {
 	db := rc.GetMongoDb()
 
 	updateResult, err := db.Collection(col).UpdateOne(ctx, filter, update, options.UpdateOne().SetUpsert(true))
@@ -118,7 +118,7 @@ func (rc MongodbCon) UpsertOne(ctx context.Context, col string, filter bson.M, u
 	return *updateResult, nil
 }
 
-func (rc MongodbCon) FindOne(ctx context.Context, col string, query bson.M, value interface{}) error {
+func (rc MongodbCon) FindOne(ctx context.Context, col string, query bson.M, value any) error {
 	db := rc.GetMongoDb()
 	err := db.Collection(col).FindOne(ctx, query).Decode(value)
 	if err != nil {
@@ -147,7 +147,7 @@ func (rc MongodbCon) Count(ctx context.Context, col string) (int64, error) {
 	return count, nil
 }
 
-func (rc MongodbCon) CountWithFilter(ctx context.Context, col string, filter interface{}) (int64, error) {
+func (rc MongodbCon) CountWithFilter(ctx context.Context, col string, filter any) (int64, error) {
 	db := rc.GetMongoDb()
 	opts := options.Count().SetHint("_id_")
 	count, err := db.Collection(col).CountDocuments(ctx, filter, opts)

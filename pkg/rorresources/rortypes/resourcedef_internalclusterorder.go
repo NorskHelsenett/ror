@@ -17,7 +17,7 @@ type ResourceClusterOrderSpec struct {
 	HighAvailability bool                               `json:"highAvailability" validate:"boolean"`
 	NodePools        []ResourceClusterOrderSpecNodePool `json:"nodePools" validate:"required,min=1,dive,required"`
 	ServiceTags      map[string]string                  `json:"serviceTags,omitempty"`
-	ProviderConfig   map[string]interface{}             `json:"providerConfig,omitempty"`
+	ProviderConfig   map[string]any                     `json:"providerConfig,omitempty"`
 	OwnerGroup       string                             `json:"ownerGroup" validate:"required,min=1,ne=' '"`
 }
 

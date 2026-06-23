@@ -121,7 +121,7 @@ type ResourceQueryOrder struct {
 }
 
 type ResourceQuery struct {
-	VersionKind      schema.GroupVersionKind                      `json:"versionkind,omitempty"`      // memory getparam: apiversion, kind
+	VersionKind      schema.GroupVersionKind                      `json:"versionkind"`                // memory getparam: apiversion, kind
 	Uids             []string                                     `json:"uids,omitempty"`             // memory
 	OwnerRefs        []rorresourceowner.RorResourceOwnerReference `json:"ownerrefs,omitempty"`        // memory
 	Fields           []string                                     `json:"fields,omitempty"`           // post or db

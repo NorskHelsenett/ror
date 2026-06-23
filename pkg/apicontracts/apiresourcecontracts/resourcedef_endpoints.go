@@ -20,7 +20,7 @@ type ResourceEndpointSpecSubsetsAddresses struct {
 	Hostname  string                                        `json:"hostname,omitempty"`
 	Ip        string                                        `json:"ip,omitempty"`
 	NodeName  string                                        `json:"nodeName,omitempty"`
-	TargetRef ResourceEndpointSpecSubsetsAddressesTargetRef `json:"targetRef,omitempty"`
+	TargetRef ResourceEndpointSpecSubsetsAddressesTargetRef `json:"targetRef"`
 }
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
@@ -39,7 +39,7 @@ type ResourceEndpointSpecSubsetsNotReadyAddresses struct {
 	Hostname  string                                                `json:"hostname,omitempty"`
 	Ip        string                                                `json:"ip,omitempty"`
 	NodeName  string                                                `json:"nodeName,omitempty"`
-	TargetRef ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef `json:"targetRef,omitempty"`
+	TargetRef ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef `json:"targetRef"`
 }
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated

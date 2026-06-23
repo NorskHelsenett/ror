@@ -7,9 +7,9 @@ import (
 )
 
 type SelfData struct {
-	Auth identitymodels.AuthInfo     `json:"auth,omitempty"`
+	Auth identitymodels.AuthInfo     `json:"auth"`
 	Type identitymodels.IdentityType `json:"type"`
-	User SelfUser                    `json:"user,omitempty"`
+	User SelfUser                    `json:"user"`
 }
 
 type SelfUser struct {

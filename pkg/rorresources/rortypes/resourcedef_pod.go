@@ -7,8 +7,8 @@ import (
 // ResourcePod
 // K8s namepace struct
 type ResourcePod struct {
-	Spec   ResourcePodSpec   `json:"spec,omitempty" bson:"spec,omitempty"`
-	Status ResourcePodStatus `json:"status,omitempty" bson:"status,omitempty"`
+	Spec   ResourcePodSpec   `json:"spec" bson:"spec,omitempty"`
+	Status ResourcePodStatus `json:"status" bson:"status,omitempty"`
 }
 
 type ResourcePodSpec struct {

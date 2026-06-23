@@ -10,7 +10,7 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func NewResourceSetFromMapInterface(input map[string]interface{}) *rorresources.ResourceSet {
+func NewResourceSetFromMapInterface(input map[string]any) *rorresources.ResourceSet {
 	var rs rorresources.ResourceSet
 	r := NewResourceFromMapInterface(input)
 	rs.Add(r)
@@ -18,8 +18,8 @@ func NewResourceSetFromMapInterface(input map[string]interface{}) *rorresources.
 
 }
 
-func newCommonResourceFromMapInterface(input map[string]interface{}) v1.ObjectMeta {
-	metadata, ok := input["metadata"].(map[string]interface{})
+func newCommonResourceFromMapInterface(input map[string]any) v1.ObjectMeta {
+	metadata, ok := input["metadata"].(map[string]any)
 
 	if !ok {
 		rlog.Warn("could not convert input to metav1.ObjectMeta", rlog.Any("input", input))
@@ -36,9 +36,9 @@ func newCommonResourceFromMapInterface(input map[string]interface{}) v1.ObjectMe
 	return *metadataConverted
 }
 
-// NewResourceFromMapInterface creates a new resource from a map[string]interface{}
+// NewResourceFromMapInterface creates a new resource from a map[string]any
 // type provided by the kubernetes universal client.
-func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Resource {
+func NewResourceFromMapInterface(input map[string]any) *rorresources.Resource {
 	r := rorresources.NewRorResource(input["kind"].(string), input["apiVersion"].(string))
 	r.SetMetadata(newCommonResourceFromMapInterface(input))
 
@@ -283,7 +283,7 @@ func NewResourceFromMapInterface(input map[string]interface{}) *rorresources.Res
 
 // newNamespaceFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newNamespaceFromMapInterface(input map[string]interface{}) *rortypes.ResourceNamespace {
+func newNamespaceFromMapInterface(input map[string]any) *rortypes.ResourceNamespace {
 	result := rortypes.ResourceNamespace{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -297,7 +297,7 @@ func newNamespaceFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 // newNodeFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newNodeFromMapInterface(input map[string]interface{}) *rortypes.ResourceNode {
+func newNodeFromMapInterface(input map[string]any) *rortypes.ResourceNode {
 	result := rortypes.ResourceNode{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -311,7 +311,7 @@ func newNodeFromMapInterface(input map[string]interface{}) *rortypes.ResourceNod
 
 // newPersistentVolumeClaimFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newPersistentVolumeClaimFromMapInterface(input map[string]interface{}) *rortypes.ResourcePersistentVolumeClaim {
+func newPersistentVolumeClaimFromMapInterface(input map[string]any) *rortypes.ResourcePersistentVolumeClaim {
 	result := rortypes.ResourcePersistentVolumeClaim{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -325,7 +325,7 @@ func newPersistentVolumeClaimFromMapInterface(input map[string]interface{}) *ror
 
 // newDeploymentFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newDeploymentFromMapInterface(input map[string]interface{}) *rortypes.ResourceDeployment {
+func newDeploymentFromMapInterface(input map[string]any) *rortypes.ResourceDeployment {
 	result := rortypes.ResourceDeployment{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -339,7 +339,7 @@ func newDeploymentFromMapInterface(input map[string]interface{}) *rortypes.Resou
 
 // newStorageClassFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newStorageClassFromMapInterface(input map[string]interface{}) *rortypes.ResourceStorageClass {
+func newStorageClassFromMapInterface(input map[string]any) *rortypes.ResourceStorageClass {
 	result := rortypes.ResourceStorageClass{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -353,7 +353,7 @@ func newStorageClassFromMapInterface(input map[string]interface{}) *rortypes.Res
 
 // newPolicyReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newPolicyReportFromMapInterface(input map[string]interface{}) *rortypes.ResourcePolicyReport {
+func newPolicyReportFromMapInterface(input map[string]any) *rortypes.ResourcePolicyReport {
 	result := rortypes.ResourcePolicyReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -367,7 +367,7 @@ func newPolicyReportFromMapInterface(input map[string]interface{}) *rortypes.Res
 
 // newApplicationFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newApplicationFromMapInterface(input map[string]interface{}) *rortypes.ResourceApplication {
+func newApplicationFromMapInterface(input map[string]any) *rortypes.ResourceApplication {
 	result := rortypes.ResourceApplication{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -381,7 +381,7 @@ func newApplicationFromMapInterface(input map[string]interface{}) *rortypes.Reso
 
 // newAppProjectFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newAppProjectFromMapInterface(input map[string]interface{}) *rortypes.ResourceAppProject {
+func newAppProjectFromMapInterface(input map[string]any) *rortypes.ResourceAppProject {
 	result := rortypes.ResourceAppProject{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -395,7 +395,7 @@ func newAppProjectFromMapInterface(input map[string]interface{}) *rortypes.Resou
 
 // newCertificateFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newCertificateFromMapInterface(input map[string]interface{}) *rortypes.ResourceCertificate {
+func newCertificateFromMapInterface(input map[string]any) *rortypes.ResourceCertificate {
 	result := rortypes.ResourceCertificate{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -409,7 +409,7 @@ func newCertificateFromMapInterface(input map[string]interface{}) *rortypes.Reso
 
 // newServiceFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newServiceFromMapInterface(input map[string]interface{}) *rortypes.ResourceService {
+func newServiceFromMapInterface(input map[string]any) *rortypes.ResourceService {
 	result := rortypes.ResourceService{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -423,7 +423,7 @@ func newServiceFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 // newPodFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newPodFromMapInterface(input map[string]interface{}) *rortypes.ResourcePod {
+func newPodFromMapInterface(input map[string]any) *rortypes.ResourcePod {
 	result := rortypes.ResourcePod{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -437,7 +437,7 @@ func newPodFromMapInterface(input map[string]interface{}) *rortypes.ResourcePod 
 
 // newReplicaSetFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newReplicaSetFromMapInterface(input map[string]interface{}) *rortypes.ResourceReplicaSet {
+func newReplicaSetFromMapInterface(input map[string]any) *rortypes.ResourceReplicaSet {
 	result := rortypes.ResourceReplicaSet{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -451,7 +451,7 @@ func newReplicaSetFromMapInterface(input map[string]interface{}) *rortypes.Resou
 
 // newStatefulSetFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newStatefulSetFromMapInterface(input map[string]interface{}) *rortypes.ResourceStatefulSet {
+func newStatefulSetFromMapInterface(input map[string]any) *rortypes.ResourceStatefulSet {
 	result := rortypes.ResourceStatefulSet{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -465,7 +465,7 @@ func newStatefulSetFromMapInterface(input map[string]interface{}) *rortypes.Reso
 
 // newDaemonSetFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newDaemonSetFromMapInterface(input map[string]interface{}) *rortypes.ResourceDaemonSet {
+func newDaemonSetFromMapInterface(input map[string]any) *rortypes.ResourceDaemonSet {
 	result := rortypes.ResourceDaemonSet{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -479,7 +479,7 @@ func newDaemonSetFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 // newIngressFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newIngressFromMapInterface(input map[string]interface{}) *rortypes.ResourceIngress {
+func newIngressFromMapInterface(input map[string]any) *rortypes.ResourceIngress {
 	result := rortypes.ResourceIngress{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -493,7 +493,7 @@ func newIngressFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 // newIngressClassFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newIngressClassFromMapInterface(input map[string]interface{}) *rortypes.ResourceIngressClass {
+func newIngressClassFromMapInterface(input map[string]any) *rortypes.ResourceIngressClass {
 	result := rortypes.ResourceIngressClass{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -507,7 +507,7 @@ func newIngressClassFromMapInterface(input map[string]interface{}) *rortypes.Res
 
 // newSbomReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newSbomReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceSbomReport {
+func newSbomReportFromMapInterface(input map[string]any) *rortypes.ResourceSbomReport {
 	result := rortypes.ResourceSbomReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -521,7 +521,7 @@ func newSbomReportFromMapInterface(input map[string]interface{}) *rortypes.Resou
 
 // newVulnerabilityReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newVulnerabilityReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceVulnerabilityReport {
+func newVulnerabilityReportFromMapInterface(input map[string]any) *rortypes.ResourceVulnerabilityReport {
 	result := rortypes.ResourceVulnerabilityReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -535,7 +535,7 @@ func newVulnerabilityReportFromMapInterface(input map[string]interface{}) *rorty
 
 // newExposedSecretReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newExposedSecretReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceExposedSecretReport {
+func newExposedSecretReportFromMapInterface(input map[string]any) *rortypes.ResourceExposedSecretReport {
 	result := rortypes.ResourceExposedSecretReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -549,7 +549,7 @@ func newExposedSecretReportFromMapInterface(input map[string]interface{}) *rorty
 
 // newConfigAuditReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newConfigAuditReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceConfigAuditReport {
+func newConfigAuditReportFromMapInterface(input map[string]any) *rortypes.ResourceConfigAuditReport {
 	result := rortypes.ResourceConfigAuditReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -563,7 +563,7 @@ func newConfigAuditReportFromMapInterface(input map[string]interface{}) *rortype
 
 // newRbacAssessmentReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newRbacAssessmentReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceRbacAssessmentReport {
+func newRbacAssessmentReportFromMapInterface(input map[string]any) *rortypes.ResourceRbacAssessmentReport {
 	result := rortypes.ResourceRbacAssessmentReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -577,7 +577,7 @@ func newRbacAssessmentReportFromMapInterface(input map[string]interface{}) *rort
 
 // newTanzuKubernetesClusterFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newTanzuKubernetesClusterFromMapInterface(input map[string]interface{}) *rortypes.ResourceTanzuKubernetesCluster {
+func newTanzuKubernetesClusterFromMapInterface(input map[string]any) *rortypes.ResourceTanzuKubernetesCluster {
 	result := rortypes.ResourceTanzuKubernetesCluster{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -591,7 +591,7 @@ func newTanzuKubernetesClusterFromMapInterface(input map[string]interface{}) *ro
 
 // newTanzuKubernetesReleaseFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newTanzuKubernetesReleaseFromMapInterface(input map[string]interface{}) *rortypes.ResourceTanzuKubernetesRelease {
+func newTanzuKubernetesReleaseFromMapInterface(input map[string]any) *rortypes.ResourceTanzuKubernetesRelease {
 	result := rortypes.ResourceTanzuKubernetesRelease{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -605,7 +605,7 @@ func newTanzuKubernetesReleaseFromMapInterface(input map[string]interface{}) *ro
 
 // newVirtualMachineClassFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newVirtualMachineClassFromMapInterface(input map[string]interface{}) *rortypes.ResourceVirtualMachineClass {
+func newVirtualMachineClassFromMapInterface(input map[string]any) *rortypes.ResourceVirtualMachineClass {
 	result := rortypes.ResourceVirtualMachineClass{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -619,7 +619,7 @@ func newVirtualMachineClassFromMapInterface(input map[string]interface{}) *rorty
 
 // newKubernetesClusterFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newKubernetesClusterFromMapInterface(input map[string]interface{}) *rortypes.ResourceKubernetesCluster {
+func newKubernetesClusterFromMapInterface(input map[string]any) *rortypes.ResourceKubernetesCluster {
 	result := rortypes.ResourceKubernetesCluster{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -633,7 +633,7 @@ func newKubernetesClusterFromMapInterface(input map[string]interface{}) *rortype
 
 // newProviderFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newProviderFromMapInterface(input map[string]interface{}) *rortypes.ResourceProvider {
+func newProviderFromMapInterface(input map[string]any) *rortypes.ResourceProvider {
 	result := rortypes.ResourceProvider{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -647,7 +647,7 @@ func newProviderFromMapInterface(input map[string]interface{}) *rortypes.Resourc
 
 // newWorkspaceFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newWorkspaceFromMapInterface(input map[string]interface{}) *rortypes.ResourceWorkspace {
+func newWorkspaceFromMapInterface(input map[string]any) *rortypes.ResourceWorkspace {
 	result := rortypes.ResourceWorkspace{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -661,7 +661,7 @@ func newWorkspaceFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 // newKubernetesMachineClassFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newKubernetesMachineClassFromMapInterface(input map[string]interface{}) *rortypes.ResourceKubernetesMachineClass {
+func newKubernetesMachineClassFromMapInterface(input map[string]any) *rortypes.ResourceKubernetesMachineClass {
 	result := rortypes.ResourceKubernetesMachineClass{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -675,7 +675,7 @@ func newKubernetesMachineClassFromMapInterface(input map[string]interface{}) *ro
 
 // newClusterOrderFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newClusterOrderFromMapInterface(input map[string]interface{}) *rortypes.ResourceClusterOrder {
+func newClusterOrderFromMapInterface(input map[string]any) *rortypes.ResourceClusterOrder {
 	result := rortypes.ResourceClusterOrder{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -689,7 +689,7 @@ func newClusterOrderFromMapInterface(input map[string]interface{}) *rortypes.Res
 
 // newProjectFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newProjectFromMapInterface(input map[string]interface{}) *rortypes.ResourceProject {
+func newProjectFromMapInterface(input map[string]any) *rortypes.ResourceProject {
 	result := rortypes.ResourceProject{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -703,7 +703,7 @@ func newProjectFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 // newConfigurationFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newConfigurationFromMapInterface(input map[string]interface{}) *rortypes.ResourceConfiguration {
+func newConfigurationFromMapInterface(input map[string]any) *rortypes.ResourceConfiguration {
 	result := rortypes.ResourceConfiguration{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -717,7 +717,7 @@ func newConfigurationFromMapInterface(input map[string]interface{}) *rortypes.Re
 
 // newClusterComplianceReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newClusterComplianceReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceClusterComplianceReport {
+func newClusterComplianceReportFromMapInterface(input map[string]any) *rortypes.ResourceClusterComplianceReport {
 	result := rortypes.ResourceClusterComplianceReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -731,7 +731,7 @@ func newClusterComplianceReportFromMapInterface(input map[string]interface{}) *r
 
 // newClusterVulnerabilityReportFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newClusterVulnerabilityReportFromMapInterface(input map[string]interface{}) *rortypes.ResourceClusterVulnerabilityReport {
+func newClusterVulnerabilityReportFromMapInterface(input map[string]any) *rortypes.ResourceClusterVulnerabilityReport {
 	result := rortypes.ResourceClusterVulnerabilityReport{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -745,7 +745,7 @@ func newClusterVulnerabilityReportFromMapInterface(input map[string]interface{})
 
 // newRouteFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newRouteFromMapInterface(input map[string]interface{}) *rortypes.ResourceRoute {
+func newRouteFromMapInterface(input map[string]any) *rortypes.ResourceRoute {
 	result := rortypes.ResourceRoute{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -759,7 +759,7 @@ func newRouteFromMapInterface(input map[string]interface{}) *rortypes.ResourceRo
 
 // newSlackMessageFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newSlackMessageFromMapInterface(input map[string]interface{}) *rortypes.ResourceSlackMessage {
+func newSlackMessageFromMapInterface(input map[string]any) *rortypes.ResourceSlackMessage {
 	result := rortypes.ResourceSlackMessage{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -773,7 +773,7 @@ func newSlackMessageFromMapInterface(input map[string]interface{}) *rortypes.Res
 
 // newVulnerabilityEventFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newVulnerabilityEventFromMapInterface(input map[string]interface{}) *rortypes.ResourceVulnerabilityEvent {
+func newVulnerabilityEventFromMapInterface(input map[string]any) *rortypes.ResourceVulnerabilityEvent {
 	result := rortypes.ResourceVulnerabilityEvent{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -787,7 +787,7 @@ func newVulnerabilityEventFromMapInterface(input map[string]interface{}) *rortyp
 
 // newVirtualMachineFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newVirtualMachineFromMapInterface(input map[string]interface{}) *rortypes.ResourceVirtualMachine {
+func newVirtualMachineFromMapInterface(input map[string]any) *rortypes.ResourceVirtualMachine {
 	result := rortypes.ResourceVirtualMachine{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -801,7 +801,7 @@ func newVirtualMachineFromMapInterface(input map[string]interface{}) *rortypes.R
 
 // newVirtualMachineVulnerabilityInfoFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newVirtualMachineVulnerabilityInfoFromMapInterface(input map[string]interface{}) *rortypes.ResourceVirtualMachineVulnerabilityInfo {
+func newVirtualMachineVulnerabilityInfoFromMapInterface(input map[string]any) *rortypes.ResourceVirtualMachineVulnerabilityInfo {
 	result := rortypes.ResourceVirtualMachineVulnerabilityInfo{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -815,7 +815,7 @@ func newVirtualMachineVulnerabilityInfoFromMapInterface(input map[string]interfa
 
 // newEndpointsFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newEndpointsFromMapInterface(input map[string]interface{}) *rortypes.ResourceEndpoints {
+func newEndpointsFromMapInterface(input map[string]any) *rortypes.ResourceEndpoints {
 	result := rortypes.ResourceEndpoints{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -829,7 +829,7 @@ func newEndpointsFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 // newNetworkPolicyFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newNetworkPolicyFromMapInterface(input map[string]interface{}) *rortypes.ResourceNetworkPolicy {
+func newNetworkPolicyFromMapInterface(input map[string]any) *rortypes.ResourceNetworkPolicy {
 	result := rortypes.ResourceNetworkPolicy{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -843,7 +843,7 @@ func newNetworkPolicyFromMapInterface(input map[string]interface{}) *rortypes.Re
 
 // newDatacenterFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newDatacenterFromMapInterface(input map[string]interface{}) *rortypes.ResourceDatacenter {
+func newDatacenterFromMapInterface(input map[string]any) *rortypes.ResourceDatacenter {
 	result := rortypes.ResourceDatacenter{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -857,7 +857,7 @@ func newDatacenterFromMapInterface(input map[string]interface{}) *rortypes.Resou
 
 // newBackupJobFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newBackupJobFromMapInterface(input map[string]interface{}) *rortypes.ResourceBackupJob {
+func newBackupJobFromMapInterface(input map[string]any) *rortypes.ResourceBackupJob {
 	result := rortypes.ResourceBackupJob{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -871,7 +871,7 @@ func newBackupJobFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 // newBackupRunFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newBackupRunFromMapInterface(input map[string]interface{}) *rortypes.ResourceBackupRun {
+func newBackupRunFromMapInterface(input map[string]any) *rortypes.ResourceBackupRun {
 	result := rortypes.ResourceBackupRun{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -885,7 +885,7 @@ func newBackupRunFromMapInterface(input map[string]interface{}) *rortypes.Resour
 
 // newMachineFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newMachineFromMapInterface(input map[string]interface{}) *rortypes.ResourceMachine {
+func newMachineFromMapInterface(input map[string]any) *rortypes.ResourceMachine {
 	result := rortypes.ResourceMachine{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -899,7 +899,7 @@ func newMachineFromMapInterface(input map[string]interface{}) *rortypes.Resource
 
 // newConfigFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newConfigFromMapInterface(input map[string]interface{}) *rortypes.ResourceConfig {
+func newConfigFromMapInterface(input map[string]any) *rortypes.ResourceConfig {
 	result := rortypes.ResourceConfig{}
 	err := convertUnstructuredToStruct(input, &result)
 
@@ -913,7 +913,7 @@ func newConfigFromMapInterface(input map[string]interface{}) *rortypes.ResourceC
 
 // newUnknownFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
 // by the kubernetes universal client.
-func newUnknownFromMapInterface(input map[string]interface{}) *rortypes.ResourceUnknown {
+func newUnknownFromMapInterface(input map[string]any) *rortypes.ResourceUnknown {
 	result := rortypes.ResourceUnknown{}
 	err := convertUnstructuredToStruct(input, &result)
 

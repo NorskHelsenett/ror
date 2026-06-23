@@ -40,7 +40,7 @@ type stubJWKKey struct {
 	err      error
 }
 
-func (s *stubJWKKey) Set(name string, value interface{}) error {
+func (s *stubJWKKey) Set(name string, value any) error {
 	if name == s.failName {
 		return s.err
 	}
@@ -513,7 +513,7 @@ func TestKeyStorageProviderGetJwksSuccess(t *testing.T) {
 func TestKeyStorageProviderGetJwksFromRawError(t *testing.T) {
 	resetGlobals()
 	privKey := generateRSAKey(t, 1024)
-	jwkFromRawFn = func(interface{}) (jwk.Key, error) {
+	jwkFromRawFn = func(any) (jwk.Key, error) {
 		return nil, errors.New("from raw failure")
 	}
 	defer func() { jwkFromRawFn = jwk.FromRaw }()
@@ -536,7 +536,7 @@ func TestKeyStorageProviderGetJwksKeyIDSetError(t *testing.T) {
 	resetGlobals()
 	privKey := generateRSAKey(t, 1024)
 	original := jwkFromRawFn
-	jwkFromRawFn = func(v interface{}) (jwk.Key, error) {
+	jwkFromRawFn = func(v any) (jwk.Key, error) {
 		key, err := original(v)
 		if err != nil {
 			return nil, err
@@ -563,7 +563,7 @@ func TestKeyStorageProviderGetJwksAlgorithmSetError(t *testing.T) {
 	resetGlobals()
 	privKey := generateRSAKey(t, 1024)
 	original := jwkFromRawFn
-	jwkFromRawFn = func(v interface{}) (jwk.Key, error) {
+	jwkFromRawFn = func(v any) (jwk.Key, error) {
 		key, err := original(v)
 		if err != nil {
 			return nil, err
@@ -590,7 +590,7 @@ func TestKeyStorageProviderGetJwksUsageSetError(t *testing.T) {
 	resetGlobals()
 	privKey := generateRSAKey(t, 1024)
 	original := jwkFromRawFn
-	jwkFromRawFn = func(v interface{}) (jwk.Key, error) {
+	jwkFromRawFn = func(v any) (jwk.Key, error) {
 		key, err := original(v)
 		if err != nil {
 			return nil, err
@@ -873,7 +873,7 @@ func TestGenerateKeyFromRawError(t *testing.T) {
 		return generateRSAKey(t, 1024), nil
 	}
 	original := jwkFromRawFn
-	jwkFromRawFn = func(interface{}) (jwk.Key, error) {
+	jwkFromRawFn = func(any) (jwk.Key, error) {
 		return nil, errors.New("from raw failure")
 	}
 	defer func() {

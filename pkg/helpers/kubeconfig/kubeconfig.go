@@ -3,8 +3,10 @@ package kubeconfig
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -143,7 +145,7 @@ func (k *KubeConfig) MemberOfGroup(context string, group string) (bool, error) {
 		return false, nil
 	}
 
-	groups, ok := groupsClaim.([]interface{})
+	groups, ok := groupsClaim.([]any)
 	if !ok {
 		return false, nil
 	}
@@ -165,13 +167,9 @@ func (k *KubeConfig) MergeYaml(yaml []byte) *KubeConfig {
 	}
 
 	if k.Config != nil {
-		for key, v := range mergeConfig.Clusters {
-			k.Config.Clusters[key] = v
-		}
+		maps.Copy(k.Config.Clusters, mergeConfig.Clusters)
 
-		for key, v := range mergeConfig.AuthInfos {
-			k.Config.AuthInfos[key] = v
-		}
+		maps.Copy(k.Config.AuthInfos, mergeConfig.AuthInfos)
 
 		for key, v := range mergeConfig.Contexts {
 			old, exists := k.Config.Contexts[key]
@@ -223,11 +221,11 @@ func (k *KubeConfig) HandleErrors() error {
 		return nil
 	}
 
-	var errs string
+	var errs strings.Builder
 	for _, err := range k.Errors {
-		errs += err.Error() + "\n"
+		errs.WriteString(err.Error() + "\n")
 	}
-	return fmt.Errorf("errors: %s", errs)
+	return fmt.Errorf("errors: %s", errs.String())
 }
 
 // SetCurrentContext sets the current context

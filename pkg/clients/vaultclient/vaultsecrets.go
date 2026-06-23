@@ -11,7 +11,7 @@ import (
 )
 
 // Deprecated: Use the VaultClient method instead
-func GetSecret(secretPath string) (map[string]interface{}, error) {
+func GetSecret(secretPath string) (map[string]any, error) {
 	if secretPath == "" {
 		return nil, errors.New("secret path is nil or empty")
 	}
@@ -60,7 +60,7 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 		return "", fmt.Errorf("could not get secret: %w", err)
 	}
 	if data != nil {
-		vaultval, _ := data.Data["data"].(map[string]interface{})
+		vaultval, _ := data.Data["data"].(map[string]any)
 		vaultkey, _ := vaultval[key].(string)
 		return vaultkey, nil
 	}
@@ -68,7 +68,7 @@ func GetSecretValue(secretPath string, key string) (string, error) {
 	return "", nil
 }
 
-func (vc VaultClient) GetSecret(secretPath string) (map[string]interface{}, error) {
+func (vc VaultClient) GetSecret(secretPath string) (map[string]any, error) {
 	if secretPath == "" {
 		return nil, errors.New("secret path is nil or empty")
 	}
@@ -131,7 +131,7 @@ func (vc VaultClient) GetSecretValue(secretPath string, key string) (string, err
 		return "", fmt.Errorf("could not get secret: %w", err)
 	}
 	if data != nil {
-		vaultval, _ := data.Data["data"].(map[string]interface{})
+		vaultval, _ := data.Data["data"].(map[string]any)
 		vaultkey, _ := vaultval[key].(string)
 		return vaultkey, nil
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 // Deprecated: ReJSON is no longer supported
-func (rc rediscon) GetJSON(ctx context.Context, key string, path string, output interface{}) error {
+func (rc rediscon) GetJSON(ctx context.Context, key string, path string, output any) error {
 	rh := rejson.NewReJSONHandler()
 	rh.SetGoRedisClientWithContext(ctx, rc.Client)
 	value, err := redis.Bytes(rh.JSONGet(key, path))
@@ -24,7 +24,7 @@ func (rc rediscon) GetJSON(ctx context.Context, key string, path string, output 
 }
 
 // Deprecated: ReJSON is no longer supported
-func (rc rediscon) SetJSON(ctx context.Context, key string, path string, value interface{}) error {
+func (rc rediscon) SetJSON(ctx context.Context, key string, path string, value any) error {
 	rh := rejson.NewReJSONHandler()
 	rh.SetGoRedisClientWithContext(ctx, rc.Client)
 

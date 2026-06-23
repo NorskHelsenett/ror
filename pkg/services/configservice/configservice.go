@@ -112,7 +112,6 @@ func Template(templatevalue string, ctx context.Context) (string, error) {
 
 	funcMap := make(template.FuncMap, len(Loaders))
 	for source, loader := range Loaders {
-		loader := loader
 		funcMap[source] = func(key string) (string, error) {
 			resolvedKey, err := renderLoaderKeyTemplate(key, data)
 			if err != nil {

@@ -15,10 +15,10 @@ import (
 {{ range .}}
 func TestNewResourceSetFromDynamicClient{{.Kind}}(t *testing.T) {
     input := &unstructured.Unstructured{
-        Object: map[string]interface{}{
+        Object: map[string]any{
             "kind":       "{{.Kind}}",
             "apiVersion": "{{.APIVersion}}",
-            "metadata": map[string]interface{}{
+            "metadata": map[string]any{
                 "name": "test-{{.Kind | lower}}",
             },
         },
@@ -35,10 +35,10 @@ func TestNewResourceSetFromDynamicClient{{.Kind}}(t *testing.T) {
 {{ end }}
 func TestNewResourceSetFromDynamicClientWrong(t *testing.T) {
 	input := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"kind":       "N00b",
 			"apiVersion": "v900",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-wrong",
 			},
 		},

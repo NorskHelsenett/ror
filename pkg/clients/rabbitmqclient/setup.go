@@ -34,7 +34,7 @@ type RabbitMQConnection interface {
 	GetChannel() *amqp.Channel
 	RegisterHandler(RabbitMQListnerInterface) error
 	RegisterHandlerWithTTL(RabbitMQListnerInterface, time.Duration) error
-	SendMessage(ctx context.Context, message any, routing string, extraheaders map[string]interface{}) error
+	SendMessage(ctx context.Context, message any, routing string, extraheaders map[string]any) error
 	clients.CommonClient
 }
 

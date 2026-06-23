@@ -12,7 +12,7 @@ import (
 
 var mandatory = false
 
-func (rc rabbitmqcon) SendMessage(ctx context.Context, message any, routing string, extraheaders map[string]interface{}) error {
+func (rc rabbitmqcon) SendMessage(ctx context.Context, message any, routing string, extraheaders map[string]any) error {
 	ctx, span := rc.Trace(ctx, "rabbitmqclient: SendMessage")
 	defer span.End()
 

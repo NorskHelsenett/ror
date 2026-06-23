@@ -36,9 +36,9 @@ type KubernetesClusterAgentStatus struct {
 	Nodes              KubernetesClusterAgentStatusNodes    `json:"nodes,omitzero" bson:"nodes,omitempty"`
 	Versions           map[string]string                    `json:"versions,omitempty" bson:"versions,omitempty"`
 	Urls               map[string]string                    `json:"urls,omitempty" bson:"urls,omitempty"`
-	Endpoint           KubernetesClusterAgentStatusEndpoint `json:"endpoint,omitempty" bson:"endpoint,omitempty"`
-	CreatedAt          time.Time                            `json:"createdAt,omitempty" bson:"createdat,omitempty"`
-	LastSeen           time.Time                            `json:"lastSeen,omitempty" bson:"lastseen,omitempty"`
+	Endpoint           KubernetesClusterAgentStatusEndpoint `json:"endpoint" bson:"endpoint,omitempty"`
+	CreatedAt          time.Time                            `json:"createdAt" bson:"createdat,omitempty"`
+	LastSeen           time.Time                            `json:"lastSeen" bson:"lastseen,omitempty"`
 }
 
 type KubernetesClusterAgentStatusNodes struct {

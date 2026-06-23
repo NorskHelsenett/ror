@@ -53,7 +53,7 @@ type RulesetRuleModel struct {
 	Lifetime RulesetLifetimeType `json:"lifetime" bson:"lifetime"`
 	Service  RulesetServiceType  `json:"service" bson:"service"`
 
-	Slack RulesetSlackModel `json:"slack,omitempty" bson:"slack,omitempty"`
+	Slack RulesetSlackModel `json:"slack" bson:"slack,omitempty"`
 }
 
 type RulesetRuleInput struct {
@@ -61,7 +61,7 @@ type RulesetRuleInput struct {
 	Lifetime RulesetLifetimeType `json:"lifetime"`
 	Service  RulesetServiceType  `json:"service"`
 
-	Slack RulesetSlackModel `json:"slack,omitempty"`
+	Slack RulesetSlackModel `json:"slack"`
 }
 
 type RulesetResourceModel struct {

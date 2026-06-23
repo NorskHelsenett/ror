@@ -11,7 +11,7 @@ type ResourceIngress struct {
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceIngressSpec struct {
-	DefaultBackend   ResourceIngressSpecRulesHttpPathsBackend `json:"defaultBackend,omitempty"`
+	DefaultBackend   ResourceIngressSpecRulesHttpPathsBackend `json:"defaultBackend"`
 	IngressClassName string                                   `json:"ingressClassName"`
 	Rules            []ResourceIngressSpecRules               `json:"rules"`
 	Tls              []ResourceIngressSpecTls                 `json:"tls"`
@@ -37,8 +37,8 @@ type ResourceIngressSpecRulesHttpPaths struct {
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceIngressSpecRulesHttpPathsBackend struct {
-	Resource ResourceIngressSpecBackendResource `json:"resource,omitempty"`
-	Service  ResourceIngressSpecBackendService  `json:"service,omitempty"`
+	Resource ResourceIngressSpecBackendResource `json:"resource"`
+	Service  ResourceIngressSpecBackendService  `json:"service"`
 }
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
@@ -51,7 +51,7 @@ type ResourceIngressSpecBackendResource struct {
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceIngressSpecBackendService struct {
 	Name string                                `json:"name,omitempty"`
-	Port ResourceIngressSpecBackendServicePort `json:"port,omitempty"`
+	Port ResourceIngressSpecBackendServicePort `json:"port"`
 }
 
 // Deprecated: This type is only to be used in resource/v1 and will be deprecated

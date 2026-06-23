@@ -7,7 +7,7 @@ import (
 )
 
 // AmqpHeadersCarrier adapts an AMQP header map for OpenTelemetry context propagation.
-type AmqpHeadersCarrier map[string]interface{}
+type AmqpHeadersCarrier map[string]any
 
 func (a AmqpHeadersCarrier) Get(key string) string {
 	v, ok := a[key]
@@ -32,7 +32,7 @@ func (a AmqpHeadersCarrier) Keys() []string {
 
 // InjectAMQPHeaders injects the trace context from ctx into a new header map
 // suitable for publishing an AMQP message.
-func InjectAMQPHeaders(ctx context.Context) map[string]interface{} {
+func InjectAMQPHeaders(ctx context.Context) map[string]any {
 	h := make(AmqpHeadersCarrier)
 	otel.GetTextMapPropagator().Inject(ctx, h)
 	return h
@@ -40,6 +40,6 @@ func InjectAMQPHeaders(ctx context.Context) map[string]interface{} {
 
 // ExtractAMQPHeaders extracts trace context from AMQP headers into the
 // returned context.
-func ExtractAMQPHeaders(ctx context.Context, headers map[string]interface{}) context.Context {
+func ExtractAMQPHeaders(ctx context.Context, headers map[string]any) context.Context {
 	return otel.GetTextMapPropagator().Extract(ctx, AmqpHeadersCarrier(headers))
 }

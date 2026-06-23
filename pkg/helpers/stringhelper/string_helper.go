@@ -81,8 +81,8 @@ func GetSHA512Hash(data []byte) string {
 }
 
 // JsonToMap converts a json string to a map
-func JsonToMap(jsonStr string) (map[string]interface{}, error) {
-	result := make(map[string]interface{})
+func JsonToMap(jsonStr string) (map[string]any, error) {
+	result := make(map[string]any)
 	err := json.Unmarshal([]byte(jsonStr), &result)
 	return result, err
 }
@@ -99,7 +99,7 @@ func CompareLabels(search map[string]string, labels map[string]string) bool {
 }
 
 // PrettyprintStruct prints a struct in a pretty way
-func PrettyprintStruct(obj interface{}) {
+func PrettyprintStruct(obj any) {
 	empJSON, err := json.MarshalIndent(obj, "", "  ")
 	if err != nil {
 		log.Fatalf(err.Error(), nil)
