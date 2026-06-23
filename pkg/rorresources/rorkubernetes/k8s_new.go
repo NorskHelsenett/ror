@@ -36,7 +36,7 @@ func newCommonResourceFromMapInterface(input map[string]any) v1.ObjectMeta {
 	return *metadataConverted
 }
 
-// NewResourceFromMapInterface creates a new resource from a map[string]interface{}
+// NewResourceFromMapInterface creates a new resource from a map[string]any
 // type provided by the kubernetes universal client.
 func NewResourceFromMapInterface(input map[string]any) *rorresources.Resource {
 	r := rorresources.NewRorResource(input["kind"].(string), input["apiVersion"].(string))
