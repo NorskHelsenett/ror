@@ -374,7 +374,7 @@ export interface ResourceEndpointSpecSubsetsNotReadyAddresses {
   hostname?: string;
   ip?: string;
   nodeName?: string;
-  targetRef?: ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef;
+  targetRef: ResourceEndpointSpecSubsetsNotReadyAddressesTargetRef;
 }
 export interface ResourceEndpointSpecSubsetsAddressesTargetRef {
   apiVersion?: string;
@@ -389,7 +389,7 @@ export interface ResourceEndpointSpecSubsetsAddresses {
   hostname?: string;
   ip?: string;
   nodeName?: string;
-  targetRef?: ResourceEndpointSpecSubsetsAddressesTargetRef;
+  targetRef: ResourceEndpointSpecSubsetsAddressesTargetRef;
 }
 export interface ResourceEndpointSpecSubsets {
   addresses?: ResourceEndpointSpecSubsetsAddresses[];
@@ -549,7 +549,7 @@ export interface ResourceRoute {
 }
 export interface ResourceClusterVulnerabilityReportReportStatus {
   status: VulnerabilityStatus;
-  until?: Time;
+  until: Time;
   reason?: VulnerabilityDismissalReason;
   comment?: string;
   riskAssessment?: string;
@@ -736,9 +736,9 @@ export interface KubernetesClusterAgentStatus {
   nodes: KubernetesClusterAgentStatusNodes;
   versions?: { [key: string]: string };
   urls?: { [key: string]: string };
-  endpoint?: KubernetesClusterAgentStatusEndpoint;
-  createdAt?: Time;
-  lastSeen?: Time;
+  endpoint: KubernetesClusterAgentStatusEndpoint;
+  createdAt: Time;
+  lastSeen: Time;
 }
 export interface KubernetesClusterCondition {
   type: string;
@@ -1068,7 +1068,7 @@ export interface ResourceTanuzKuberntesClusterSpec {
 }
 export interface ResourceTanzuKubernetesCluster {
   spec: ResourceTanuzKuberntesClusterSpec;
-  status?: ResourceTanzuKubernetesClusterStatus;
+  status: ResourceTanzuKubernetesClusterStatus;
 }
 export interface ResourceRbacAssessmentReport {
   report: ResourceVulnerabilityReportReport;
@@ -1136,7 +1136,7 @@ export interface ResourceSbomReportsComponentLicenseDetails {
 }
 export interface ResourceSbomReportsComponentLicense {
   expression?: string;
-  license?: ResourceSbomReportsComponentLicenseDetails;
+  license: ResourceSbomReportsComponentLicenseDetails;
 }
 export interface ResourceSbomReportsComponentHash {
   alg?: string;
@@ -1152,22 +1152,22 @@ export interface ResourceSbomReportsComponent {
   hashes?: ResourceSbomReportsComponentHash[];
   licenses?: ResourceSbomReportsComponentLicense[];
   properties?: ResourceSbomReportsComponentProperty[];
-  supplier?: ResourceSbomReportsComponentSupplier;
+  supplier: ResourceSbomReportsComponentSupplier;
 }
 export interface ResourceSbomReportsBomMetadataTools {
   components?: ResourceSbomReportsComponent[];
 }
 export interface ResourceSbomReportsBomMetadata {
   timestamp?: string;
-  tools?: ResourceSbomReportsBomMetadataTools;
-  component?: ResourceSbomReportsComponent;
+  tools: ResourceSbomReportsBomMetadataTools;
+  component: ResourceSbomReportsComponent;
 }
 export interface ResourceSbomReportsBom {
   bomFormat: string;
   specVersion: string;
   serialNumber?: string;
   version?: number;
-  metadata?: ResourceSbomReportsBomMetadata;
+  metadata: ResourceSbomReportsBomMetadata;
   components?: ResourceSbomReportsComponent[];
   dependencies?: ResourceSbomReportsComponentDep[];
 }
@@ -1192,7 +1192,7 @@ export interface AquaReportScanner {
 export interface ResourceSbomReportsReport {
   scanner: AquaReportScanner;
   artifact: ResourceSbomReportsArtifact;
-  registry?: ResourceSbomReportsRegistry;
+  registry: ResourceSbomReportsRegistry;
   summary: ResourceSbomReportsSummary;
   components: ResourceSbomReportsBom;
   updateTimestamp: string;
@@ -1246,7 +1246,7 @@ export interface ResourceIngressSpecBackendServicePort {
 }
 export interface ResourceIngressSpecBackendService {
   name?: string;
-  port?: ResourceIngressSpecBackendServicePort;
+  port: ResourceIngressSpecBackendServicePort;
 }
 export interface ResourceIngressSpecBackendResource {
   apiGroup?: string;
@@ -1254,11 +1254,11 @@ export interface ResourceIngressSpecBackendResource {
   name?: string;
 }
 export interface ResourceIngressSpecRulesHttpPathsBackend {
-  resource?: ResourceIngressSpecBackendResource;
-  service?: ResourceIngressSpecBackendService;
+  resource: ResourceIngressSpecBackendResource;
+  service: ResourceIngressSpecBackendService;
 }
 export interface ResourceIngressSpec {
-  defaultBackend?: ResourceIngressSpecRulesHttpPathsBackend;
+  defaultBackend: ResourceIngressSpecRulesHttpPathsBackend;
   ingressClassName: string;
   rules: ResourceIngressSpecRules[];
   tls: ResourceIngressSpecTls[];
@@ -1333,8 +1333,8 @@ export interface ResourcePodSpec {
   nodeName?: string;
 }
 export interface ResourcePod {
-  spec?: ResourcePodSpec;
-  status?: ResourcePodStatus;
+  spec: ResourcePodSpec;
+  status: ResourcePodStatus;
 }
 export interface IntOrString {
   Type: number;
@@ -1590,7 +1590,7 @@ export interface ResourceRorMeta {
   lastReported?: string;
   internal?: boolean;
   hash?: string;
-  ownerref?: RorResourceOwnerReference;
+  ownerref: RorResourceOwnerReference;
   action?: string;
   tags?: ResourceTag[];
 }
@@ -1633,7 +1633,7 @@ export interface ObjectMeta {
 export interface Resource {
   kind?: string;
   apiVersion?: string;
-  metadata?: ObjectMeta;
+  metadata: ObjectMeta;
   rormeta: ResourceRorMeta;
   namespace?: ResourceNamespace;
   node?: ResourceNode;
@@ -1702,7 +1702,7 @@ export interface GroupVersionKind {
   Kind: string;
 }
 export interface ResourceQuery {
-  versionkind?: GroupVersionKind;
+  versionkind: GroupVersionKind;
   uids?: string[];
   ownerrefs?: RorResourceOwnerReference[];
   fields?: string[];
