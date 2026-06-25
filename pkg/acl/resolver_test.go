@@ -237,7 +237,7 @@ func TestResolver_ResolveOwnerrefs_Basic(t *testing.T) {
 	)
 	resolver := acl.NewResolver(store)
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Len(t, refs, 2)
 	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
@@ -255,7 +255,7 @@ func TestResolver_ResolveOwnerrefs_GlobalReturnsNil(t *testing.T) {
 	)
 	resolver := acl.NewResolver(store)
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Nil(t, refs) // nil = unrestricted
 }
@@ -277,7 +277,7 @@ func TestResolver_ResolveOwnerrefs_Deduplicates(t *testing.T) {
 	)
 	resolver := acl.NewResolver(store)
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"team-a", "team-b"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"team-a", "team-b"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Len(t, refs, 1) // same scope+subject, deduplicated
 }
@@ -293,7 +293,7 @@ func TestResolver_ResolveOwnerrefs_NoMatchingAccess(t *testing.T) {
 	)
 	resolver := acl.NewResolver(store)
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:write")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:write", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Empty(t, refs)
 	assert.NotNil(t, refs) // empty but not nil — nil means unrestricted
@@ -310,7 +310,7 @@ func TestResolver_ResolveOwnerrefs_SubjectAll(t *testing.T) {
 	)
 	resolver := acl.NewResolver(store)
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"ops"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"ops"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Nil(t, refs) // subject=all → unrestricted
 }
@@ -353,6 +353,15 @@ func (m *mockExpander) ExpandScope(_ context.Context, scope aclscope.Scope, subj
 	return m.expansions[key], nil
 }
 
+func (m *mockExpander) ExpandScopes(_ context.Context, seeds []acl.Ownerref) (map[acl.Ownerref][]acl.Ownerref, error) {
+	m.calls++
+	result := make(map[acl.Ownerref][]acl.Ownerref, len(seeds))
+	for _, seed := range seeds {
+		result[seed] = m.expansions[seed]
+	}
+	return result, nil
+}
+
 func TestResolver_ResolveOwnerrefs_WithExpander_ProjectExpands(t *testing.T) {
 	store := newMockStore(
 		aclmodels.AclV3ListItem{
@@ -373,7 +382,7 @@ func TestResolver_ResolveOwnerrefs_WithExpander_ProjectExpands(t *testing.T) {
 	}
 	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	// Original + 3 descendants
 	assert.Len(t, refs, 4)
@@ -397,7 +406,7 @@ func TestResolver_ResolveOwnerrefs_WithExpander_LeafScope_NoExpansion(t *testing
 	}
 	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Len(t, refs, 1)
 	assert.Contains(t, refs, acl.Ownerref{Scope: "KubernetesCluster", Subject: "cluster-1"})
@@ -429,7 +438,7 @@ func TestResolver_ResolveOwnerrefs_WithExpander_DeduplicatesAcrossEntries(t *tes
 	}
 	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	// ws-dev + cluster-abc (deduped) + cluster-def
 	assert.Len(t, refs, 3)
@@ -447,7 +456,7 @@ func TestResolver_ResolveOwnerrefs_WithExpander_GlobalStillReturnsNil(t *testing
 	expander := &mockExpander{}
 	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Nil(t, refs) // nil = unrestricted, expander should not be called
 	assert.Equal(t, 0, expander.calls)
@@ -465,7 +474,7 @@ func TestResolver_ResolveOwnerrefs_WithoutExpander_BackwardsCompatible(t *testin
 	// No expander — old behavior
 	resolver := acl.NewResolver(store)
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read")
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Len(t, refs, 1)
 	assert.Contains(t, refs, acl.Ownerref{Scope: "Project", Subject: "proj-1"})
