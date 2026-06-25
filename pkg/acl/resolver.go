@@ -177,8 +177,11 @@ func (r *Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requir
 			if !slices.Contains(entry.Access, requiredAccess) {
 				continue
 			}
-			// Global access — unrestricted
-			if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll {
+			// Global access — unrestricted. Mirrors the global semantics in
+			// matchesScopeSubject: the "all" scope or subject, or the "ror" scope
+			// with the global subject.
+			if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll ||
+				(entry.Scope == aclscope.ScopeRor && entry.Subject == aclscope.SubjectGlobal) {
 				span.SetAttributes(attribute.Bool("acl.unrestricted", true))
 				return nil, nil
 			}
