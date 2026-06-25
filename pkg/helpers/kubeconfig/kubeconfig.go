@@ -6,6 +6,7 @@ import (
 	"maps"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -256,6 +257,85 @@ func (k *KubeConfig) SetNamespace(namespace string) *KubeConfig {
 		k.Errors = append(k.Errors, err)
 	}
 	return k
+}
+
+// RemoveExpiredContexts removes every context whose token has expired, prunes
+// the user and cluster entries that are left unreferenced and clears the current
+// context if it was removed. It returns the names of the removed contexts,
+// sorted. Contexts without a token (for example client-certificate or exec based
+// auth) are never considered expired and are left untouched.
+func (k *KubeConfig) RemoveExpiredContexts() []string {
+	if k == nil || k.Config == nil {
+		return nil
+	}
+
+	var removed []string
+	for name, context := range k.Config.Contexts {
+		if context != nil && k.contextTokenExpired(context) {
+			delete(k.Config.Contexts, name)
+			removed = append(removed, name)
+		}
+	}
+	if len(removed) == 0 {
+		return nil
+	}
+
+	k.pruneOrphans()
+
+	if _, ok := k.Config.Contexts[k.Config.CurrentContext]; !ok {
+		k.Config.CurrentContext = ""
+	}
+
+	sort.Strings(removed)
+	return removed
+}
+
+// contextTokenExpired reports whether the context's user has a token that has
+// expired.
+func (k *KubeConfig) contextTokenExpired(context *clientcmdapi.Context) bool {
+	authInfo, ok := k.Config.AuthInfos[context.AuthInfo]
+	if !ok || authInfo.Token == "" {
+		return false
+	}
+
+	parsed, _, err := new(jwt.Parser).ParseUnverified(authInfo.Token, jwt.MapClaims{})
+	if err != nil {
+		return false
+	}
+	claims, ok := parsed.Claims.(jwt.MapClaims)
+	if !ok {
+		return false
+	}
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		return false
+	}
+	return time.Now().Unix() > int64(exp)
+}
+
+// pruneOrphans removes user and cluster entries that are no longer referenced by
+// any remaining context.
+func (k *KubeConfig) pruneOrphans() {
+	usedAuthInfos := make(map[string]struct{})
+	usedClusters := make(map[string]struct{})
+	for _, context := range k.Config.Contexts {
+		if context == nil {
+			continue
+		}
+		usedAuthInfos[context.AuthInfo] = struct{}{}
+		usedClusters[context.Cluster] = struct{}{}
+	}
+
+	for name := range k.Config.AuthInfos {
+		if _, ok := usedAuthInfos[name]; !ok {
+			delete(k.Config.AuthInfos, name)
+		}
+	}
+	for name := range k.Config.Clusters {
+		if _, ok := usedClusters[name]; !ok {
+			delete(k.Config.Clusters, name)
+		}
+	}
 }
 
 // getDefaultFilename returns the default filename
