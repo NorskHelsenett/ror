@@ -329,6 +329,28 @@ func TestResolver_ResolveOwnerrefs_GlobalGrant_IgnoresFilter(t *testing.T) {
 	assert.Empty(t, expander.expandedSeeds())
 }
 
+// A global grant expressed as the "ror" scope with the "globalscope" subject
+// (the standard global access grant) must be treated as unrestricted, just like
+// the "all" scope/subject. This mirrors matchesScopeSubject's global semantics.
+func TestResolver_ResolveOwnerrefs_RorGlobalScope_IsUnrestricted(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "super-admins",
+			Scope:   aclscope.ScopeRor,
+			Subject: aclscope.SubjectGlobal,
+			Access:  []aclmodels.AccessTypeV3{"kubernetes:logon"},
+		},
+	)
+	expander := &recordingExpander{}
+	resolver := acl.NewResolver(store, acl.WithScopeExpander(expander))
+
+	filter := acl.OwnerrefFilter{Scopes: []aclscope.Scope{"KubernetesCluster"}}
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"super-admins"}, "kubernetes:logon", filter)
+	assert.NoError(t, err)
+	assert.Nil(t, refs) // nil = unrestricted
+	assert.Empty(t, expander.expandedSeeds())
+}
+
 // An error from the expander backend must propagate, never silently yielding a
 // partial (and possibly misleading) result.
 func TestResolver_ResolveOwnerrefs_ExpanderError_Propagates(t *testing.T) {
