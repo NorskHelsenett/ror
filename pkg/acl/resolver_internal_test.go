@@ -1,5 +1,4 @@
 package acl
-package acl
 
 import (
 	"testing"
