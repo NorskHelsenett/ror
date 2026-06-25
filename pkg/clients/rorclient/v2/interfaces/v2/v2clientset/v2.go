@@ -32,9 +32,11 @@ func NewV2ClientSet(transport transportinterface.RorTransport) clientinterface.R
 		tokenClientV2:     transport.TokenV2(),
 	}
 }
+
 func (c *ClientSet) Acl() acl.AclInterface {
 	return c.aclClientV2
 }
+
 func (c *ClientSet) ApiKeys() apikeys.ApiKeysInterface {
 	return c.apikeysClientV2
 }
