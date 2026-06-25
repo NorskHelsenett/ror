@@ -23,4 +23,10 @@ import (
 // The original scope+subject is NOT included in the result.
 type ScopeExpander interface {
 	ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]Ownerref, error)
+
+	// ExpandScopes expands several seeds in a single round-trip, returning the
+	// descendant ownerrefs for each seed keyed by the seed ownerref. It is
+	// equivalent to calling ExpandScope for each seed but avoids per-seed
+	// round-trips. Seeds with no descendants map to a nil/empty slice.
+	ExpandScopes(ctx context.Context, seeds []Ownerref) (map[Ownerref][]Ownerref, error)
 }

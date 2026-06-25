@@ -5,9 +5,11 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 const aclCollectionName = "acl"
@@ -31,8 +33,12 @@ type aclRawEntry struct {
 
 // GetByGroups returns all ACL entries as V3 items. V2 entries are converted via aclmodels.V2ToV3.
 func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
+	ctx, span := rortracer.StartSpan(ctx, "acl.MongoStore.GetByGroups")
+	defer span.End()
+	span.SetAttributes(attribute.Int("acl.groups", len(groups)))
+
 	if s.db == nil {
-		return nil, fmt.Errorf("mongodb not initialized")
+		return nil, rortracer.SpanErrorf(span, "mongodb not initialized")
 	}
 
 	filter := bson.M{
@@ -42,36 +48,40 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 
 	cursor, err := s.db.Collection(aclCollectionName).Find(ctx, filter)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query ACL entries: %w", err)
+		return nil, rortracer.SpanError(span, fmt.Errorf("failed to query ACL entries: %w", err))
 	}
 	defer cursor.Close(ctx)
 
 	result := make(map[string][]aclmodels.AclV3ListItem, len(groups))
+	entryCount := 0
 	for cursor.Next(ctx) {
 		var raw aclRawEntry
 		if err := cursor.Decode(&raw); err != nil {
-			return nil, fmt.Errorf("failed to decode ACL entry version: %w", err)
+			return nil, rortracer.SpanError(span, fmt.Errorf("failed to decode ACL entry version: %w", err))
 		}
 
 		switch raw.Version {
 		case 3:
 			var entry aclmodels.AclV3ListItem
 			if err := cursor.Decode(&entry); err != nil {
-				return nil, fmt.Errorf("failed to decode V3 ACL entry: %w", err)
+				return nil, rortracer.SpanError(span, fmt.Errorf("failed to decode V3 ACL entry: %w", err))
 			}
 			result[entry.Group] = append(result[entry.Group], entry)
+			entryCount++
 		case 2:
 			var entry aclmodels.AclV2ListItem
 			if err := cursor.Decode(&entry); err != nil {
-				return nil, fmt.Errorf("failed to decode V2 ACL entry: %w", err)
+				return nil, rortracer.SpanError(span, fmt.Errorf("failed to decode V2 ACL entry: %w", err))
 			}
 			converted := aclmodels.V2ToV3(entry)
 			result[converted.Group] = append(result[converted.Group], converted)
+			entryCount++
 		}
 	}
 	if err := cursor.Err(); err != nil {
-		return nil, fmt.Errorf("cursor error reading ACL entries: %w", err)
+		return nil, rortracer.SpanError(span, fmt.Errorf("cursor error reading ACL entries: %w", err))
 	}
+	span.SetAttributes(attribute.Int("acl.entries", entryCount))
 	return result, nil
 }
 

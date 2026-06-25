@@ -18,6 +18,7 @@ import (
 	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/token"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/v1clientset"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/workspaces"
+	v2acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/acl"
 	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/apikeys"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/rorclientv2self"
@@ -65,6 +66,7 @@ type RorClient struct {
 	resourcesClientV2  v2resources.ResourcesInterface
 	streamClientV2     v2stream.StreamInterface
 	aclClientV1        v1acl.AclInterface
+	aclClientV2        v2acl.AclInterface
 	tokenClientV1      v1token.TokenInterface
 	tokenClientV2      v2token.TokenInterface
 	v1                 clientinterface.RorCommonClientApiInterfaceV1
@@ -75,6 +77,7 @@ func NewRorClient(transport transportinterface.RorTransport) *RorClient {
 	return &RorClient{
 		Transport:          transport,
 		aclClientV1:        transport.Acl(),
+		aclClientV2:        transport.AclV2(),
 		streamClientV1:     transport.Stream(),
 		infoClientV1:       transport.Info(),
 		datacenterClientV1: transport.Datacenters(),
@@ -109,6 +112,9 @@ func (c *RorClient) Acl() v1acl.AclInterface {
 	return c.aclClientV1
 }
 
+func (c *RorClient) AclV2() v2acl.AclInterface {
+	return c.aclClientV2
+}
 func (c *RorClient) Info() v1info.InfoInterface {
 	return c.infoClientV1
 }

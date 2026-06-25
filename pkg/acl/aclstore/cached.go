@@ -10,6 +10,9 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
+	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
+
+	"go.opentelemetry.io/otel/attribute"
 )
 
 const (
@@ -40,6 +43,10 @@ func NewCachedStore(backend acl.Store, redis redisdb.RedisDB, ttl time.Duration)
 // GetByGroups returns ACL entries for all groups, using Redis cache where possible.
 // Cache misses are backfilled from the backend in a single call.
 func (c *CachedStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
+	ctx, span := rortracer.StartSpan(ctx, "acl.CachedStore.GetByGroups")
+	defer span.End()
+	span.SetAttributes(attribute.Int("acl.groups", len(groups)))
+
 	if len(groups) == 0 {
 		return make(map[string][]aclmodels.AclV3ListItem), nil
 	}
@@ -50,9 +57,15 @@ func (c *CachedStore) GetByGroups(ctx context.Context, groups []string) (map[str
 	hits, misses, cacheErr := c.mget(ctx, groups)
 	if cacheErr != nil {
 		// Redis down — fall through to backend for all groups
+		span.SetAttributes(attribute.Bool("acl.cache_available", false))
 		rlog.Warnc(ctx, "redis cache unavailable, falling through to backend", rlog.Any("error", cacheErr))
 		return c.backend.GetByGroups(ctx, groups)
 	}
+	span.SetAttributes(
+		attribute.Bool("acl.cache_available", true),
+		attribute.Int("acl.cache_hits", len(hits)),
+		attribute.Int("acl.cache_misses", len(misses)),
+	)
 
 	// Add hits to result (preserve backend behavior: omit groups with no entries)
 	for group, entries := range hits {

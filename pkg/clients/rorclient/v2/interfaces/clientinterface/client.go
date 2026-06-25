@@ -11,6 +11,7 @@ import (
 	v1stream "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/stream"
 	v1token "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/token"
 	v1workspaces "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v1/workspaces"
+	v2acl "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/acl"
 	v2apikeys "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/apikeys"
 	v2resources "github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/rorclientv2self"
@@ -21,6 +22,7 @@ import (
 
 type RorCommonClientApiInterface interface {
 	Acl() v1acl.AclInterface
+	AclV2() v2acl.AclInterface
 	ApiKeysV2() v2apikeys.ApiKeysInterface
 	Clusters() v1clusters.ClustersInterface
 	Datacenters() v1datacenter.DatacenterInterface
@@ -56,6 +58,7 @@ type RorCommonClientApiInterfaceV1 interface {
 }
 
 type RorCommonClientApiInterfaceV2 interface {
+	Acl() v2acl.AclInterface
 	ApiKeys() v2apikeys.ApiKeysInterface
 	Resources() v2resources.ResourcesInterface
 	Stream() v2stream.StreamInterface

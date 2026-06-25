@@ -327,3 +327,152 @@ func TestCached_CacheKeyFormat(t *testing.T) {
 	assert.NoError(t, json.Unmarshal([]byte(val), &entries))
 	assert.Len(t, entries, 1)
 }
+
+// --- V2 cache path ---
+
+func TestCached_V2_CacheMiss_BackfillsFromBackend(t *testing.T) {
+	store, backend, _ := setupTest(t,
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+
+	result, err := store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Len(t, result["dev-team"], 1)
+	assert.Equal(t, 1, backend.calls)
+}
+
+func TestCached_V2_CacheHit_SkipsBackend(t *testing.T) {
+	store, backend, _ := setupTest(t,
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+
+	// First call — cache miss.
+	_, err := store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, backend.calls)
+
+	// Second call — cache hit, backend not consulted.
+	result, err := store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Len(t, result["dev-team"], 1)
+	assert.Equal(t, 1, backend.calls)
+}
+
+func TestCached_V2_PartialHit_OnlyBackfillsMisses(t *testing.T) {
+	store, backend, _ := setupTest(t,
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+		aclmodels.AclV3ListItem{
+			Group:   "ops-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:write"},
+		},
+	)
+
+	// Warm dev-team only.
+	_, err := store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, backend.calls)
+
+	result, err := store.GetV2ByGroups(context.Background(), []string{"dev-team", "ops-team"})
+	assert.NoError(t, err)
+	assert.Len(t, result["dev-team"], 1)
+	assert.Len(t, result["ops-team"], 1)
+	assert.Equal(t, 2, backend.calls)
+}
+
+func TestCached_V2_EmptyGroups(t *testing.T) {
+	store, backend, _ := setupTest(t)
+
+	result, err := store.GetV2ByGroups(context.Background(), []string{})
+	assert.NoError(t, err)
+	assert.Empty(t, result)
+	assert.Equal(t, 0, backend.calls)
+}
+
+func TestCached_V2_RedisDown_FallsThrough(t *testing.T) {
+	store, backend, mr := setupTest(t,
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+
+	mr.Close()
+
+	result, err := store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Len(t, result["dev-team"], 1)
+	assert.Equal(t, 1, backend.calls)
+}
+
+func TestCached_V2_CacheKeyFormat(t *testing.T) {
+	store, _, mr := setupTest(t,
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+
+	_, err := store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+
+	// V2 uses a distinct key prefix from V3.
+	val, err := mr.Get("acl:v2:group:dev-team")
+	assert.NoError(t, err)
+
+	var entries []aclmodels.AclV2ListItem
+	assert.NoError(t, json.Unmarshal([]byte(val), &entries))
+	assert.Len(t, entries, 1)
+
+	// V3 key must not be populated by a V2 fetch.
+	_, err = mr.Get("acl:v3:group:dev-team")
+	assert.Error(t, err)
+}
+
+func TestCached_Invalidate_ClearsBothV2AndV3(t *testing.T) {
+	store, backend, _ := setupTest(t,
+		aclmodels.AclV3ListItem{
+			Group:   "dev-team",
+			Scope:   "KubernetesCluster",
+			Subject: "cluster-1",
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+
+	// Warm both caches.
+	_, err := store.GetByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	_, err = store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, backend.calls)
+
+	// Invalidate clears both V2 and V3 entries.
+	err = store.Invalidate(context.Background(), "dev-team")
+	assert.NoError(t, err)
+
+	_, err = store.GetByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	_, err = store.GetV2ByGroups(context.Background(), []string{"dev-team"})
+	assert.NoError(t, err)
+	assert.Equal(t, 4, backend.calls) // both had to re-fetch
+}

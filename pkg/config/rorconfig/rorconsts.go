@@ -60,6 +60,9 @@ const (
 	// KV_VAULT_ROLE is the vault database role used to issue redis/valkey
 	// credentials. When empty it defaults to "valkey-<ROLE>-role".
 	KV_VAULT_ROLE ConfigConst = "KV_VAULT_ROLE"
+	// KV_ENABLED gates whether the redis/valkey client is initialized. It is
+	// enabled by default; set it to "false" to skip connecting to redis.
+	KV_ENABLED ConfigConst = "KV_ENABLED"
 
 	TRACER_ID                        ConfigConst = "TRACER_ID"
 	ENABLE_TRACING                   ConfigConst = "ENABLE_TRACING"
@@ -129,6 +132,7 @@ var ConfigConsts = EnvironmentVariables{
 	{key: "KV_HOST", deprecated: false, description: ""},
 	{key: "KV_PORT", deprecated: false, description: ""},
 	{key: "KV_VAULT_ROLE", deprecated: false, description: ""},
+	{key: "KV_ENABLED", deprecated: false, description: "Enables the redis/valkey client. Enabled by default; set to false to disable."},
 	{key: "TRACER_ID", deprecated: false, description: ""},
 	{key: "ENABLE_TRACING", deprecated: false, description: ""},
 	{key: "OPENTELEMETRY_COLLECTOR_ENDPOINT", deprecated: false, description: ""},

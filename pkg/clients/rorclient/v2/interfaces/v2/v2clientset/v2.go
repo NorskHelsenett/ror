@@ -3,6 +3,7 @@ package v2clientset
 import (
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/clientinterface"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/transports/transportinterface"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/acl"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/apikeys"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/rorclientv2self"
@@ -13,6 +14,7 @@ import (
 type ClientSet struct {
 	transport transportinterface.RorTransport
 
+	aclClientV2       acl.AclInterface
 	apikeysClientV2   apikeys.ApiKeysInterface
 	selfClientV2      rorclientv2self.SelfInterface
 	resourcesClientV2 resources.ResourcesInterface
@@ -22,6 +24,7 @@ type ClientSet struct {
 
 func NewV2ClientSet(transport transportinterface.RorTransport) clientinterface.RorCommonClientApiInterfaceV2 {
 	return &ClientSet{
+		aclClientV2:       transport.AclV2(),
 		apikeysClientV2:   transport.ApiKeysV2(),
 		selfClientV2:      transport.Self(),
 		resourcesClientV2: transport.ResourcesV2(),
@@ -29,6 +32,11 @@ func NewV2ClientSet(transport transportinterface.RorTransport) clientinterface.R
 		tokenClientV2:     transport.TokenV2(),
 	}
 }
+
+func (c *ClientSet) Acl() acl.AclInterface {
+	return c.aclClientV2
+}
+
 func (c *ClientSet) ApiKeys() apikeys.ApiKeysInterface {
 	return c.apikeysClientV2
 }
