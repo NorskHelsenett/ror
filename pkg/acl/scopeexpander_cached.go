@@ -96,8 +96,9 @@ func (c *CachedScopeExpander) ExpandScopes(ctx context.Context, seeds []Ownerref
 	}
 	c.mu.RUnlock()
 
+	uniqueSeeds := len(result)
 	span.SetAttributes(
-		attribute.Int("acl.cache_hits", len(seeds)-len(misses)),
+		attribute.Int("acl.cache_hits", uniqueSeeds-len(misses)),
 		attribute.Int("acl.cache_misses", len(misses)),
 	)
 
