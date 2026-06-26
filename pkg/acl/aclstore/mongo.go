@@ -17,12 +17,18 @@ const aclCollectionName = "acl"
 // MongoStore implements acl.Store backed by MongoDB.
 // It queries both V2 and V3 entries and converts to the requested format.
 type MongoStore struct {
-	db *mongo.Database
+	// dbProvider returns the live *mongo.Database on every call. It must not be
+	// cached: the underlying mongo client is reconnected (and the previous one
+	// disconnected) whenever its credentials are rotated, so a captured handle
+	// would start failing with "client is disconnected" after the first renewal.
+	dbProvider func() *mongo.Database
 }
 
-// NewMongoStore creates a new MongoDB-backed ACL store.
-func NewMongoStore(db *mongo.Database) *MongoStore {
-	return &MongoStore{db: db}
+// NewMongoStore creates a new MongoDB-backed ACL store. dbProvider must return
+// the current *mongo.Database; it is called on every query so the store always
+// uses the live connection (see the field doc for why this matters).
+func NewMongoStore(dbProvider func() *mongo.Database) *MongoStore {
+	return &MongoStore{dbProvider: dbProvider}
 }
 
 // aclRawEntry is used to decode both V2 and V3 entries from MongoDB.
@@ -37,7 +43,8 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 	defer span.End()
 	span.SetAttributes(attribute.Int("acl.groups", len(groups)))
 
-	if s.db == nil {
+	db := s.dbProvider()
+	if db == nil {
 		return nil, rortracer.SpanErrorf(span, "mongodb not initialized")
 	}
 
@@ -46,7 +53,7 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 		"group":   bson.M{"$in": groups},
 	}
 
-	cursor, err := s.db.Collection(aclCollectionName).Find(ctx, filter)
+	cursor, err := db.Collection(aclCollectionName).Find(ctx, filter)
 	if err != nil {
 		return nil, rortracer.SpanError(span, fmt.Errorf("failed to query ACL entries: %w", err))
 	}
@@ -87,7 +94,8 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 
 // GetV2ByGroups returns all ACL entries as V2 items. V3 entries are converted via aclmodels.V3ToV2.
 func (s *MongoStore) GetV2ByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV2ListItem, error) {
-	if s.db == nil {
+	db := s.dbProvider()
+	if db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
@@ -96,7 +104,7 @@ func (s *MongoStore) GetV2ByGroups(ctx context.Context, groups []string) (map[st
 		"group":   bson.M{"$in": groups},
 	}
 
-	cursor, err := s.db.Collection(aclCollectionName).Find(ctx, filter)
+	cursor, err := db.Collection(aclCollectionName).Find(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query ACL entries: %w", err)
 	}

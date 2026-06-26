@@ -19,12 +19,18 @@ const resourceV2Collection = "resourcesv2"
 // ownerref chain in the resourcesv2 collection. No hardcoded hierarchy —
 // the tree is derived entirely from rormeta.ownerref data on each resource.
 type MongoScopeExpander struct {
-	db *mongo.Database
+	// dbProvider returns the live *mongo.Database on every call. It must not be
+	// cached: the underlying mongo client is reconnected (and the previous one
+	// disconnected) whenever its credentials are rotated, so a captured handle
+	// would start failing with "client is disconnected" after the first renewal.
+	dbProvider func() *mongo.Database
 }
 
-// NewMongoScopeExpander creates a new MongoDB-backed scope expander.
-func NewMongoScopeExpander(db *mongo.Database) *MongoScopeExpander {
-	return &MongoScopeExpander{db: db}
+// NewMongoScopeExpander creates a new MongoDB-backed scope expander. dbProvider
+// must return the current *mongo.Database; it is called on every expansion so
+// the expander always uses the live connection (see the field doc for why).
+func NewMongoScopeExpander(dbProvider func() *mongo.Database) *MongoScopeExpander {
+	return &MongoScopeExpander{dbProvider: dbProvider}
 }
 
 // ownerRef is a minimal projection of a resourcesv2 document, carrying only
@@ -109,7 +115,8 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 		return out, nil
 	}
 
-	if e.db == nil {
+	db := e.dbProvider()
+	if db == nil {
 		return nil, fmt.Errorf("mongodb not initialized")
 	}
 
@@ -125,7 +132,7 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 		out[s] = nil // ensure every queried seed is present in the result
 	}
 
-	collection := e.db.Collection(resourceV2Collection)
+	collection := db.Collection(resourceV2Collection)
 
 	// The graph traversal must only ever visit owner ("parent") resources:
 	// resources whose uid is referenced by at least one other resource as its
