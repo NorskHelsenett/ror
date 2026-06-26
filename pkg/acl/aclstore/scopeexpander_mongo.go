@@ -140,7 +140,14 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 	//
 	// Owner chains never pass through a leaf (a leaf has no children), so
 	// restricting the search to owners loses no owner-descendant.
-	ownerSubjectFilter := bson.D{{Key: "rormeta.ownerref.subject", Value: bson.D{{Key: "$nin", Value: bson.A{"", nil}}}}}
+	//
+	// Require the subject to be a present, non-empty string: $type screens out
+	// missing fields, null, and any non-string values, so Distinct yields a
+	// clean []string and the result never includes a spurious empty/owner uid.
+	ownerSubjectFilter := bson.D{{Key: "rormeta.ownerref.subject", Value: bson.D{
+		{Key: "$type", Value: "string"},
+		{Key: "$ne", Value: ""},
+	}}}
 	var ownerSubjects []string
 	if err := collection.Distinct(ctx, "rormeta.ownerref.subject", ownerSubjectFilter).Decode(&ownerSubjects); err != nil {
 		return nil, fmt.Errorf("failed to list owner subjects for scope expansion: %w", err)
