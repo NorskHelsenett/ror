@@ -37,17 +37,17 @@ type ownerRef struct {
 // ExpandScope recursively finds all descendant ownerrefs by walking the
 // ownerref chain in resourcesv2. Returns nil if no resources have the given ownerref.
 //
-// The full descendant subtree is resolved in a single $graphLookup aggregation
+// The descendant subtree is resolved in a single $graphLookup aggregation
 // (resource.uid -> child.rormeta.ownerref.subject) instead of issuing one query
 // per node.
 //
-// Only "owner" nodes are returned: a node is an owner iff at least one other
-// resource in the subtree references its uid as rormeta.ownerref.subject. Leaf
-// resources ("stubs", which own nothing) are excluded — they are never anyone's
-// ownerref.subject, so they would match no resources in an OwnerrefsToFilter
-// query, and they remain reachable through their (owning) parent regardless.
-// This keeps the result small, which matters because the expander runs on every
-// authorized read.
+// Only "owner" nodes are ever traversed or returned: a node is an owner iff at
+// least one other resource references its uid as rormeta.ownerref.subject. Leaf
+// resources (which own nothing — e.g. the in-cluster resources a cluster owns)
+// are pruned from the traversal itself via restrictSearchWithMatch. This keeps
+// the result small — a single cluster can own tens of thousands of leaves —
+// which both avoids overflowing the $graphLookup memory limit and matters
+// because the expander runs on every authorized read.
 func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]acl.Ownerref, error) {
 	ctx, span := rortracer.StartSpan(ctx, "acl.MongoScopeExpander.ExpandScope")
 	defer span.End()
@@ -76,7 +76,7 @@ func (e *MongoScopeExpander) ExpandScope(ctx context.Context, scope aclscope.Sco
 // ExpandScopes expands several scope+subject seeds in a single aggregation,
 // returning the owner descendants for each seed keyed by the seed ownerref.
 // Batching collapses many per-entry round-trips into one. The same owners-only
-// (stub-excluding) rules as ExpandScope apply to every seed.
+// (leaf-excluding) traversal as ExpandScope applies to every seed.
 func (e *MongoScopeExpander) ExpandScopes(ctx context.Context, seeds []acl.Ownerref) (map[acl.Ownerref][]acl.Ownerref, error) {
 	ctx, span := rortracer.StartSpan(ctx, "acl.MongoScopeExpander.ExpandScopes")
 	defer span.End()
@@ -127,6 +127,36 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 
 	collection := e.db.Collection(resourceV2Collection)
 
+	// The graph traversal must only ever visit owner ("parent") resources:
+	// resources whose uid is referenced by at least one other resource as its
+	// rormeta.ownerref.subject. Leaf resources (e.g. the in-cluster resources a
+	// cluster owns — Pods, PolicyReports, ...) own nothing and must never be
+	// traversed or returned: there are no ownership relations between resources
+	// inside a cluster, so a leaf can never lead to another scope. Crucially,
+	// pruning them at traversal time (rather than after) keeps the $graphLookup
+	// result small enough to stay within MongoDB's memory limit — a single
+	// cluster can own tens of thousands of leaf resources, which would otherwise
+	// overflow the traversal.
+	//
+	// Owner chains never pass through a leaf (a leaf has no children), so
+	// restricting the search to owners loses no owner-descendant.
+	//
+	// Require the subject to be a present, non-empty string: $type screens out
+	// missing fields, null, and any non-string values, so Distinct yields a
+	// clean []string and the result never includes a spurious empty/owner uid.
+	ownerSubjectFilter := bson.D{{Key: "rormeta.ownerref.subject", Value: bson.D{
+		{Key: "$type", Value: "string"},
+		{Key: "$ne", Value: ""},
+	}}}
+	var ownerSubjects []string
+	if err := collection.Distinct(ctx, "rormeta.ownerref.subject", ownerSubjectFilter).Decode(&ownerSubjects); err != nil {
+		return nil, fmt.Errorf("failed to list owner subjects for scope expansion: %w", err)
+	}
+	ownerUids := make(bson.A, len(ownerSubjects))
+	for i, s := range ownerSubjects {
+		ownerUids[i] = s
+	}
+
 	pipeline := mongo.Pipeline{
 		// Emit one synthetic row per seed subject. Seeds need not exist as
 		// documents; one graph traversal runs per seed instead of one per
@@ -137,38 +167,25 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 			{Key: "seed", Value: bson.D{{Key: "$literal", Value: seedVals}}},
 		}}},
 		bson.D{{Key: "$unwind", Value: "$seed"}},
-		// Recursively gather each seed's subtree by following the ownerref chain
-		// (resource.uid -> child.rormeta.ownerref.subject). uids are globally
-		// unique so connecting on subject alone is sufficient.
+		// Recursively gather each seed's owner-descendants by following the
+		// ownerref chain (resource.uid -> child.rormeta.ownerref.subject). uids
+		// are globally unique so connecting on subject alone is sufficient.
+		// restrictSearchWithMatch prunes non-owner (leaf) resources from the
+		// traversal entirely: they are neither returned nor recursed into.
 		bson.D{{Key: "$graphLookup", Value: bson.D{
 			{Key: "from", Value: resourceV2Collection},
 			{Key: "startWith", Value: "$seed"},
 			{Key: "connectFromField", Value: "uid"},
 			{Key: "connectToField", Value: "rormeta.ownerref.subject"},
 			{Key: "as", Value: "descendants"},
+			{Key: "restrictSearchWithMatch", Value: bson.D{{Key: "uid", Value: bson.D{{Key: "$in", Value: ownerUids}}}}},
 		}}},
-		// Build the set of uids that own at least one resource within this
-		// subtree: every uid that appears as some descendant's ownerref.subject.
-		// A leaf resource ("stub") never appears here.
-		bson.D{{Key: "$set", Value: bson.D{
-			{Key: "ownerUids", Value: bson.D{{Key: "$setUnion", Value: bson.A{
-				bson.D{{Key: "$map", Value: bson.D{
-					{Key: "input", Value: "$descendants"},
-					{Key: "as", Value: "d"},
-					{Key: "in", Value: "$$d.rormeta.ownerref.subject"},
-				}}},
-			}}}},
-		}}},
-		// Keep only owner nodes (exclude stubs) and trim to uid + kind.
+		// All descendants are owners by construction; trim to uid + kind.
 		bson.D{{Key: "$project", Value: bson.D{
 			{Key: "_id", Value: 0},
 			{Key: "seed", Value: 1},
 			{Key: "owners", Value: bson.D{{Key: "$map", Value: bson.D{
-				{Key: "input", Value: bson.D{{Key: "$filter", Value: bson.D{
-					{Key: "input", Value: "$descendants"},
-					{Key: "as", Value: "d"},
-					{Key: "cond", Value: bson.D{{Key: "$in", Value: bson.A{"$$d.uid", "$ownerUids"}}}},
-				}}}},
+				{Key: "input", Value: "$descendants"},
 				{Key: "as", Value: "d"},
 				{Key: "in", Value: bson.D{
 					{Key: "uid", Value: "$$d.uid"},
