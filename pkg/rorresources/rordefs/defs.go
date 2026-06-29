@@ -519,6 +519,17 @@ var ResourceOrganizationalUnit = ApiResource{
 	Versions:   []ApiVersions{ApiVersionV2},
 }
 
+var ResourceDatabase = ApiResource{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "ManagedDatabase",
+		APIVersion: "database.ror.internal/v1",
+	},
+	Plural:     "databases",
+	Namespaced: false,
+	Types:      []ApiResourceType{ApiResourceTypeInternal},
+	Versions:   []ApiVersions{ApiVersionV2},
+}
+
 var ResourceUnknown = ApiResource{
 	TypeMeta: metav1.TypeMeta{
 		Kind:       "Unknown",
@@ -577,6 +588,7 @@ var Resourcedefs = ApiResources{
 	ResourceBackupJob,
 	ResourceBackupRun,
 	ResourceMachine,
+	ResourceDatabase,
 	ResourceConfig,
 	ResourceOrganizationalUnit,
 	ResourceUnknown,

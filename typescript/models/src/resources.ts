@@ -35,6 +35,20 @@ export interface ResourceConfigSpec {
 export interface ResourceConfig {
   spec: ResourceConfigSpec;
 }
+export interface ResourceManagedDatabaseStatus {
+  name: string;
+  engine: string;
+}
+export interface ResourceManagedDatabaseSpec {
+  name: string;
+  engine: string;
+}
+export interface ResourceManagedDatabase {
+  id: string;
+  provider: string;
+  spec?: ResourceManagedDatabaseSpec;
+  status?: ResourceManagedDatabaseStatus;
+}
 export interface MachineCondition {
   type?: string;
   status?: string;
@@ -1692,6 +1706,7 @@ export interface Resource {
   backupjob?: ResourceBackupJob;
   backuprun?: ResourceBackupRun;
   machine?: ResourceMachine;
+  manageddatabase?: ResourceManagedDatabase;
   config?: ResourceConfig;
   organizationalunit?: ResourceOrganizationalUnit;
   unknown?: ResourceUnknown;
