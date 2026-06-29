@@ -272,6 +272,12 @@ var (
 		Kind:    "Machine",
 	}
 
+	ResourceManagedDatabaseGVK = schema.GroupVersionKind{
+		Group:   "database.ror.internal",
+		Version: "v1",
+		Kind:    "ManagedDatabase",
+	}
+
 	ResourceConfigGVK = schema.GroupVersionKind{
 		Group:   "ror.internal",
 		Version: "v1",

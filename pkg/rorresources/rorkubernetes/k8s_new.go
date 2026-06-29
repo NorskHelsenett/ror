@@ -264,6 +264,11 @@ func NewResourceFromMapInterface(input map[string]any) *rorresources.Resource {
 		r.SetMachine(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
+	case "database.ror.internal/v1, Kind=ManagedDatabase":
+		res := newManagedDatabaseFromMapInterface(input)
+		r.SetManagedDatabase(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
 	case "ror.internal/v1, Kind=Config":
 		res := newConfigFromMapInterface(input)
 		r.SetConfig(res)
@@ -891,6 +896,20 @@ func newMachineFromMapInterface(input map[string]any) *rortypes.ResourceMachine 
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceMachine", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newManagedDatabaseFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newManagedDatabaseFromMapInterface(input map[string]any) *rortypes.ResourceManagedDatabase {
+	result := rortypes.ResourceManagedDatabase{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceManagedDatabase", err)
 		return nil
 	}
 

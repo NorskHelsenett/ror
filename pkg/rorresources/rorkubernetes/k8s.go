@@ -267,6 +267,11 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetMachine(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
+	case "database.ror.internal/v1, Kind=ManagedDatabase":
+		res := newManagedDatabaseFromDynamicClient(input)
+		r.SetManagedDatabase(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
 	case "ror.internal/v1, Kind=Config":
 		res := newConfigFromDynamicClient(input)
 		r.SetConfig(res)
@@ -1156,6 +1161,26 @@ func newMachineFromDynamicClient(obj *unstructured.Unstructured) *rortypes.Resou
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to Machine", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newManagedDatabaseFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newManagedDatabaseFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceManagedDatabase {
+	nr := rortypes.ResourceManagedDatabase{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to ManagedDatabase", err)
 	}
 
 	// Explicitly free the JSON bytes to help garbage collection

@@ -849,6 +849,25 @@ func TestNewResourceSetFromDynamicClientMachine(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientManagedDatabase(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]any{
+			"kind":       "ManagedDatabase",
+			"apiVersion": "database.ror.internal/v1",
+			"metadata": map[string]any{
+				"name": "test-manageddatabase",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientConfig(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]any{
