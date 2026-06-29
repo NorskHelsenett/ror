@@ -1,6 +1,8 @@
 package rorresources
 
 import (
+	"fmt"
+
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rortypes"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -8,11 +10,11 @@ import (
 
 // NewResourceSetFromStruct creates a new ResourceSet from a struct of the type ResourceSet
 // the function restores common methods after transit eg by json.
-func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
+func NewResourceSetFromStruct(in ResourceSet) (*ResourceSet, error) {
 	out := ResourceSet{}
 	if len(in.Resources) == 0 {
 		rlog.Warn("ResourceSet has no resources")
-		return &out
+		return &out, fmt.Errorf("ResourceSet has no resources")
 	}
 
 	if in.query == nil {
@@ -24,14 +26,17 @@ func NewResourceSetFromStruct(in ResourceSet) *ResourceSet {
 	out.query = &query
 
 	for _, res := range in.Resources {
-		r := NewResourceFromStruct(*res)
+		r, err := NewResourceFromStruct(*res)
+		if err != nil {
+			rlog.Error("Failed to create resource from struct", err)
+			return nil, err
+		}
 		out.Add(r)
 	}
-	return &out
-
+	return &out, nil
 }
 
-func NewResourceFromStruct(res Resource) *Resource {
+func NewResourceFromStruct(res Resource) (*Resource, error) {
 
 	r := NewRorResource(res.Kind, res.APIVersion)
 	r.CommonResource = res.CommonResource
@@ -377,7 +382,7 @@ func NewResourceFromStruct(res Resource) *Resource {
 
 	default:
 		rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
-		return nil
+		return nil, fmt.Errorf("unknown resource kind: %s", gvk.String())
 	}
-	return r
+	return r, nil
 }
