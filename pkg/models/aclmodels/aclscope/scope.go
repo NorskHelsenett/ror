@@ -14,6 +14,7 @@ const (
 	ScopeVirtualMachine Scope = "VirtualMachine"
 	ScopeMachine        Scope = "Machine"
 	ScopeBackup         Scope = "BackupJob"
+	ScopeDatabase       Scope = "Database"
 	ScopeAll            Scope = "all"
 	ScopeSpam           Scope = "spam"
 )
@@ -28,6 +29,7 @@ func (s Scope) IsValid() bool {
 		ScopeVirtualMachine,
 		ScopeMachine,
 		ScopeBackup,
+		ScopeDatabase,
 		ScopeAll,
 		ScopeSpam:
 		return true
@@ -46,6 +48,7 @@ func GetScopes() []Scope {
 		ScopeProject,
 		ScopeMachine,
 		ScopeDatacenter,
+		ScopeDatabase,
 		ScopeAll,
 		ScopeSpam,
 	}

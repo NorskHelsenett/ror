@@ -14,6 +14,7 @@ const (
 	Acl2ScopeVirtualMachine = aclscope.ScopeVirtualMachine
 	Acl2ScopeMachine        = aclscope.ScopeMachine
 	Acl2ScopeBackup         = aclscope.ScopeBackup
+	Acl2ScopeDatabase       = aclscope.ScopeDatabase
 	Acl2ScopeAll            = aclscope.ScopeAll
 	Acl2ScopeSpam           = aclscope.ScopeSpam
 )
