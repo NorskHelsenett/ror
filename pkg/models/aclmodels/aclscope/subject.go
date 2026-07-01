@@ -21,6 +21,7 @@ const (
 	SubjectPrice          Subject = "price"
 	SubjectVirtualMachine Subject = "virtualmachine"
 	SubjectBackup         Subject = "backup"
+	SubjectDatabase       Subject = "database"
 	SubjectAll            Subject = "all"
 	SubjectSpamGit        Subject = "spamgit"
 )
@@ -37,6 +38,7 @@ func GetValidSubjects() []Subject {
 		SubjectPrice,
 		SubjectVirtualMachine,
 		SubjectBackup,
+		SubjectDatabase,
 		SubjectAll,
 	}
 }
