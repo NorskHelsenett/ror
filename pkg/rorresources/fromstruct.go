@@ -347,6 +347,13 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetMachine(res.MachineResource)
 		r.common = rortypes.NewCommonFactory(res.MachineResource)
 
+	case "database.ror.internal/v1, Kind=ManagedDatabase":
+		if res.ManagedDatabaseResource == nil {
+			res.ManagedDatabaseResource = &rortypes.ResourceManagedDatabase{}
+		}
+		r.SetManagedDatabase(res.ManagedDatabaseResource)
+		r.common = rortypes.NewCommonFactory(res.ManagedDatabaseResource)
+
 	case "ror.internal/v1, Kind=Config":
 		if res.ConfigResource == nil {
 			res.ConfigResource = &rortypes.ResourceConfig{}

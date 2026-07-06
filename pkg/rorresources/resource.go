@@ -59,6 +59,7 @@ type Resource struct {
 	BackupJobResource                       *rortypes.ResourceBackupJob                       `json:"backupjob,omitempty" bson:"backupjob,omitempty"`
 	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	MachineResource                         *rortypes.ResourceMachine                         `json:"machine,omitempty" bson:"machine,omitempty"`
+	ManagedDatabaseResource                 *rortypes.ResourceManagedDatabase                 `json:"manageddatabase,omitempty" bson:"manageddatabase,omitempty"`
 	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
 	OrganizationalUnitResource              *rortypes.ResourceOrganizationalUnit              `json:"organizationalunit,omitempty" bson:"organizationalunit,omitempty"`
 	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
@@ -514,6 +515,16 @@ func NewRorMachineResource() *Resource {
 	return &r
 }
 
+// NewRorManagedDatabaseResource provides a empty resource of a given kind/apiversion
+func NewRorManagedDatabaseResource() *Resource {
+	r := Resource{}
+	r.Kind = "ManagedDatabase"
+	r.APIVersion = "database.ror.internal/v1"
+	r.ManagedDatabaseResource = &rortypes.ResourceManagedDatabase{}
+	r.common = rortypes.NewCommonFactory(r.ManagedDatabaseResource)
+	return &r
+}
+
 // NewRorConfigResource provides a empty resource of a given kind/apiversion
 func NewRorConfigResource() *Resource {
 	r := Resource{}
@@ -728,6 +739,10 @@ func (r *Resource) SetBackupRun(res *rortypes.ResourceBackupRun) {
 
 func (r *Resource) SetMachine(res *rortypes.ResourceMachine) {
 	r.MachineResource = res
+}
+
+func (r *Resource) SetManagedDatabase(res *rortypes.ResourceManagedDatabase) {
+	r.ManagedDatabaseResource = res
 }
 
 func (r *Resource) SetConfig(res *rortypes.ResourceConfig) {
@@ -960,6 +975,11 @@ func (r *Resource) BackupRun() rortypes.BackupRuninterface {
 // Machine is a wrapper for the underlying resource, it provides a Machineinterface to work with machines
 func (r *Resource) Machine() rortypes.Machineinterface {
 	return r.MachineResource
+}
+
+// ManagedDatabase is a wrapper for the underlying resource, it provides a ManagedDatabaseinterface to work with databases
+func (r *Resource) ManagedDatabase() rortypes.ManagedDatabaseinterface {
+	return r.ManagedDatabaseResource
 }
 
 // Config is a wrapper for the underlying resource, it provides a Configinterface to work with configs
