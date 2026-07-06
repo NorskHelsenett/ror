@@ -15,6 +15,19 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceUnknown {}
+export interface ResourceOrganizationalUnitStatus {
+  name: string;
+  type: string;
+}
+export interface ResourceOrganizationalUnitSpec {
+  name: string;
+  type: string;
+}
+export interface ResourceOrganizationalUnit {
+  id: string;
+  spec: ResourceOrganizationalUnitSpec;
+  status: ResourceOrganizationalUnitStatus;
+}
 export interface ResourceConfigSpec {
   filter: string;
   data: { [key: string]: string };
@@ -1680,6 +1693,7 @@ export interface Resource {
   backuprun?: ResourceBackupRun;
   machine?: ResourceMachine;
   config?: ResourceConfig;
+  organizationalunit?: ResourceOrganizationalUnit;
   unknown?: ResourceUnknown;
 }
 export interface ResourceSet {

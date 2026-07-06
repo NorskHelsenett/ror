@@ -278,6 +278,12 @@ var (
 		Kind:    "Config",
 	}
 
+	ResourceOrganizationalUnitGVK = schema.GroupVersionKind{
+		Group:   "ror.internal",
+		Version: "v1",
+		Kind:    "OrganizationalUnit",
+	}
+
 	ResourceUnknownGVK = schema.GroupVersionKind{
 		Group:   "unknown.ror.internal",
 		Version: "v1",

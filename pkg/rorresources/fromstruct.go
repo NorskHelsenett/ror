@@ -354,6 +354,13 @@ func NewResourceFromStruct(res Resource) *Resource {
 		r.SetConfig(res.ConfigResource)
 		r.common = rortypes.NewCommonFactory(res.ConfigResource)
 
+	case "ror.internal/v1, Kind=OrganizationalUnit":
+		if res.OrganizationalUnitResource == nil {
+			res.OrganizationalUnitResource = &rortypes.ResourceOrganizationalUnit{}
+		}
+		r.SetOrganizationalUnit(res.OrganizationalUnitResource)
+		r.common = rortypes.NewCommonFactory(res.OrganizationalUnitResource)
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		if res.UnknownResource == nil {
 			res.UnknownResource = &rortypes.ResourceUnknown{}
