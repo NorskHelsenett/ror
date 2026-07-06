@@ -60,6 +60,7 @@ type Resource struct {
 	BackupRunResource                       *rortypes.ResourceBackupRun                       `json:"backuprun,omitempty" bson:"backuprun,omitempty"`
 	MachineResource                         *rortypes.ResourceMachine                         `json:"machine,omitempty" bson:"machine,omitempty"`
 	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
+	OrganizationalUnitResource              *rortypes.ResourceOrganizationalUnit              `json:"organizationalunit,omitempty" bson:"organizationalunit,omitempty"`
 	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
@@ -523,6 +524,16 @@ func NewRorConfigResource() *Resource {
 	return &r
 }
 
+// NewRorOrganizationalUnitResource provides a empty resource of a given kind/apiversion
+func NewRorOrganizationalUnitResource() *Resource {
+	r := Resource{}
+	r.Kind = "OrganizationalUnit"
+	r.APIVersion = "ror.internal/v1"
+	r.OrganizationalUnitResource = &rortypes.ResourceOrganizationalUnit{}
+	r.common = rortypes.NewCommonFactory(r.OrganizationalUnitResource)
+	return &r
+}
+
 // NewRorUnknownResource provides a empty resource of a given kind/apiversion
 func NewRorUnknownResource() *Resource {
 	r := Resource{}
@@ -721,6 +732,10 @@ func (r *Resource) SetMachine(res *rortypes.ResourceMachine) {
 
 func (r *Resource) SetConfig(res *rortypes.ResourceConfig) {
 	r.ConfigResource = res
+}
+
+func (r *Resource) SetOrganizationalUnit(res *rortypes.ResourceOrganizationalUnit) {
+	r.OrganizationalUnitResource = res
 }
 
 func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
@@ -950,6 +965,11 @@ func (r *Resource) Machine() rortypes.Machineinterface {
 // Config is a wrapper for the underlying resource, it provides a Configinterface to work with configs
 func (r *Resource) Config() rortypes.Configinterface {
 	return r.ConfigResource
+}
+
+// OrganizationalUnit is a wrapper for the underlying resource, it provides a OrganizationalUnitinterface to work with OrganizationalUnits
+func (r *Resource) OrganizationalUnit() rortypes.OrganizationalUnitinterface {
+	return r.OrganizationalUnitResource
 }
 
 // Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns

@@ -269,6 +269,11 @@ func NewResourceFromMapInterface(input map[string]any) *rorresources.Resource {
 		r.SetConfig(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
+	case "ror.internal/v1, Kind=OrganizationalUnit":
+		res := newOrganizationalUnitFromMapInterface(input)
+		r.SetOrganizationalUnit(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		res := newUnknownFromMapInterface(input)
 		r.SetUnknown(res)
@@ -905,6 +910,20 @@ func newConfigFromMapInterface(input map[string]any) *rortypes.ResourceConfig {
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceConfig", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newOrganizationalUnitFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newOrganizationalUnitFromMapInterface(input map[string]any) *rortypes.ResourceOrganizationalUnit {
+	result := rortypes.ResourceOrganizationalUnit{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceOrganizationalUnit", err)
 		return nil
 	}
 
