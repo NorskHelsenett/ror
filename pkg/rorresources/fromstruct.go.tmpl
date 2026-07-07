@@ -8,13 +8,18 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
+var (
+	ErrResourceSetEmpty    = fmt.Errorf("resource set is empty")
+	ErrUnknownResourceKind = fmt.Errorf("unknown resource kind")
+)
+
 // NewResourceSetFromStruct creates a new ResourceSet from a struct of the type ResourceSet
 // the function restores common methods after transit eg by json.
 func NewResourceSetFromStruct(in ResourceSet) (*ResourceSet, error) {
 	out := ResourceSet{}
 	if len(in.Resources) == 0 {
 		rlog.Warn("ResourceSet has no resources")
-		return &out, fmt.Errorf("ResourceSet has no resources")
+		return &out, ErrResourceSetEmpty
 	}
 
 	if in.query == nil {
@@ -54,7 +59,7 @@ func NewResourceFromStruct(res Resource) (*Resource, error) {
 {{end}}
 		default:
 			rlog.Info("Unknown resource kind", rlog.String("gvk", gvk.String()), rlog.String("kind", res.Kind), rlog.String("apiVersion", res.APIVersion))
-		    return nil, fmt.Errorf("unknown resource kind: %s", gvk.String())
+		    return nil, fmt.Errorf("%w: %s",ErrUnknownResourceKind, gvk.String())
 		}
 	return r, nil
 }
