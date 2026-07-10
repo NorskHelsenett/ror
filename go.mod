@@ -20,7 +20,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/joho/godotenv v1.5.1
-	github.com/lestrrat-go/jwx/v2 v2.1.6
+	github.com/lestrrat-go/jwx/v2 v2.1.7
 	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/microsoftgraph/msgraph-sdk-go v1.99.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
