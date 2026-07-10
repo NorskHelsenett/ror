@@ -62,6 +62,9 @@ type KubernetesClusterAgentStatusNodesNodepoolsNodes struct {
 	Memory            KubernetesClusterAgentStatusNodesNodepoolsNodesResource `json:"memory,omitzero" bson:"memory,omitempty"`
 	Architecture      string                                                  `json:"architecture,omitempty" bson:"architecture,omitempty"`
 	KubernetesVersion string                                                  `json:"kubernetesVersion,omitempty" bson:"kubernetesversion,omitempty"`
+	OsImage           string                                                  `json:"osImage,omitempty" bson:"osimage,omitempty"`
+	KernelVersion     string                                                  `json:"kernelVersion,omitempty" bson:"kernelversion,omitempty"`
+	OperatingSystem   string                                                  `json:"operatingSystem,omitempty" bson:"operatingsystem,omitempty"`
 }
 
 type KubernetesClusterAgentStatusNodesNodepoolsNodesResource struct {
