@@ -255,7 +255,12 @@ func (t *HttpTransportClient) PutJSON(ctx context.Context, path string, in any, 
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, out)
 	if err != nil {
@@ -286,7 +291,12 @@ func (t *HttpTransportClient) Delete(ctx context.Context, path string, out any, 
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, out)
 	if err != nil {
@@ -316,7 +326,12 @@ func (t *HttpTransportClient) Head(ctx context.Context, path string, params ...H
 	if err != nil {
 		return nil, -1, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
 
 	err = t.handleResponse(res, nil)
 	if err != nil {

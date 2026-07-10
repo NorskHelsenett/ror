@@ -124,7 +124,10 @@ func (l *AdClient) Connect() error {
 			authtools.ServerConnectionHistogram.WithLabelValues("ad", l.config.Domain, ldapserver.Host, strconv.Itoa(ldapserver.Port), "401").Observe(time.Since(connectionStart).Seconds())
 			// Close the connection before trying the next server so failed
 			// attempts do not leak open connections/file descriptors.
-			client.Close()
+			err = client.Close()
+			if err != nil {
+				rlog.Error("an error occurred closing the connection to LDAP-host.", err, rlog.Any("Host", ldapserver.Host), rlog.Any("Port", ldapserver.Port))
+			}
 			client = nil
 			continue
 		} else {

@@ -99,7 +99,11 @@ func (ti *TestIssuer) handleDiscovery(w http.ResponseWriter, _ *http.Request) {
 		"response_types_supported":              []string{"id_token"},
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(doc)
+	err := json.NewEncoder(w).Encode(doc)
+	if err != nil {
+		http.Error(w, "could not encode discovery document", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (ti *TestIssuer) handleJWKS(w http.ResponseWriter, _ *http.Request) {
@@ -117,5 +121,9 @@ func (ti *TestIssuer) handleJWKS(w http.ResponseWriter, _ *http.Request) {
 	_ = set.AddKey(jwkKey)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(set)
+	err = json.NewEncoder(w).Encode(set)
+	if err != nil {
+		http.Error(w, "could not encode JWKS", http.StatusInternalServerError)
+		return
+	}
 }
