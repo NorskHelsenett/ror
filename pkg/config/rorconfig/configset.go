@@ -288,7 +288,6 @@ func (rc *rorConfigSet) exportRecurseUntagged(field reflect.Value, excludeSource
 // nested structs).
 func (rc *rorConfigSet) hasAnyTaggedKey(t reflect.Type, excludeSources []ConfigSource) bool {
 	for sf := range t.Fields() {
-		sf := sf
 		tag := sf.Tag.Get("rorconfig")
 		if tag != "" {
 			if rc.configs.IsSet(tag) && !isExcludedSource(rc.configs.Get(tag).source, excludeSources) {
