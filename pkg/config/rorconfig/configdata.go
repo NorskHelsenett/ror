@@ -38,7 +38,7 @@ type ConfigData struct {
 }
 
 func (cd ConfigData) String() string {
-	return string(cd.Value)
+	return cd.Value
 }
 
 func (cd ConfigData) Bool() bool {
