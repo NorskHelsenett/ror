@@ -53,7 +53,7 @@ var ResourceDeployment = ApiResource{
 	},
 	Plural:     "deployments",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -75,7 +75,7 @@ var ResourcePolicyReport = ApiResource{
 	},
 	Plural:     "policyreports",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -130,7 +130,7 @@ var ResourcePod = ApiResource{
 	},
 	Plural:     "pods",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -141,7 +141,7 @@ var ResourceReplicaSet = ApiResource{
 	},
 	Plural:     "replicasets",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -152,7 +152,7 @@ var ResourceStatefulSet = ApiResource{
 	},
 	Plural:     "statefulsets",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -163,7 +163,7 @@ var ResourceDaemonSet = ApiResource{
 	},
 	Plural:     "daemonsets",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -218,7 +218,7 @@ var ResourceExposedSecretReport = ApiResource{
 	},
 	Plural:     "exposedsecretreports",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -229,7 +229,7 @@ var ResourceConfigAuditReport = ApiResource{
 	},
 	Plural:     "configauditreports",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -240,7 +240,7 @@ var ResourceRbacAssessmentReport = ApiResource{
 	},
 	Plural:     "rbacassessmentreports",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -361,7 +361,7 @@ var ResourceClusterComplianceReport = ApiResource{
 	},
 	Plural:     "clustercompliancereports",
 	Namespaced: false,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -438,7 +438,7 @@ var ResourceEndpoints = ApiResource{
 	},
 	Plural:     "endpoints",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
@@ -449,7 +449,7 @@ var ResourceNetworkPolicy = ApiResource{
 	},
 	Plural:     "networkpolicies",
 	Namespaced: true,
-	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV1, ApiResourceTypeClusterAgentV2},
+	Types:      []ApiResourceType{ApiResourceTypeAgent, ApiResourceTypeClusterAgentV2},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
 }
 
