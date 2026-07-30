@@ -9,3 +9,4 @@
 | RabbitMQ      | Message bus           | GUI: http://localhost:15672, amqp port: localhost:5672      |                                                                                       |                                             |
 | Vault         | Secrets handling      | GUI: http://localhost:8200                                  |                                                                                       |                                             |
 | Valkey        | Cache                 | GUI: http://localhost:6379                                  |                                                                                       |                                             |
+| Swagger       | API documentation     | GUI: http://localhost:10000/swagger/index.html              |                                                                                       |                                             |
