@@ -195,7 +195,7 @@ func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan cha
 	}
 	fetchedUser, err := g.Client.Users().ByUserId(userId).Get(ctx, nil)
 	if err != nil {
-		rortracer.SpanError(span, err)
+		_ = rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -205,7 +205,7 @@ func (g *MsGraphClient) getUser(ctx context.Context, userId string, userChan cha
 
 	if fetchedUser == nil {
 		err := fmt.Errorf("msgraph returned nil user for userId: %s", userId)
-		rortracer.SpanError(span, err)
+		_ = rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -267,7 +267,7 @@ func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan
 
 	fetchedUserGroups, err := g.Client.Users().ByUserId(userId).GetMemberGroups().Post(ctx, requestBody, nil)
 	if err != nil {
-		rortracer.SpanError(span, err)
+		_ = rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():
@@ -277,7 +277,7 @@ func (g *MsGraphClient) getGroups(ctx context.Context, userId string, groupsChan
 
 	if fetchedUserGroups == nil {
 		err := fmt.Errorf("msgraph returned nil user for userId: %s", userId)
-		rortracer.SpanError(span, err)
+		_ = rortracer.SpanError(span, err)
 		select {
 		case errorChan <- err:
 		case <-ctx.Done():

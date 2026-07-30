@@ -240,7 +240,7 @@ func TestCached_CorruptedCache_TreatedAsMiss(t *testing.T) {
 	store := aclstore.NewCachedStore(backend, rdb, 5*time.Minute)
 
 	// Manually put garbage in cache
-	mr.Set("acl:v3:group:dev-team", "not-valid-json{{{")
+	_ = mr.Set("acl:v3:group:dev-team", "not-valid-json{{{")
 
 	// Should treat as miss and fetch from backend
 	result, err := store.GetByGroups(context.Background(), []string{"dev-team"})

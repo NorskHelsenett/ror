@@ -65,7 +65,7 @@ func (kvch *KubernetesVaultCredsHelper) waitForTokenRenewal(ctx context.Context)
 	rlog.Debugc(ctx, "started vault token refresher")
 
 	for {
-		timer := time.NewTimer(time.Second * time.Duration(kvch.ttl-int32(kvch.renewThreshold)))
+		timer := time.NewTimer(time.Second * time.Duration(kvch.ttl-kvch.renewThreshold))
 
 		<-timer.C
 		rlog.Debugc(ctx, "attempting to renew vault acces token")

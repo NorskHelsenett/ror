@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -57,7 +58,12 @@ func (s *MongoStore) GetByGroups(ctx context.Context, groups []string) (map[stri
 	if err != nil {
 		return nil, rortracer.SpanError(span, fmt.Errorf("failed to query ACL entries: %w", err))
 	}
-	defer cursor.Close(ctx)
+	defer func() {
+		err := cursor.Close(ctx)
+		if err != nil {
+			rlog.Error("failed to close ACL cursor", err)
+		}
+	}()
 
 	result := make(map[string][]aclmodels.AclV3ListItem, len(groups))
 	entryCount := 0
@@ -108,7 +114,12 @@ func (s *MongoStore) GetV2ByGroups(ctx context.Context, groups []string) (map[st
 	if err != nil {
 		return nil, fmt.Errorf("failed to query ACL entries: %w", err)
 	}
-	defer cursor.Close(ctx)
+	defer func() {
+		err := cursor.Close(ctx)
+		if err != nil {
+			rlog.Error("failed to close ACL cursor", err)
+		}
+	}()
 
 	result := make(map[string][]aclmodels.AclV2ListItem, len(groups))
 	for cursor.Next(ctx) {

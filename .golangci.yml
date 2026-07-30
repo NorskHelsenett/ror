@@ -88,6 +88,7 @@ linters:
       - path: pkg/
         linters:
           - unused
+          - unparam
 
 # Options for analysis running.
 run:

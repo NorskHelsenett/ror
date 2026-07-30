@@ -192,14 +192,22 @@ func TestDiscoveryURL_DifferentFromIssuerURL(t *testing.T) {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
 		}
-		defer resp.Body.Close()
+		defer func() {
+			err := resp.Body.Close()
+			if err != nil {
+				t.Error("failed to close response body", err)
+			}
+		}()
 		for k, vs := range resp.Header {
 			for _, v := range vs {
 				w.Header().Add(k, v)
 			}
 		}
 		w.WriteHeader(resp.StatusCode)
-		io.Copy(w, resp.Body)
+		_, err = io.Copy(w, resp.Body)
+		if err != nil {
+			t.Error("failed to copy response body", err)
+		}
 	}))
 	defer proxy.Close()
 

@@ -46,7 +46,7 @@ func RotateKeys() {
 			rlog.Error("could not generate random interval for key rotation", err)
 			return
 		}
-		sleepFunc(time.Duration(time.Duration(randomInterval.Int64()) * time.Millisecond))
+		sleepFunc(time.Duration(randomInterval.Int64()) * time.Millisecond)
 		err = keyStorage.Load()
 		if err != nil {
 			rotateErrorHandler("load", err)
