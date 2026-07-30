@@ -8,7 +8,7 @@ import (
 
 func RunOtelHttpHealthServer(serverAddress string, healthHandler http.HandlerFunc) error {
 	mux := http.NewServeMux()
-	mux.Handle("/health", http.HandlerFunc(healthHandler))
+	mux.Handle("/health", healthHandler)
 	var handler http.Handler = mux
 
 	httpServer := &http.Server{
