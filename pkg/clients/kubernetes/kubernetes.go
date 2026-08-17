@@ -29,6 +29,7 @@ type K8sClientsets struct {
 
 type K8SClientInterface interface {
 	GetConfig() *rest.Config
+	SetContext(contextName string) error
 	GetDiscoveryClient() (*discovery.DiscoveryClient, error)
 	GetDynamicClient() (dynamic.Interface, error)
 	GetMetricsClient() (*metrics.Clientset, error)
@@ -49,12 +50,54 @@ func NewK8sClientConfig() *K8sClientsets {
 	return &K8sClientsets{k8sConfig: k8sconfig}
 }
 
+// NewK8sClientConfigWithContext initializes a new instance of the K8sClientsets struct using the
+// Kubernetes configuration for the given kubeconfig context.
+//
+// Parameters:
+// - contextName (string): The name of the kubeconfig context to load.
+//
+// Returns:
+// - (*K8sClientsets): The initialized K8sClientsets object.
+func NewK8sClientConfigWithContext(contextName string) *K8sClientsets {
+	k8sconfig, err := config.GetConfigWithContext(contextName)
+	if err != nil {
+		rlog.Error("Error trying to get k8s config for context", err, rlog.String("context", contextName))
+		panic(err)
+	}
+	return &K8sClientsets{k8sConfig: k8sconfig}
+}
+
 // GetConfig retrieves the Kubernetes configuration.
 //
 // Returns:
 // - (*rest.Config): The Kubernetes configuration.
 func (c *K8sClientsets) GetConfig() *rest.Config {
 	return c.k8sConfig
+}
+
+// SetContext switches the Kubernetes configuration to the given kubeconfig context and
+// clears cached clientsets so subsequent Get* calls rebuild them against the new context.
+//
+// Parameters:
+// - contextName (string): The name of the kubeconfig context to switch to.
+//
+// Returns:
+// - (error): An error if the configuration for the given context could not be loaded.
+func (c *K8sClientsets) SetContext(contextName string) error {
+	k8sconfig, err := config.GetConfigWithContext(contextName)
+	if err != nil {
+		rlog.Error("Error trying to get k8s config for context", err, rlog.String("context", contextName))
+		return err
+	}
+
+	c.k8sConfig = k8sconfig
+	c.k8sClientset = nil
+	c.discoveryClient = nil
+	c.dynamicClient = nil
+	c.metricsClient = nil
+	c.metricsV1Beta1 = nil
+
+	return nil
 }
 
 // GetKubernetesClientset returns a Kubernetes clientset for interacting with the Kubernetes API.
