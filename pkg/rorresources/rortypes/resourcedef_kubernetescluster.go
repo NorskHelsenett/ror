@@ -14,9 +14,33 @@ type ResourceKubernetesCluster struct {
 }
 
 type ResourceKubernetesClusterSpec struct {
-	SlackChannels []string              `json:"slackChannels"`
-	VitiSpec      KubernetesClusterSpec `json:"vitiSpec,omitzero" bson:"vitispec,omitempty"`
+	ClusterMetadata ResourceKubernetesClusterSpecMetadataDetails `json:"clusterMetadata,omitzero" bson:"clustermetadata,omitempty"`
+	VitiSpec        KubernetesClusterSpec                        `json:"vitiSpec,omitzero" bson:"vitispec,omitempty"`
 }
+
+type ResourceKubernetesClusterSpecMetadataDetails struct {
+	Criticality   string            `json:"criticality,omitempty" bson:"criticality,omitempty"`
+	Sensitivity   string            `json:"sensitivity,omitempty" bson:"sensitivity,omitempty"`
+	Description   string            `json:"description,omitempty" bson:"description,omitempty"`
+	Contacts      []ResourceContact `json:"contacts,omitempty" bson:"contacts,omitempty"`
+	SlackChannels []string          `json:"slackChannels"`
+}
+
+type ResourceContact struct {
+	Name  string                        `json:"name,omitempty" bson:"name,omitempty"`
+	Email string                        `json:"email,omitempty" bson:"email,omitempty"`
+	Phone string                        `json:"phone"`
+	Role  ResourceContactRoleDefinition `json:"role,omitempty" bson:"role,omitempty"`
+}
+
+type ResourceContactRoleDefinition = string
+
+const (
+	ResourceRoleUnknown          ResourceContactRoleDefinition = ""
+	ResourceRoleOwner            ResourceContactRoleDefinition = "Owner"
+	ResourceRoleResponsible      ResourceContactRoleDefinition = "Responsible"
+	ResourceRoleTechnicalContact ResourceContactRoleDefinition = "TechnicalContact"
+)
 
 type ResourceKubernetesClusterStatus struct {
 	ProviderStatus KubernetesClusterStatus      `json:"providerstatus,omitzero" bson:"providerstatus,omitempty"`

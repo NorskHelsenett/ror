@@ -745,6 +745,9 @@ export interface KubernetesClusterAgentStatusNodesNodepoolsNodes {
   memory: KubernetesClusterAgentStatusNodesNodepoolsNodesResource;
   architecture?: string;
   kubernetesVersion?: string;
+  osImage?: string;
+  kernelVersion?: string;
+  operatingSystem?: string;
 }
 export interface KubernetesClusterAgentStatusNodes {
   controlPlane: KubernetesClusterAgentStatusNodesNodepoolsNodes[];
@@ -917,8 +920,21 @@ export interface KubernetesClusterSpec {
   data: KubernetesClusterSpecData;
   topology: KubernetesClusterSpecTopology;
 }
-export interface ResourceKubernetesClusterSpec {
+export interface ResourceContact {
+  name?: string;
+  email?: string;
+  phone: string;
+  role?: string;
+}
+export interface ResourceKubernetesClusterSpecMetadataDetails {
+  criticality?: string;
+  sensitivity?: string;
+  description?: string;
+  contacts?: ResourceContact[];
   slackChannels: string[];
+}
+export interface ResourceKubernetesClusterSpec {
+  clusterMetadata: ResourceKubernetesClusterSpecMetadataDetails;
   vitiSpec: KubernetesClusterSpec;
 }
 export interface ResourceKubernetesCluster {
