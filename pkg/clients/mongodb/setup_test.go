@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 // TestPingNilClient verifies that pinging a connection whose client has not been
@@ -15,6 +17,30 @@ func TestPingNilClient(t *testing.T) {
 	c := MongodbCon{} // Client is nil
 	if c.ping(context.Background()) {
 		t.Error("ping on a nil client should return false")
+	}
+}
+
+// TestGetMongoDbUsesReceiverClient verifies that a standalone MongodbCon (its
+// own client, no Credentials, singleton uninitialized) uses the receiver's
+// client instead of the package singleton. This guards against the regression
+// where GetMongoDb hit the uninitialized singleton and dereferenced its nil
+// Credentials, panicking for callers that construct their own connection (e.g.
+// the resourcesv2service integration tests).
+func TestGetMongoDbUsesReceiverClient(t *testing.T) {
+	// mongo.Connect is lazy in the v2 driver, so this does not dial anything.
+	cli, err := mongo.Connect(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		t.Fatalf("connect: %v", err)
+	}
+	t.Cleanup(func() { _ = cli.Disconnect(context.Background()) })
+
+	rc := MongodbCon{Client: cli, Database: "standalonedb"}
+	db := rc.GetMongoDb()
+	if db == nil {
+		t.Fatal("GetMongoDb returned nil")
+	}
+	if db.Name() != "standalonedb" {
+		t.Errorf("db name = %q, want standalonedb", db.Name())
 	}
 }
 

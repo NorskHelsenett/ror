@@ -139,8 +139,13 @@ func GetMongodbConnection() *MongodbCon {
 }
 
 func (rc MongodbCon) GetMongoDb() *mongo.Database {
-	mongoClient := getDbConnectionWithReconnect().Database(mongodb.Database)
-	return mongoClient
+	// Instances that carry their own client (standalone connections, e.g. tests)
+	// use it directly and manage their own lifecycle. A receiver without a client
+	// falls back to the process-managed singleton connection.
+	if rc.Client != nil {
+		return rc.Client.Database(rc.Database)
+	}
+	return getDbConnectionWithReconnect().Database(mongodb.Database)
 }
 
 // CheckHealthWithoutContext checks the health of the redis connection and returns a health check
@@ -375,6 +380,10 @@ func connectionMonitor(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
+			// Proactively rotate credentials before the lease expires so the
+			// singleton reconnects ahead of the dynamic user being revoked.
+			renewSingletonCredentials()
+
 			pingCtx, cancel := context.WithTimeout(ctx, mongoPingTimeout)
 			ok := pingCurrent(pingCtx)
 			cancel()
@@ -387,6 +396,20 @@ func connectionMonitor(ctx context.Context) {
 				rlog.Int("consecutiveFailures", failures))
 			forceReconnect("ping failure")
 		}
+	}
+}
+
+// renewSingletonCredentials proactively rotates the singleton's credentials when
+// the lease is near expiry, rebuilding the connection before the dynamic user is
+// revoked server-side. It is a no-op for an uninitialized singleton.
+func renewSingletonCredentials() {
+	connMu.Lock()
+	defer connMu.Unlock()
+	if mongodb.Client == nil || mongodb.Credentials == nil {
+		return
+	}
+	if mongodb.Credentials.CheckAndRenew() {
+		reconnectLocked("credential rotation")
 	}
 }
 
