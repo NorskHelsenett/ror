@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/netip"
 	"testing"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
 )
@@ -175,5 +176,145 @@ func TestHealthMuxLivenessMethods(t *testing.T) {
 				t.Errorf("liveness %s = %d, want %d", tt.method, rec.Code, tt.expected)
 			}
 		})
+	}
+}
+
+// passingChecker is a health checker that always reports a passing status.
+type passingChecker struct{}
+
+func (passingChecker) CheckHealth(_ context.Context) []rorhealth.Check {
+	return []rorhealth.Check{{Status: rorhealth.StatusPass}}
+}
+
+// newTestGate builds a gate with deterministic (zero) jitter for tests.
+func newTestGate(grace time.Duration, critical ...string) *livenessGate {
+	set := make(map[string]struct{}, len(critical))
+	for _, c := range critical {
+		set[c] = struct{}{}
+	}
+	return &livenessGate{
+		grace:        grace,
+		jitter:       0,
+		critical:     set,
+		failingSince: make(map[string]time.Time),
+	}
+}
+
+// TestLivenessGateTripsAfterGrace verifies the gate trips once a critical
+// dependency has been failing for longer than the grace.
+func TestLivenessGateTripsAfterGrace(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "gate-failing-dep", failingChecker{})
+	defer registered.Deregister()
+
+	g := newTestGate(20 * time.Millisecond)
+	g.sample(context.Background())
+
+	if _, _, tripped := g.tripped(); tripped {
+		t.Fatal("gate tripped immediately, want not tripped before grace elapses")
+	}
+
+	time.Sleep(40 * time.Millisecond)
+
+	name, _, tripped := g.tripped()
+	if !tripped {
+		t.Fatal("gate did not trip after grace elapsed")
+	}
+	if name != "gate-failing-dep" {
+		t.Errorf("tripped check = %q, want %q", name, "gate-failing-dep")
+	}
+}
+
+// TestLivenessGateIgnoresNonCritical verifies a failing check that is not in the
+// critical allowlist never trips liveness.
+func TestLivenessGateIgnoresNonCritical(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "gate-noncritical-dep", failingChecker{})
+	defer registered.Deregister()
+
+	g := newTestGate(10*time.Millisecond, "mongodb")
+	g.sample(context.Background())
+	time.Sleep(30 * time.Millisecond)
+
+	if _, _, tripped := g.tripped(); tripped {
+		t.Fatal("gate tripped on a non-critical dependency")
+	}
+}
+
+// TestLivenessGatePassingDependencyDoesNotTrip verifies a healthy dependency
+// never trips liveness.
+func TestLivenessGatePassingDependencyDoesNotTrip(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "gate-passing-dep", passingChecker{})
+	defer registered.Deregister()
+
+	g := newTestGate(10 * time.Millisecond)
+	g.sample(context.Background())
+	time.Sleep(30 * time.Millisecond)
+
+	if _, _, tripped := g.tripped(); tripped {
+		t.Fatal("gate tripped on a passing dependency")
+	}
+}
+
+// TestLivenessGateRecovers verifies the failing timer is cleared once the
+// dependency recovers, so a recovered dependency no longer trips liveness.
+func TestLivenessGateRecovers(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "gate-flapping-dep", failingChecker{})
+
+	g := newTestGate(10 * time.Millisecond)
+	g.sample(context.Background())
+	time.Sleep(30 * time.Millisecond)
+	if _, _, tripped := g.tripped(); !tripped {
+		t.Fatal("gate did not trip while dependency failing")
+	}
+
+	// Dependency recovers: re-register a passing checker under the same name.
+	registered.Deregister()
+	recovered := rorhealth.Register(context.Background(), "gate-flapping-dep", passingChecker{})
+	defer recovered.Deregister()
+
+	g.sample(context.Background())
+	if _, _, tripped := g.tripped(); tripped {
+		t.Fatal("gate stayed tripped after dependency recovered")
+	}
+}
+
+// TestHealthMuxLivenessEscalates verifies the liveness endpoint returns 500 once
+// the gate has tripped for a chronically failing critical dependency.
+func TestHealthMuxLivenessEscalates(t *testing.T) {
+	registered := rorhealth.Register(context.Background(), "mux-failing-dep", failingChecker{})
+	defer registered.Deregister()
+
+	gate = newTestGate(20 * time.Millisecond)
+	defer func() { gate = nil }()
+
+	gate.sample(context.Background())
+	time.Sleep(40 * time.Millisecond)
+
+	mux := newHealthMux()
+	req := httptest.NewRequest(http.MethodGet, "/health/live", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("liveness after escalation = %d, want %d", rec.Code, http.StatusInternalServerError)
+	}
+}
+
+// TestParseGraceDuration verifies grace parsing accepts durations and bare
+// seconds and rejects invalid input.
+func TestParseGraceDuration(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected time.Duration
+	}{
+		{"", 0},
+		{"5m", 5 * time.Minute},
+		{"30s", 30 * time.Second},
+		{"90", 90 * time.Second},
+		{"garbage", 0},
+	}
+	for _, tt := range tests {
+		if got := parseGraceDuration(tt.input); got != tt.expected {
+			t.Errorf("parseGraceDuration(%q) = %v, want %v", tt.input, got, tt.expected)
+		}
 	}
 }

@@ -7,20 +7,29 @@ import (
 type ConfigConst string
 
 const (
-	ROLE               ConfigConst = "ROLE"
-	HTTP_HOST          ConfigConst = "HTTP_HOST"
-	HTTP_PORT          ConfigConst = "HTTP_PORT"
-	HTTP_HEALTH_HOST   ConfigConst = "HTTP_HEALTH_HOST"
-	HTTP_HEALTH_PORT   ConfigConst = "HTTP_HEALTH_PORT"
-	HTTP_TIMEOUT       ConfigConst = "HTTP_TIMEOUT"
-	HTTP_USE_CORS      ConfigConst = "HTTP_USE_CORS"
-	HTTP_ALLOW_ORIGINS ConfigConst = "HTTP_ALLOW_ORIGINS"
-	ROR_API_KEY_SALT   ConfigConst = "API_KEY_SALT"
-	ROR_API_KEY        ConfigConst = "ROR_API_KEY"
-	ROR_API_KEY_SECRET ConfigConst = "ROR_API_KEY_SECRET"
-	ROR_API_ENDPOINT   ConfigConst = "ROR_API_ENDPOINT"
-	DEVELOPMENT        ConfigConst = "DEVELOPMENT"
-	ENVIRONMENT        ConfigConst = "ENVIRONMENT"
+	ROLE             ConfigConst = "ROLE"
+	HTTP_HOST        ConfigConst = "HTTP_HOST"
+	HTTP_PORT        ConfigConst = "HTTP_PORT"
+	HTTP_HEALTH_HOST ConfigConst = "HTTP_HEALTH_HOST"
+	HTTP_HEALTH_PORT ConfigConst = "HTTP_HEALTH_PORT"
+	// HTTP_HEALTH_LIVENESS_GRACE, when set to a non-zero duration (e.g. "5m"),
+	// makes /health/live fail after a critical dependency has been continuously
+	// failing for longer than this grace, so Kubernetes restarts the pod. Empty
+	// or zero disables the escalation (liveness never inspects dependencies).
+	HTTP_HEALTH_LIVENESS_GRACE ConfigConst = "HTTP_HEALTH_LIVENESS_GRACE"
+	// HTTP_HEALTH_LIVENESS_CRITICAL_CHECKS is a comma-separated list of health
+	// check names (e.g. "mongodb") that liveness escalation considers critical.
+	// Empty means every registered dependency check is considered critical.
+	HTTP_HEALTH_LIVENESS_CRITICAL_CHECKS ConfigConst = "HTTP_HEALTH_LIVENESS_CRITICAL_CHECKS"
+	HTTP_TIMEOUT                         ConfigConst = "HTTP_TIMEOUT"
+	HTTP_USE_CORS                        ConfigConst = "HTTP_USE_CORS"
+	HTTP_ALLOW_ORIGINS                   ConfigConst = "HTTP_ALLOW_ORIGINS"
+	ROR_API_KEY_SALT                     ConfigConst = "API_KEY_SALT"
+	ROR_API_KEY                          ConfigConst = "ROR_API_KEY"
+	ROR_API_KEY_SECRET                   ConfigConst = "ROR_API_KEY_SECRET"
+	ROR_API_ENDPOINT                     ConfigConst = "ROR_API_ENDPOINT"
+	DEVELOPMENT                          ConfigConst = "DEVELOPMENT"
+	ENVIRONMENT                          ConfigConst = "ENVIRONMENT"
 
 	ERROR_COUNT ConfigConst = "ERROR_COUNT"
 
@@ -96,6 +105,8 @@ var ConfigConsts = EnvironmentVariables{
 	{key: "HTTP_PORT", deprecated: false, description: ""},
 	{key: "HTTP_HEALTH_HOST", deprecated: false, description: ""},
 	{key: "HTTP_HEALTH_PORT", deprecated: false, description: ""},
+	{key: "HTTP_HEALTH_LIVENESS_GRACE", deprecated: false, description: "Duration a critical dependency may stay failing before /health/live fails and the pod is restarted. Empty/0 disables escalation."},
+	{key: "HTTP_HEALTH_LIVENESS_CRITICAL_CHECKS", deprecated: false, description: "Comma-separated health check names treated as critical for liveness escalation. Empty means all checks."},
 	{key: "HTTP_TIMEOUT", deprecated: false, description: ""},
 	{key: "API_KEY_SALT", deprecated: false, description: ""},
 	{key: "API_KEY", deprecated: false, description: ""},
