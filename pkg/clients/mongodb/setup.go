@@ -27,6 +27,8 @@ const (
 	mongoMonitorInterval = 15 * time.Second
 	// mongoPingTimeout bounds a single background ping.
 	mongoPingTimeout = 5 * time.Second
+	// mongoDisconnectTimeout bounds disconnecting a superseded client.
+	mongoDisconnectTimeout = 10 * time.Second
 )
 
 var (
@@ -137,7 +139,7 @@ func GetMongodbConnection() *MongodbCon {
 }
 
 func (rc MongodbCon) GetMongoDb() *mongo.Database {
-	mongoClient := getDbConnectionWithReconnect().Database(rc.Database)
+	mongoClient := getDbConnectionWithReconnect().Database(mongodb.Database)
 	return mongoClient
 }
 
@@ -321,7 +323,13 @@ func reconnectLocked(reason string) {
 		return
 	}
 	if old != nil {
-		_ = old.Disconnect(mongodb.Context)
+		// Disconnect the superseded client asynchronously with a bounded context
+		// so a stalled Disconnect cannot hold connMu and block all mongodb callers.
+		go func(c *mongo.Client) {
+			ctx, cancel := context.WithTimeout(context.Background(), mongoDisconnectTimeout)
+			defer cancel()
+			_ = c.Disconnect(ctx)
+		}(old)
 	}
 }
 
@@ -348,7 +356,12 @@ func forceReconnect(reason string) {
 // marked NotReady, so a wedged connection can heal on its own.
 func startConnectionMonitor(ctx context.Context) {
 	monitorOnce.Do(func() {
-		go connectionMonitor(ctx)
+		// Callers often pass a context that only bounds the initial connect (with
+		// defer cancel()); using it directly would stop the monitor right after
+		// Init. Keep the context values (e.g. tracing) but ignore its cancellation
+		// so the monitor lives for the process lifetime.
+		monitorCtx := context.WithoutCancel(ctx)
+		go connectionMonitor(monitorCtx)
 	})
 }
 
