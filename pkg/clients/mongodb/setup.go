@@ -23,9 +23,22 @@ const (
 	mongoInitialBackoff = 1 * time.Second
 	// mongoMaxBackoff caps the exponential backoff between connection retries.
 	mongoMaxBackoff = 30 * time.Second
+	// mongoMonitorInterval is how often the background monitor pings mongodb.
+	mongoMonitorInterval = 15 * time.Second
+	// mongoPingTimeout bounds a single background ping.
+	mongoPingTimeout = 5 * time.Second
+	// mongoDisconnectTimeout bounds disconnecting a superseded client.
+	mongoDisconnectTimeout = 10 * time.Second
 )
 
-var mongodb MongodbCon
+var (
+	mongodb MongodbCon
+	// connMu guards the mongodb client lifecycle (connect/reconnect/swap) so
+	// concurrent callers cannot race on the *mongo.Client during a rebuild.
+	connMu sync.Mutex
+	// monitorOnce ensures a single background connection monitor is started.
+	monitorOnce sync.Once
+)
 
 // This type implements the mongodb connection in ror
 type MongodbCon struct {
@@ -41,13 +54,11 @@ type MongodbCon struct {
 // The function simply returns the MongoDB client instance stored in a `mongodb` singleton object.
 // This function is used to obtain the MongoDB client connection in other parts of the application.
 func GetMongoDb() *mongo.Database {
-	mongoClient := mongodb.getDbConnectionWithReconnect().Database(mongodb.Database)
-	return mongoClient
+	return getDbConnectionWithReconnect().Database(mongodb.Database)
 }
 
 func GetMongoClient() *mongo.Client {
-	mongoClient := mongodb.getDbConnectionWithReconnect()
-	return mongoClient
+	return getDbConnectionWithReconnect()
 }
 
 // Init initializes the mongodb client, retrying the connection with exponential
@@ -77,6 +88,7 @@ func InitWithContext(ctx context.Context, cp credshelper.CredHelperWithRenew, ho
 		return err
 	}
 	checker.setConnected()
+	startConnectionMonitor(ctx)
 	return nil
 }
 
@@ -127,7 +139,7 @@ func GetMongodbConnection() *MongodbCon {
 }
 
 func (rc MongodbCon) GetMongoDb() *mongo.Database {
-	mongoClient := rc.getDbConnectionWithReconnect().Database(rc.Database)
+	mongoClient := getDbConnectionWithReconnect().Database(mongodb.Database)
 	return mongoClient
 }
 
@@ -152,10 +164,11 @@ func (rc MongodbCon) CheckHealth(ctx context.Context) []rorhealth.Check {
 
 // Ping the mongodb database and returns the result as a bool
 func Ping() bool {
-	return mongodb.ping(context.Background())
+	return pingCurrent(context.Background())
 }
-func PingWithContext(_ context.Context) bool {
-	return Ping()
+
+func PingWithContext(ctx context.Context) bool {
+	return pingCurrent(ctx)
 }
 
 func (mdb MongodbCon) getConnectionstring() string {
@@ -253,26 +266,128 @@ func (mdb *MongodbCon) connectWithRetry(ctx context.Context) error {
 	}
 }
 
-func (mdb *MongodbCon) disconnect() {
-	_ = mdb.Client.Disconnect(mdb.Context)
+// currentClient returns the active client under the connection lock so reads do
+// not race with a concurrent reconnect.
+func currentClient() *mongo.Client {
+	connMu.Lock()
+	defer connMu.Unlock()
+	return mongodb.Client
 }
 
-func (mdb *MongodbCon) getDbConnectionWithReconnect() *mongo.Client {
-	if mdb.Client == nil {
-		if err := mdb.connect(); err != nil {
+// pingCurrent pings the active client, honoring the supplied context.
+func pingCurrent(ctx context.Context) bool {
+	cli := currentClient()
+	if cli == nil {
+		rlog.Debug("mongodb client is not initialized")
+		return false
+	}
+	if err := cli.Ping(ctx, nil); err != nil {
+		rlog.Debug(err.Error())
+		return false
+	}
+	return true
+}
+
+// getDbConnectionWithReconnect returns a live client, rebuilding it on scheduled
+// Vault credential rotation. It is safe for concurrent use. On a rebuild failure
+// it keeps the existing client so the background monitor can retry instead of
+// crashing the process or returning a nil client.
+func getDbConnectionWithReconnect() *mongo.Client {
+	connMu.Lock()
+	defer connMu.Unlock()
+
+	if mongodb.Client == nil {
+		// Reached only if queries run before Init succeeded; treat as a fatal
+		// misconfiguration to preserve the previous hard-prerequisite contract.
+		if err := mongodb.connect(); err != nil {
 			rlog.Fatal("could not connect to Mongodb", err)
 		}
+		return mongodb.Client
 	}
 
-	if mdb.Credentials.CheckAndRenew() {
-		rlog.Info("reconnecting to mongodb")
-		mdb.disconnect()
-		if err := mdb.connect(); err != nil {
-			rlog.Fatal("could not reconnect to Mongodb", err)
+	if mongodb.Credentials.CheckAndRenew() {
+		reconnectLocked("credential rotation")
+	}
+	return mongodb.Client
+}
+
+// reconnectLocked rebuilds the client. connMu must be held. The existing client
+// is only replaced and disconnected once a new connection is established, so a
+// failed rebuild leaves the previous client in place for the next retry.
+func reconnectLocked(reason string) {
+	rlog.Info("reconnecting to mongodb", rlog.String("reason", reason))
+	old := mongodb.Client
+	if err := mongodb.connect(); err != nil {
+		rlog.Error("could not reconnect to mongodb, keeping existing connection", err,
+			rlog.String("reason", reason))
+		return
+	}
+	if old != nil {
+		// Disconnect the superseded client asynchronously with a bounded context
+		// so a stalled Disconnect cannot hold connMu and block all mongodb callers.
+		go func(c *mongo.Client) {
+			ctx, cancel := context.WithTimeout(context.Background(), mongoDisconnectTimeout)
+			defer cancel()
+			_ = c.Disconnect(ctx)
+		}(old)
+	}
+}
+
+// forceReconnect fetches fresh credentials (bypassing the local expiry timer)
+// and rebuilds the connection. Used when an actual failure is detected, e.g. the
+// dynamic database user was revoked server-side before its local lease expired.
+func forceReconnect(reason string) {
+	connMu.Lock()
+	defer connMu.Unlock()
+
+	if fr, ok := mongodb.Credentials.(credshelper.ForceRenewer); ok {
+		if err := fr.ForceRenew(); err != nil {
+			rlog.Error("mongodb: forced credential renewal failed", err, rlog.String("reason", reason))
+		}
+	} else {
+		mongodb.Credentials.CheckAndRenew()
+	}
+	reconnectLocked(reason)
+}
+
+// startConnectionMonitor launches a single background goroutine that pings
+// mongodb periodically and rebuilds the connection when it becomes unusable.
+// This decouples recovery from incoming query traffic, which stops once a pod is
+// marked NotReady, so a wedged connection can heal on its own.
+func startConnectionMonitor(ctx context.Context) {
+	monitorOnce.Do(func() {
+		// Callers often pass a context that only bounds the initial connect (with
+		// defer cancel()); using it directly would stop the monitor right after
+		// Init. Keep the context values (e.g. tracing) but ignore its cancellation
+		// so the monitor lives for the process lifetime.
+		monitorCtx := context.WithoutCancel(ctx)
+		go connectionMonitor(monitorCtx)
+	})
+}
+
+func connectionMonitor(ctx context.Context) {
+	ticker := time.NewTicker(mongoMonitorInterval)
+	defer ticker.Stop()
+
+	failures := 0
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			pingCtx, cancel := context.WithTimeout(ctx, mongoPingTimeout)
+			ok := pingCurrent(pingCtx)
+			cancel()
+			if ok {
+				failures = 0
+				continue
+			}
+			failures++
+			rlog.Warn("mongodb ping failed, rebuilding connection",
+				rlog.Int("consecutiveFailures", failures))
+			forceReconnect("ping failure")
 		}
 	}
-
-	return mdb.Client
 }
 
 // DEPRECATED: This function is wrongly placed, its a local function for ror-api and is implemented
