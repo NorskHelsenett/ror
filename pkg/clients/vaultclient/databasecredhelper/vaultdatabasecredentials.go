@@ -53,16 +53,32 @@ func (dbc *VaultDBCredentials) CheckAndRenew() bool {
 		dbc.lock.Lock()
 		defer dbc.lock.Unlock()
 
-		msg := fmt.Sprintf("Renewing lease for database %s/credentials/%s", dbc.MountPath, dbc.VaultRole)
-		rlog.Debug(msg)
-		_ = dbc.updateCreds()
+		rlog.Debug(fmt.Sprintf("Renewing lease for database %s/credentials/%s", dbc.MountPath, dbc.VaultRole))
+		if err := dbc.updateCreds(); err != nil {
+			// Do not report a renewal that did not happen: returning true here
+			// would make callers rebuild connections with the old, now-invalid
+			// credentials.
+			rlog.Error("could not renew database credentials", err)
+			return false
+		}
 		return true
 	}
 	return false
 }
 
+// ForceRenew fetches new credentials immediately, regardless of the local lease
+// expiry. Used to recover when the dynamic database user has been revoked
+// server-side before its local lease was considered expired.
+func (dbc *VaultDBCredentials) ForceRenew() error {
+	dbc.lock.Lock()
+	defer dbc.lock.Unlock()
+	return dbc.updateCreds()
+}
+
 func (dbc *VaultDBCredentials) GetCredentials() (string, string) {
 	dbc.CheckAndRenew()
+	dbc.lock.RLock()
+	defer dbc.lock.RUnlock()
 	return dbc.Username, dbc.Password
 }
 func (dbc *VaultDBCredentials) updateCreds() error {

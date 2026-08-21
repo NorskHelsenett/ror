@@ -70,3 +70,13 @@ func (s *SimpleWrapperWithRenew) GetCredentials() (string, string) {
 func (s *SimpleWrapperWithRenew) CheckAndRenew() bool {
 	return s.wrapped.CheckAndRenew()
 }
+
+// ForceRenew forces an immediate credential renewal if the wrapped helper
+// supports it, otherwise it falls back to a scheduled CheckAndRenew.
+func (s *SimpleWrapperWithRenew) ForceRenew() error {
+	if fr, ok := s.wrapped.(ForceRenewer); ok {
+		return fr.ForceRenew()
+	}
+	s.wrapped.CheckAndRenew()
+	return nil
+}
