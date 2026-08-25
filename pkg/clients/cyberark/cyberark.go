@@ -181,13 +181,20 @@ func newCyberArkClientInternal(url string, method CyberArkAuthMethod, validDomai
 func (c *CyberArkClient) Ping() bool {
 	client := http.Client{
 		Timeout: time.Duration(defaultPingTimeout) * time.Second,
+		// The PVWA root often replies with a redirect whose Location header uses
+		// backslashes, which Go can't parse into a host ("no Host in request
+		// URL"). Don't follow it: any HTTP response means the service is up.
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
 	}
 
-	_, err := client.Get(c.baseURL)
+	resp, err := client.Get(c.baseURL)
 	if err != nil {
 		rlog.Error("Could not ping CyberArk API", err, rlog.String("url", c.baseURL))
 		return false
 	}
+	_ = resp.Body.Close()
 
 	return true
 }
