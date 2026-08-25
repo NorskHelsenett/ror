@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
@@ -224,7 +224,8 @@ func (k *KubeConfig) HandleErrors() error {
 
 	var errs strings.Builder
 	for _, err := range k.Errors {
-		errs.WriteString(err.Error() + "\n")
+		errs.WriteString(err.Error())
+		errs.WriteByte('\n')
 	}
 	return fmt.Errorf("errors: %s", errs.String())
 }
