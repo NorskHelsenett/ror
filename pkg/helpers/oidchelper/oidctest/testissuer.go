@@ -11,7 +11,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/oidchelper"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v4/jwk"
 )
 
 // TestIssuer is an in-memory OIDC issuer for testing.
@@ -108,7 +108,7 @@ func (ti *TestIssuer) handleDiscovery(w http.ResponseWriter, _ *http.Request) {
 
 func (ti *TestIssuer) handleJWKS(w http.ResponseWriter, _ *http.Request) {
 	pubKey := ti.PrivateKey.Public().(*rsa.PublicKey)
-	jwkKey, err := jwk.FromRaw(pubKey)
+	jwkKey, err := jwk.Import[jwk.Key](pubKey)
 	if err != nil {
 		http.Error(w, "could not create JWK", http.StatusInternalServerError)
 		return

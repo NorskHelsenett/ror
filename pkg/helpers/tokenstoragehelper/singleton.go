@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v4/jwk"
 )
 
 var (
