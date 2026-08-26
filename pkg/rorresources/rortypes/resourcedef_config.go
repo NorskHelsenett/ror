@@ -34,10 +34,8 @@ func (r *ResourceConfig) ApplyOutputFilter(ctx context.Context, cr *CommonResour
 		//make string to lower case to avoid case sensitivity issues
 		// gogo agent
 		if r.Spec.Filter != string(identity.Type) {
-			fmt.Println("this is not in cluster")
 			continue
 		}
-		fmt.Println("this is cluster")
 		res, err := configservice.Template(string(data), ctx)
 		if err != nil {
 			return fmt.Errorf("failed to apply config service: %w", err)

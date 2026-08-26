@@ -31,18 +31,6 @@ func initConfigService() {
 	}
 }
 
-/*
-
-
-func initConfigService() {
-	if !initiated {
-		Loaders["env"] = NewEnvConfigLoader()
-		initiated = true
-	}
-}
-
-*/
-
 func (cl ConfigLoaders) AddLoader(source string, loader ConfigLoaderInterface) {
 	initConfigService()
 	if loader != nil {
@@ -107,9 +95,6 @@ func Template(templatevalue string, ctx context.Context) (string, error) {
 		"test": identity.GetId(), // For testing purposes, can be removed later
 	}
 
-	fmt.Println(templatevalue)
-	fmt.Println(Loaders)
-
 	funcMap := make(template.FuncMap, len(Loaders))
 	for source, loader := range Loaders {
 		funcMap[source] = func(key string) (string, error) {
@@ -117,8 +102,6 @@ func Template(templatevalue string, ctx context.Context) (string, error) {
 			if err != nil {
 				return "", err
 			}
-
-			fmt.Println("funcmap:", resolvedKey)
 			return loader.Load(resolvedKey)
 		}
 	}
@@ -150,8 +133,6 @@ func renderLoaderKeyTemplate(key string, data map[string]string) (string, error)
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return "", fmt.Errorf("failed to execute loader key %q: %w", key, err)
 	}
-
-	fmt.Println("this is brus string in renderLoader: ", buf.String())
 
 	return buf.String(), nil
 }
