@@ -9,13 +9,13 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/tokenhelper"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v4/jwk"
 )
 
 var (
 	nowFunc       = time.Now
 	generateKeyFn = GenerateKey
-	jwkFromRawFn  = jwk.FromRaw
+	jwkFromRawFn  = jwk.Import[jwk.Key]
 	newJWKSetFn   = jwk.NewSet
 	addKeyFunc    = func(set jwk.Set, key jwk.Key) error {
 		return set.AddKey(key)
