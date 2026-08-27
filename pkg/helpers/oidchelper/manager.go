@@ -6,7 +6,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/tokenstoragehelper"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v4/jwk"
 )
 
 // Manager combines token validation and signing into a single entry point.

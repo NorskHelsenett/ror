@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NorskHelsenett/ror/pkg/clients/rorclient"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/workqueue"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
@@ -82,7 +82,7 @@ func newResourceCache(rcConfig ResourceCacheConfig) (*resourcecache, error) {
 	rc.rorClient = rcConfig.RorClient
 
 	if rc.rorClient.CheckConnection() == nil {
-		hashes, err := rc.rorClient.ResourcesV2().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
+		hashes, err := rc.rorClient.V2().Resources().GetOwnHashes(context.TODO(), rc.rorClient.GetOwnerref())
 		if err != nil {
 			rc.hashList = NewEmptyHashList()
 			return nil, fmt.Errorf("failed to get own hashes: %w", err)
@@ -171,7 +171,7 @@ func (rc *resourcecache) RunWorkQeue() {
 	}
 	cacheworkqueue := rc.workQueue.ConsumeWorkQeue()
 
-	status, err := rc.rorClient.ResourcesV2().Update(context.Background(), cacheworkqueue.ResourceSet)
+	status, err := rc.rorClient.V2().Resources().Update(context.Background(), cacheworkqueue.ResourceSet)
 	if err != nil {
 		rlog.Error("error sending resources update to ror, added to retryQeue", err)
 		rc.workQueue.ReQueue(cacheworkqueue)

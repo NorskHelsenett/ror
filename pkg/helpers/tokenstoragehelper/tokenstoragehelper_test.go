@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v4/jwk"
 	"github.com/stretchr/testify/require"
 )
 
@@ -52,7 +52,7 @@ func resetGlobals() {
 	generateKeyFn = GenerateKey
 	randomIntFunc = rand.Int
 	sleepFunc = time.Sleep
-	jwkFromRawFn = jwk.FromRaw
+	jwkFromRawFn = jwk.Import[jwk.Key]
 	newJWKSetFn = jwk.NewSet
 	addKeyFunc = func(set jwk.Set, key jwk.Key) error {
 		return set.AddKey(key)
@@ -485,7 +485,7 @@ func TestKeyStorageProviderGetJwksNoKeys(t *testing.T) {
 
 func TestKeyStorageProviderGetJwksSuccess(t *testing.T) {
 	resetGlobals()
-	privKey := generateRSAKey(t, 1024)
+	privKey := generateRSAKey(t, 2048)
 	provider := &KeyStorageProvider{
 		Keys: map[int]Key{
 			1: {
@@ -503,10 +503,9 @@ func TestKeyStorageProviderGetJwksSuccess(t *testing.T) {
 	key, ok := set.Key(0)
 	require.True(t, ok)
 
-	kidValue, ok := key.Get(jwk.KeyIDKey)
-	require.True(t, ok)
-	kidStr, ok2 := kidValue.(string)
-	require.True(t, ok2)
+	var kidStr string
+	kidStr, err = jwk.Get[string](key, jwk.KeyIDKey)
+	require.NoError(t, err)
 	require.Equal(t, "jwks", kidStr)
 }
 
@@ -516,7 +515,7 @@ func TestKeyStorageProviderGetJwksFromRawError(t *testing.T) {
 	jwkFromRawFn = func(any) (jwk.Key, error) {
 		return nil, errors.New("from raw failure")
 	}
-	defer func() { jwkFromRawFn = jwk.FromRaw }()
+	defer func() { jwkFromRawFn = jwk.Import[jwk.Key] }()
 
 	provider := &KeyStorageProvider{
 		Keys: map[int]Key{
@@ -534,7 +533,7 @@ func TestKeyStorageProviderGetJwksFromRawError(t *testing.T) {
 
 func TestKeyStorageProviderGetJwksKeyIDSetError(t *testing.T) {
 	resetGlobals()
-	privKey := generateRSAKey(t, 1024)
+	privKey := generateRSAKey(t, 2048)
 	original := jwkFromRawFn
 	jwkFromRawFn = func(v any) (jwk.Key, error) {
 		key, err := original(v)
@@ -543,7 +542,7 @@ func TestKeyStorageProviderGetJwksKeyIDSetError(t *testing.T) {
 		}
 		return &stubJWKKey{Key: key, failName: jwk.KeyIDKey, err: errors.New("key id failure")}, nil
 	}
-	defer func() { jwkFromRawFn = jwk.FromRaw }()
+	defer func() { jwkFromRawFn = jwk.Import[jwk.Key] }()
 
 	provider := &KeyStorageProvider{
 		Keys: map[int]Key{
@@ -561,7 +560,7 @@ func TestKeyStorageProviderGetJwksKeyIDSetError(t *testing.T) {
 
 func TestKeyStorageProviderGetJwksAlgorithmSetError(t *testing.T) {
 	resetGlobals()
-	privKey := generateRSAKey(t, 1024)
+	privKey := generateRSAKey(t, 2048)
 	original := jwkFromRawFn
 	jwkFromRawFn = func(v any) (jwk.Key, error) {
 		key, err := original(v)
@@ -570,7 +569,7 @@ func TestKeyStorageProviderGetJwksAlgorithmSetError(t *testing.T) {
 		}
 		return &stubJWKKey{Key: key, failName: jwk.AlgorithmKey, err: errors.New("algorithm failure")}, nil
 	}
-	defer func() { jwkFromRawFn = jwk.FromRaw }()
+	defer func() { jwkFromRawFn = jwk.Import[jwk.Key] }()
 
 	provider := &KeyStorageProvider{
 		Keys: map[int]Key{
@@ -588,7 +587,7 @@ func TestKeyStorageProviderGetJwksAlgorithmSetError(t *testing.T) {
 
 func TestKeyStorageProviderGetJwksUsageSetError(t *testing.T) {
 	resetGlobals()
-	privKey := generateRSAKey(t, 1024)
+	privKey := generateRSAKey(t, 2048)
 	original := jwkFromRawFn
 	jwkFromRawFn = func(v any) (jwk.Key, error) {
 		key, err := original(v)
@@ -597,7 +596,7 @@ func TestKeyStorageProviderGetJwksUsageSetError(t *testing.T) {
 		}
 		return &stubJWKKey{Key: key, failName: jwk.KeyUsageKey, err: errors.New("usage failure")}, nil
 	}
-	defer func() { jwkFromRawFn = jwk.FromRaw }()
+	defer func() { jwkFromRawFn = jwk.Import[jwk.Key] }()
 
 	provider := &KeyStorageProvider{
 		Keys: map[int]Key{
@@ -615,7 +614,7 @@ func TestKeyStorageProviderGetJwksUsageSetError(t *testing.T) {
 
 func TestKeyStorageProviderGetJwksAddKeyError(t *testing.T) {
 	resetGlobals()
-	privKey := generateRSAKey(t, 1024)
+	privKey := generateRSAKey(t, 2048)
 	addKeyFunc = func(jwk.Set, jwk.Key) error {
 		return errors.New("add key failure")
 	}
@@ -888,7 +887,7 @@ func TestGenerateKeyFromRawError(t *testing.T) {
 func TestGenerateKeyThumbprintError(t *testing.T) {
 	resetGlobals()
 	rsaGenerateKeyFunc = func(reader io.Reader, bits int) (*rsa.PrivateKey, error) {
-		return generateRSAKey(t, 1024), nil
+		return generateRSAKey(t, 2048), nil
 	}
 	jwkThumbprintFunc = func(jwk.Key, crypto.Hash) ([]byte, error) {
 		return nil, errors.New("thumbprint failure")
@@ -906,7 +905,7 @@ func TestGenerateKeyThumbprintError(t *testing.T) {
 
 func TestDefaultAddKeyFunc(t *testing.T) {
 	resetGlobals()
-	privKey := generateRSAKey(t, 1024)
+	privKey := generateRSAKey(t, 2048)
 	set := newJWKSetFn()
 	jwkKey, err := jwkFromRawFn(&privKey.PublicKey)
 	require.NoError(t, err)

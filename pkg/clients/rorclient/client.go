@@ -1,3 +1,7 @@
+// Package rorclient is the v1 ROR client.
+//
+// Deprecated: rorclient v1 is deprecated and will be removed in a future release.
+// Use github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2 instead.
 package rorclient
 
 import (
@@ -31,6 +35,8 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
 
+// Deprecated: rorclient v1 is deprecated and will be removed in a future release.
+// Use github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2 instead.
 type RorConfig struct {
 	Host string
 }
@@ -38,6 +44,8 @@ type RorConfig struct {
 // Compile-time check to ensure RorClient implements RorClientInterface
 var _ RorClientInterface = (*RorClient)(nil)
 
+// Deprecated: rorclient v1 is deprecated and will be removed in a future release.
+// Use github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2 instead.
 type RorClientInterface interface {
 	transportinterface.RorCommonClientTransportInterface
 	clientinterface.RorCommonClientApiInterface
@@ -49,6 +57,10 @@ type RorClientInterface interface {
 	clients.CommonClient
 }
 
+// RorClient is the v1 ROR client.
+//
+// Deprecated: rorclient v1 is deprecated and will be removed in a future release.
+// Use github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2 instead.
 type RorClient struct {
 	ownerRef *rorresourceowner.RorResourceOwnerReference
 
@@ -73,6 +85,10 @@ type RorClient struct {
 	v2                 clientinterface.RorCommonClientApiInterfaceV2
 }
 
+// NewRorClient creates a new v1 ROR client.
+//
+// Deprecated: rorclient v1 is deprecated and will be removed in a future release.
+// Use github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2.NewRorClient instead.
 func NewRorClient(transport transportinterface.RorTransport) *RorClient {
 	return &RorClient{
 		Transport:          transport,
