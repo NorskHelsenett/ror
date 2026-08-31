@@ -2,7 +2,8 @@ package rabbitmq
 
 import (
 	"context"
-	"github.com/google/uuid"
+	"uuid"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -35,9 +36,9 @@ func NewPublisher(opts ...Option) Publisher {
 	// producer names and keys.
 	p := &publisher{
 		connection:   newConnection(),
-		exchangeName: uuid.NewString(),
+		exchangeName: uuid.NewV4().String(),
 		exchangeType: amqp.ExchangeDirect,
-		routingKey:   uuid.NewString(),
+		routingKey:   uuid.NewV4().String(),
 	}
 
 	// Apply consumer overrides from the environment and options passed in the
