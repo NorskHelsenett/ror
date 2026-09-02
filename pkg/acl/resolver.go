@@ -34,8 +34,16 @@ func (f OwnerrefFilter) IsEmpty() bool {
 
 // Matches reports whether the given ownerref passes the filter.
 func (f OwnerrefFilter) Matches(ref Ownerref) bool {
-	if len(f.Scopes) > 0 && !slices.Contains(f.Scopes, ref.Scope) {
-		return false
+	if len(f.Scopes) > 0 {
+		scope := ref.Scope
+		// A ror-level grant {ror, <scope>} is a scope-level grant over <scope>;
+		// match it against the requested scope, consistent with matchesScopeSubject.
+		if ref.Scope == aclscope.ScopeRor && slices.Contains(f.Scopes, aclscope.Scope(ref.Subject)) {
+			scope = aclscope.Scope(ref.Subject)
+		}
+		if !slices.Contains(f.Scopes, scope) {
+			return false
+		}
 	}
 	if len(f.Subjects) > 0 && !slices.Contains(f.Subjects, ref.Subject) {
 		return false
@@ -65,19 +73,26 @@ func (f OwnerrefFilter) skipExpansion(entryScope aclscope.Scope) bool {
 	return true
 }
 
+// GroupReader is the read access a Resolver needs from an ACL store: loading
+// all entries for a set of groups as canonical V3 items. Any Store satisfies it,
+// as does the in-memory snapshot store.
+type GroupReader interface {
+	GetByGroups(ctx context.Context, groups []string) (aclmodels.AclV3List, error)
+}
+
 // Resolver resolves access for a set of groups using a Store.
 // It loads all entries in one batch call, then compiles access in-memory.
 // An optional ScopeExpander enables hierarchical scope resolution:
 // if a user has access to a Project, the expander resolves all descendant
 // ownerrefs (Workspaces, Clusters, etc.) so they are included in the result.
 type Resolver struct {
-	store    Store
+	store    GroupReader
 	expander ScopeExpander
 }
 
 // NewResolver creates a new resolver with the given store backend.
 // Use WithScopeExpander to enable hierarchical scope resolution.
-func NewResolver(store Store, opts ...ResolverOption) *Resolver {
+func NewResolver(store GroupReader, opts ...ResolverOption) *Resolver {
 	r := &Resolver{store: store}
 	for _, opt := range opts {
 		opt(r)
@@ -106,18 +121,17 @@ func (r *Resolver) ResolveAccess(ctx context.Context, groups []string, scope acl
 		attribute.String("acl.subject", string(subject)),
 	)
 
-	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
+	entries, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
 		return nil, rortracer.SpanError(span, err)
 	}
 
 	seen := make(map[aclmodels.AccessTypeV3]struct{})
-	for _, entries := range entriesByGroup {
-		for _, entry := range entries {
-			if matchesScopeSubject(entry, scope, subject) {
-				for _, a := range entry.Access {
-					seen[a] = struct{}{}
-				}
+
+	for _, entry := range entries {
+		if matchesScopeSubject(entry, scope, subject) {
+			for _, a := range entry.Access {
+				seen[a] = struct{}{}
 			}
 		}
 	}
@@ -148,7 +162,7 @@ func (r *Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requir
 		attribute.Int("acl.filter_subjects", len(filter.Subjects)),
 	)
 
-	entriesByGroup, err := r.store.GetByGroups(ctx, groups)
+	entries, err := r.store.GetByGroups(ctx, groups)
 	if err != nil {
 		return nil, rortracer.SpanError(span, err)
 	}
@@ -172,28 +186,26 @@ func (r *Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requir
 	var seeds []Ownerref
 	seedSeen := make(map[Ownerref]struct{})
 
-	for _, entries := range entriesByGroup {
-		for _, entry := range entries {
-			if !slices.Contains(entry.Access, requiredAccess) {
-				continue
-			}
-			// Global access — unrestricted. Mirrors the global semantics in
-			// matchesScopeSubject: the "all" scope or subject, or the "ror" scope
-			// with the global subject.
-			if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll ||
-				(entry.Scope == aclscope.ScopeRor && entry.Subject == aclscope.SubjectGlobal) {
-				span.SetAttributes(attribute.Bool("acl.unrestricted", true))
-				return nil, nil
-			}
+	for _, entry := range entries {
+		if !slices.Contains(entry.Access, requiredAccess) {
+			continue
+		}
+		// Global access — unrestricted. Mirrors the global semantics in
+		// matchesScopeSubject: the "all" scope or subject, or the "ror" scope
+		// with the global subject.
+		if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll ||
+			(entry.Scope == aclscope.ScopeRor && entry.Subject == aclscope.SubjectGlobal) {
+			span.SetAttributes(attribute.Bool("acl.unrestricted", true))
+			return nil, nil
+		}
 
-			ref := Ownerref{Scope: entry.Scope, Subject: entry.Subject}
-			addRef(ref)
+		ref := Ownerref{Scope: entry.Scope, Subject: entry.Subject}
+		addRef(ref)
 
-			if r.expander != nil && !filter.skipExpansion(entry.Scope) {
-				if _, dup := seedSeen[ref]; !dup {
-					seedSeen[ref] = struct{}{}
-					seeds = append(seeds, ref)
-				}
+		if r.expander != nil && !filter.skipExpansion(entry.Scope) {
+			if _, dup := seedSeen[ref]; !dup {
+				seedSeen[ref] = struct{}{}
+				seeds = append(seeds, ref)
 			}
 		}
 	}

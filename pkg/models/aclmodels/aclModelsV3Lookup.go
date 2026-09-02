@@ -17,3 +17,14 @@ type AclV3LookupResponse struct {
 	Unrestricted bool                  `json:"unrestricted"`
 	Ownerrefs    []AclV3LookupOwnerref `json:"ownerrefs"`
 }
+
+type Acl3LookupByScopeSubjectResponse struct {
+	Scope      aclscope.Scope                        `json:"scope"`
+	Subject    aclscope.Subject                      `json:"subject"`
+	AccesGroup []Acl3LookupByScopeSubjectAccessGroup `json:"accessGroups"`
+}
+
+type Acl3LookupByScopeSubjectAccessGroup struct {
+	Access AccessTypeV3 `json:"access"`
+	Group  string       `json:"group"`
+}

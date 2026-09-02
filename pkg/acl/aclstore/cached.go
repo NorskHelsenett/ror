@@ -9,6 +9,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/clients/redisdb"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 
@@ -137,6 +138,18 @@ func (c *CachedStore) GetV2ByGroups(ctx context.Context, groups []string) (map[s
 	}
 
 	return result, nil
+}
+
+// GetByScopeSubject returns ACL entries for a scope+subject pair. The cache is
+// keyed by group, so this access pattern passes through to the backend.
+func (c *CachedStore) GetByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AclV3ListItem, error) {
+	return c.backend.GetByScopeSubject(ctx, scope, subject)
+}
+
+// GetV2ByScopeSubject returns V2 ACL entries for a scope+subject pair. The cache
+// is keyed by group, so this access pattern passes through to the backend.
+func (c *CachedStore) GetV2ByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AclV2ListItem, error) {
+	return c.backend.GetV2ByScopeSubject(ctx, scope, subject)
 }
 
 // Invalidate removes the cached entries for a group (both V2 and V3 caches).
