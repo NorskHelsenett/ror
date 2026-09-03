@@ -27,4 +27,16 @@ type Acl3LookupByScopeSubjectResponse struct {
 type Acl3LookupByScopeSubjectAccessGroup struct {
 	Access AccessTypeV3 `json:"access"`
 	Group  string       `json:"group"`
+	// Provenance lists every resource in the tree (the queried resource and/or
+	// its ancestors) on which this group has this access, one entry per level.
+	Provenance []Acl3LookupProvenance `json:"provenance"`
+}
+
+// Acl3LookupProvenance is a single resource a grant is defined on. Level 0 is
+// the queried resource itself; level 1 is its immediate parent, level 2 its
+// grandparent, and so on.
+type Acl3LookupProvenance struct {
+	Scope   aclscope.Scope   `json:"scope"`
+	Subject aclscope.Subject `json:"subject"`
+	Level   int              `json:"level"`
 }
