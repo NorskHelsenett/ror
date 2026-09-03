@@ -443,8 +443,8 @@ go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.45.0 h1:fG5MC
 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.45.0/go.mod h1:BmAYTn+3ysbRe+IU2msxmf5Rx3g6DHvex+tWI3LdhYI=
 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.43.0 h1:3iZJKlCZufyRzPzlQhUIWVmfltrXuGyfjREgGP3UUjc=
 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.43.0/go.mod h1:/G+nUPfhq2e+qiXMGxMwumDrP5jtzU+mWN7/sjT2rak=
-go.opentelemetry.io/otel/exporters/prometheus v0.67.0 h1:7IefDa35e6V3NoiqIeLDMDxMFyZDk5qcoC0Ax4cC16E=
-go.opentelemetry.io/otel/exporters/prometheus v0.67.0/go.mod h1:nsPI1awTg5Vmg1YrommL2mVarVGlqc4yXOoKAkPRD0c=
+go.opentelemetry.io/otel/exporters/prometheus v0.68.0 h1:QOf2IftqQwITVRJpnn0M7M9ZCbgWfxz4P7i9C9yc2N4=
+go.opentelemetry.io/otel/exporters/prometheus v0.68.0/go.mod h1:bgSvqu2TWGXiz7yr5UTMfObH8oqxJWHTnubQ3ef9BO4=
 go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.21.0 h1:2lpf4hnrasYIsUyEXwnTZq5lsxrMm4T2Bwb06IctAZQ=
 go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.21.0/go.mod h1:YWOW6h7jwApz9Pl76ie/izUsSPj0s2MdIlpqbPqaf3U=
 go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.43.0 h1:TC+BewnDpeiAmcscXbGMfxkO+mwYUwE/VySwvw88PfA=
@@ -555,8 +555,8 @@ google.golang.org/genproto/googleapis/rpc v0.0.0-20260803160001-6ac0973c030d h1:
 google.golang.org/genproto/googleapis/rpc v0.0.0-20260803160001-6ac0973c030d/go.mod h1:4Hqkh8ycfw05ld/3BWL7rJOSfebL2Q+DVDeRgYgxUU8=
 google.golang.org/grpc v1.83.1 h1:HIO0+BEtBP6soyqvqC8sNUjZ7bTs+0hFQuFF+RAy++Y=
 google.golang.org/grpc v1.83.1/go.mod h1:kDyl6SKsiHKt0uylY5gtn5cEjkrIOhQOGDgIc4JGwzQ=
-google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af h1:+5/Sw3GsDNlEmu7TfklWKPdQ0Ykja5VEmq2i817+jbI=
-google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af/go.mod h1:HTf+CrKn2C3g5S8VImy6tdcUvCska2kB7j23XfzDpco=
+google.golang.org/protobuf v1.36.12 h1:pJOKDDOyeXErUroCihFAd5LQuwXBSpVnKGrj5o/fwxc=
+google.golang.org/protobuf v1.36.12/go.mod h1:HTf+CrKn2C3g5S8VImy6tdcUvCska2kB7j23XfzDpco=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
