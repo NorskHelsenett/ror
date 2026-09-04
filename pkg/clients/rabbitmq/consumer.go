@@ -25,6 +25,8 @@ type consumer struct {
 	queueName    string
 	exchangeName string
 	routingKey   string
+	durable      bool
+	autoDelete   bool
 	args         amqp.Table
 	handler      func(context.Context, amqp.Delivery) error
 }
@@ -47,6 +49,7 @@ func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Opt
 		queueName:    uuid.NewV4().String(),
 		exchangeName: uuid.NewV4().String(),
 		routingKey:   uuid.NewV4().String(),
+		autoDelete:   true,
 	}
 
 	// Apply consumer overrides from the environment and options passed in the
@@ -146,7 +149,7 @@ consumeLoop:
 // queue to an exchange. If any of the operations fails this method returns an
 // error.
 func (c *consumer) setupConsumeQueue() error {
-	_, err := c.amqpChannel.QueueDeclare(c.queueName, false, true, false, false, c.args)
+	_, err := c.amqpChannel.QueueDeclare(c.queueName, c.durable, c.autoDelete, false, false, c.args)
 	if err != nil {
 		c.logger.Error("failed to declare consumer queue", "error", err)
 		return err
@@ -184,6 +187,14 @@ func (c *consumer) setExchangeName(e string) {
 
 func (c *consumer) setConsumerName(n string) {
 	c.consumerName = n
+}
+
+func (c *consumer) setDurable(b bool) {
+	c.durable = b
+}
+
+func (c *consumer) setAutoDelete(b bool) {
+	c.autoDelete = b
 }
 
 // No-Op method to satisfy the option interface
