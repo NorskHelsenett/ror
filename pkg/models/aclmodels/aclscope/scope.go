@@ -1,6 +1,9 @@
 package aclscope
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 // Scope represents the scope of an ACL entry.
 // Valid values are known resource kinds (e.g. "cluster", "project")
@@ -22,7 +25,7 @@ const (
 )
 
 // scopeAliases maps every accepted string representation to its Scope.
-// This is the single source of truth for ScopeFromString, IsValid and GetScopes.
+// This is the single source of truth for ParseScope, IsValid and GetScopes.
 var scopeAliases = map[string]Scope{
 	"ror":               ScopeRor,
 	"cluster":           ScopeCluster,
@@ -43,12 +46,13 @@ var scopeAliases = map[string]Scope{
 	"spam":              ScopeSpam,
 }
 
-func ScopeFromString(s string) (Scope, bool) {
+// ParseScope resolves a string to a Scope, returning an error if it is not a known scope.
+func ParseScope(s string) (Scope, error) {
 	scope, ok := scopeAliases[s]
 	if !ok {
-		return ScopeUnknown, false
+		return ScopeUnknown, fmt.Errorf("unknown scope %q", s)
 	}
-	return scope, true
+	return scope, nil
 }
 
 // String returns the string representation of the scope.

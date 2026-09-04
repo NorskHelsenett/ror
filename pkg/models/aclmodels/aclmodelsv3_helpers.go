@@ -25,6 +25,7 @@ func MergeAccess(a, b []AccessTypeV3) []AccessTypeV3 {
 	for k := range seen {
 		result = append(result, k)
 	}
+	slices.Sort(result)
 	return result
 }
 
@@ -64,6 +65,7 @@ func CompileAccess(entries []AclV3ListItem, scope aclscope.Scope, subject aclsco
 	for k := range seen {
 		result = append(result, k)
 	}
+	slices.Sort(result)
 	return result
 }
 
@@ -78,11 +80,11 @@ func AllowedKinds(access []AccessTypeV3, verb Verb) []string {
 
 	kinds := make([]string, 0)
 	for _, a := range access {
-		cap, v := a.Parse()
+		capability, v := a.Parse()
 		if v != verb {
 			continue
 		}
-		capStr := string(cap)
+		capStr := string(capability)
 		if !strings.HasPrefix(capStr, "resource:") {
 			continue
 		}

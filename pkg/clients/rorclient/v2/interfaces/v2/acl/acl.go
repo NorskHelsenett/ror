@@ -18,4 +18,6 @@ type AclInterface interface {
 	// given scope+subject pair, using the V3 ACL backend. Unlike Lookup, scope
 	// and subject are required and identify a single resource.
 	LookupByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) (*aclmodels.Acl3LookupByScopeSubjectResponse, error)
+
+	CheckAccess(ctx context.Context, scope, subject, access string) bool
 }

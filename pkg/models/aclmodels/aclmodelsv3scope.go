@@ -7,7 +7,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
 )
 
-var ValidSystems = map[string]bool{
+var validSystems = map[string]bool{
 	"ror":   true,
 	"spam":  true,
 	"alarm": true,
@@ -19,7 +19,7 @@ var ValidSystems = map[string]bool{
 func ValidScope(scope aclscope.Scope) error {
 	s := string(scope)
 
-	if ValidSystems[s] {
+	if validSystems[s] {
 		return nil
 	}
 

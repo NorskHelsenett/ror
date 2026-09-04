@@ -2,6 +2,7 @@ package aclscope
 
 import (
 	"context"
+	"fmt"
 	"slices"
 )
 
@@ -26,12 +27,14 @@ const (
 	SubjectSpamGit        Subject = "spamgit"
 )
 
-func GetSubjectFromString(scope Scope, inputSubject string) (Subject, bool) {
+// ParseSubject resolves a string to a Subject and validates it for the given scope,
+// returning an error if the subject is not valid for that scope.
+func ParseSubject(scope Scope, inputSubject string) (Subject, error) {
 	resolvedSubject := Subject(inputSubject)
 	if !resolvedSubject.HasValidScope(scope) {
-		return SubjectUnknown, false
+		return SubjectUnknown, fmt.Errorf("invalid subject %q for scope %q", inputSubject, scope)
 	}
-	return resolvedSubject, true
+	return resolvedSubject, nil
 }
 
 // String returns the string representation of the subject.
