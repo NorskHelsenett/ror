@@ -8,12 +8,15 @@ import (
 	"sync"
 	"uuid"
 
+	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // Connection interface for handling rabbitmq connections.
 type Connection interface {
 	Ping(ctx context.Context) error
+	CheckHealth(ctx context.Context) []rorhealth.Check
 	Shutdown(ctx context.Context) error
 }
 
@@ -241,6 +244,16 @@ func (c *connection) Ping(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// CheckHealth implements the rorhealth Checker interface by pinging the broker.
+func (c *connection) CheckHealth(ctx context.Context) []rorhealth.Check {
+	check := rorhealth.Check{}
+	if err := c.Ping(ctx); err != nil {
+		check.Status = rorhealth.StatusFail
+		check.Output = "could not ping rabbitmq"
+	}
+	return []rorhealth.Check{check}
 }
 
 // getConnectionString creates a connectionString from the connections endpoint
