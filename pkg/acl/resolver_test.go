@@ -14,19 +14,17 @@ import (
 
 // mockStore implements acl.Store for testing.
 type mockStore struct {
-	entries map[string][]aclmodels.AclV3ListItem
+	entries aclmodels.AclV3ListByGroup
 	err     error
 }
 
-func (m *mockStore) GetByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV3ListItem, error) {
+func (m *mockStore) GetByGroups(ctx context.Context, groups []string) (aclmodels.AclV3List, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
-	result := make(map[string][]aclmodels.AclV3ListItem)
+	var result aclmodels.AclV3List
 	for _, g := range groups {
-		if entries, ok := m.entries[g]; ok {
-			result[g] = entries
-		}
+		result = append(result, m.entries[g]...)
 	}
 	return result, nil
 }
@@ -46,8 +44,38 @@ func (m *mockStore) GetV2ByGroups(ctx context.Context, groups []string) (map[str
 	return result, nil
 }
 
+func (m *mockStore) GetByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) (aclmodels.AclV3List, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	var result []aclmodels.AclV3ListItem
+	for _, entries := range m.entries {
+		for _, e := range entries {
+			if e.Scope == scope && e.Subject == subject {
+				result = append(result, e)
+			}
+		}
+	}
+	return result, nil
+}
+
+func (m *mockStore) GetV2ByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AclV2ListItem, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	var result []aclmodels.AclV2ListItem
+	for _, entries := range m.entries {
+		for _, e := range entries {
+			if e.Scope == scope && e.Subject == subject {
+				result = append(result, aclmodels.V3ToV2(e))
+			}
+		}
+	}
+	return result, nil
+}
+
 func newMockStore(entries ...aclmodels.AclV3ListItem) *mockStore {
-	m := &mockStore{entries: make(map[string][]aclmodels.AclV3ListItem)}
+	m := &mockStore{entries: make(aclmodels.AclV3ListByGroup)}
 	for _, e := range entries {
 		m.entries[e.Group] = append(m.entries[e.Group], e)
 	}

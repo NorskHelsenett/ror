@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"sync"
+	"uuid"
 
-	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -173,9 +173,9 @@ func (c *connection) Shutdown(ctx context.Context) error {
 // setupHealthQueue declares an exchange and a queue with unique names and
 // routing key that is used in the Ping function.
 func (c *connection) setupHealthQueue() error {
-	c.healthExchange = uuid.NewString()
-	c.healthQueue = uuid.NewString()
-	c.healthRoutingKey = uuid.NewString()
+	c.healthExchange = uuid.NewV4().String()
+	c.healthQueue = uuid.NewV4().String()
+	c.healthRoutingKey = uuid.NewV4().String()
 
 	err := c.amqpChannel.ExchangeDeclare(c.healthExchange, amqp.ExchangeDirect, false, true, false, false, nil)
 	if err != nil {

@@ -3,8 +3,9 @@ package rabbitmq
 import (
 	"context"
 
+	"uuid"
+
 	"github.com/NorskHelsenett/ror/pkg/telemetry/amqptrace"
-	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -42,10 +43,10 @@ func NewConsumer(handler func(context.Context, amqp.Delivery) error, opts ...Opt
 	// consumer names and keys.
 	c := &consumer{
 		connection:   newConnection(),
-		consumerName: uuid.NewString(),
-		queueName:    uuid.NewString(),
-		exchangeName: uuid.NewString(),
-		routingKey:   uuid.NewString(),
+		consumerName: uuid.NewV4().String(),
+		queueName:    uuid.NewV4().String(),
+		exchangeName: uuid.NewV4().String(),
+		routingKey:   uuid.NewV4().String(),
 	}
 
 	// Apply consumer overrides from the environment and options passed in the

@@ -114,3 +114,37 @@ type AclV3ListItem struct {
 	Created  time.Time        `json:"created"`
 	IssuedBy string           `json:"issuedBy,omitempty" validate:"email"`
 }
+
+type AclV3List []AclV3ListItem
+
+type AclV3ListByGroup map[string]AclV3List
+type AclV3ListByScopeSubject map[aclscope.Scope]map[aclscope.Subject]AclV3List
+
+func (a AclV3ListByGroup) Flatten() AclV3List {
+	out := AclV3List{}
+	for _, entries := range a {
+		for _, entry := range entries {
+			out = append(out, entry)
+		}
+	}
+	return out
+}
+
+func (a AclV3List) ByGroup() AclV3ListByGroup {
+	out := AclV3ListByGroup{}
+	for _, entry := range a {
+		out[entry.Group] = append(out[entry.Group], entry)
+	}
+	return out
+}
+
+func (a AclV3List) ByScopeSubject() AclV3ListByScopeSubject {
+	out := AclV3ListByScopeSubject{}
+	for _, entry := range a {
+		if _, ok := out[entry.Scope]; !ok {
+			out[entry.Scope] = make(map[aclscope.Subject]AclV3List)
+		}
+		out[entry.Scope][entry.Subject] = append(out[entry.Scope][entry.Subject], entry)
+	}
+	return out
+}

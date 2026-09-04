@@ -95,6 +95,15 @@ func TestOwnerrefFilter_Matches(t *testing.T) {
 		Scopes:   []aclscope.Scope{"Project"},
 		Subjects: []aclscope.Subject{"cluster-1"},
 	}.Matches(ref))
+
+	// A ror-level scope grant {ror, <scope>} belongs to <scope>, mirroring
+	// matchesScopeSubject: it must satisfy a scope filter for that scope.
+	scopeGrant := acl.Ownerref{Scope: aclscope.ScopeRor, Subject: aclscope.Subject("KubernetesCluster")}
+	assert.True(t, acl.OwnerrefFilter{Scopes: []aclscope.Scope{"KubernetesCluster"}}.Matches(scopeGrant))
+	// It must NOT satisfy a scope filter for a different scope.
+	assert.False(t, acl.OwnerrefFilter{Scopes: []aclscope.Scope{"Project"}}.Matches(scopeGrant))
+	// An empty filter still matches it.
+	assert.True(t, acl.OwnerrefFilter{}.Matches(scopeGrant))
 }
 
 // --- ResolveOwnerrefs with a non-empty filter ---
@@ -351,8 +360,26 @@ func TestResolver_ResolveOwnerrefs_RorGlobalScope_IsUnrestricted(t *testing.T) {
 	assert.Empty(t, expander.expandedSeeds())
 }
 
-// An error from the expander backend must propagate, never silently yielding a
-// partial (and possibly misleading) result.
+// A ror-level scope grant {ror, <scope>} (e.g. "read all clusters") is NOT
+// global, so it must be returned as a concrete ref even when the result is
+// narrowed by a scope filter for that scope (previously it was wrongly dropped).
+func TestResolver_ResolveOwnerrefs_RorScopeGrant_KeptUnderScopeFilter(t *testing.T) {
+	store := newMockStore(
+		aclmodels.AclV3ListItem{
+			Group:   "cluster-admins",
+			Scope:   aclscope.ScopeRor,
+			Subject: aclscope.Subject("KubernetesCluster"),
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		},
+	)
+	resolver := acl.NewResolver(store)
+
+	filter := acl.OwnerrefFilter{Scopes: []aclscope.Scope{"KubernetesCluster"}}
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"cluster-admins"}, "ror:read", filter)
+	assert.NoError(t, err)
+	assert.Equal(t, []acl.Ownerref{{Scope: aclscope.ScopeRor, Subject: "KubernetesCluster"}}, refs)
+}
+
 func TestResolver_ResolveOwnerrefs_ExpanderError_Propagates(t *testing.T) {
 	store := newMockStore(
 		aclmodels.AclV3ListItem{

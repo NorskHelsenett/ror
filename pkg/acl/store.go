@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 // Store is the interface for loading ACL entries.
@@ -21,4 +22,13 @@ type Store interface {
 	// V3 entries in the database are converted to V2 using aclmodels.V3ToV2.
 	// V3-only capabilities (e.g. "kubernetes:admin") are dropped in the conversion.
 	GetV2ByGroups(ctx context.Context, groups []string) (map[string][]aclmodels.AclV2ListItem, error)
+
+	// GetByScopeSubject returns all ACL entries for the given scope+subject pair as V3 items.
+	// V2 entries in the database are converted to V3 using aclmodels.V2ToV3.
+	GetByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AclV3ListItem, error)
+
+	// GetV2ByScopeSubject returns all ACL entries for the given scope+subject pair as V2 items.
+	// V3 entries in the database are converted to V2 using aclmodels.V3ToV2.
+	// V3-only capabilities (e.g. "kubernetes:admin") are dropped in the conversion.
+	GetV2ByScopeSubject(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject) ([]aclmodels.AclV2ListItem, error)
 }

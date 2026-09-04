@@ -1,8 +1,9 @@
 package aclmodels
 
 import (
+	"uuid"
+
 	"github.com/NorskHelsenett/ror/pkg/rlog"
-	"github.com/google/uuid"
 )
 
 // ClusterIdToUidResolver is an optional function that resolves a cluster ID

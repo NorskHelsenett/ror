@@ -26,6 +26,24 @@ const (
 	SubjectSpamGit        Subject = "spamgit"
 )
 
+func GetSubjectFromString(scope Scope, inputSubject string) (Subject, bool) {
+	resolvedSubject := Subject(inputSubject)
+	if !resolvedSubject.HasValidScope(scope) {
+		return SubjectUnknown, false
+	}
+	return resolvedSubject, true
+}
+
+// String returns the string representation of the subject.
+func (s Subject) String() string {
+	return string(s)
+}
+
+// IsValid validates the subject for the given scope.
+func (s Subject) IsValid(scope Scope) bool {
+	return s.HasValidScope(scope)
+}
+
 // GetValidSubjects returns all valid subjects for the "ror" scope.
 func GetValidSubjects() []Subject {
 	return []Subject{

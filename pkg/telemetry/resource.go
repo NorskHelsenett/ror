@@ -3,7 +3,8 @@ package telemetry
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"uuid"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
@@ -24,7 +25,7 @@ func newResource(ctx context.Context, opts ...Option) *resource.Resource {
 	attributes := []attribute.KeyValue{}
 	attributes = append(attributes,
 		semconv.ServiceInstanceID(
-			uuid.NewString(),
+			uuid.NewV4().String(),
 		),
 	)
 
