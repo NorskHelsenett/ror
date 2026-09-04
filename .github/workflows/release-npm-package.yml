@@ -45,7 +45,7 @@ jobs:
         uses: dcarbone/install-jq-action@v3.0.1
 
       - name: Use node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
           node-version: "22.x"
       - name: Build package
