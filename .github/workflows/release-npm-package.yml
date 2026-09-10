@@ -19,7 +19,7 @@ jobs:
       rorversion: ${{ steps.env.outputs.ROR_VERSION }}
       shortsha: ${{ steps.env.outputs.SHA_SHORT }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: env
         name: Set env
         run: |
@@ -40,7 +40,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install jq
         uses: dcarbone/install-jq-action@v3.0.1
 
