@@ -1,9 +1,10 @@
 package rabbitmq
 
 import (
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log/slog"
 	"os"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // option is an interface for passing configuration options to the structs in
@@ -18,6 +19,8 @@ type option interface {
 	setLogger(*slog.Logger)
 	setAuthenticator(Authenticator)
 	setExchangeType(string)
+	setDurable(bool)
+	setAutoDelete(bool)
 }
 
 // Option is used in a functional options pattern to apply configuration options
@@ -69,6 +72,21 @@ func WithAuthenticator(authenticator Authenticator) Option {
 func WithExchangeName(name string) Option {
 	return func(o option) {
 		o.setExchangeName(name)
+	}
+}
+
+// WithDurable sets whether the consumer's queue survives a broker restart.
+func WithDurable(durable bool) Option {
+	return func(o option) {
+		o.setDurable(durable)
+	}
+}
+
+// WithAutoDelete sets whether the consumer's queue is deleted once the last
+// consumer disconnects.
+func WithAutoDelete(autoDelete bool) Option {
+	return func(o option) {
+		o.setAutoDelete(autoDelete)
 	}
 }
 

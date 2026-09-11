@@ -115,3 +115,9 @@ func (p *publisher) setConsumerName(s string) {}
 
 // No-Op method to satisfy the option interface
 func (p *publisher) setQueueName(s string) {}
+
+// No-Op method to satisfy the option interface
+func (p *publisher) setDurable(b bool) {}
+
+// No-Op method to satisfy the option interface
+func (p *publisher) setAutoDelete(b bool) {}
