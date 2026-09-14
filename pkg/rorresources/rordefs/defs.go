@@ -2,6 +2,7 @@
 package rordefs // Package resourcegeneratormodels
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -502,10 +503,11 @@ var ResourceConfig = ApiResource{
 		Kind:       "Config",
 		APIVersion: "ror.internal/v1",
 	},
-	Plural:     "configs",
-	Namespaced: false,
-	Types:      []ApiResourceType{ApiResourceTypeInternal},
-	Versions:   []ApiVersions{ApiVersionV2},
+	Plural:      "configs",
+	Namespaced:  false,
+	Types:       []ApiResourceType{ApiResourceTypeInternal},
+	Versions:    []ApiVersions{ApiVersionV2},
+	ProtectedBy: aclcaps.CapRorConfig,
 }
 
 var ResourceOrganizationalUnit = ApiResource{

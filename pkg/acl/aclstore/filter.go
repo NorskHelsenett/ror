@@ -125,15 +125,28 @@ func ClusterIdentityFilter(clusterID string) bson.M {
 // resource kinds it protects. The verb is appended at check time by
 // ResourceTypeFilter (VerbRead) / ResourceTypeWriteFilter (VerbWrite).
 //
-// Example: CapRorConfig protects Configuration resources.
+// It is derived from the resource definitions: any rordefs.ApiResource with a
+// non-empty ProtectedBy contributes its Kind to the capability's kind list.
+//
+// Example: CapRorConfig protects Config resources.
 // A user needs CapRorConfig.WithVerb(VerbRead) to query them and
 // CapRorConfig.WithVerb(VerbWrite) to mutate them.
 //
-// Resources not listed here are accessible with the standard ror:read / ror:write capabilities.
-var ProtectedResourceTypes = map[aclmodels.Capability][]string{
-	aclmodels.CapRorConfig: {
-		rordefs.ResourceConfig.Kind,
-	},
+// Resources without ProtectedBy are accessible with the standard ror:read / ror:write capabilities.
+var ProtectedResourceTypes = buildProtectedResourceTypes()
+
+// buildProtectedResourceTypes collects the capability→kinds mapping from the
+// resource definitions so protection is declared on each ApiResource.
+func buildProtectedResourceTypes() map[aclmodels.Capability][]string {
+	protected := map[aclmodels.Capability][]string{}
+	for _, r := range rordefs.Resourcedefs {
+		if r.ProtectedBy == "" {
+			continue
+		}
+		cap := aclmodels.Capability(r.ProtectedBy)
+		protected[cap] = append(protected[cap], r.Kind)
+	}
+	return protected
 }
 
 // ResourceTypeFilter builds a MongoDB aggregation pipeline stage that excludes

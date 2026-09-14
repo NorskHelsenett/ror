@@ -487,6 +487,32 @@ func TestResourceTypeFilter_ProtectedRegistryCoverage(t *testing.T) {
 	}
 }
 
+// TestProtectedResourceTypes_DerivedFromDefs guards the production registry,
+// which is built from rordefs.ApiResource.ProtectedBy. It ensures a typo in a
+// definition can't silently under-protect a kind: every declared ProtectedBy
+// must be a real capability and must surface in the registry.
+func TestProtectedResourceTypes_DerivedFromDefs(t *testing.T) {
+	for _, r := range rordefs.Resourcedefs {
+		if r.ProtectedBy == "" {
+			continue
+		}
+		cap := aclmodels.Capability(r.ProtectedBy)
+
+		// ProtectedBy must name a valid capability for both read and write.
+		assert.NoError(t, aclmodels.ValidateAccess(cap.WithVerb(aclmodels.VerbRead)),
+			"resource %s: ProtectedBy %q is not a valid read capability", r.Kind, r.ProtectedBy)
+		assert.NoError(t, aclmodels.ValidateAccess(cap.WithVerb(aclmodels.VerbWrite)),
+			"resource %s: ProtectedBy %q is not a valid write capability", r.Kind, r.ProtectedBy)
+
+		// The kind must be registered under its capability.
+		assert.Contains(t, aclstore.ProtectedResourceTypes[cap], r.Kind,
+			"resource %s must be registered under %q", r.Kind, r.ProtectedBy)
+	}
+
+	// Config is the canonical protected kind — assert it explicitly.
+	assert.Contains(t, aclstore.ProtectedResourceTypes[aclmodels.CapRorConfig], rordefs.ResourceConfig.Kind)
+}
+
 func TestResourceTypeFilter_ResultIsValidPipelineStage(t *testing.T) {
 	withTestRegistry(t)
 	result := aclstore.ResourceTypeFilter([]aclmodels.AccessTypeV3{"ror:read"})
