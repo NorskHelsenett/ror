@@ -7,6 +7,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
@@ -22,7 +23,7 @@ func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	}
 }
 
-func (c V2Client) Lookup(ctx context.Context, access aclmodels.AccessTypeV3, scopes []aclscope.Scope, subjects []aclscope.Subject) (*aclmodels.AclV3LookupResponse, error) {
+func (c V2Client) Lookup(ctx context.Context, access aclcaps.AccessTypeV3, scopes []aclscope.Scope, subjects []aclscope.Subject) (*aclmodels.AclV3LookupResponse, error) {
 	u, err := url.Parse(c.BasePath)
 	if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (c V2Client) LookupByScopeSubject(ctx context.Context, scope aclscope.Scope
 
 	return &res, nil
 }
-func (c V2Client) CheckAccess(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject, access aclmodels.AccessTypeV3) bool {
+func (c V2Client) CheckAccess(ctx context.Context, scope aclscope.Scope, subject aclscope.Subject, access aclcaps.AccessTypeV3) bool {
 	u, err := url.Parse(c.BasePath)
 	if err != nil {
 		return false
