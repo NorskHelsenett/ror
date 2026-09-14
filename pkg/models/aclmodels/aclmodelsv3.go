@@ -64,6 +64,10 @@ func (a AccessTypeV3) Parse() (Capability, Verb) {
 	return Capability(s[:i]), Verb(s[i+1:])
 }
 
+func (a AccessTypeV3) String() string {
+	return string(a)
+}
+
 // Access type constants for the ror system
 const (
 	AccessRorRead  AccessTypeV3 = "ror:read"
