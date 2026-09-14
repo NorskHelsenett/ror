@@ -143,8 +143,8 @@ func buildProtectedResourceTypes() map[aclmodels.Capability][]string {
 		if r.ProtectedBy == "" {
 			continue
 		}
-		cap := aclmodels.Capability(r.ProtectedBy)
-		protected[cap] = append(protected[cap], r.Kind)
+		capability := aclmodels.Capability(r.ProtectedBy)
+		protected[capability] = append(protected[capability], r.Kind)
 	}
 	return protected
 }

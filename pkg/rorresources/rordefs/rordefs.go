@@ -122,6 +122,17 @@ func (m ApiResources) GetResourcesByVersion(version ApiVersions) ApiResources {
 	return resources
 }
 
+// ProtectedByKind returns the capability that protects the given resource kind,
+// or an empty Capability when the kind is unprotected or unknown.
+func (m ApiResources) ProtectedByKind(kind string) aclcaps.Capability {
+	for _, resource := range m {
+		if resource.Kind == kind {
+			return resource.ProtectedBy
+		}
+	}
+	return ""
+}
+
 // Deprecated: migrate to the ApiResources.GetSchemasByType
 func GetSchemasByType(resourceType ApiResourceType) []schema.GroupVersionResource {
 	var resources []schema.GroupVersionResource
