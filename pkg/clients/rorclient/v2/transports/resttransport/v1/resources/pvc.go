@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
-func (c *V1Client) GetPVCByUid(ctx context.Context, uid string, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourcePersistentVolumeClaim, error) {
+func (c *V1Client) GetPVCByUid(ctx context.Context, uid string, ownerSubject string, scope aclscope.Scope) (*apiresourcecontracts.ResourcePersistentVolumeClaim, error) {
 	kind := "PersistentVolumeClaim"
 	apiVersion := "v1"
 	var result *apiresourcecontracts.ResourcePersistentVolumeClaim

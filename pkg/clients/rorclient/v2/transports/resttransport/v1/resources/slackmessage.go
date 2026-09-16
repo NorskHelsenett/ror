@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
-func (c *V1Client) GetSlackMessageByUid(ctx context.Context, uid, owner string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceSlackMessage, error) {
+func (c *V1Client) GetSlackMessageByUid(ctx context.Context, uid, owner string, scope aclscope.Scope) (*apiresourcecontracts.ResourceSlackMessage, error) {
 	kind := "SlackMessage"
 	apiVersion := "general.ror.internal/v1alpha1"
 	var result apiresourcecontracts.ResourceSlackMessage

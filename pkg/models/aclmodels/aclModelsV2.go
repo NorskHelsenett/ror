@@ -2,6 +2,8 @@ package aclmodels
 
 import (
 	"time"
+
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 type AccessType string
@@ -18,8 +20,8 @@ const (
 )
 
 type AclV2ListItems struct {
-	Scope   Acl2Scope           // Type of object ['cluster','project']
-	Subject Acl2Subject         // The subject eg. clusterid, projectid (can be 'All')
+	Scope   aclscope.Scope      // Type of object ['cluster','project']
+	Subject aclscope.Subject    // The subject eg. clusterid, projectid (can be 'All')
 	Global  AclV2ListItemAccess //If global access granted
 	Items   []AclV2ListItem     // v2 access model for ror api
 }
@@ -29,8 +31,8 @@ type AclV2ListItem struct {
 	Id         string                  `json:"id" bson:"_id,omitempty"`                   // Id
 	Version    int                     `json:"version" default:"2" validate:"eq=2" `      // Acl Version, must be 2
 	Group      string                  `json:"group" validate:"required,min=1,rortext" `  // The group which the acces is granted
-	Scope      Acl2Scope               `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
-	Subject    Acl2Subject             `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
+	Scope      aclscope.Scope          `json:"scope" validate:"required,min=1,rortext"`   // Type of object ['cluster','project']
+	Subject    aclscope.Subject        `json:"subject" validate:"required,min=1,rortext"` // The subject eg. clusterid, projectid (can be 'All')
 	Access     AclV2ListItemAccess     `json:"access" validate:"required"`                // v2 access model for ror api
 	Kubernetes AclV2ListItemKubernetes `json:"kubernetes" validate:""`                    // v2 access model for kubernetes
 	Created    time.Time               `json:"created"`
@@ -38,8 +40,8 @@ type AclV2ListItem struct {
 }
 
 func NewAclV2ListItem(group string,
-	scope Acl2Scope,
-	subject Acl2Subject,
+	scope aclscope.Scope,
+	subject aclscope.Subject,
 	access AclV2ListItemAccess,
 	kubernetesLogon bool,
 	issuedBy string,
@@ -160,9 +162,9 @@ type AclV2ListItemKubernetes struct {
 }
 
 type AclLookupResponse struct {
-	Scopes map[Acl2Scope]AclLookupResponseScope `json:"scopes"`
+	Scopes map[aclscope.Scope]AclLookupResponseScope `json:"scopes"`
 }
 
 type AclLookupResponseScope struct {
-	Subject map[Acl2Subject]AclV2ListItemAccess `json:"subject"`
+	Subject map[aclscope.Subject]AclV2ListItemAccess `json:"subject"`
 }

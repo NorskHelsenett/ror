@@ -2,10 +2,10 @@ package resources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
-func (c *V1Client) GetApplicationByUid(uid string, ownerSubject string, scope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceApplication, error) {
+func (c *V1Client) GetApplicationByUid(uid string, ownerSubject string, scope aclscope.Scope) (*apiresourcecontracts.ResourceApplication, error) {
 	kind := "Application"
 	apiVersion := "argoproj.io/v1alpha1"
 

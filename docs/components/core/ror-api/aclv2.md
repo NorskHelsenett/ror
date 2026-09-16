@@ -41,7 +41,7 @@ Access is defined by the type [ AclV2ListItemAccess](https://docs.ror.sky.test.n
 The returnes accessobject can be queried with the methods representing the level of acces we want to check eg:
 
 ```go
-accessQuery := aclmodels.NewAclV2QueryAccessScopeSubject(aclmodels.Acl2ScopeRor, aclmodels.Acl2RorSubjectGlobal)
+accessQuery := aclmodels.NewAclV2QueryAccessScopeSubject(aclscope.ScopeRor, aclmodels.Acl2RorSubjectGlobal)
 accessObject := aclservice.CheckAccessByContextAclQuery(ctx, accessQuery)
 if !accessObject.Read {
     c.JSON(http.StatusForbidden, "403: No access")
