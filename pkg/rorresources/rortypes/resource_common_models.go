@@ -4,7 +4,7 @@ package rortypes
 import (
 	"errors"
 
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -88,8 +88,8 @@ func (t ResourceRorMeta) GetTagByKey(key string) (ResourceTag, bool) {
 // The RorResourceOwnerReference or ownereref references the owner og a resource.
 // Its used to chek acl and select resources for valid Scopes.
 type RorResourceOwnerReference struct {
-	Scope   aclmodels.Acl2Scope   `json:"scope"`   // cluster, workspace,...
-	Subject aclmodels.Acl2Subject `json:"subject"` // ror id eg clusterId or workspaceName
+	Scope   aclscope.Scope   `json:"scope"`   // cluster, workspace,...
+	Subject aclscope.Subject `json:"subject"` // ror id eg clusterId or workspaceName
 }
 
 // Validate validates the ResourceOwnerReference
