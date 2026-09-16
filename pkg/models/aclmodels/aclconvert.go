@@ -103,8 +103,8 @@ func V3ToV2(v3 AclV3ListItem) AclV2ListItem {
 		Id:       v3.Id,
 		Version:  2,
 		Group:    v3.Group,
-		Scope:    Acl2Scope(v3.Scope),
-		Subject:  Acl2Subject(v3.Subject),
+		Scope:    aclscope.Scope(v3.Scope),
+		Subject:  aclscope.Subject(v3.Subject),
 		Created:  v3.Created,
 		IssuedBy: v3.IssuedBy,
 	}
@@ -148,10 +148,10 @@ func V3ListToV2List(v3list AclV3List) []AclV2ListItem {
 // kubernetes:logon is surfaced on the Access model's KubernetesLogon field, since
 // the response carries AclV2ListItemAccess (not the Kubernetes struct).
 func (a AclV3List) ToV2LookupResponse() AclLookupResponse {
-	resp := AclLookupResponse{Scopes: map[Acl2Scope]AclLookupResponseScope{}}
+	resp := AclLookupResponse{Scopes: map[aclscope.Scope]AclLookupResponseScope{}}
 	for scope, subjects := range a.ByScopeSubject() {
-		legacyScope := Acl2Scope(scope.ToLegacy())
-		resp.Scopes[legacyScope] = AclLookupResponseScope{Subject: map[Acl2Subject]AclV2ListItemAccess{}}
+		legacyScope := aclscope.Scope(scope.ToLegacy())
+		resp.Scopes[legacyScope] = AclLookupResponseScope{Subject: map[aclscope.Subject]AclV2ListItemAccess{}}
 		for subject, items := range subjects {
 			merged := AclV3ListItem{}
 			for _, e := range items {
@@ -160,7 +160,7 @@ func (a AclV3List) ToV2LookupResponse() AclLookupResponse {
 			v2 := V3ToV2(merged)
 			access := v2.Access
 			access.KubernetesLogon = v2.Kubernetes.Logon
-			resp.Scopes[legacyScope].Subject[Acl2Subject(subject.ToLegacy())] = access
+			resp.Scopes[legacyScope].Subject[aclscope.Subject(subject.ToLegacy())] = access
 		}
 	}
 	return resp

@@ -2,10 +2,10 @@ package resources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
-func (c *V1Client) GetRoutesByOwner(owner string, scope aclmodels.Acl2Scope) ([]apiresourcecontracts.ResourceRoute, error) {
+func (c *V1Client) GetRoutesByOwner(owner string, scope aclscope.Scope) ([]apiresourcecontracts.ResourceRoute, error) {
 	kind := "Route"
 	apiVersion := "general.ror.internal/v1alpha1"
 	var result []apiresourcecontracts.ResourceRoute

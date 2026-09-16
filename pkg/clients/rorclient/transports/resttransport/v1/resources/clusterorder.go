@@ -2,7 +2,7 @@ package resources
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apiresourcecontracts"
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 const (
@@ -10,7 +10,7 @@ const (
 	kind       = "ClusterOrder"
 )
 
-func (c *V1Client) GetClusterOrderByUid(uid string, ownerSubject aclmodels.Acl2Subject, ownerScope aclmodels.Acl2Scope) (*apiresourcecontracts.ResourceClusterOrder, error) {
+func (c *V1Client) GetClusterOrderByUid(uid string, ownerSubject aclscope.Subject, ownerScope aclscope.Scope) (*apiresourcecontracts.ResourceClusterOrder, error) {
 	var result apiresourcecontracts.ResourceClusterOrder
 	err := c.Client.GetJSON(c.basePath+"/uid/"+uid+"?ownerScope="+string(ownerScope)+"&ownerSubject="+string(ownerSubject)+"&apiversion="+apiversion+"&kind="+kind, &result)
 	if err != nil {
@@ -19,7 +19,7 @@ func (c *V1Client) GetClusterOrderByUid(uid string, ownerSubject aclmodels.Acl2S
 	return &result, nil
 }
 
-func (c *V1Client) GetClusterOrders(ownerSubject aclmodels.Acl2Subject, ownerScope aclmodels.Acl2Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error) {
+func (c *V1Client) GetClusterOrders(ownerSubject aclscope.Subject, ownerScope aclscope.Scope) ([]*apiresourcecontracts.ResourceClusterOrder, error) {
 	var result []*apiresourcecontracts.ResourceClusterOrder
 	err := c.Client.GetJSON(c.basePath+"?ownerScope="+string(ownerScope)+"&ownerSubject="+string(ownerSubject)+"&apiversion="+apiversion+"&kind="+kind, &result)
 	if err != nil {

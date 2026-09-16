@@ -10,7 +10,7 @@ Scope represent the extent of the right. eg. if you want to grant access to a cl
 
 There is a global scope called **ror** that aplies to the whole system
 
-All scopes are represented by the enum type [Acl2Scope](https://docs.ror.sky.test.nhn.no/code/internal/acl/models/#Acl2Scope).
+All scopes are represented by the enum type [aclscope.Scope](https://docs.ror.sky.test.nhn.no/code/internal/acl/models/#aclscope.Scope).
 
 ### Subject
 
@@ -20,13 +20,13 @@ If the scope is **ror** the subject is a group of subject eg **cluster** grantin
 
 Valid subjects under the scope **ror** is defined in the const **Acl2RorSubject**
 
-Scopes are represented by the type [Acl2Subject](https://docs.ror.sky.test.nhn.no/code/internal/acl/models/#Acl2Subject) that represents a string.
+Scopes are represented by the type [aclscope.Subject](https://docs.ror.sky.test.nhn.no/code/internal/acl/models/#aclscope.Subject) that represents a string.
 
 ### Validation
 
-Scopes can be validated with the method _(s Acl2Scope) IsValid() bool_
+Scopes can be validated with the method _(s aclscope.Scope) IsValid() bool_
 
-Subjects can be validated against its coresponding scope with the method \*(s Acl2Subject) HasValidScope(scope Acl2Scope) bool
+Subjects can be validated against its coresponding scope with the method \*(s aclscope.Subject) HasValidScope(scope aclscope.Scope) bool
 
 ## Query
 
@@ -41,7 +41,7 @@ Access is defined by the type [ AclV2ListItemAccess](https://docs.ror.sky.test.n
 The returnes accessobject can be queried with the methods representing the level of acces we want to check eg:
 
 ```go
-accessQuery := aclmodels.NewAclV2QueryAccessScopeSubject(aclmodels.Acl2ScopeRor, aclmodels.Acl2RorSubjectGlobal)
+accessQuery := aclmodels.NewAclV2QueryAccessScopeSubject(aclscope.ScopeRor, aclmodels.Acl2RorSubjectGlobal)
 accessObject := aclservice.CheckAccessByContextAclQuery(ctx, accessQuery)
 if !accessObject.Read {
     c.JSON(http.StatusForbidden, "403: No access")

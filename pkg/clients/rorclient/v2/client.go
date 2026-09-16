@@ -11,7 +11,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/clients/v2"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
-	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
 )
 
@@ -85,7 +85,7 @@ func (c *RorClient) SetTransport(transport transportinterface.RorTransport) {
 // GetOwnerref gets the owner reference for the RorClient.
 func (c *RorClient) GetOwnerref() rorresourceowner.RorResourceOwnerReference {
 	if c.ownerRef == nil {
-		return rorresourceowner.RorResourceOwnerReference{Scope: aclmodels.Acl2ScopeUnknown, Subject: aclmodels.Acl2RorSubjecUnknown}
+		return rorresourceowner.RorResourceOwnerReference{Scope: aclscope.ScopeUnknown, Subject: aclscope.SubjectUnknown}
 	}
 	return *c.ownerRef
 }

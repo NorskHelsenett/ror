@@ -1,6 +1,7 @@
 package rordefs
 
 import (
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -42,7 +43,10 @@ type ApiResource struct {
 	Namespaced      bool
 	Types           []ApiResourceType
 	Versions        []ApiVersions
-	resource        any
+	// ProtectedBy names the capability (without verb) required to access this
+	// resource kind; empty means it is accessible with the standard ror caps.
+	ProtectedBy aclcaps.Capability
+	resource    any
 }
 
 // GetApiVersion
@@ -116,6 +120,17 @@ func (m ApiResources) GetResourcesByVersion(version ApiVersions) ApiResources {
 		}
 	}
 	return resources
+}
+
+// ProtectedByKind returns the capability that protects the given resource kind,
+// or an empty Capability when the kind is unprotected or unknown.
+func (m ApiResources) ProtectedByKind(kind string) aclcaps.Capability {
+	for _, resource := range m {
+		if resource.Kind == kind {
+			return resource.ProtectedBy
+		}
+	}
+	return ""
 }
 
 // Deprecated: migrate to the ApiResources.GetSchemasByType

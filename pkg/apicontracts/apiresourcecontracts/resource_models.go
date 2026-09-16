@@ -3,7 +3,7 @@
 package apiresourcecontracts
 
 import (
-	aclmodels "github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 // Allowed actions from the kubernetes dynamic client// Deprecated: This type is only to be used in resource/v1 and will be deprecated
@@ -27,8 +27,8 @@ const (
 // The ResourceOwnerReference or ownereref references the owner og a resource.
 // Its used to chek acl and select resources for valid Scopes.// Deprecated: This type is only to be used in resource/v1 and will be deprecated
 type ResourceOwnerReference struct {
-	Scope   aclmodels.Acl2Scope `json:"scope"`   // cluster, workspace,...
-	Subject string              `json:"subject"` // ror id eg clusterId or workspaceName
+	Scope   aclscope.Scope `json:"scope"`   // cluster, workspace,...
+	Subject string         `json:"subject"` // ror id eg clusterId or workspaceName
 }
 
 // Returns a map to use in the `*Resty.Request.SetQueryParams(<ResourceOwnerReference>.GetQueryParams())“ function

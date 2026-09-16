@@ -1,68 +1,48 @@
 package aclmodels
 
 import (
-	"strings"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
-// Capability represents the system:component path of an access type, without the verb.
-// Example: "ror", "ror:vulnerability", "kubernetes:argocd", "resource:Deployment"
-type Capability string
-
-// WithVerb builds a full AccessTypeV3 by appending the verb.
-// Example: CapRorConfig.WithVerb(VerbRead) → "ror:config:read"
-func (c Capability) WithVerb(v Verb) AccessTypeV3 {
-	return AccessTypeV3(string(c) + ":" + string(v))
-}
-
-// Verb represents the action part of an access type.
-type Verb string
+// Capability, Verb and AccessTypeV3 live in the aclcaps leaf package so they can
+// be shared with rordefs without an import cycle. They are aliased here so the
+// existing aclmodels.* API is unchanged.
+type (
+	Capability   = aclcaps.Capability
+	Verb         = aclcaps.Verb
+	AccessTypeV3 = aclcaps.AccessTypeV3
+)
 
 // Well-known verbs.
 const (
-	VerbRead     Verb = "read"
-	VerbWrite    Verb = "write"
-	VerbCreate   Verb = "create"
-	VerbUpdate   Verb = "update"
-	VerbDelete   Verb = "delete"
-	VerbAdmin    Verb = "admin"
-	VerbLogon    Verb = "logon"
-	VerbOwner    Verb = "owner"
-	VerbReadonly Verb = "readonly"
+	VerbRead     = aclcaps.VerbRead
+	VerbWrite    = aclcaps.VerbWrite
+	VerbCreate   = aclcaps.VerbCreate
+	VerbUpdate   = aclcaps.VerbUpdate
+	VerbDelete   = aclcaps.VerbDelete
+	VerbAdmin    = aclcaps.VerbAdmin
+	VerbLogon    = aclcaps.VerbLogon
+	VerbOwner    = aclcaps.VerbOwner
+	VerbReadonly = aclcaps.VerbReadonly
 )
 
 // Well-known capabilities (without verb).
 const (
-	CapRor              Capability = "ror"
-	CapRorMetadata      Capability = "ror:metadata"
-	CapRorVulnerability Capability = "ror:vulnerability"
-	CapRorConfig        Capability = "ror:config"
+	CapRor              = aclcaps.CapRor
+	CapRorMetadata      = aclcaps.CapRorMetadata
+	CapRorVulnerability = aclcaps.CapRorVulnerability
+	CapRorConfig        = aclcaps.CapRorConfig
 
-	CapKubernetes              Capability = "kubernetes"
-	CapKubernetesArgocd        Capability = "kubernetes:argocd"
-	CapKubernetesArgocdProject Capability = "kubernetes:argocd:project"
-	CapKubernetesGrafana       Capability = "kubernetes:grafana"
+	CapKubernetes              = aclcaps.CapKubernetes
+	CapKubernetesArgocd        = aclcaps.CapKubernetesArgocd
+	CapKubernetesArgocdProject = aclcaps.CapKubernetesArgocdProject
+	CapKubernetesGrafana       = aclcaps.CapKubernetesGrafana
 
-	CapVirtualmachine Capability = "virtualmachine"
+	CapVirtualmachine = aclcaps.CapVirtualmachine
 )
-
-// AccessTypeV3 represents a hierarchical capability string.
-// Format: system:component[:subcomponent...]:verb
-// The last segment is always the verb. Everything before it is the path.
-type AccessTypeV3 string
-
-// Parse splits an AccessTypeV3 into its Capability and Verb parts.
-// The verb is the last colon-separated segment; everything before it is the capability.
-func (a AccessTypeV3) Parse() (Capability, Verb) {
-	s := string(a)
-	i := strings.LastIndex(s, ":")
-	if i < 0 {
-		return Capability(s), ""
-	}
-	return Capability(s[:i]), Verb(s[i+1:])
-}
 
 // Access type constants for the ror system
 const (

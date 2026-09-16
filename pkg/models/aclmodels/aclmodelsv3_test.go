@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -193,7 +194,7 @@ func TestValidateACLEntry_Valid(t *testing.T) {
 	entry := aclmodels.AclV3ListItem{
 		Group:   "dev-team",
 		Scope:   "ror",
-		Subject: aclmodels.Acl2RorSubjectGlobal,
+		Subject: aclscope.SubjectGlobal,
 		Access:  []aclmodels.AccessTypeV3{"ror:read", "ror:write"},
 	}
 	assert.NoError(t, aclmodels.ValidateACLEntry(entry))
@@ -223,7 +224,7 @@ func TestValidateACLEntry_InvalidAccess(t *testing.T) {
 	entry := aclmodels.AclV3ListItem{
 		Group:   "dev-team",
 		Scope:   "ror",
-		Subject: aclmodels.Acl2RorSubjectGlobal,
+		Subject: aclscope.SubjectGlobal,
 		Access:  []aclmodels.AccessTypeV3{"ror:read", "invalid:nonsense"},
 	}
 	assert.Error(t, aclmodels.ValidateACLEntry(entry))

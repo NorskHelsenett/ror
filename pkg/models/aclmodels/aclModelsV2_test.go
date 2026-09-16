@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,8 +14,8 @@ import (
 func TestNewAclV2ListItem(t *testing.T) {
 
 	groupName := "group_name"
-	scope := aclmodels.Acl2ScopeRor
-	subject := aclmodels.Acl2RorSubjectPrice
+	scope := aclscope.ScopeRor
+	subject := aclscope.SubjectPrice
 	access := aclmodels.NewAclV2ListItemAccessAll()
 	kuberneteslogon := false
 	issuedBy := "Thomas Vifte"

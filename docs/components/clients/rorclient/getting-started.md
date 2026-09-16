@@ -1,7 +1,7 @@
 # Getting started with ROR Client
 
 ## Prerequisites
-    
+
 - A ROR resourcedef - To create this see docs/ror-generator-client/docs/generator/getting-started.md
 
 ### Optional
@@ -20,14 +20,13 @@ go get "github.com/NorskHelsenett/ror/pkg/clients/rorclient"
 
 And then add configuration variables for the following parameters:
 
-
-``BaseUrl``
+`BaseUrl`
 
 The Url of the ROR instance you're communicating with.
 
----------
+---
 
-``AuthProvider``
+`AuthProvider`
 
 The auth proivder from "github.com/NorskHelsenett/ror/pkg/clients/rorclient/transports/resttransport/httpauthprovider"
 which is either:
@@ -36,19 +35,19 @@ or an actual AuthProvider
 
 TODO
 
----------
+---
 
-``Version``
+`Version`
 
 The current version of the client, for example 0.0.1:<commit>
 
----------
+---
 
-``Role``
+`Role`
 
 The name of the client, for example vpshereAgent
 
----------
+---
 
 ### Implementation
 
@@ -75,7 +74,7 @@ type config struct {
     RorVersion string
 }
 
-// Populates the Config with values from environmental variables or static values 
+// Populates the Config with values from environmental variables or static values
 func NewConfig() *Config {
 ...
 ...
@@ -95,7 +94,7 @@ type RorClient struct {
 	rorclient.RorClient
 }
 
-// Constructs 
+// Constructs
 func NewRorClient(config config.Config) *RorClient {
 	transport := resttransport.NewRorHttpTransport(&httpclient.HttpTransportClientConfig{
 		BaseURL:      config.RorUrl,
@@ -132,8 +131,8 @@ func (r *RorClient) UpdateVms(ctx context.Context, vmResources []*rortypes.Resou
 		res := rorresources.NewRorResource("VirtualMachine", "general.ror.internal/v1alpha1")
 
 		res.RorMeta.Ownerref = rorresourceowner.RorResourceOwnerReference{
-			Scope:   aclmodels.Acl2ScopeRor,
-			Subject: aclmodels.Acl2RorSubjectGlobal,
+			Scope:   aclscope.ScopeRor,
+			Subject: aclscope.SubjectGlobal,
 		}
 
 		v5Uuid, err := virtualmachine.UuidV5FromCompositeId(vm.Id)
@@ -225,4 +224,3 @@ func (r *RorClient) DeleteVms(ctx context.Context, uuids []string) error {
 ```
 
 </details>
-
