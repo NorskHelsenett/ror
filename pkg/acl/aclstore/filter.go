@@ -122,25 +122,6 @@ func OwnerrefsToFilter(refs []acl.Ownerref) bson.M {
 	}
 }
 
-// ClusterIdentityFilter returns a pipeline stage that scopes resource queries
-// to resources owned by a specific cluster. Used when the identity is a cluster
-// (which has implicit read/create/update access to its own resources).
-func ClusterIdentityFilter(clusterID string) bson.M {
-	return bson.M{
-		"$match": bson.M{
-			"$or": bson.A{
-				bson.M{
-					"rormeta.ownerref.scope":   string(aclscope.ScopeCluster),
-					"rormeta.ownerref.subject": clusterID,
-				},
-				// uid-self-match: also match the cluster's own doc when it is not
-				// self-owned (its ownerref points at a parent scope).
-				bson.M{"uid": clusterID},
-			},
-		},
-	}
-}
-
 // ProtectedResourceTypes maps a Capability (without the verb) to the
 // resource kinds it protects. The verb is appended at check time by
 // ResourceTypeFilter (VerbRead) / ResourceTypeWriteFilter (VerbWrite).

@@ -317,34 +317,6 @@ func TestOwnerrefsToFilter_RorScopeWithMixedGlobalAndSpecific(t *testing.T) {
 	assert.Len(t, inClause, 2) // proj-1 + dc-1, cluster-1 excluded
 }
 
-// --- ClusterIdentityFilter ---
-
-func TestClusterIdentityFilter(t *testing.T) {
-	result := aclstore.ClusterIdentityFilter("my-cluster-id")
-
-	expected := bson.M{
-		"$match": bson.M{
-			"$or": bson.A{
-				bson.M{
-					"rormeta.ownerref.scope":   "KubernetesCluster",
-					"rormeta.ownerref.subject": "my-cluster-id",
-				},
-				bson.M{"uid": "my-cluster-id"},
-			},
-		},
-	}
-	assert.Equal(t, expected, result)
-}
-
-func TestClusterIdentityFilter_EmptyID(t *testing.T) {
-	result := aclstore.ClusterIdentityFilter("")
-
-	match := result["$match"].(bson.M)
-	or := match["$or"].(bson.A)
-	ownerBranch := or[0].(bson.M)
-	assert.Equal(t, "", ownerBranch["rormeta.ownerref.subject"])
-}
-
 // --- DenyAllFilter ---
 
 func TestDenyAllFilter_HasImpossibleMatch(t *testing.T) {
@@ -628,13 +600,15 @@ func TestResourceTypeFilter_ExcludesExactKinds(t *testing.T) {
 	assert.ElementsMatch(t, allProtected, nin)
 }
 
-func TestResourceTypeFilter_ClusterIdentityPlusTypeFilter(t *testing.T) {
+func TestResourceTypeFilter_ClusterOwnerPlusTypeFilter(t *testing.T) {
 	withTestRegistry(t)
-	clusterFilter := aclstore.ClusterIdentityFilter("my-cluster")
+	ownerFilter := aclstore.OwnerrefsToFilter([]acl.Ownerref{
+		{Scope: aclscope.ScopeCluster, Subject: "my-cluster"},
+	})
 
 	typeFilter := aclstore.ResourceTypeFilter([]aclmodels.AccessTypeV3{"ror:read"})
 
-	pipeline := bson.A{clusterFilter}
+	pipeline := bson.A{ownerFilter}
 	if len(typeFilter) > 0 {
 		pipeline = append(pipeline, typeFilter)
 	}
@@ -643,8 +617,8 @@ func TestResourceTypeFilter_ClusterIdentityPlusTypeFilter(t *testing.T) {
 
 	s1 := pipeline[0].(bson.M)["$match"].(bson.M)
 	ownerBranch := s1["$or"].(bson.A)[0].(bson.M)
-	assert.Equal(t, "KubernetesCluster", ownerBranch["rormeta.ownerref.scope"])
-	assert.Equal(t, "my-cluster", ownerBranch["rormeta.ownerref.subject"])
+	inClause := ownerBranch["rormeta.ownerref"].(bson.M)["$in"].(bson.A)
+	assert.Equal(t, "my-cluster", inClause[0].(bson.D)[1].Value)
 
 	s2 := pipeline[1].(bson.M)["$match"].(bson.M)
 	nin := s2["typemeta.kind"].(bson.M)["$nin"].([]string)

@@ -22,29 +22,31 @@ OAuth Middleware (oauthmiddleware)
   ▼
 Gin Context
   • rorcontext.GetIdentityFromRorContext(ctx) → Identity
-  • identity.User.Groups → []string (for users)
-  • identity.IsCluster() / identity.GetId() (for clusters)
+  • identity.GetGroups() → []string (all identity types)
   │
   ▼
 Controller Handler
   • Determines scope + subject for the check
-  • Checks identity type (cluster vs user vs service)
 ```
 
-### Cluster Identity Special Case
+### Principal Groups
 
-Cluster identities bypass the ACL store entirely. They get hardcoded access
-to their own resources:
+Every identity type resolves through the same group mechanism — there is no
+cluster special case. `Identity.GetGroups()` is the single source:
 
-| Field  | Value |
-| ------ | ----- |
-| Read   | ✓     |
-| Create | ✓     |
-| Update | ✓     |
-| Delete | ✗     |
-| Owner  | ✗     |
+| Identity | Groups |
+| -------- | ------ |
+| User     | the identity provider's groups, with any reserved `*.ror.system` group stripped |
+| Cluster  | `<uid>@cluster.ror.system`, `*@cluster.ror.system` |
+| Service  | `<id>@service.ror.system`, `service-<id>@ror.system` (legacy, transitional), `*@service.ror.system` |
 
-Condition: `identity.IsCluster() && scope == cluster && subject == identity.GetId()`
+Names are built by `aclmodels/aclprincipal`, which also covers Kubernetes
+ServiceAccounts (`<sa>@<namespace>.<cluster-uid>.sa.ror.system` plus its
+namespace/cluster/fleet aggregates).
+
+A cluster's access to its own resources is an ordinary ACL entry held by its own
+group — a cluster without that grant has no access. The cluster **uid** is
+required: a cluster identity without one fails closed.
 
 ## V2 Path (Current — ror-api)
 
@@ -128,7 +130,8 @@ aclstore.OwnerrefsToFilter(refs) → bson.M
   • nil → {} (unrestricted)
   • [] → DenyAllFilter (matches nothing)
   • scope=ror → scope-level grants
-  • specific → $in query
+  • specific → $in query, OR-ed with a top-level uid match
+    so a grant also matches the object that IS the scope
   │
   ▼
 aclstore.ResourceTypeFilter(access) → bson.M
@@ -224,6 +227,7 @@ user lacks capability for.
 | `aclstore`   | `pkg/acl/aclstore/`              | MongoStore, CachedStore, MongoScopeExpander, OwnerrefsToFilter, ResourceTypeFilter |
 | `aclmodels`  | `pkg/models/aclmodels/`          | V2 + V3 types, Capability/Verb, V2↔V3 converters                                   |
 | `aclscope`   | `pkg/models/aclmodels/aclscope/` | Scope + Subject types, shared between V2 and V3                                    |
+| `aclprincipal` | `pkg/models/aclmodels/aclprincipal/` | ROR-owned principal group names (cluster/service/serviceaccount) + reserved-domain guard |
 | `rordefs`    | `pkg/rorresources/rordefs/`      | Named resource definitions (ResourceConfiguration, etc.)                           |
 | `rorcontext` | `pkg/context/rorcontext/`        | GetIdentityFromRorContext()                                                        |
 | `identity`   | `pkg/models/identity/`           | Identity type, Groups, IsCluster(), GetId()                                        |
