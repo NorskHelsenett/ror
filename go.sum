@@ -233,8 +233,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lestrrat-go/dsig v1.4.0 h1:g7LUjK8cT74A5DzBXJI5HzsJuLhoYN0Wzj4nuOMIrH8=
 github.com/lestrrat-go/dsig v1.4.0/go.mod h1:I8Nddg/vN2cUl/h8N7SRRApLnNNeyZPIqLYpvpOtGGo=
-github.com/lestrrat-go/jwx/v4 v4.4.0 h1:CzoK8+u++WF7vVEmxx9fB8VaheeXWZ698F6HZbrl6SI=
-github.com/lestrrat-go/jwx/v4 v4.4.0/go.mod h1:65utsGK/iSrjgGfu6iqj/TAvSfia6SSXkRpjHcKcTyg=
+github.com/lestrrat-go/jwx/v4 v4.5.0 h1:lgU8YcqaJo/iZllX4AvSaQTzT2XpWWMrDcPMe6+KzqI=
+github.com/lestrrat-go/jwx/v4 v4.5.0/go.mod h1:HpoztFC5HrNj9iKkZJ3XTQQgzCY2Zto/29n89QhTC10=
 github.com/lestrrat-go/option/v3 v3.0.0-alpha1 h1:dvdzLwm/Ba5CJUF3jQP7w/iNYSLfy7yyh9XXNa1WjxI=
 github.com/lestrrat-go/option/v3 v3.0.0-alpha1/go.mod h1:5KSg20dfsKkNJtjDmaQRLZVXuUrzuCCcz/gbDK0pfKk=
 github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de h1:9TO3cAIGXtEhnIaL+V+BEER86oLrvS+kWobKpbJuye0=
