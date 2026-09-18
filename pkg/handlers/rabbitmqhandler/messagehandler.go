@@ -89,9 +89,15 @@ func (r RabbitMQListner) ListenWithTTL(hangup chan *amqp.Error, TTL time.Duratio
 }
 
 func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
+	channel, err := r.Client.OpenChannel()
+	if err != nil {
+		rlog.Fatal("could not open listener channel", err)
+		return
+	}
+	defer channel.Close()
 	if (r.exchangeAutoDelete && r.exchange != "") || (!r.isInitialized && r.exchange != "") {
 		// (re)Declare exchange if it is not declared or if it is set to auto delete{
-		err := r.Client.GetChannel().ExchangeDeclare(
+		err := channel.ExchangeDeclare(
 			r.exchange,           // name
 			r.excahngeKind,       // kind
 			r.excahngeDurable,    // durable
@@ -104,7 +110,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 			rlog.Fatal("Could not declare excahnge", err)
 		}
 
-		err = r.Client.GetChannel().ExchangeBind(
+		err = channel.ExchangeBind(
 			r.exchange,                      //destination
 			r.excahngeRoutingKey,            // key
 			messagebuscontracts.ExchangeRor, // source
@@ -116,7 +122,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 		}
 	}
 
-	queue, err := r.Client.GetChannel().QueueDeclare(
+	queue, err := channel.QueueDeclare(
 		r.queueName,       // name
 		true,              // durable
 		r.queueAutoDelete, // delete when unused
@@ -129,7 +135,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 	}
 
 	if r.exchange != "" {
-		err = r.Client.GetChannel().QueueBind(
+		err = channel.QueueBind(
 			queue.Name,           // queue name
 			r.excahngeRoutingKey, // routing key
 			r.exchange,           // exchange
@@ -141,7 +147,7 @@ func (r RabbitMQListner) Listen(hangup chan *amqp.Error) {
 		}
 	}
 
-	messages, err := r.Client.GetChannel().Consume(
+	messages, err := channel.Consume(
 		queue.Name,       // queue
 		r.queueConsumer,  // consumer
 		r.queueAutoAck,   // auto-ack

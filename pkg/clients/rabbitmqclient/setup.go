@@ -32,6 +32,7 @@ type RabbitMQListnerInterface interface {
 
 type RabbitMQConnection interface {
 	GetChannel() *amqp.Channel
+	OpenChannel() (*amqp.Channel, error)
 	RegisterHandler(RabbitMQListnerInterface) error
 	RegisterHandlerWithTTL(RabbitMQListnerInterface, time.Duration) error
 	SendMessage(ctx context.Context, message any, routing string, extraheaders map[string]any) error
@@ -228,6 +229,13 @@ func (rc rabbitmqcon) GetChannel() *amqp.Channel {
 		}
 	}
 	return rc.RabbitMqChannel
+}
+
+func (rc *rabbitmqcon) OpenChannel() (*amqp.Channel, error) {
+	if rc.RabbitMqConnection == nil {
+		return nil, fmt.Errorf("rabbitmq connection is not initialized")
+	}
+	return rc.RabbitMqConnection.Channel()
 }
 
 // CheckHealth checks the health of the rabbitmq connection and returns a health check
