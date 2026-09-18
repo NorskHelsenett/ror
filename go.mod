@@ -18,7 +18,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/joho/godotenv v1.5.1
-	github.com/lestrrat-go/jwx/v4 v4.4.0
+	github.com/lestrrat-go/jwx/v4 v4.5.0
 	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/microsoftgraph/msgraph-sdk-go v1.102.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
