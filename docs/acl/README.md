@@ -211,9 +211,10 @@ user lacks capability for.
 
 ### Validation
 
-`ValidateAccess(access)` validates against the `accessTree` — a hierarchical
-tree of allowed paths and verbs. It uses `access.Parse()` internally to
-split the capability path from the verb.
+`ValidateAccess(access)` validates against the capability `Registry` in
+`aclcaps` — a hierarchical registry of allowed namespaces, paths and verbs
+(the single source of truth, also consumed by egress audiences). It uses
+`access.Parse()` internally to split the capability path from the verb.
 
 ## Package Map
 
