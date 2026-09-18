@@ -7,27 +7,19 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
 )
 
-var validSystems = map[string]bool{
-	"ror":   true,
-	"spam":  true,
-	"alarm": true,
-	"all":   true,
-}
-
 // ValidScope checks if a scope is either a known resource kind or a known system.
-// Resource kinds are resolved at runtime from rordefs.Resourcedefs.
+// System scopes (e.g. "ror", "all", "spam") are owned by the aclscope package;
+// resource kinds are resolved at runtime from rordefs.Resourcedefs.
 func ValidScope(scope aclscope.Scope) error {
-	s := string(scope)
-
-	if validSystems[s] {
+	if scope.IsValid() {
 		return nil
 	}
 
 	for _, r := range rordefs.Resourcedefs {
-		if r.GetKind() == s {
+		if r.GetKind() == string(scope) {
 			return nil
 		}
 	}
 
-	return fmt.Errorf("unknown scope %q: must be a known resource kind or system", s)
+	return fmt.Errorf("unknown scope %q: must be a known resource kind or system", scope)
 }

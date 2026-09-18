@@ -30,6 +30,10 @@ func TestValidateAccess_ValidTypes(t *testing.T) {
 		"resource:*:delete",
 		"resource:VulnerabilityReport:read",
 		"virtualmachine:delete",
+		"monitoring:read",
+		"monitoring:write",
+		"dns:read",
+		"dns:write",
 	}
 	for _, v := range valid {
 		t.Run(string(v), func(t *testing.T) {
@@ -64,7 +68,6 @@ func TestValidScope_Systems(t *testing.T) {
 	assert.NoError(t, aclmodels.ValidScope("ror"))
 	assert.NoError(t, aclmodels.ValidScope("all"))
 	assert.NoError(t, aclmodels.ValidScope("spam"))
-	assert.NoError(t, aclmodels.ValidScope("alarm"))
 }
 
 func TestValidScope_Kinds(t *testing.T) {
@@ -81,6 +84,7 @@ func TestValidScope_Invalid(t *testing.T) {
 	assert.Error(t, aclmodels.ValidScope("unknown"))
 	assert.Error(t, aclmodels.ValidScope(""))
 	assert.Error(t, aclmodels.ValidScope("cluster")) // old V2 scope, not valid in V3
+	assert.Error(t, aclmodels.ValidScope("alarm"))   // orphan system removed
 	assert.Error(t, aclmodels.ValidScope("notakind"))
 }
 
