@@ -3,9 +3,9 @@ package identitymodels
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclprincipal"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -87,25 +87,46 @@ func (identity *Identity) IsService() bool {
 	return identity.Type == IdentityTypeService
 }
 
-// Function returns a bson.A containing the groups of an identity. To be used in filtering in mongodb.
-func (identity Identity) ReturnGroupQuery() (bson.A, error) {
-	filterGroups := bson.A{}
-
+// GetGroups returns the ACL groups of the identity. Every identity type
+// resolves through the same group mechanism: user groups come from the identity
+// provider, while cluster and service groups are ROR-owned principal names.
+func (identity *Identity) GetGroups() ([]string, error) {
 	switch identity.Type {
-	case IdentityTypeCluster:
-		return nil, errors.New("clusters dont have groups")
 	case IdentityTypeUser:
-		for i := 0; i < len(identity.User.Groups); i++ {
-			filterGroups = append(filterGroups, identity.User.Groups[i])
+		if identity.User == nil {
+			return nil, errors.New("user identity has nil user")
 		}
-
-		return filterGroups, nil
+		// Groups in the ROR-owned domain grant authorization directly, so one
+		// supplied by the identity provider would allow impersonating a cluster,
+		// service or service account.
+		return aclprincipal.SanitizeExternalGroups(identity.User.Groups), nil
+	case IdentityTypeCluster:
+		if identity.ClusterIdentity == nil || identity.ClusterIdentity.Uid == "" {
+			return nil, errors.New("cluster identity has no uid")
+		}
+		return aclprincipal.ClusterGroups(identity.ClusterIdentity.Uid), nil
 	case IdentityTypeService:
-		filterGroups = append(filterGroups, fmt.Sprintf("service-%s@ror.system", identity.GetId()))
-		return filterGroups, nil
+		if identity.ServiceIdentity == nil || identity.ServiceIdentity.Id == "" {
+			return nil, errors.New("service identity has no id")
+		}
+		return aclprincipal.ServiceGroups(identity.ServiceIdentity.Id), nil
 	default:
 		return nil, errors.New("type not implemented")
 	}
+}
+
+// Function returns a bson.A containing the groups of an identity. To be used in filtering in mongodb.
+func (identity Identity) ReturnGroupQuery() (bson.A, error) {
+	groups, err := identity.GetGroups()
+	if err != nil {
+		return nil, err
+	}
+
+	filterGroups := bson.A{}
+	for _, group := range groups {
+		filterGroups = append(filterGroups, group)
+	}
+	return filterGroups, nil
 }
 
 // Function returns the auth info of the identity

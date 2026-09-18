@@ -86,14 +86,27 @@ func OwnerrefsToFilter(refs []acl.Ownerref) bson.M {
 
 	if len(specific) > 0 {
 		inquery := bson.A{}
+		uidquery := bson.A{}
+		seenSubject := make(map[string]struct{}, len(specific))
 		for _, ss := range specific {
 			inquery = append(inquery, bson.D{
 				{Key: "scope", Value: ss.scope},
 				{Key: "subject", Value: ss.subject},
 			})
+			if _, ok := seenSubject[ss.subject]; !ok {
+				seenSubject[ss.subject] = struct{}{}
+				uidquery = append(uidquery, ss.subject)
+			}
 		}
 		orquery = append(orquery, bson.M{
 			"rormeta.ownerref": bson.M{"$in": inquery},
+		})
+		// uid-self-match: a grant on {scope, subject} must also match the object
+		// that IS the scope (its own doc, keyed by top-level uid), not only what it
+		// owns. This keeps a scope object visible to its own grant when it is not
+		// self-owned (ownerref points at a parent).
+		orquery = append(orquery, bson.M{
+			"uid": bson.M{"$in": uidquery},
 		})
 	}
 
@@ -105,18 +118,6 @@ func OwnerrefsToFilter(refs []acl.Ownerref) bson.M {
 	return bson.M{
 		"$match": bson.M{
 			"$or": orquery,
-		},
-	}
-}
-
-// ClusterIdentityFilter returns a pipeline stage that scopes resource queries
-// to resources owned by a specific cluster. Used when the identity is a cluster
-// (which has implicit read/create/update access to its own resources).
-func ClusterIdentityFilter(clusterID string) bson.M {
-	return bson.M{
-		"$match": bson.M{
-			"rormeta.ownerref.scope":   string(aclscope.ScopeCluster),
-			"rormeta.ownerref.subject": clusterID,
 		},
 	}
 }
