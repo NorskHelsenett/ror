@@ -164,6 +164,14 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 		ownerUids[i] = s
 	}
 
+	// Scope objects (KubernetesCluster, Project, ...) must stay traversable even
+	// when childless: a cluster with no in-cluster resources is referenced by
+	// nothing, so it is absent from ownerUids and would otherwise be pruned,
+	// hiding it from a grant on its parent. Keep any resource whose kind is a
+	// scope kind, but exclude cluster-owned CRDs that reuse a scope kind name
+	// (KubeVirt VirtualMachine, CAPI Machine) via the ownerref.scope guard.
+	scopeKinds := scopeResourceKinds()
+
 	pipeline := mongo.Pipeline{
 		// Emit one synthetic row per seed subject. Seeds need not exist as
 		// documents; one graph traversal runs per seed instead of one per
@@ -185,7 +193,13 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 			{Key: "connectFromField", Value: "uid"},
 			{Key: "connectToField", Value: "rormeta.ownerref.subject"},
 			{Key: "as", Value: "descendants"},
-			{Key: "restrictSearchWithMatch", Value: bson.D{{Key: "uid", Value: bson.D{{Key: "$in", Value: ownerUids}}}}},
+			{Key: "restrictSearchWithMatch", Value: bson.D{{Key: "$or", Value: bson.A{
+				bson.D{{Key: "uid", Value: bson.D{{Key: "$in", Value: ownerUids}}}},
+				bson.D{
+					{Key: "typemeta.kind", Value: bson.D{{Key: "$in", Value: scopeKinds}}},
+					{Key: "rormeta.ownerref.scope", Value: bson.D{{Key: "$ne", Value: string(aclscope.ScopeCluster)}}},
+				},
+			}}}},
 		}}},
 		// All descendants are owners by construction; trim to uid + kind.
 		bson.D{{Key: "$project", Value: bson.D{
@@ -234,4 +248,19 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 	}
 
 	return out, nil
+}
+
+// scopeResourceKinds returns the resource-kind scopes (all valid scopes except
+// the system scopes ror/all/spam), derived from aclscope so the set stays in
+// sync with the scope model rather than being hardcoded here.
+func scopeResourceKinds() bson.A {
+	kinds := bson.A{}
+	for _, s := range aclscope.GetScopes() {
+		switch s {
+		case aclscope.ScopeRor, aclscope.ScopeAll, aclscope.ScopeSpam:
+			continue
+		}
+		kinds = append(kinds, string(s))
+	}
+	return kinds
 }

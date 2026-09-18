@@ -42,6 +42,7 @@ func TestOwnerrefsToFilter_SingleCluster(t *testing.T) {
 						bson.D{{Key: "scope", Value: "cluster"}, {Key: "subject", Value: "cluster-1"}},
 					}},
 				},
+				bson.M{"uid": bson.M{"$in": bson.A{"cluster-1"}}},
 			},
 		},
 	}
@@ -60,7 +61,7 @@ func TestOwnerrefsToFilter_MultipleClusters(t *testing.T) {
 	assert.True(t, ok)
 	or, ok := match["$or"].(bson.A)
 	assert.True(t, ok)
-	assert.Len(t, or, 1) // single $in clause
+	assert.Len(t, or, 2) // ownerref $in + uid-self-match $in
 
 	inClause := or[0].(bson.M)["rormeta.ownerref"].(bson.M)["$in"].(bson.A)
 	assert.Len(t, inClause, 3)
@@ -76,7 +77,7 @@ func TestOwnerrefsToFilter_MixedScopes(t *testing.T) {
 
 	match := result["$match"].(bson.M)
 	or := match["$or"].(bson.A)
-	assert.Len(t, or, 1) // all in one $in
+	assert.Len(t, or, 2) // ownerref $in + uid-self-match $in
 
 	inClause := or[0].(bson.M)["rormeta.ownerref"].(bson.M)["$in"].(bson.A)
 	assert.Len(t, inClause, 3)
@@ -129,7 +130,7 @@ func TestOwnerrefsToFilter_RorScopeDeduplicatesSpecific(t *testing.T) {
 
 	match := result["$match"].(bson.M)
 	or := match["$or"].(bson.A)
-	assert.Len(t, or, 2) // ror scope-level grant + $in for project
+	assert.Len(t, or, 3) // ror scope-level grant + ownerref $in + uid-self-match $in
 
 	// First: ror scope-level grant
 	assert.Equal(t, bson.M{"rormeta.ownerref.scope": "cluster"}, or[0])
@@ -215,7 +216,7 @@ func TestOwnerrefsToFilter_WithExpandedHierarchy(t *testing.T) {
 
 	match := result["$match"].(bson.M)
 	or := match["$or"].(bson.A)
-	assert.Len(t, or, 1)
+	assert.Len(t, or, 2) // ownerref $in + uid-self-match $in
 
 	inClause := or[0].(bson.M)["rormeta.ownerref"].(bson.M)["$in"].(bson.A)
 	assert.Len(t, inClause, 4)
@@ -249,7 +250,7 @@ func TestOwnerrefsToFilter_SingleRef(t *testing.T) {
 
 	match := result["$match"].(bson.M)
 	or := match["$or"].(bson.A)
-	assert.Len(t, or, 1)
+	assert.Len(t, or, 2) // ownerref $in + uid-self-match $in
 
 	inClause := or[0].(bson.M)["rormeta.ownerref"].(bson.M)["$in"].(bson.A)
 	assert.Len(t, inClause, 1)
@@ -270,10 +271,13 @@ func TestOwnerrefsToFilter_ManyRefs(t *testing.T) {
 
 	match := result["$match"].(bson.M)
 	or := match["$or"].(bson.A)
-	assert.Len(t, or, 1)
+	assert.Len(t, or, 2) // ownerref $in + uid-self-match $in
 
 	inClause := or[0].(bson.M)["rormeta.ownerref"].(bson.M)["$in"].(bson.A)
 	assert.Len(t, inClause, 100)
+
+	uidClause := or[1].(bson.M)["uid"].(bson.M)["$in"].(bson.A)
+	assert.Len(t, uidClause, 100)
 }
 
 func TestOwnerrefsToFilter_DuplicateRefsHandled(t *testing.T) {
@@ -303,7 +307,7 @@ func TestOwnerrefsToFilter_RorScopeWithMixedGlobalAndSpecific(t *testing.T) {
 
 	match := result["$match"].(bson.M)
 	or := match["$or"].(bson.A)
-	assert.Len(t, or, 2) // ror scope-level + $in for project+datacenter
+	assert.Len(t, or, 3) // ror scope-level + ownerref $in + uid-self-match $in
 
 	// First: ror scope-level
 	assert.Equal(t, bson.M{"rormeta.ownerref.scope": "cluster"}, or[0])
@@ -320,8 +324,13 @@ func TestClusterIdentityFilter(t *testing.T) {
 
 	expected := bson.M{
 		"$match": bson.M{
-			"rormeta.ownerref.scope":   "KubernetesCluster",
-			"rormeta.ownerref.subject": "my-cluster-id",
+			"$or": bson.A{
+				bson.M{
+					"rormeta.ownerref.scope":   "KubernetesCluster",
+					"rormeta.ownerref.subject": "my-cluster-id",
+				},
+				bson.M{"uid": "my-cluster-id"},
+			},
 		},
 	}
 	assert.Equal(t, expected, result)
@@ -331,7 +340,9 @@ func TestClusterIdentityFilter_EmptyID(t *testing.T) {
 	result := aclstore.ClusterIdentityFilter("")
 
 	match := result["$match"].(bson.M)
-	assert.Equal(t, "", match["rormeta.ownerref.subject"])
+	or := match["$or"].(bson.A)
+	ownerBranch := or[0].(bson.M)
+	assert.Equal(t, "", ownerBranch["rormeta.ownerref.subject"])
 }
 
 // --- DenyAllFilter ---
@@ -631,8 +642,9 @@ func TestResourceTypeFilter_ClusterIdentityPlusTypeFilter(t *testing.T) {
 	assert.Len(t, pipeline, 2)
 
 	s1 := pipeline[0].(bson.M)["$match"].(bson.M)
-	assert.Equal(t, "KubernetesCluster", s1["rormeta.ownerref.scope"])
-	assert.Equal(t, "my-cluster", s1["rormeta.ownerref.subject"])
+	ownerBranch := s1["$or"].(bson.A)[0].(bson.M)
+	assert.Equal(t, "KubernetesCluster", ownerBranch["rormeta.ownerref.scope"])
+	assert.Equal(t, "my-cluster", ownerBranch["rormeta.ownerref.subject"])
 
 	s2 := pipeline[1].(bson.M)["$match"].(bson.M)
 	nin := s2["typemeta.kind"].(bson.M)["$nin"].([]string)
