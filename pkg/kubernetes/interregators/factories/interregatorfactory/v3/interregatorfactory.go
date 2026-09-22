@@ -17,6 +17,7 @@ import (
 type ProviderGetter interface {
 	GetProvider() providermodels.ProviderType
 }
+
 type ClusterIdGetter interface{ GetClusterId() string }
 type ClusterNameGetter interface{ GetClusterName() string }
 type ClusterWorkspaceGetter interface{ GetClusterWorkspace() string }
