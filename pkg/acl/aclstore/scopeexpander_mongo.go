@@ -3,6 +3,8 @@ package aclstore
 import (
 	"context"
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
@@ -15,6 +17,14 @@ import (
 
 const resourceV2Collection = "resourcesv2"
 
+// defaultOwnerUidsTTL bounds how stale the memoized owner-uid set may be when no
+// explicit TTL is configured. A newly created owner relationship becomes visible
+// to scope expansion within this window. It only gates leaf-pruning of the
+// traversal, and per-seed expansion results are themselves cached
+// (CachedScopeExpander), so this staleness is consistent with the access layer's
+// existing eventual-consistency window. Override with WithOwnerUidsTTL.
+const defaultOwnerUidsTTL = 30 * time.Second
+
 // MongoScopeExpander implements acl.ScopeExpander by walking the
 // ownerref chain in the resourcesv2 collection. No hardcoded hierarchy —
 // the tree is derived entirely from rormeta.ownerref data on each resource.
@@ -24,13 +34,78 @@ type MongoScopeExpander struct {
 	// disconnected) whenever its credentials are rotated, so a captured handle
 	// would start failing with "client is disconnected" after the first renewal.
 	dbProvider func() *mongo.Database
+
+	// ownerUidsTTL is how long the memoized owner-uid set is reused before a
+	// refresh. Set via WithOwnerUidsTTL; defaults to defaultOwnerUidsTTL.
+	ownerUidsTTL time.Duration
+
+	// ownerUids memoizes the set of owner subject uids (a Distinct over the whole
+	// collection, identical for every seed) so scope expansion does not rescan
+	// resourcesv2 on every authorized read. Guarded by ownerUidsMu, which also
+	// single-flights concurrent refreshes. See ownerUidList.
+	ownerUidsMu sync.Mutex
+	ownerUids   bson.A
+	ownerUidsAt time.Time
 }
 
 // NewMongoScopeExpander creates a new MongoDB-backed scope expander. dbProvider
 // must return the current *mongo.Database; it is called on every expansion so
 // the expander always uses the live connection (see the field doc for why).
-func NewMongoScopeExpander(dbProvider func() *mongo.Database) *MongoScopeExpander {
-	return &MongoScopeExpander{dbProvider: dbProvider}
+// MongoScopeExpanderOption configures a MongoScopeExpander at construction.
+type MongoScopeExpanderOption func(*MongoScopeExpander)
+
+// WithOwnerUidsTTL sets how long the memoized owner-uid set is reused before a
+// refresh. Values <= 0 are ignored (defaultOwnerUidsTTL is kept).
+func WithOwnerUidsTTL(ttl time.Duration) MongoScopeExpanderOption {
+	return func(e *MongoScopeExpander) {
+		if ttl > 0 {
+			e.ownerUidsTTL = ttl
+		}
+	}
+}
+
+func NewMongoScopeExpander(dbProvider func() *mongo.Database, opts ...MongoScopeExpanderOption) *MongoScopeExpander {
+	e := &MongoScopeExpander{dbProvider: dbProvider, ownerUidsTTL: defaultOwnerUidsTTL}
+	for _, opt := range opts {
+		opt(e)
+	}
+	return e
+}
+
+// ownerUidList returns the uids that are referenced by at least one resource as
+// its rormeta.ownerref.subject — the "owner" nodes used to prune leaves from the
+// graph traversal. That set is a Distinct over the entire collection (expensive,
+// O(collection)) but is the same for every seed, so it is memoized for
+// ownerUidsTTL. The lock is held across the refresh so a burst of concurrent
+// cache misses (e.g. right after a rollout, when every request misses) collapses
+// into a single Distinct instead of one per request.
+func (e *MongoScopeExpander) ownerUidList(ctx context.Context, collection *mongo.Collection) (bson.A, error) {
+	e.ownerUidsMu.Lock()
+	defer e.ownerUidsMu.Unlock()
+
+	if e.ownerUids != nil && time.Since(e.ownerUidsAt) < e.ownerUidsTTL {
+		return e.ownerUids, nil
+	}
+
+	// Require the subject to be a present, non-empty string: $type screens out
+	// missing fields, null, and any non-string values, so Distinct yields a clean
+	// []string and the result never includes a spurious empty/owner uid.
+	filter := bson.D{{Key: "rormeta.ownerref.subject", Value: bson.D{
+		{Key: "$type", Value: "string"},
+		{Key: "$ne", Value: ""},
+	}}}
+	var ownerSubjects []string
+	if err := collection.Distinct(ctx, "rormeta.ownerref.subject", filter).Decode(&ownerSubjects); err != nil {
+		return nil, fmt.Errorf("failed to list owner subjects for scope expansion: %w", err)
+	}
+
+	uids := make(bson.A, len(ownerSubjects))
+	for i, s := range ownerSubjects {
+		uids[i] = s
+	}
+	e.ownerUids = uids
+	e.ownerUidsAt = time.Now()
+	return uids, nil
 }
 
 // ownerRef is a minimal projection of a resourcesv2 document, carrying only
@@ -148,20 +223,12 @@ func (e *MongoScopeExpander) expandSeeds(ctx context.Context, seeds []acl.Ownerr
 	// Owner chains never pass through a leaf (a leaf has no children), so
 	// restricting the search to owners loses no owner-descendant.
 	//
-	// Require the subject to be a present, non-empty string: $type screens out
-	// missing fields, null, and any non-string values, so Distinct yields a
-	// clean []string and the result never includes a spurious empty/owner uid.
-	ownerSubjectFilter := bson.D{{Key: "rormeta.ownerref.subject", Value: bson.D{
-		{Key: "$type", Value: "string"},
-		{Key: "$ne", Value: ""},
-	}}}
-	var ownerSubjects []string
-	if err := collection.Distinct(ctx, "rormeta.ownerref.subject", ownerSubjectFilter).Decode(&ownerSubjects); err != nil {
-		return nil, fmt.Errorf("failed to list owner subjects for scope expansion: %w", err)
-	}
-	ownerUids := make(bson.A, len(ownerSubjects))
-	for i, s := range ownerSubjects {
-		ownerUids[i] = s
+	// The owner-uid set is a Distinct over the entire collection and is identical
+	// for every seed, so it is memoized (see ownerUidList) rather than recomputed
+	// on each expansion — this path runs on every authorized read.
+	ownerUids, err := e.ownerUidList(ctx, collection)
+	if err != nil {
+		return nil, err
 	}
 
 	// Scope objects (KubernetesCluster, Project, ...) must stay traversable even
