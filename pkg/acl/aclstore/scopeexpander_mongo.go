@@ -8,6 +8,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -25,6 +26,11 @@ const resourceV2Collection = "resourcesv2"
 // existing eventual-consistency window. Override with WithOwnerUidsTTL.
 const defaultOwnerUidsTTL = 30 * time.Second
 
+// ownerUidsRefreshTimeout bounds a single background owner-uid refresh. It is
+// generous — the Distinct scans the whole collection — but it runs off the
+// request path, so it never adds request latency.
+const ownerUidsRefreshTimeout = 60 * time.Second
+
 // MongoScopeExpander implements acl.ScopeExpander by walking the
 // ownerref chain in the resourcesv2 collection. No hardcoded hierarchy —
 // the tree is derived entirely from rormeta.ownerref data on each resource.
@@ -41,16 +47,20 @@ type MongoScopeExpander struct {
 
 	// ownerUids memoizes the set of owner subject uids (a Distinct over the whole
 	// collection, identical for every seed) so scope expansion does not rescan
-	// resourcesv2 on every authorized read. Guarded by ownerUidsMu, which also
-	// single-flights concurrent refreshes. See ownerUidList.
-	ownerUidsMu sync.Mutex
-	ownerUids   bson.A
-	ownerUidsAt time.Time
+	// resourcesv2 on every authorized read. After the initial (cold) load it is
+	// refreshed off the request path: a stale set is served immediately while a
+	// single background goroutine repopulates it, so no request ever pays the
+	// Distinct latency. See ownerUidList.
+	ownerUidsMu         sync.Mutex
+	ownerUids           bson.A
+	ownerUidsAt         time.Time
+	ownerUidsRefreshing bool // a background refresh is in flight (guarded by ownerUidsMu)
+
+	// ownerUidsColdMu single-flights the initial synchronous load so concurrent
+	// first callers issue one Distinct, not one each.
+	ownerUidsColdMu sync.Mutex
 }
 
-// NewMongoScopeExpander creates a new MongoDB-backed scope expander. dbProvider
-// must return the current *mongo.Database; it is called on every expansion so
-// the expander always uses the live connection (see the field doc for why).
 // MongoScopeExpanderOption configures a MongoScopeExpander at construction.
 type MongoScopeExpanderOption func(*MongoScopeExpander)
 
@@ -64,6 +74,9 @@ func WithOwnerUidsTTL(ttl time.Duration) MongoScopeExpanderOption {
 	}
 }
 
+// NewMongoScopeExpander creates a new MongoDB-backed scope expander. dbProvider
+// must return the current *mongo.Database; it is called on every expansion so
+// the expander always uses the live connection (see the field doc for why).
 func NewMongoScopeExpander(dbProvider func() *mongo.Database, opts ...MongoScopeExpanderOption) *MongoScopeExpander {
 	e := &MongoScopeExpander{dbProvider: dbProvider, ownerUidsTTL: defaultOwnerUidsTTL}
 	for _, opt := range opts {
@@ -75,21 +88,88 @@ func NewMongoScopeExpander(dbProvider func() *mongo.Database, opts ...MongoScope
 // ownerUidList returns the uids that are referenced by at least one resource as
 // its rormeta.ownerref.subject — the "owner" nodes used to prune leaves from the
 // graph traversal. That set is a Distinct over the entire collection (expensive,
-// O(collection)) but is the same for every seed, so it is memoized for
-// ownerUidsTTL. The lock is held across the refresh so a burst of concurrent
-// cache misses (e.g. right after a rollout, when every request misses) collapses
-// into a single Distinct instead of one per request.
+// O(collection)) but is identical for every seed and changes slowly, so it is
+// memoized for ownerUidsTTL and refreshed off the request path: once loaded, a
+// stale set is returned immediately while a single background goroutine
+// repopulates it (stale-while-revalidate). Only the initial cold load blocks.
 func (e *MongoScopeExpander) ownerUidList(ctx context.Context, collection *mongo.Collection) (bson.A, error) {
 	e.ownerUidsMu.Lock()
-	defer e.ownerUidsMu.Unlock()
-
-	if e.ownerUids != nil && time.Since(e.ownerUidsAt) < e.ownerUidsTTL {
-		return e.ownerUids, nil
+	if e.ownerUids != nil {
+		if time.Since(e.ownerUidsAt) >= e.ownerUidsTTL && !e.ownerUidsRefreshing {
+			e.ownerUidsRefreshing = true
+			go e.refreshOwnerUids()
+		}
+		uids := e.ownerUids
+		e.ownerUidsMu.Unlock()
+		return uids, nil
 	}
+	e.ownerUidsMu.Unlock()
 
-	// Require the subject to be a present, non-empty string: $type screens out
-	// missing fields, null, and any non-string values, so Distinct yields a clean
-	// []string and the result never includes a spurious empty/owner uid.
+	// Cold start: nothing to serve yet, so block on a single-flighted load.
+	return e.coldLoadOwnerUids(ctx, collection)
+}
+
+// coldLoadOwnerUids performs the first synchronous owner-uid load, ensuring only
+// one Distinct runs even when many requests arrive before the set is populated.
+func (e *MongoScopeExpander) coldLoadOwnerUids(ctx context.Context, collection *mongo.Collection) (bson.A, error) {
+	e.ownerUidsColdMu.Lock()
+	defer e.ownerUidsColdMu.Unlock()
+
+	// Another goroutine may have populated the set while we waited for the lock.
+	e.ownerUidsMu.Lock()
+	if e.ownerUids != nil {
+		uids := e.ownerUids
+		e.ownerUidsMu.Unlock()
+		return uids, nil
+	}
+	e.ownerUidsMu.Unlock()
+
+	uids, err := e.fetchOwnerUids(ctx, collection)
+	if err != nil {
+		return nil, err
+	}
+	e.setOwnerUids(uids)
+	return uids, nil
+}
+
+// refreshOwnerUids repopulates the owner-uid set in the background. It runs off
+// the request path with its own timeout and a fresh db handle (credentials may
+// have rotated). On error it leaves the previous set in place, so expansion
+// keeps working on slightly staler data.
+func (e *MongoScopeExpander) refreshOwnerUids() {
+	defer func() {
+		e.ownerUidsMu.Lock()
+		e.ownerUidsRefreshing = false
+		e.ownerUidsMu.Unlock()
+	}()
+
+	db := e.dbProvider()
+	if db == nil {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), ownerUidsRefreshTimeout)
+	defer cancel()
+
+	uids, err := e.fetchOwnerUids(ctx, db.Collection(resourceV2Collection))
+	if err != nil {
+		rlog.Warn("scope expander: background owner-uid refresh failed, keeping previous set", rlog.Any("error", err))
+		return
+	}
+	e.setOwnerUids(uids)
+}
+
+// setOwnerUids stores a freshly loaded owner-uid set and stamps its load time.
+func (e *MongoScopeExpander) setOwnerUids(uids bson.A) {
+	e.ownerUidsMu.Lock()
+	e.ownerUids = uids
+	e.ownerUidsAt = time.Now()
+	e.ownerUidsMu.Unlock()
+}
+
+// fetchOwnerUids runs the Distinct and returns the owner-uid set. Require the
+// subject to be a present, non-empty string: $type screens out missing fields,
+// null, and non-string values, so the result never includes a spurious uid.
+func (e *MongoScopeExpander) fetchOwnerUids(ctx context.Context, collection *mongo.Collection) (bson.A, error) {
 	filter := bson.D{{Key: "rormeta.ownerref.subject", Value: bson.D{
 		{Key: "$type", Value: "string"},
 		{Key: "$ne", Value: ""},
@@ -98,13 +178,10 @@ func (e *MongoScopeExpander) ownerUidList(ctx context.Context, collection *mongo
 	if err := collection.Distinct(ctx, "rormeta.ownerref.subject", filter).Decode(&ownerSubjects); err != nil {
 		return nil, fmt.Errorf("failed to list owner subjects for scope expansion: %w", err)
 	}
-
 	uids := make(bson.A, len(ownerSubjects))
 	for i, s := range ownerSubjects {
 		uids[i] = s
 	}
-	e.ownerUids = uids
-	e.ownerUidsAt = time.Now()
 	return uids, nil
 }
 
