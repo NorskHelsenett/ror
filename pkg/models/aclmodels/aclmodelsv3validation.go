@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 )
 
 // ValidateAccess validates that an AccessTypeV3 string follows the system:component:verb
@@ -25,6 +26,11 @@ func ParseAccessTypeV3(s string) (AccessTypeV3, error) {
 func ValidateACLEntry(entry AclV3ListItem) error {
 	if err := ValidScope(entry.Scope); err != nil {
 		return fmt.Errorf("invalid ACL entry: %w", err)
+	}
+	// "all" is a lookup wildcard, not a grant value: a global grant is written as
+	// scope "ror" with subject "globalscope".
+	if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll {
+		return fmt.Errorf("invalid ACL entry: scope/subject \"all\" is not a valid grant value; use scope %q subject %q for a global grant", aclscope.ScopeRor, aclscope.SubjectGlobal)
 	}
 	for _, a := range entry.Access {
 		if err := ValidateAccess(a); err != nil {
