@@ -171,6 +171,21 @@ func TestValidateACLEntry_InvalidAccess(t *testing.T) {
 	assert.Error(t, aclmodels.ValidateACLEntry(entry))
 }
 
+func TestValidateACLEntry_RejectsAllGrant(t *testing.T) {
+	// "all" is a lookup wildcard, not a grant value; a global grant is
+	// {ror, globalscope}.
+	allScope := aclmodels.AclV3ListItem{
+		Group: "dev-team", Scope: aclscope.ScopeAll, Subject: "x",
+		Access: []aclmodels.AccessTypeV3{"ror:read"},
+	}
+	allSubject := aclmodels.AclV3ListItem{
+		Group: "dev-team", Scope: aclscope.ScopeRor, Subject: aclscope.SubjectAll,
+		Access: []aclmodels.AccessTypeV3{"ror:read"},
+	}
+	assert.Error(t, aclmodels.ValidateACLEntry(allScope))
+	assert.Error(t, aclmodels.ValidateACLEntry(allSubject))
+}
+
 func TestAccessTypeV3Constants(t *testing.T) {
 	// Verify all constants pass validation
 	constants := []aclmodels.AccessTypeV3{
