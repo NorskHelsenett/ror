@@ -24,11 +24,6 @@ func TestValidateAccess_ValidTypes(t *testing.T) {
 		"kubernetes:argocd:admin",
 		"kubernetes:argocd:project:admin",
 		"kubernetes:grafana:admin",
-		"resource:Deployment:read",
-		"resource:Pod:write",
-		"resource:*:read",
-		"resource:*:delete",
-		"resource:VulnerabilityReport:read",
 		"virtualmachine:delete",
 		"monitoring:read",
 		"monitoring:write",
@@ -52,7 +47,6 @@ func TestValidateAccess_InvalidTypes(t *testing.T) {
 		{"unknown system", "foo:bar"},
 		{"wrong verb at path", "ror:metadata:read"},
 		{"unknown verb", "ror:execute"},
-		{"verb not allowed at level", "resource:Deployment:admin"},
 		{"unknown sub path", "ror:unknown:write"},
 		{"empty string", ""},
 	}
@@ -113,63 +107,6 @@ func TestMergeAccess_Empty(t *testing.T) {
 	assert.Empty(t, result)
 }
 
-func TestMatchPrefix(t *testing.T) {
-	access := []aclmodels.AccessTypeV3{
-		"ror:read",
-		"resource:Deployment:read",
-		"resource:Pod:write",
-		"kubernetes:logon",
-	}
-	result := aclmodels.MatchPrefix(access, "resource:")
-	assert.Len(t, result, 2)
-	assert.Contains(t, result, aclmodels.AccessTypeV3("resource:Deployment:read"))
-	assert.Contains(t, result, aclmodels.AccessTypeV3("resource:Pod:write"))
-}
-
-func TestCanAccessKind(t *testing.T) {
-	access := []aclmodels.AccessTypeV3{
-		"resource:Deployment:read",
-		"resource:Pod:read",
-	}
-	assert.True(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbRead))
-	assert.True(t, aclmodels.CanAccessKind(access, "Pod", aclmodels.VerbRead))
-	assert.False(t, aclmodels.CanAccessKind(access, "Service", aclmodels.VerbRead))
-	assert.False(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbWrite))
-}
-
-func TestCanAccessKind_Wildcard(t *testing.T) {
-	access := []aclmodels.AccessTypeV3{"resource:*:read"}
-	assert.True(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbRead))
-	assert.True(t, aclmodels.CanAccessKind(access, "Service", aclmodels.VerbRead))
-	assert.True(t, aclmodels.CanAccessKind(access, "VulnerabilityReport", aclmodels.VerbRead))
-	assert.False(t, aclmodels.CanAccessKind(access, "Deployment", aclmodels.VerbWrite))
-}
-
-func TestAllowedKinds(t *testing.T) {
-	access := []aclmodels.AccessTypeV3{
-		"resource:Deployment:read",
-		"resource:Pod:read",
-		"resource:Service:write",
-	}
-	kinds := aclmodels.AllowedKinds(access, aclmodels.VerbRead)
-	assert.Len(t, kinds, 2)
-	assert.Contains(t, kinds, "Deployment")
-	assert.Contains(t, kinds, "Pod")
-}
-
-func TestAllowedKinds_Wildcard(t *testing.T) {
-	access := []aclmodels.AccessTypeV3{"resource:*:read", "resource:Deployment:read"}
-	kinds := aclmodels.AllowedKinds(access, aclmodels.VerbRead)
-	assert.Nil(t, kinds) // nil means all kinds allowed
-}
-
-func TestAllowedKinds_NoAccess(t *testing.T) {
-	access := []aclmodels.AccessTypeV3{"ror:read"}
-	kinds := aclmodels.AllowedKinds(access, aclmodels.VerbRead)
-	assert.NotNil(t, kinds)
-	assert.Empty(t, kinds)
-}
-
 func TestCompileAccess(t *testing.T) {
 	entries := []aclmodels.AclV3ListItem{
 		{
@@ -209,7 +146,7 @@ func TestValidateACLEntry_ValidKindScope(t *testing.T) {
 		Group:   "dev-team",
 		Scope:   "KubernetesCluster",
 		Subject: "prod-cluster-1",
-		Access:  []aclmodels.AccessTypeV3{"ror:read", "resource:Deployment:read"},
+		Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"},
 	}
 	assert.NoError(t, aclmodels.ValidateACLEntry(entry))
 }

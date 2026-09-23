@@ -116,10 +116,9 @@ func TestV3ToV2_V3OnlyCapabilitiesDropped(t *testing.T) {
 		Subject: "cluster-1",
 		Access: []aclmodels.AccessTypeV3{
 			"ror:read",
-			"kubernetes:admin",              // V3-only, no V2 equivalent
-			"kubernetes:argocd:admin",       // V3-only
-			"resource:Deployment:read",      // V3-only
-			"ror:vulnerability:read",        // V3-only
+			"kubernetes:admin",        // V3-only, no V2 equivalent
+			"kubernetes:argocd:admin", // V3-only
+			"ror:vulnerability:read",  // V3-only
 		},
 	}
 

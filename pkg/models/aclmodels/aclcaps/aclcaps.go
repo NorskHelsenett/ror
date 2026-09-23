@@ -7,7 +7,7 @@ package aclcaps
 import "strings"
 
 // Capability represents the system:component path of an access type, without the verb.
-// Example: "ror", "ror:vulnerability", "kubernetes:argocd", "resource:Deployment"
+// Example: "ror", "ror:vulnerability", "kubernetes:argocd", "virtualmachine"
 type Capability string
 
 // WithVerb builds a full AccessTypeV3 by appending the verb.
