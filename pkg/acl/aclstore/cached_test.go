@@ -310,7 +310,7 @@ func TestCached_PreservesAccessData(t *testing.T) {
 		Group:   "dev-team",
 		Scope:   "KubernetesCluster",
 		Subject: "cluster-1",
-		Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon", "resource:Deployment:read"},
+		Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon", "kubernetes:admin"},
 	}
 	store, _, _ := setupTest(t, original)
 
@@ -329,7 +329,7 @@ func TestCached_PreservesAccessData(t *testing.T) {
 	assert.Len(t, entries[0].Access, 3)
 	assert.Contains(t, entries[0].Access, aclmodels.AccessTypeV3("ror:read"))
 	assert.Contains(t, entries[0].Access, aclmodels.AccessTypeV3("kubernetes:logon"))
-	assert.Contains(t, entries[0].Access, aclmodels.AccessTypeV3("resource:Deployment:read"))
+	assert.Contains(t, entries[0].Access, aclmodels.AccessTypeV3("kubernetes:admin"))
 }
 
 func TestCached_CacheKeyFormat(t *testing.T) {

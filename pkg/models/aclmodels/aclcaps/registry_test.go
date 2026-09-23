@@ -32,8 +32,6 @@ func TestValidate_Valid(t *testing.T) {
 		"ror:read",
 		"ror:config:write",
 		"kubernetes:argocd:project:admin",
-		"resource:Deployment:read",
-		"resource:*:delete",
 		"virtualmachine:delete",
 		"monitoring:read",
 		"monitoring:write",
@@ -51,7 +49,6 @@ func TestValidate_Invalid(t *testing.T) {
 		"foo:bar",
 		"ror:metadata:read",
 		"ror:execute",
-		"resource:Deployment:admin",
 		"monitoring:admin",
 		"dns:delete",
 		"",
@@ -74,7 +71,6 @@ func TestRegistryVerbsAreKnown(t *testing.T) {
 		for _, c := range n.Children {
 			walk(c)
 		}
-		walk(n.Wildcard)
 	}
 	walk(aclcaps.Registry)
 }

@@ -6,12 +6,10 @@ import (
 )
 
 // Namespace is a node in the capability registry. Each node declares the verbs
-// valid at its path and, optionally, child components or a wildcard child that
-// matches any single segment (used for resource:<Kind>).
+// valid at its path and, optionally, child components.
 type Namespace struct {
 	Verbs    map[Verb]struct{}
 	Children map[string]*Namespace
-	Wildcard *Namespace
 }
 
 // AllVerbs is the canonical set of verbs that may appear as the last segment of
@@ -52,10 +50,6 @@ var Registry = &Namespace{
 				"grafana": {Verbs: verbs(VerbAdmin)},
 			},
 		},
-		"resource": {
-			// Wildcard accepts any resource Kind: resource:<Kind>:<verb>.
-			Wildcard: &Namespace{Verbs: verbs(VerbRead, VerbWrite, VerbDelete)},
-		},
 		"virtualmachine": {Verbs: verbs(VerbDelete)},
 		"monitoring":     {Verbs: verbs(VerbRead, VerbWrite)},
 		"dns":            {Verbs: verbs(VerbRead, VerbWrite)},
@@ -89,10 +83,6 @@ func Validate(a AccessTypeV3) error {
 			node = child
 			continue
 		}
-		if node.Wildcard != nil {
-			node = node.Wildcard
-			continue
-		}
 		return fmt.Errorf("unknown path segment %q at position %d in %q", segment, i, a)
 	}
 
@@ -114,11 +104,7 @@ func ValidCapability(c Capability) bool {
 			node = child
 			continue
 		}
-		if node.Wildcard != nil {
-			node = node.Wildcard
-			continue
-		}
 		return false
 	}
-	return len(node.Verbs) > 0 || node.Wildcard != nil
+	return len(node.Verbs) > 0
 }

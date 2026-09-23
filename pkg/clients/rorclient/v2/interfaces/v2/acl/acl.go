@@ -24,7 +24,7 @@ type AclInterface interface {
 
 	// Create persists a new V3 ACL entry via POST /v2/acl and returns the
 	// server-assigned entry. Unlike the V1 client it speaks AclV3ListItem, so
-	// V3-only capabilities (resource:*, ror:config:*, ...) are preserved.
+	// V3-only capabilities (ror:config:*, kubernetes:admin, ...) are preserved.
 	Create(ctx context.Context, item aclmodels.AclV3ListItem) (*aclmodels.AclV3ListItem, error)
 	// Update replaces the V3 ACL entry with the given id via PUT /v2/acl/{id}.
 	Update(ctx context.Context, id string, item aclmodels.AclV3ListItem) (*aclmodels.AclV3ListItem, error)

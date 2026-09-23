@@ -83,7 +83,7 @@ const (
 // Example:
 //
 //	Group: "dev-team", Scope: "KubernetesCluster", Subject: "prod-cluster-1",
-//	Access: ["ror:read", "ror:write", "kubernetes:logon", "resource:Deployment:read"]
+//	Access: ["ror:read", "ror:write", "kubernetes:logon", "ror:config:read"]
 type AclV3ListItem struct {
 	Id       string           `json:"id" bson:"_id,omitempty"`
 	Version  int              `json:"version" default:"3" validate:"eq=3"`

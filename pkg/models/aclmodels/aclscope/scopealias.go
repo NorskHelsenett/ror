@@ -1,9 +1,9 @@
 package aclscope
 
-// LegacyToKind maps legacy V2 scope names to resource Kind names.
-// Used to translate V2 API calls to the Kind-based scope values stored in the database
-// after the scope migration.
-var LegacyToKind = map[Scope]Scope{
+// legacyKindNames is the single source of truth for legacy V2 name <-> resource
+// Kind name pairs. The Scope and Subject alias maps below are all derived from
+// it, so the mapping is defined exactly once.
+var legacyKindNames = map[string]string{
 	"cluster":        "KubernetesCluster",
 	"project":        "Project",
 	"workspace":      "Workspace",
@@ -13,40 +13,32 @@ var LegacyToKind = map[Scope]Scope{
 	"machine":        "Machine",
 }
 
-// KindToLegacy maps resource Kind names back to legacy V2 scope names.
-// Used when returning data to V2 API consumers that expect the old naming.
-var KindToLegacy = map[Scope]Scope{
-	"KubernetesCluster": "cluster",
-	"Project":           "project",
-	"Workspace":         "workspace",
-	"VirtualMachine":    "virtualmachine",
-	"BackupJob":         "backup",
-	"Datacenter":        "datacenter",
-	"Machine":           "machine",
+// aliasMap builds a legacy<->kind alias map of the given string type from
+// legacyKindNames, inverting (kind -> legacy) when invert is true.
+func aliasMap[T ~string](invert bool) map[T]T {
+	out := make(map[T]T, len(legacyKindNames))
+	for legacy, kind := range legacyKindNames {
+		if invert {
+			out[T(kind)] = T(legacy)
+		} else {
+			out[T(legacy)] = T(kind)
+		}
+	}
+	return out
 }
+
+// LegacyToKind maps legacy V2 scope names to resource Kind names.
+var LegacyToKind = aliasMap[Scope](false)
+
+// KindToLegacy maps resource Kind names back to legacy V2 scope names.
+var KindToLegacy = aliasMap[Scope](true)
 
 // LegacySubjectToKind maps legacy V2 subject names (used with scope "ror") to
 // resource Kind names. These represent type-level grants (e.g. "can manage all clusters").
-var LegacySubjectToKind = map[Subject]Subject{
-	"cluster":        "KubernetesCluster",
-	"project":        "Project",
-	"workspace":      "Workspace",
-	"virtualmachine": "VirtualMachine",
-	"backup":         "BackupJob",
-	"datacenter":     "Datacenter",
-	"machine":        "Machine",
-}
+var LegacySubjectToKind = aliasMap[Subject](false)
 
 // KindToLegacySubject maps resource Kind subject names back to legacy V2 subject names.
-var KindToLegacySubject = map[Subject]Subject{
-	"KubernetesCluster": "cluster",
-	"Project":           "project",
-	"Workspace":         "workspace",
-	"VirtualMachine":    "virtualmachine",
-	"BackupJob":         "backup",
-	"Datacenter":        "datacenter",
-	"Machine":           "machine",
-}
+var KindToLegacySubject = aliasMap[Subject](true)
 
 // ToKind translates a legacy scope to its Kind equivalent.
 // If no mapping exists, returns the scope unchanged (it may already be a Kind).

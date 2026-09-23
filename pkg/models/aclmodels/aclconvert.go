@@ -96,7 +96,7 @@ func buildV3TagMap() map[AccessTypeV3]string {
 
 // V3ToV2 converts a V3 ACL entry to a V2 representation.
 // Only V3 access types that have a corresponding v3 struct tag on the V2 struct
-// are mapped. V3-only capabilities (e.g. "kubernetes:admin", "resource:Deployment:read")
+// are mapped. V3-only capabilities (e.g. "kubernetes:admin", "ror:config:read")
 // are silently dropped since V2 has no way to represent them.
 func V3ToV2(v3 AclV3ListItem) AclV2ListItem {
 	v2 := AclV2ListItem{
