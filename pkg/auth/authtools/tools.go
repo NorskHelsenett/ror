@@ -27,3 +27,27 @@ func SplitUserId(userId string) (string, string, error) {
 	}
 	return parts[0], parts[1], nil
 }
+
+// DirectoryUser is a user as resolved from a directory service (Active
+// Directory, LDAP or Microsoft Graph). It is the directory layer's own DTO, so
+// resolvers stay independent of the authentication identity model.
+type DirectoryUser struct {
+	Email  string
+	Name   string
+	Groups []string
+}
+
+// QualifyGroups returns group names in the "<group>@<domain>" form that ACL
+// grants are matched on. Names that already carry a domain, and all names when
+// no domain is known, are returned unchanged.
+func QualifyGroups(groups []string, domain string) []string {
+	qualified := make([]string, 0, len(groups))
+	for _, group := range groups {
+		if domain == "" || strings.Contains(group, "@") {
+			qualified = append(qualified, group)
+			continue
+		}
+		qualified = append(qualified, group+"@"+domain)
+	}
+	return qualified
+}

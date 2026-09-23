@@ -3,6 +3,9 @@ package identitymodels
 
 import (
 	"errors"
+	"fmt"
+	"maps"
+	"slices"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclprincipal"
@@ -29,12 +32,19 @@ const (
 
 // Identity is a representation of the consumers identity kept in the context for authentication
 type Identity struct {
-	Auth            AuthInfo     `json:"auth"`
-	Type            IdentityType `json:"type,omitempty"`
-	User            *User        `json:"user,omitempty"`
-	token           string
-	ClusterIdentity *ServiceIdentity `json:"clusterIdentity,omitempty"`
-	ServiceIdentity *ServiceIdentity `json:"serviceIdentity,omitempty"`
+	Auth AuthInfo     `json:"auth"`
+	Type IdentityType `json:"type,omitempty"`
+
+	// Unexported so every read goes through a getter that verifies the identity
+	// first. Build identities with NewUserIdentity, NewClusterIdentity or
+	// NewServiceIdentity; a struct literal resolves to no access.
+	subject string
+	name    string
+	email   string
+	groups  []string
+	claims  map[string]string
+
+	token string
 }
 
 type AuthInfo struct {
@@ -43,33 +53,184 @@ type AuthInfo struct {
 	ExpirationTime time.Time        `json:"expirationTime"`
 }
 
-// The type is a representation of a user identity.
-//
-// The json fields corresponds with the values provided in an oidc token.
-type User struct {
-	Email           string   `json:"email"`
-	IsEmailVerified bool     `json:"email_verified"`
-	Name            string   `json:"name"`
-	Groups          []string `json:"groups"`
-	Audience        string   `json:"aud"`
-	Issuer          string   `json:"iss"`
-	ExpirationTime  int      `json:"exp"`
+// Errors returned when an identity cannot be resolved. They are sentinels so
+// callers can match with errors.Is rather than on message text.
+var (
+	ErrUnknownIdentityType = errors.New("unknown identity type")
+	ErrIncompleteIdentity  = errors.New("incomplete identity")
+	ErrNotAUser            = errors.New("identity is not a user")
+)
+
+// identityView is the normalised read model of an Identity. Every getter reads
+// through it, so the rules for deriving subject, name, email and groups exist
+// once regardless of how the identity was built.
+type identityView struct {
+	subject string
+	name    string
+	email   string
+	groups  []string
+}
+
+// validateFor enforces the per-type invariants of a resolved identity.
+func (v identityView) validateFor(identityType IdentityType) error {
+	switch identityType {
+	case IdentityTypeUser:
+		if v.email == "" {
+			return fmt.Errorf("%w: user identity requires an email", ErrIncompleteIdentity)
+		}
+	case IdentityTypeCluster:
+		// Cluster grants are keyed by uid (the subject); the cluster id is what
+		// the cluster is operationally known by. Both are required.
+		if v.name == "" {
+			return fmt.Errorf("%w: cluster identity requires a cluster id", ErrIncompleteIdentity)
+		}
+	case IdentityTypeService:
+	default:
+		return fmt.Errorf("%w: %q", ErrUnknownIdentityType, identityType)
+	}
+	if v.subject == "" {
+		return fmt.Errorf("%w: %s identity requires a subject", ErrIncompleteIdentity, identityType)
+	}
+	return nil
+}
+
+// principalGroups returns the ACL groups a principal resolves to. User groups
+// come from the identity provider and are sanitised; cluster and service groups
+// are ROR-owned principal names derived from the subject.
+func principalGroups(identityType IdentityType, subject string, idpGroups []string) ([]string, error) {
+	switch identityType {
+	case IdentityTypeUser:
+		// Groups in the ROR-owned domain grant authorization directly, so one
+		// supplied by the identity provider would allow impersonating a cluster,
+		// service or service account.
+		return aclprincipal.SanitizeExternalGroups(idpGroups), nil
+	case IdentityTypeCluster:
+		return aclprincipal.ClusterGroups(subject), nil
+	case IdentityTypeService:
+		return aclprincipal.ServiceGroups(subject), nil
+	default:
+		return nil, fmt.Errorf("%w: %q", ErrUnknownIdentityType, identityType)
+	}
+}
+
+// resolve normalises the identity into the read model every getter reads
+// through.
+func (identity *Identity) resolve() (identityView, error) {
+	v := identityView{
+		subject: identity.subject,
+		name:    identity.name,
+		email:   identity.email,
+		groups:  identity.groups,
+	}
+	if err := v.validateFor(identity.Type); err != nil {
+		return identityView{}, err
+	}
+	return v, nil
+}
+
+// Validate reports whether the identity is complete enough to act on.
+func (identity *Identity) Validate() error {
+	_, err := identity.resolve()
+	return err
+}
+
+// newIdentity completes and validates an identity produced by a constructor.
+func newIdentity(identity Identity, idpGroups []string) (Identity, error) {
+	groups, err := principalGroups(identity.Type, identity.subject, idpGroups)
+	if err != nil {
+		return Identity{}, err
+	}
+	identity.groups = groups
+	if err := identity.Validate(); err != nil {
+		return Identity{}, err
+	}
+	return identity, nil
+}
+
+// NewUserIdentity builds a user identity. idpGroups are the groups supplied by
+// the identity provider; reserved ROR-owned names are dropped.
+func NewUserIdentity(auth AuthInfo, email, name string, idpGroups []string, claims map[string]string) (Identity, error) {
+	return newIdentity(Identity{
+		Auth:    auth,
+		Type:    IdentityTypeUser,
+		subject: email,
+		name:    name,
+		email:   email,
+		claims:  maps.Clone(claims),
+	}, idpGroups)
+}
+
+// NewClusterIdentity builds a cluster identity. The uid is required: cluster
+// grants are keyed by uid, so an identity without one resolves to no access.
+func NewClusterIdentity(auth AuthInfo, clusterID, uid string) (Identity, error) {
+	return newIdentity(Identity{
+		Auth:    auth,
+		Type:    IdentityTypeCluster,
+		subject: uid,
+		name:    clusterID,
+	}, nil)
+}
+
+// NewServiceIdentity builds a service identity.
+func NewServiceIdentity(auth AuthInfo, id string) (Identity, error) {
+	return newIdentity(Identity{
+		Auth:    auth,
+		Type:    IdentityTypeService,
+		subject: id,
+		name:    id,
+	}, nil)
 }
 
 // Function returns the id of the identity.
 //
 // User is represented by email, cluster by clusterid and service by service name
 func (identity *Identity) GetId() string {
-	switch identity.Type {
-	case IdentityTypeUser:
-		return identity.User.Email
-	case IdentityTypeCluster:
-		return identity.ClusterIdentity.Id
-	case IdentityTypeService:
-		return identity.ServiceIdentity.Id
-	default:
+	v, err := identity.resolve()
+	if err != nil {
 		return ""
 	}
+	if identity.Type == IdentityTypeCluster {
+		return v.name
+	}
+	return v.subject
+}
+
+// GetSubject returns the identifier authorization is derived from: a user's
+// email, a cluster's uid or a service's id.
+func (identity *Identity) GetSubject() (string, error) {
+	v, err := identity.resolve()
+	if err != nil {
+		return "", err
+	}
+	return v.subject, nil
+}
+
+// GetName returns the human readable identifier: a user's display name, a
+// cluster's cluster id or a service's id.
+func (identity *Identity) GetName() (string, error) {
+	v, err := identity.resolve()
+	if err != nil {
+		return "", err
+	}
+	return v.name, nil
+}
+
+// GetEmail returns the email of a user identity and fails for any other type.
+func (identity *Identity) GetEmail() (string, error) {
+	if identity.Type != IdentityTypeUser {
+		return "", fmt.Errorf("%w: %q", ErrNotAUser, identity.Type)
+	}
+	v, err := identity.resolve()
+	if err != nil {
+		return "", err
+	}
+	return v.email, nil
+}
+
+// GetClaim returns an additional claim captured at authentication.
+func (identity *Identity) GetClaim(name string) (string, bool) {
+	value, ok := identity.claims[name]
+	return value, ok
 }
 
 // Function returns true if identity is an user
@@ -90,29 +251,13 @@ func (identity *Identity) IsService() bool {
 // GetGroups returns the ACL groups of the identity. Every identity type
 // resolves through the same group mechanism: user groups come from the identity
 // provider, while cluster and service groups are ROR-owned principal names.
+// The returned slice is a copy, so callers cannot mutate the identity.
 func (identity *Identity) GetGroups() ([]string, error) {
-	switch identity.Type {
-	case IdentityTypeUser:
-		if identity.User == nil {
-			return nil, errors.New("user identity has nil user")
-		}
-		// Groups in the ROR-owned domain grant authorization directly, so one
-		// supplied by the identity provider would allow impersonating a cluster,
-		// service or service account.
-		return aclprincipal.SanitizeExternalGroups(identity.User.Groups), nil
-	case IdentityTypeCluster:
-		if identity.ClusterIdentity == nil || identity.ClusterIdentity.Uid == "" {
-			return nil, errors.New("cluster identity has no uid")
-		}
-		return aclprincipal.ClusterGroups(identity.ClusterIdentity.Uid), nil
-	case IdentityTypeService:
-		if identity.ServiceIdentity == nil || identity.ServiceIdentity.Id == "" {
-			return nil, errors.New("service identity has no id")
-		}
-		return aclprincipal.ServiceGroups(identity.ServiceIdentity.Id), nil
-	default:
-		return nil, errors.New("type not implemented")
+	v, err := identity.resolve()
+	if err != nil {
+		return nil, err
 	}
+	return slices.Clone(v.groups), nil
 }
 
 // Function returns a bson.A containing the groups of an identity. To be used in filtering in mongodb.
@@ -140,10 +285,4 @@ func (identity *Identity) SetToken(token string) {
 
 func (identity *Identity) GetToken() string {
 	return identity.token
-}
-
-// The type is a representation of a cluster or service identity. May be splited if needed.
-type ServiceIdentity struct {
-	Id  string `json:"id"`
-	Uid string `json:"uid,omitempty"`
 }

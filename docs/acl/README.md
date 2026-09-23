@@ -16,7 +16,7 @@ HTTP Request (Bearer JWT)
 OAuth Middleware (oauthmiddleware)
   • Validates JWT via oidchelper.MultiIssuerValidator
   • Extracts groups + email from claims
-  • Builds Identity{Type, User{Groups, Email}}
+  • Builds a user Identity via identitymodels.NewUserIdentity()
   • Stores in Gin context via context.WithValue()
   │
   ▼
@@ -34,10 +34,10 @@ Controller Handler
 Every identity type resolves through the same group mechanism — there is no
 cluster special case. `Identity.GetGroups()` is the single source:
 
-| Identity | Groups |
-| -------- | ------ |
-| User     | the identity provider's groups, with any reserved `*.ror.system` group stripped |
-| Cluster  | `<uid>@cluster.ror.system`, `*@cluster.ror.system` |
+| Identity | Groups                                                                                              |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| User     | the identity provider's groups, with any reserved `*.ror.system` group stripped                     |
+| Cluster  | `<uid>@cluster.ror.system`, `*@cluster.ror.system`                                                  |
 | Service  | `<id>@service.ror.system`, `service-<id>@ror.system` (legacy, transitional), `*@service.ror.system` |
 
 Names are built by `aclmodels/aclprincipal`, which also covers Kubernetes
@@ -221,16 +221,16 @@ user lacks capability for.
 
 ## Package Map
 
-| Package      | Location                         | Purpose                                                                            |
-| ------------ | -------------------------------- | ---------------------------------------------------------------------------------- |
-| `acl`        | `pkg/acl/`                       | Resolver, Store interface, ScopeExpander, Ownerref type                            |
-| `aclstore`   | `pkg/acl/aclstore/`              | MongoStore, CachedStore, MongoScopeExpander, OwnerrefsToFilter, ResourceTypeFilter |
-| `aclmodels`  | `pkg/models/aclmodels/`          | V2 + V3 types, Capability/Verb, V2↔V3 converters                                   |
-| `aclscope`   | `pkg/models/aclmodels/aclscope/` | Scope + Subject types, shared between V2 and V3                                    |
+| Package        | Location                             | Purpose                                                                                  |
+| -------------- | ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `acl`          | `pkg/acl/`                           | Resolver, Store interface, ScopeExpander, Ownerref type                                  |
+| `aclstore`     | `pkg/acl/aclstore/`                  | MongoStore, CachedStore, MongoScopeExpander, OwnerrefsToFilter, ResourceTypeFilter       |
+| `aclmodels`    | `pkg/models/aclmodels/`              | V2 + V3 types, Capability/Verb, V2↔V3 converters                                         |
+| `aclscope`     | `pkg/models/aclmodels/aclscope/`     | Scope + Subject types, shared between V2 and V3                                          |
 | `aclprincipal` | `pkg/models/aclmodels/aclprincipal/` | ROR-owned principal group names (cluster/service/serviceaccount) + reserved-domain guard |
-| `rordefs`    | `pkg/rorresources/rordefs/`      | Named resource definitions (ResourceConfiguration, etc.)                           |
-| `rorcontext` | `pkg/context/rorcontext/`        | GetIdentityFromRorContext()                                                        |
-| `identity`   | `pkg/models/identity/`           | Identity type, Groups, IsCluster(), GetId()                                        |
+| `rordefs`      | `pkg/rorresources/rordefs/`          | Named resource definitions (ResourceConfiguration, etc.)                                 |
+| `rorcontext`   | `pkg/context/rorcontext/`            | GetIdentityFromRorContext()                                                              |
+| `identity`     | `pkg/models/identity/`               | Identity type, Groups, IsCluster(), GetId()                                              |
 
 ## V2 ↔ V3 Conversion
 

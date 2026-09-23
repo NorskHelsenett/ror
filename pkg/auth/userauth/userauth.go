@@ -13,7 +13,6 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/auth/userauth/msgraph"
 	"github.com/NorskHelsenett/ror/pkg/clients"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
-	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 )
 
@@ -30,7 +29,7 @@ type DomainResolverConfig struct {
 }
 
 type DomainResolverInterface interface {
-	GetUser(ctx context.Context, userId string) (*identitymodels.User, error)
+	GetUser(ctx context.Context, userId string) (*authtools.DirectoryUser, error)
 	clients.CommonHealthChecker
 }
 
@@ -47,7 +46,7 @@ func NewDomainResolvers() *DomainResolvers {
 	return &DomainResolvers{resolvers: map[string]DomainResolverInterface{}}
 }
 
-func (d *DomainResolvers) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
+func (d *DomainResolvers) GetUser(ctx context.Context, userId string) (*authtools.DirectoryUser, error) {
 	ctx, span := rortracer.StartSpan(ctx, "userauth.DomainResolvers.GetUser")
 	defer span.End()
 	_, domain, err := authtools.SplitUserId(userId)
