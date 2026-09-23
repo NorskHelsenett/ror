@@ -12,7 +12,6 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper"
 	"github.com/NorskHelsenett/ror/pkg/helpers/kvcachehelper/memorycache"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
-	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
@@ -68,7 +67,7 @@ func NewMsGraphClient(config MsGraphConfig, cacheHelper kvcachehelper.CacheInter
 // GetUsersWithGroups gets a user and the name of the groups the user is a member of
 // TODO: Implement isExpired
 // TODO: Implement isDisabled...
-func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
+func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*authtools.DirectoryUser, error) {
 	ctx, span := rortracer.StartSpan(ctx, "msgraph.MsGraphClient.GetUser")
 	defer span.End()
 	if g == nil {
@@ -83,7 +82,7 @@ func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymo
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	var ret *identitymodels.User
+	var ret *authtools.DirectoryUser
 	var groupnames []string = []string{}
 	var user models.Userable
 
@@ -120,7 +119,6 @@ func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymo
 		}
 	}
 
-	addDomainpartToGroups(&groupnames, userId)
 	authtools.UserLookupHistogram.WithLabelValues("msgraph", g.config.Domain, ApiEndpoint, "200").Observe(time.Since(queryStart).Seconds())
 	if user == nil {
 		return nil, fmt.Errorf("msgraph returned nil user for userId: %s", userId)
@@ -134,27 +132,18 @@ func (g *MsGraphClient) GetUser(ctx context.Context, userId string) (*identitymo
 		return nil, fmt.Errorf("msgraph returned nil display name for userId: %s", userId)
 	}
 
-	ret = &identitymodels.User{
-		Email:           *userPrincipalName,
-		Name:            *displayName,
-		IsEmailVerified: true,
-		Groups:          groupnames,
-	}
-	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(ret.Groups)))
-	return ret, nil
-}
-
-func addDomainpartToGroups(groupnames *[]string, userId string) {
-
 	_, domain, err := authtools.SplitUserId(userId)
 	if err != nil {
 		domain = ""
 	}
 
-	// TODO: Add check if domainpart is already part of the group name
-	for i, group := range *groupnames {
-		(*groupnames)[i] = group + "@" + domain
+	ret = &authtools.DirectoryUser{
+		Email:  *userPrincipalName,
+		Name:   *displayName,
+		Groups: authtools.QualifyGroups(groupnames, domain),
 	}
+	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(ret.Groups)))
+	return ret, nil
 }
 
 // getUser gets a user from the graph api

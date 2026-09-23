@@ -14,13 +14,15 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
-	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 	"github.com/go-ldap/ldap/v3"
 )
 
 var DefaultTimeout = 10 * time.Second
+
+// adGroupCN extracts the common name from a distinguished name in memberOf.
+var adGroupCN = regexp.MustCompile("CN=([^,]+)")
 
 type AdConfig struct {
 	Domain       string `json:"domain"`
@@ -169,7 +171,7 @@ func (l *AdClient) search(basedn, filter string, attributes []string) (*ldap.Sea
 	return nil, fmt.Errorf("could not fetch search entries")
 }
 
-func (l *AdClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
+func (l *AdClient) GetUser(ctx context.Context, userId string) (*authtools.DirectoryUser, error) {
 	ctx, span := rortracer.StartSpan(ctx, "activedirectory.AdClient.GetUser")
 	defer span.End()
 	userpart, domainpart, err := authtools.SplitUserId(userId)
@@ -217,22 +219,21 @@ func (l *AdClient) GetUser(ctx context.Context, userId string) (*identitymodels.
 		return nil, err
 	}
 
-	userGroups := make([]string, 0)
-	memberOfString := result.Entries[0].GetAttributeValues("memberOf")
-	if len(userEntry.GetAttributeValue("memberOf")) > 0 {
-		re := regexp.MustCompile("CN=([^,]+)")
-		for _, entry := range memberOfString {
-			match := re.FindStringSubmatch(entry)
-			userGroups = append(userGroups, fmt.Sprintf("%s@%s", match[1], domainpart))
+	bareGroups := make([]string, 0)
+	for _, entry := range result.Entries[0].GetAttributeValues("memberOf") {
+		match := adGroupCN.FindStringSubmatch(entry)
+		if len(match) < 2 {
+			continue
 		}
-	} else {
+		bareGroups = append(bareGroups, match[1])
+	}
+	if len(bareGroups) == 0 {
 		return nil, errors.New("account has no groups")
 	}
-	user := identitymodels.User{
-		Email:           userId,
-		Name:            userEntry.GetAttributeValue("cn"),
-		IsEmailVerified: true,
-		Groups:          userGroups,
+	user := authtools.DirectoryUser{
+		Email:  userId,
+		Name:   userEntry.GetAttributeValue("cn"),
+		Groups: authtools.QualifyGroups(bareGroups, domainpart),
 	}
 
 	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(user.Groups)))

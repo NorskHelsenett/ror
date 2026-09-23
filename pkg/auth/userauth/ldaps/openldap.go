@@ -11,7 +11,6 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/auth/authtools"
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
-	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 	"github.com/go-ldap/ldap/v3"
@@ -135,7 +134,7 @@ func (l *LdapsClient) search(basedn, filter string, attributes []string) (*ldap.
 	return nil, fmt.Errorf("could not fetch search entries")
 }
 
-func (l *LdapsClient) GetUser(ctx context.Context, userId string) (*identitymodels.User, error) {
+func (l *LdapsClient) GetUser(ctx context.Context, userId string) (*authtools.DirectoryUser, error) {
 	ctx, span := rortracer.StartSpan(ctx, "openldap.LdapsClient.GetUser")
 	defer span.End()
 	_, domainpart, err := authtools.SplitUserId(userId)
@@ -181,20 +180,19 @@ func (l *LdapsClient) GetUser(ctx context.Context, userId string) (*identitymode
 	if err != nil {
 		return nil, err
 	}
-	userGroups := make([]string, 0)
+	bareGroups := make([]string, 0)
 	if groups != nil && len(groups.Entries) > 0 {
 		for _, entry := range groups.Entries {
-			userGroups = append(userGroups, fmt.Sprintf("%s@%s", entry.GetAttributeValue("cn"), domainpart))
+			bareGroups = append(bareGroups, entry.GetAttributeValue("cn"))
 		}
 	} else {
 		return nil, errors.New("account has no groups")
 	}
 
-	user := identitymodels.User{
-		Email:           userId,
-		Name:            userEntry.GetAttributeValue("cn"),
-		IsEmailVerified: true,
-		Groups:          userGroups,
+	user := authtools.DirectoryUser{
+		Email:  userId,
+		Name:   userEntry.GetAttributeValue("cn"),
+		Groups: authtools.QualifyGroups(bareGroups, domainpart),
 	}
 	rlog.Debug(fmt.Sprintf("Got user %s with %d groups", userId, len(user.Groups)))
 	return &user, nil
