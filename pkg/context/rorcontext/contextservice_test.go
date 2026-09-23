@@ -2,6 +2,7 @@ package rorcontext
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
@@ -53,7 +54,7 @@ func TestGetIdentityFromRorContext(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
-		if got != (identitymodels.Identity{}) {
+		if !reflect.DeepEqual(got, identitymodels.Identity{}) {
 			t.Fatalf("expected zero-value identity, got %+v", got)
 		}
 	})
