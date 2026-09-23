@@ -244,3 +244,27 @@ func TestReturnGroupQuery(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, query, len(groups))
 }
+
+// Audit records still read the deprecated payloads, so the constructors mirror
+// the flat state into them until those readers are migrated.
+func TestConstructors_FillDeprecatedPayload(t *testing.T) {
+	user, err := identitymodels.NewUserIdentity(testAuth, "alice@example.com", "Alice",
+		[]string{"team-blue@example.com"}, map[string]string{"email_verified": "true"})
+	require.NoError(t, err)
+	require.NotNil(t, user.User)
+	assert.Equal(t, "alice@example.com", user.User.Email)
+	assert.Equal(t, "Alice", user.User.Name)
+	assert.Equal(t, []string{"team-blue@example.com"}, user.User.Groups)
+	assert.True(t, user.User.IsEmailVerified)
+
+	cluster, err := identitymodels.NewClusterIdentity(testAuth, "prod-cluster-1", "uid-1")
+	require.NoError(t, err)
+	require.NotNil(t, cluster.ClusterIdentity)
+	assert.Equal(t, "prod-cluster-1", cluster.ClusterIdentity.Id)
+	assert.Equal(t, "uid-1", cluster.ClusterIdentity.Uid)
+
+	service, err := identitymodels.NewServiceIdentity(testAuth, "scanner")
+	require.NoError(t, err)
+	require.NotNil(t, service.ServiceIdentity)
+	assert.Equal(t, "scanner", service.ServiceIdentity.Id)
+}

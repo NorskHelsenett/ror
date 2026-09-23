@@ -201,7 +201,28 @@ func newIdentity(identity Identity, idpGroups []string) (Identity, error) {
 	if err := identity.Validate(); err != nil {
 		return Identity{}, err
 	}
+	identity.fillDeprecatedPayload()
 	return identity, nil
+}
+
+// fillDeprecatedPayload mirrors the flat state into the deprecated per-type
+// payloads so the call sites still reading them (notably audit records) keep
+// working. Removed once every reader uses the getters.
+func (identity *Identity) fillDeprecatedPayload() {
+	switch identity.Type {
+	case IdentityTypeUser:
+		verified, ok := identity.claims["email_verified"]
+		identity.User = &User{
+			Email:           identity.email,
+			Name:            identity.name,
+			Groups:          identity.groups,
+			IsEmailVerified: !ok || verified == "true",
+		}
+	case IdentityTypeCluster:
+		identity.ClusterIdentity = &ServiceIdentity{Id: identity.name, Uid: identity.subject}
+	case IdentityTypeService:
+		identity.ServiceIdentity = &ServiceIdentity{Id: identity.subject}
+	}
 }
 
 // NewUserIdentity builds a user identity. idpGroups are the groups supplied by
