@@ -7,6 +7,8 @@ import (
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclprincipal"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -15,32 +17,6 @@ var testAuth = identitymodels.AuthInfo{
 	AuthProvider:   identitymodels.IdentityProviderOidc,
 	AuthProviderID: "alice@example.com",
 	ExpirationTime: time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
-}
-
-// legacyUser/legacyCluster/legacyService build identities the deprecated way, so
-// the tests can assert the constructors and the struct literals resolve alike.
-func legacyUser(email, name string, groups []string) identitymodels.Identity {
-	return identitymodels.Identity{
-		Auth: testAuth,
-		Type: identitymodels.IdentityTypeUser,
-		User: &identitymodels.User{Email: email, Name: name, Groups: groups},
-	}
-}
-
-func legacyCluster(clusterID, uid string) identitymodels.Identity {
-	return identitymodels.Identity{
-		Auth:            testAuth,
-		Type:            identitymodels.IdentityTypeCluster,
-		ClusterIdentity: &identitymodels.ServiceIdentity{Id: clusterID, Uid: uid},
-	}
-}
-
-func legacyService(id string) identitymodels.Identity {
-	return identitymodels.Identity{
-		Auth:            testAuth,
-		Type:            identitymodels.IdentityTypeService,
-		ServiceIdentity: &identitymodels.ServiceIdentity{Id: id},
-	}
 }
 
 // assertResolvesTo checks every getter of an identity in one place.
@@ -63,9 +39,9 @@ func assertResolvesTo(t *testing.T, identity identitymodels.Identity, subject, n
 	assert.Equal(t, id, identity.GetId())
 }
 
-// The constructors and the deprecated struct literals must resolve identically,
-// so ror-api can migrate call sites one at a time.
-func TestIdentity_ConstructorMatchesLegacy(t *testing.T) {
+// Each constructor must resolve to the subject, name, id and groups its
+// principal type is authorized by.
+func TestConstructors_Resolve(t *testing.T) {
 	const (
 		email     = "alice@example.com"
 		userName  = "Alice Example"
@@ -80,7 +56,6 @@ func TestIdentity_ConstructorMatchesLegacy(t *testing.T) {
 		require.NoError(t, err)
 
 		assertResolvesTo(t, built, email, userName, email, idpGroups)
-		assertResolvesTo(t, legacyUser(email, userName, idpGroups), email, userName, email, idpGroups)
 	})
 
 	t.Run("cluster", func(t *testing.T) {
@@ -90,18 +65,13 @@ func TestIdentity_ConstructorMatchesLegacy(t *testing.T) {
 		// A cluster's subject is its uid while its id is what it is known by.
 		groups := []string{clusterUI + "@cluster.ror.system", "*@cluster.ror.system"}
 		assertResolvesTo(t, built, clusterUI, clusterID, clusterID, groups)
-		assertResolvesTo(t, legacyCluster(clusterID, clusterUI), clusterUI, clusterID, clusterID, groups)
 	})
 
 	t.Run("service", func(t *testing.T) {
 		built, err := identitymodels.NewServiceIdentity(testAuth, serviceID)
 		require.NoError(t, err)
 
-		legacy := legacyService(serviceID)
-		legacyGroups, err := legacy.GetGroups()
-		require.NoError(t, err)
-
-		assertResolvesTo(t, built, serviceID, serviceID, serviceID, legacyGroups)
+		assertResolvesTo(t, built, serviceID, serviceID, serviceID, aclprincipal.ServiceGroups(serviceID))
 	})
 }
 
@@ -144,18 +114,17 @@ func TestConstructors_RejectIncompleteInput(t *testing.T) {
 	}
 }
 
-// A malformed identity must fail closed rather than panic: GetId used to
-// dereference the per-type payload without a nil check.
+// An identity built as a struct literal has no resolvable state and must fail
+// closed rather than panic.
 func TestIdentity_MalformedFailsClosed(t *testing.T) {
 	tests := []struct {
 		name     string
 		identity identitymodels.Identity
 		wantErr  error
 	}{
-		{"user with nil payload", identitymodels.Identity{Type: identitymodels.IdentityTypeUser}, identitymodels.ErrIncompleteIdentity},
-		{"cluster with nil payload", identitymodels.Identity{Type: identitymodels.IdentityTypeCluster}, identitymodels.ErrIncompleteIdentity},
-		{"cluster without uid", legacyCluster("prod-cluster-1", ""), identitymodels.ErrIncompleteIdentity},
-		{"service with nil payload", identitymodels.Identity{Type: identitymodels.IdentityTypeService}, identitymodels.ErrIncompleteIdentity},
+		{"user literal", identitymodels.Identity{Type: identitymodels.IdentityTypeUser}, identitymodels.ErrIncompleteIdentity},
+		{"cluster literal", identitymodels.Identity{Type: identitymodels.IdentityTypeCluster}, identitymodels.ErrIncompleteIdentity},
+		{"service literal", identitymodels.Identity{Type: identitymodels.IdentityTypeService}, identitymodels.ErrIncompleteIdentity},
 		{"unknown type", identitymodels.Identity{Type: "Robot"}, identitymodels.ErrUnknownIdentityType},
 		{"zero value", identitymodels.Identity{}, identitymodels.ErrUnknownIdentityType},
 	}
@@ -243,28 +212,4 @@ func TestReturnGroupQuery(t *testing.T) {
 	groups, err := identity.GetGroups()
 	require.NoError(t, err)
 	assert.Len(t, query, len(groups))
-}
-
-// Audit records still read the deprecated payloads, so the constructors mirror
-// the flat state into them until those readers are migrated.
-func TestConstructors_FillDeprecatedPayload(t *testing.T) {
-	user, err := identitymodels.NewUserIdentity(testAuth, "alice@example.com", "Alice",
-		[]string{"team-blue@example.com"}, map[string]string{"email_verified": "true"})
-	require.NoError(t, err)
-	require.NotNil(t, user.User)
-	assert.Equal(t, "alice@example.com", user.User.Email)
-	assert.Equal(t, "Alice", user.User.Name)
-	assert.Equal(t, []string{"team-blue@example.com"}, user.User.Groups)
-	assert.True(t, user.User.IsEmailVerified)
-
-	cluster, err := identitymodels.NewClusterIdentity(testAuth, "prod-cluster-1", "uid-1")
-	require.NoError(t, err)
-	require.NotNil(t, cluster.ClusterIdentity)
-	assert.Equal(t, "prod-cluster-1", cluster.ClusterIdentity.Id)
-	assert.Equal(t, "uid-1", cluster.ClusterIdentity.Uid)
-
-	service, err := identitymodels.NewServiceIdentity(testAuth, "scanner")
-	require.NoError(t, err)
-	require.NotNil(t, service.ServiceIdentity)
-	assert.Equal(t, "scanner", service.ServiceIdentity.Id)
 }

@@ -35,16 +35,9 @@ type Identity struct {
 	Auth AuthInfo     `json:"auth"`
 	Type IdentityType `json:"type,omitempty"`
 
-	// Deprecated: construct identities with NewUserIdentity, NewClusterIdentity or
-	// NewServiceIdentity and read them through the getters. These per-type payloads
-	// are retained until every caller is migrated.
-	User            *User            `json:"user,omitempty"`
-	ClusterIdentity *ServiceIdentity `json:"clusterIdentity,omitempty"`
-	ServiceIdentity *ServiceIdentity `json:"serviceIdentity,omitempty"`
-
-	// Flat state populated by the constructors, kept unexported so every read goes
-	// through a getter that verifies the identity first. An identity built as a
-	// struct literal leaves these empty and is resolved from the payloads above.
+	// Unexported so every read goes through a getter that verifies the identity
+	// first. Build identities with NewUserIdentity, NewClusterIdentity or
+	// NewServiceIdentity; a struct literal resolves to no access.
 	subject string
 	name    string
 	email   string
@@ -58,19 +51,6 @@ type AuthInfo struct {
 	AuthProvider   IdentityProvider `json:"authProvider,omitempty"`
 	AuthProviderID string           `json:"authProviderId,omitempty"`
 	ExpirationTime time.Time        `json:"expirationTime"`
-}
-
-// The type is a representation of a user identity.
-//
-// The json fields corresponds with the values provided in an oidc token.
-type User struct {
-	Email           string   `json:"email"`
-	IsEmailVerified bool     `json:"email_verified"`
-	Name            string   `json:"name"`
-	Groups          []string `json:"groups"`
-	Audience        string   `json:"aud"`
-	Issuer          string   `json:"iss"`
-	ExpirationTime  int      `json:"exp"`
 }
 
 // Errors returned when an identity cannot be resolved. They are sentinels so
@@ -133,12 +113,9 @@ func principalGroups(identityType IdentityType, subject string, idpGroups []stri
 	}
 }
 
-// resolve normalises the identity, preferring the flat state written by the
-// constructors and falling back to the deprecated per-type payloads.
+// resolve normalises the identity into the read model every getter reads
+// through.
 func (identity *Identity) resolve() (identityView, error) {
-	if identity.subject == "" {
-		return identity.resolveLegacy()
-	}
 	v := identityView{
 		subject: identity.subject,
 		name:    identity.name,
@@ -148,40 +125,6 @@ func (identity *Identity) resolve() (identityView, error) {
 	if err := v.validateFor(identity.Type); err != nil {
 		return identityView{}, err
 	}
-	return v, nil
-}
-
-// resolveLegacy derives the view from the deprecated per-type payloads. It reads
-// them nil-safely, so a malformed identity yields an error instead of a panic.
-func (identity *Identity) resolveLegacy() (identityView, error) {
-	var (
-		v         identityView
-		idpGroups []string
-	)
-	switch identity.Type {
-	case IdentityTypeUser:
-		if identity.User != nil {
-			v = identityView{subject: identity.User.Email, name: identity.User.Name, email: identity.User.Email}
-			idpGroups = identity.User.Groups
-		}
-	case IdentityTypeCluster:
-		if identity.ClusterIdentity != nil {
-			v = identityView{subject: identity.ClusterIdentity.Uid, name: identity.ClusterIdentity.Id}
-		}
-	case IdentityTypeService:
-		if identity.ServiceIdentity != nil {
-			v = identityView{subject: identity.ServiceIdentity.Id, name: identity.ServiceIdentity.Id}
-		}
-	}
-	if err := v.validateFor(identity.Type); err != nil {
-		return identityView{}, err
-	}
-
-	groups, err := principalGroups(identity.Type, v.subject, idpGroups)
-	if err != nil {
-		return identityView{}, err
-	}
-	v.groups = groups
 	return v, nil
 }
 
@@ -201,28 +144,7 @@ func newIdentity(identity Identity, idpGroups []string) (Identity, error) {
 	if err := identity.Validate(); err != nil {
 		return Identity{}, err
 	}
-	identity.fillDeprecatedPayload()
 	return identity, nil
-}
-
-// fillDeprecatedPayload mirrors the flat state into the deprecated per-type
-// payloads so the call sites still reading them (notably audit records) keep
-// working. Removed once every reader uses the getters.
-func (identity *Identity) fillDeprecatedPayload() {
-	switch identity.Type {
-	case IdentityTypeUser:
-		verified, ok := identity.claims["email_verified"]
-		identity.User = &User{
-			Email:           identity.email,
-			Name:            identity.name,
-			Groups:          identity.groups,
-			IsEmailVerified: !ok || verified == "true",
-		}
-	case IdentityTypeCluster:
-		identity.ClusterIdentity = &ServiceIdentity{Id: identity.name, Uid: identity.subject}
-	case IdentityTypeService:
-		identity.ServiceIdentity = &ServiceIdentity{Id: identity.subject}
-	}
 }
 
 // NewUserIdentity builds a user identity. idpGroups are the groups supplied by
@@ -363,10 +285,4 @@ func (identity *Identity) SetToken(token string) {
 
 func (identity *Identity) GetToken() string {
 	return identity.token
-}
-
-// The type is a representation of a cluster or service identity. May be splited if needed.
-type ServiceIdentity struct {
-	Id  string `json:"id"`
-	Uid string `json:"uid,omitempty"`
 }

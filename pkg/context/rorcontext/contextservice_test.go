@@ -10,9 +10,9 @@ import (
 
 func TestGetIdentityFromRorContext(t *testing.T) {
 	t.Run("returns identity when present in context", func(t *testing.T) {
-		expected := identitymodels.Identity{
-			Type: identitymodels.IdentityTypeUser,
-			User: &identitymodels.User{Email: "test@example.com"},
+		expected, err := identitymodels.NewUserIdentity(identitymodels.AuthInfo{}, "test@example.com", "Test User", nil, nil)
+		if err != nil {
+			t.Fatalf("build user identity: %v", err)
 		}
 		ctx := context.WithValue(context.Background(), identitymodels.ContexIdentity, expected)
 
@@ -20,18 +20,17 @@ func TestGetIdentityFromRorContext(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected nil error, got %v", err)
 		}
-		if got.Type != expected.Type {
-			t.Fatalf("expected type %q, got %q", expected.Type, got.Type)
-		}
-		if got.User == nil || got.User.Email != expected.User.Email {
-			t.Fatalf("expected user email %q, got %+v", expected.User.Email, got.User)
+		// DeepEqual covers the unexported state too, so the whole identity must
+		// survive the round-trip, not just the fields a getter happens to expose.
+		if !reflect.DeepEqual(got, expected) {
+			t.Fatalf("expected %+v, got %+v", expected, got)
 		}
 	})
 
 	t.Run("returns cluster identity when present in context", func(t *testing.T) {
-		expected := identitymodels.Identity{
-			Type:            identitymodels.IdentityTypeCluster,
-			ClusterIdentity: &identitymodels.ServiceIdentity{Id: "cluster-1"},
+		expected, err := identitymodels.NewClusterIdentity(identitymodels.AuthInfo{}, "cluster-1", "uid-1")
+		if err != nil {
+			t.Fatalf("build cluster identity: %v", err)
 		}
 		ctx := context.WithValue(context.Background(), identitymodels.ContexIdentity, expected)
 
@@ -39,11 +38,8 @@ func TestGetIdentityFromRorContext(t *testing.T) {
 		if err != nil {
 			t.Fatalf("expected nil error, got %v", err)
 		}
-		if got.Type != expected.Type {
-			t.Fatalf("expected type %q, got %q", expected.Type, got.Type)
-		}
-		if got.ClusterIdentity == nil || got.ClusterIdentity.Id != expected.ClusterIdentity.Id {
-			t.Fatalf("expected cluster id %q, got %+v", expected.ClusterIdentity.Id, got.ClusterIdentity)
+		if !reflect.DeepEqual(got, expected) {
+			t.Fatalf("expected %+v, got %+v", expected, got)
 		}
 	})
 
@@ -62,18 +58,15 @@ func TestGetIdentityFromRorContext(t *testing.T) {
 
 func TestMustGetIdentityFromRorContext(t *testing.T) {
 	t.Run("returns identity when present in context", func(t *testing.T) {
-		expected := identitymodels.Identity{
-			Type:            identitymodels.IdentityTypeService,
-			ServiceIdentity: &identitymodels.ServiceIdentity{Id: "svc-1"},
+		expected, err := identitymodels.NewServiceIdentity(identitymodels.AuthInfo{}, "svc-1")
+		if err != nil {
+			t.Fatalf("build service identity: %v", err)
 		}
 		ctx := context.WithValue(context.Background(), identitymodels.ContexIdentity, expected)
 
 		got := MustGetIdentityFromRorContext(ctx)
-		if got.Type != expected.Type {
-			t.Fatalf("expected type %q, got %q", expected.Type, got.Type)
-		}
-		if got.ServiceIdentity == nil || got.ServiceIdentity.Id != expected.ServiceIdentity.Id {
-			t.Fatalf("expected service id %q, got %+v", expected.ServiceIdentity.Id, got.ServiceIdentity)
+		if !reflect.DeepEqual(got, expected) {
+			t.Fatalf("expected %+v, got %+v", expected, got)
 		}
 	})
 

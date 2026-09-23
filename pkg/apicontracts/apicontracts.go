@@ -520,8 +520,8 @@ type SSEMessage struct {
 }
 
 type SSEClient struct {
-	Identity   identitymodels.Identity `json:"identity"`
-	Connection chan string             `json:"connection"`
+	Identity   identitymodels.Identity
+	Connection chan string
 }
 
 type TanzuKubeConfigPayload struct {
