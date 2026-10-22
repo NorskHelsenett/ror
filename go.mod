@@ -32,7 +32,7 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/tkrajina/typescriptify-golang-structs v0.2.0
 	github.com/vitistack/common v1.0.0
-	go.mongodb.org/mongo-driver/v2 v2.9.1
+	go.mongodb.org/mongo-driver/v2 v2.9.2
 	go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo v0.0.0-20260316083141-e92a00df8617
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.72.0
 	go.opentelemetry.io/otel v1.47.0
