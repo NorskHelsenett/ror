@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/v4/jwk"
 )
@@ -18,18 +19,20 @@ type IssuerConfig struct {
 
 // TokenClaims represents the claims extracted from a validated token.
 type TokenClaims struct {
-	Subject          string    `json:"sub"`
-	Issuer           string    `json:"iss"`
-	Email            string    `json:"email"`
-	EmailVerified    bool      `json:"email_verified"`
-	Name             string    `json:"name"`
-	Groups           []string  `json:"groups"`
-	Audience         string    `json:"aud"`
-	ExpirationTime   time.Time `json:"exp"`
-	IssuedAt         time.Time `json:"iat"`
-	ClusterID        string    `json:"clusterID,omitempty"`
-	ProviderISS      string    `json:"providerISS,omitempty"`
-	ProviderAudience string    `json:"providerAudience,omitempty"`
+	Subject          string           `json:"sub"`
+	Issuer           string           `json:"iss"`
+	Email            string           `json:"email"`
+	EmailVerified    bool             `json:"email_verified"`
+	Name             string           `json:"name"`
+	Groups           []string         `json:"groups"`
+	Audience         string           `json:"aud"`
+	ExpirationTime   time.Time        `json:"exp"`
+	IssuedAt         time.Time        `json:"iat"`
+	ClusterID        string           `json:"clusterID,omitempty"`
+	ProviderISS      string           `json:"providerISS,omitempty"`
+	ProviderAudience string           `json:"providerAudience,omitempty"`
+	ACLGrants        aclgrants.Grants `json:"ror_grants,omitempty"`
+	ACLGrantsPresent bool             `json:"-"`
 }
 
 // TokenValidator validates OIDC tokens from one or more issuers.

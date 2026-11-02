@@ -1,12 +1,15 @@
 package oidchelper
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/rorhealth"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 
 	gooidc "github.com/coreos/go-oidc/v3/oidc"
@@ -269,26 +272,40 @@ func (v *MultiIssuerValidator) ValidateToken(ctx context.Context, tokenString st
 	}
 
 	var rawClaims struct {
-		Email         string   `json:"email"`
-		EmailVerified bool     `json:"email_verified"`
-		Name          string   `json:"name"`
-		Groups        []string `json:"groups"`
-		Audience      string   `json:"aud"`
-		Issuer        string   `json:"iss"`
-		Exp           int64    `json:"exp"`
+		Email         string          `json:"email"`
+		EmailVerified bool            `json:"email_verified"`
+		Name          string          `json:"name"`
+		Groups        []string        `json:"groups"`
+		Audience      string          `json:"aud"`
+		Issuer        string          `json:"iss"`
+		Exp           int64           `json:"exp"`
+		ACLGrants     json.RawMessage `json:"ror_grants"`
 	}
 	if err := idToken.Claims(&rawClaims); err != nil {
 		return nil, fmt.Errorf("could not extract claims: %w", err)
 	}
 
+	var grants aclgrants.Grants
+	grantsPresent := len(rawClaims.ACLGrants) > 0
+	if grantsPresent {
+		if bytes.Equal(bytes.TrimSpace(rawClaims.ACLGrants), []byte("null")) {
+			return nil, fmt.Errorf("invalid ror_grants claim: expected an array")
+		}
+		if err := json.Unmarshal(rawClaims.ACLGrants, &grants); err != nil {
+			return nil, fmt.Errorf("invalid ror_grants claim: %w", err)
+		}
+	}
+
 	return &TokenClaims{
-		Subject:        rawClaims.Email,
-		Issuer:         rawClaims.Issuer,
-		Email:          rawClaims.Email,
-		EmailVerified:  rawClaims.EmailVerified,
-		Name:           rawClaims.Name,
-		Groups:         rawClaims.Groups,
-		Audience:       clientID,
-		ExpirationTime: time.Unix(rawClaims.Exp, 0),
+		Subject:          rawClaims.Email,
+		Issuer:           rawClaims.Issuer,
+		Email:            rawClaims.Email,
+		EmailVerified:    rawClaims.EmailVerified,
+		Name:             rawClaims.Name,
+		Groups:           rawClaims.Groups,
+		Audience:         clientID,
+		ExpirationTime:   time.Unix(rawClaims.Exp, 0),
+		ACLGrants:        grants,
+		ACLGrantsPresent: grantsPresent,
 	}, nil
 }

@@ -2,6 +2,7 @@ package oidctest
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,6 +10,10 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/oidchelper"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -29,6 +34,51 @@ func TestTestIssuer_SignAndValidate(t *testing.T) {
 	assert.Equal(t, "alice@example.com", validated.Email)
 	assert.Equal(t, []string{"admins", "devs"}, validated.Groups)
 	assert.Equal(t, issuer.IssuerURL, validated.Issuer)
+}
+
+func TestTestIssuer_GrantsPreservePresence(t *testing.T) {
+	issuer, err := NewTestIssuer()
+	require.NoError(t, err)
+	defer issuer.Close()
+
+	validator, err := oidchelper.NewMultiIssuerValidator(issuer.Config(DefaultTestClientID))
+	require.NoError(t, err)
+
+	testCases := []struct {
+		name        string
+		grants      aclgrants.Grants
+		present     bool
+		wantPresent bool
+		wantGrants  aclgrants.Grants
+	}{
+		{name: "absent"},
+		{
+			name:        "populated",
+			grants:      aclgrants.Grants{{Scope: aclscope.ScopeProject, Subject: "proj-blue", Access: []aclcaps.AccessTypeV3{"ror:read"}}},
+			wantPresent: true,
+			wantGrants:  aclgrants.Grants{{Scope: aclscope.ScopeProject, Subject: "proj-blue", Access: []aclcaps.AccessTypeV3{"ror:read"}}},
+		},
+		{
+			name:        "explicitly empty",
+			present:     true,
+			wantPresent: true,
+			wantGrants:  aclgrants.Grants{},
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			claims := DefaultUserClaims("alice@example.com")
+			claims.ACLGrants = tt.grants
+			claims.ACLGrantsPresent = tt.present
+			token := MustSignToken(t, issuer, claims)
+
+			validated, err := validator.ValidateToken(context.Background(), token)
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantPresent, validated.ACLGrantsPresent)
+			assert.Equal(t, tt.wantGrants, validated.ACLGrants)
+		})
+	}
 }
 
 func TestTestIssuer_UnknownIssuer(t *testing.T) {
@@ -138,6 +188,58 @@ func TestNewTestManager_SignAndValidate(t *testing.T) {
 	jwks, err := manager.GetJWKS()
 	require.NoError(t, err)
 	assert.True(t, jwks.Len() > 0)
+}
+
+func TestManagerSignToken_GrantsPreservePresence(t *testing.T) {
+	manager, _, cleanup := NewTestManager(t, "https://test-ror.local")
+	defer cleanup()
+
+	testCases := []struct {
+		name        string
+		grants      aclgrants.Grants
+		present     bool
+		wantPresent bool
+		wantGrants  aclgrants.Grants
+	}{
+		{name: "absent"},
+		{
+			name:        "populated",
+			grants:      aclgrants.Grants{{Scope: aclscope.ScopeProject, Subject: "proj-blue", Access: []aclcaps.AccessTypeV3{"ror:read"}}},
+			wantPresent: true,
+			wantGrants:  aclgrants.Grants{{Scope: aclscope.ScopeProject, Subject: "proj-blue", Access: []aclcaps.AccessTypeV3{"ror:read"}}},
+		},
+		{
+			name:        "explicitly empty",
+			present:     true,
+			wantPresent: true,
+			wantGrants:  aclgrants.Grants{},
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			claims := DefaultUserClaims("alice@example.com")
+			claims.ACLGrants = tt.grants
+			claims.ACLGrantsPresent = tt.present
+			signed, err := manager.SignToken(claims)
+			require.NoError(t, err)
+
+			token, _, err := new(jwt.Parser).ParseUnverified(signed, jwt.MapClaims{})
+			require.NoError(t, err)
+			mapClaims, ok := token.Claims.(jwt.MapClaims)
+			require.True(t, ok)
+
+			rawGrants, exists := mapClaims[aclgrants.ClaimKey]
+			assert.Equal(t, tt.wantPresent, exists)
+			if exists {
+				encoded, err := json.Marshal(rawGrants)
+				require.NoError(t, err)
+				var actual aclgrants.Grants
+				require.NoError(t, json.Unmarshal(encoded, &actual))
+				assert.Equal(t, tt.wantGrants, actual)
+			}
+		})
+	}
 }
 
 func TestMemoryStorageAdapter(t *testing.T) {
