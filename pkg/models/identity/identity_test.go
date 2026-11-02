@@ -7,7 +7,10 @@ import (
 
 	identitymodels "github.com/NorskHelsenett/ror/pkg/models/identity"
 
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclprincipal"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -85,6 +88,43 @@ func TestNewUserIdentity_DropsReservedGroups(t *testing.T) {
 	groups, err := identity.GetGroups()
 	require.NoError(t, err)
 	assert.Equal(t, []string{"team-blue@example.com"}, groups)
+}
+
+func TestIdentity_ACLGrantsPresenceAndCopy(t *testing.T) {
+	identity, err := identitymodels.NewUserIdentity(testAuth, "alice@example.com", "Alice", nil, nil)
+	require.NoError(t, err)
+
+	if _, present := identity.GetACLGrants(); present {
+		t.Fatal("ACL grants should be absent on a legacy identity")
+	}
+
+	grants := aclgrants.Grants{{
+		Scope:   aclscope.ScopeProject,
+		Subject: "project-1",
+		Access:  []aclcaps.AccessTypeV3{"ror:read"},
+	}}
+	identity.SetACLGrants(grants)
+	grants[0].Access[0] = "ror:write"
+
+	got, present := identity.GetACLGrants()
+	require.True(t, present)
+	require.Len(t, got, 1)
+	assert.Equal(t, aclcaps.AccessTypeV3("ror:read"), got[0].Access[0])
+
+	got[0].Access[0] = "ror:delete"
+	again, present := identity.GetACLGrants()
+	require.True(t, present)
+	assert.Equal(t, aclcaps.AccessTypeV3("ror:read"), again[0].Access[0])
+}
+
+func TestIdentity_ExplicitEmptyACLGrantsRemainPresent(t *testing.T) {
+	identity, err := identitymodels.NewUserIdentity(testAuth, "alice@example.com", "Alice", nil, nil)
+	require.NoError(t, err)
+
+	identity.SetACLGrants(aclgrants.Grants{})
+	grants, present := identity.GetACLGrants()
+	require.True(t, present)
+	assert.Empty(t, grants)
 }
 
 func TestConstructors_RejectIncompleteInput(t *testing.T) {

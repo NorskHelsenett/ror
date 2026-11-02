@@ -8,6 +8,7 @@ import (
 
 	"github.com/NorskHelsenett/ror/pkg/acl"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/stretchr/testify/assert"
 )
@@ -80,6 +81,89 @@ func newMockStore(entries ...aclmodels.AclV3ListItem) *mockStore {
 		m.entries[e.Group] = append(m.entries[e.Group], e)
 	}
 	return m
+}
+
+type mockGrantSource struct {
+	grants         aclgrants.Grants
+	err            error
+	receivedGroups []string
+}
+
+func (m *mockGrantSource) GetGrants(_ context.Context, groups []string) (aclgrants.Grants, error) {
+	m.receivedGroups = append([]string(nil), groups...)
+	return m.grants, m.err
+}
+
+func TestResolverWithGrantSource_ResolveAccessAndScopeLevelGrant(t *testing.T) {
+	source := &mockGrantSource{
+		grants: aclgrants.Grants{
+			{
+				Scope:   aclscope.ScopeCluster,
+				Subject: "cluster-1",
+				Access:  []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"},
+			},
+			{
+				Scope:   aclscope.ScopeRor,
+				Subject: aclscope.Subject("KubernetesCluster"),
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
+	}
+	resolver := acl.NewResolverWithGrantSource(source)
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{"team-a"}, aclscope.ScopeCluster, "cluster-1")
+	assert.NoError(t, err)
+	assert.ElementsMatch(t, []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"}, access)
+	assert.Equal(t, []string{"team-a"}, source.receivedGroups)
+}
+
+func TestResolverWithGrantSource_ResolveOwnerrefsUsesExpander(t *testing.T) {
+	project := acl.Ownerref{Scope: aclscope.ScopeProject, Subject: "project-1"}
+	cluster := acl.Ownerref{Scope: aclscope.ScopeCluster, Subject: "cluster-1"}
+	source := &mockGrantSource{
+		grants: aclgrants.Grants{{
+			Scope:   project.Scope,
+			Subject: project.Subject,
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		}},
+	}
+	expander := &recordingExpander{
+		expansions: map[acl.Ownerref][]acl.Ownerref{project: {cluster}},
+	}
+	resolver := acl.NewResolverWithGrantSource(source, acl.WithScopeExpander(expander))
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"team-a"}, "ror:read", acl.OwnerrefFilter{
+		Scopes: []aclscope.Scope{aclscope.ScopeCluster},
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, []acl.Ownerref{cluster}, refs)
+	assert.Equal(t, []acl.Ownerref{project}, expander.expandedSeeds())
+}
+
+func TestResolverWithGrantSource_GlobalGrantReturnsUnrestricted(t *testing.T) {
+	source := &mockGrantSource{
+		grants: aclgrants.Grants{{
+			Scope:   aclscope.ScopeRor,
+			Subject: aclscope.SubjectGlobal,
+			Access:  []aclmodels.AccessTypeV3{"ror:read"},
+		}},
+	}
+	resolver := acl.NewResolverWithGrantSource(source)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read", acl.OwnerrefFilter{})
+	assert.NoError(t, err)
+	assert.Nil(t, refs)
+}
+
+func TestResolverWithGrantSource_SourceErrorPropagates(t *testing.T) {
+	sourceErr := fmt.Errorf("grant source unavailable")
+	resolver := acl.NewResolverWithGrantSource(&mockGrantSource{err: sourceErr})
+
+	_, err := resolver.ResolveAccess(context.Background(), []string{"team-a"}, aclscope.ScopeCluster, "cluster-1")
+	assert.ErrorIs(t, err, sourceErr)
+
+	_, err = resolver.ResolveOwnerrefs(context.Background(), []string{"team-a"}, "ror:read", acl.OwnerrefFilter{})
+	assert.ErrorIs(t, err, sourceErr)
 }
 
 func TestResolver_ResolveAccess_ExactMatch(t *testing.T) {

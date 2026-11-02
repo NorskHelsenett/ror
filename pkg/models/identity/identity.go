@@ -8,6 +8,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclprincipal"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -44,7 +45,9 @@ type Identity struct {
 	groups  []string
 	claims  map[string]string
 
-	token string
+	token            string
+	aclGrants        aclgrants.Grants
+	aclGrantsPresent bool
 }
 
 type AuthInfo struct {
@@ -285,4 +288,30 @@ func (identity *Identity) SetToken(token string) {
 
 func (identity *Identity) GetToken() string {
 	return identity.token
+}
+
+// SetACLGrants stores verified ACL grants and records that the claim was
+// present, including when grants is empty.
+func (identity *Identity) SetACLGrants(grants aclgrants.Grants) {
+	identity.aclGrants = cloneACLGrants(grants)
+	identity.aclGrantsPresent = true
+}
+
+// GetACLGrants returns a copy of verified ACL grants and whether the claim was
+// present. Presence distinguishes an explicit empty grant set from legacy
+// tokens that should use the database fallback.
+func (identity *Identity) GetACLGrants() (aclgrants.Grants, bool) {
+	return cloneACLGrants(identity.aclGrants), identity.aclGrantsPresent
+}
+
+func cloneACLGrants(grants aclgrants.Grants) aclgrants.Grants {
+	if grants == nil {
+		return nil
+	}
+	cloned := make(aclgrants.Grants, len(grants))
+	for i, grant := range grants {
+		cloned[i] = grant
+		cloned[i].Access = slices.Clone(grant.Access)
+	}
+	return cloned
 }

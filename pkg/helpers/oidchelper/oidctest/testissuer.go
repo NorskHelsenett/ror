@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/oidchelper"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/v4/jwk"
 )
@@ -73,6 +74,9 @@ func (ti *TestIssuer) SignToken(claims oidchelper.TokenClaims) (string, error) {
 	}
 	if claims.Audience != "" {
 		mapClaims["aud"] = claims.Audience
+	}
+	if claims.ACLGrantsPresent || claims.ACLGrants != nil {
+		mapClaims[aclgrants.ClaimKey] = claims.ACLGrants
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, mapClaims)
