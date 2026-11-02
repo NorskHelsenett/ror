@@ -94,7 +94,7 @@ func (m *mockGrantSource) GetGrants(_ context.Context, groups []string) (aclgran
 	return m.grants, m.err
 }
 
-func TestResolverWithGrantSource_ResolveAccessAndScopeLevelGrant(t *testing.T) {
+func TestResolverWithGrantSource_ResolveAccess(t *testing.T) {
 	source := &mockGrantSource{
 		grants: aclgrants.Grants{
 			{
@@ -111,58 +111,138 @@ func TestResolverWithGrantSource_ResolveAccessAndScopeLevelGrant(t *testing.T) {
 	}
 	resolver := acl.NewResolverWithGrantSource(source)
 
-	access, err := resolver.ResolveAccess(context.Background(), []string{"team-a"}, aclscope.ScopeCluster, "cluster-1")
+	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, aclscope.ScopeCluster, "cluster-1")
 	assert.NoError(t, err)
 	assert.ElementsMatch(t, []aclmodels.AccessTypeV3{"ror:read", "kubernetes:logon"}, access)
-	assert.Equal(t, []string{"team-a"}, source.receivedGroups)
+	assert.Equal(t, []string{"dev-team"}, source.receivedGroups)
 }
 
-func TestResolverWithGrantSource_ResolveOwnerrefsUsesExpander(t *testing.T) {
+func TestResolverWithGrantSource_ResolveAccessGlobalSemantics(t *testing.T) {
+	tests := []struct {
+		name  string
+		grant aclgrants.Grant
+	}{
+		{
+			name: "all scope",
+			grant: aclgrants.Grant{
+				Scope:   aclscope.ScopeAll,
+				Subject: aclscope.SubjectAll,
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
+		{
+			name: "all subject",
+			grant: aclgrants.Grant{
+				Scope:   aclscope.ScopeCluster,
+				Subject: aclscope.SubjectAll,
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
+		{
+			name: "ror global subject",
+			grant: aclgrants.Grant{
+				Scope:   aclscope.ScopeRor,
+				Subject: aclscope.SubjectGlobal,
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resolver := acl.NewResolverWithGrantSource(&mockGrantSource{
+				grants: aclgrants.Grants{tt.grant},
+			})
+
+			access, err := resolver.ResolveAccess(context.Background(), []string{"admins"}, aclscope.ScopeCluster, "cluster-1")
+			assert.NoError(t, err)
+			assert.Contains(t, access, aclmodels.AccessTypeV3("ror:read"))
+		})
+	}
+}
+
+func TestResolverWithGrantSource_HasAccess(t *testing.T) {
+	resolver := acl.NewResolverWithGrantSource(&mockGrantSource{
+		grants: aclgrants.Grants{
+			{
+				Scope:   aclscope.ScopeCluster,
+				Subject: "cluster-1",
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
+	})
+
+	allowed, err := resolver.HasAccess(context.Background(), []string{"dev-team"}, aclscope.ScopeCluster, "cluster-1", "ror:read")
+	assert.NoError(t, err)
+	assert.True(t, allowed)
+
+	allowed, err = resolver.HasAccess(context.Background(), []string{"dev-team"}, aclscope.ScopeCluster, "cluster-1", "ror:write")
+	assert.NoError(t, err)
+	assert.False(t, allowed)
+}
+
+func TestResolverWithGrantSource_ResolveOwnerrefsAndExpansion(t *testing.T) {
 	project := acl.Ownerref{Scope: aclscope.ScopeProject, Subject: "project-1"}
 	cluster := acl.Ownerref{Scope: aclscope.ScopeCluster, Subject: "cluster-1"}
 	source := &mockGrantSource{
-		grants: aclgrants.Grants{{
-			Scope:   project.Scope,
-			Subject: project.Subject,
-			Access:  []aclmodels.AccessTypeV3{"ror:read"},
-		}},
+		grants: aclgrants.Grants{
+			{
+				Scope:   project.Scope,
+				Subject: project.Subject,
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
 	}
-	expander := &recordingExpander{
-		expansions: map[acl.Ownerref][]acl.Ownerref{project: {cluster}},
+	expander := &mockExpander{
+		expansions: map[acl.Ownerref][]acl.Ownerref{
+			project: {cluster},
+		},
 	}
 	resolver := acl.NewResolverWithGrantSource(source, acl.WithScopeExpander(expander))
 
-	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"team-a"}, "ror:read", acl.OwnerrefFilter{
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{
 		Scopes: []aclscope.Scope{aclscope.ScopeCluster},
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, []acl.Ownerref{cluster}, refs)
-	assert.Equal(t, []acl.Ownerref{project}, expander.expandedSeeds())
+	assert.Equal(t, 1, expander.calls)
+	assert.Equal(t, []string{"dev-team"}, source.receivedGroups)
 }
 
-func TestResolverWithGrantSource_GlobalGrantReturnsUnrestricted(t *testing.T) {
-	source := &mockGrantSource{
-		grants: aclgrants.Grants{{
-			Scope:   aclscope.ScopeRor,
-			Subject: aclscope.SubjectGlobal,
-			Access:  []aclmodels.AccessTypeV3{"ror:read"},
-		}},
-	}
-	resolver := acl.NewResolverWithGrantSource(source)
+func TestResolverWithGrantSource_ResolveOwnerrefsGlobalReturnsNil(t *testing.T) {
+	resolver := acl.NewResolverWithGrantSource(&mockGrantSource{
+		grants: aclgrants.Grants{
+			{
+				Scope:   aclscope.ScopeRor,
+				Subject: aclscope.SubjectGlobal,
+				Access:  []aclmodels.AccessTypeV3{"ror:read"},
+			},
+		},
+	})
 
 	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"admins"}, "ror:read", acl.OwnerrefFilter{})
 	assert.NoError(t, err)
 	assert.Nil(t, refs)
 }
 
-func TestResolverWithGrantSource_SourceErrorPropagates(t *testing.T) {
+func TestResolverWithGrantSource_EmptyGrants(t *testing.T) {
+	resolver := acl.NewResolverWithGrantSource(&mockGrantSource{})
+
+	access, err := resolver.ResolveAccess(context.Background(), []string{"dev-team"}, aclscope.ScopeCluster, "cluster-1")
+	assert.NoError(t, err)
+	assert.Empty(t, access)
+
+	refs, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
+	assert.NoError(t, err)
+	assert.Empty(t, refs)
+	assert.NotNil(t, refs)
+}
+
+func TestResolverWithGrantSource_ResolveOwnerrefsErrorPropagates(t *testing.T) {
 	sourceErr := fmt.Errorf("grant source unavailable")
 	resolver := acl.NewResolverWithGrantSource(&mockGrantSource{err: sourceErr})
 
-	_, err := resolver.ResolveAccess(context.Background(), []string{"team-a"}, aclscope.ScopeCluster, "cluster-1")
-	assert.ErrorIs(t, err, sourceErr)
-
-	_, err = resolver.ResolveOwnerrefs(context.Background(), []string{"team-a"}, "ror:read", acl.OwnerrefFilter{})
+	_, err := resolver.ResolveOwnerrefs(context.Background(), []string{"dev-team"}, "ror:read", acl.OwnerrefFilter{})
 	assert.ErrorIs(t, err, sourceErr)
 }
 

@@ -82,6 +82,7 @@ type GroupReader interface {
 }
 
 // GrantSource loads raw grants for the current request and its groups.
+// Implementations may read from an ACL store or from verified token claims.
 type GrantSource interface {
 	GetGrants(ctx context.Context, groups []string) (aclgrants.Grants, error)
 }
@@ -120,15 +121,11 @@ type Resolver struct {
 // NewResolver creates a new resolver with the given store backend.
 // Use WithScopeExpander to enable hierarchical scope resolution.
 func NewResolver(store GroupReader, opts ...ResolverOption) *Resolver {
-	return NewResolverWithGrantSource(NewStoreGrantSource(store), opts...)
-}
-
-// NewStoreGrantSource adapts a group-based ACL reader to raw grants.
-func NewStoreGrantSource(reader GroupReader) GrantSource {
-	return storeGrantSource{reader: reader}
+	return NewResolverWithGrantSource(storeGrantSource{reader: store}, opts...)
 }
 
 // NewResolverWithGrantSource creates a resolver using the provided grant source.
+// Use this when grants come from a source other than the ACL store.
 func NewResolverWithGrantSource(source GrantSource, opts ...ResolverOption) *Resolver {
 	r := &Resolver{source: source}
 	for _, opt := range opts {
