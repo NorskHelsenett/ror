@@ -76,7 +76,11 @@ func (ti *TestIssuer) SignToken(claims oidchelper.TokenClaims) (string, error) {
 		mapClaims["aud"] = claims.Audience
 	}
 	if claims.ACLGrantsPresent || claims.ACLGrants != nil {
-		mapClaims[aclgrants.ClaimKey] = claims.ACLGrants
+		grants := claims.ACLGrants
+		if grants == nil {
+			grants = aclgrants.Grants{}
+		}
+		mapClaims[aclgrants.ClaimKey] = grants
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, mapClaims)

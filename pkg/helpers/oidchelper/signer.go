@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/tokenstoragehelper"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/v4/jwk"
 )
@@ -54,6 +55,13 @@ func (s *TokenSignerImpl) SignToken(claims TokenClaims) (string, error) {
 	}
 	if claims.ProviderAudience != "" {
 		mapClaims["providerAudience"] = claims.ProviderAudience
+	}
+	if claims.ACLGrantsPresent || claims.ACLGrants != nil {
+		grants := claims.ACLGrants
+		if grants == nil {
+			grants = aclgrants.Grants{}
+		}
+		mapClaims[aclgrants.ClaimKey] = grants
 	}
 
 	return s.storage.Sign(mapClaims)
