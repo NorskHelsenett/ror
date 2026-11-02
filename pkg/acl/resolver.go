@@ -121,7 +121,12 @@ type Resolver struct {
 // NewResolver creates a new resolver with the given store backend.
 // Use WithScopeExpander to enable hierarchical scope resolution.
 func NewResolver(store GroupReader, opts ...ResolverOption) *Resolver {
-	return NewResolverWithGrantSource(storeGrantSource{reader: store}, opts...)
+	return NewResolverWithGrantSource(NewStoreGrantSource(store), opts...)
+}
+
+// NewStoreGrantSource adapts a group-based ACL reader to raw grants.
+func NewStoreGrantSource(reader GroupReader) GrantSource {
+	return storeGrantSource{reader: reader}
 }
 
 // NewResolverWithGrantSource creates a resolver using the provided grant source.
