@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclgrants"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
 	"github.com/NorskHelsenett/ror/pkg/telemetry/rortracer"
 
@@ -80,20 +81,53 @@ type GroupReader interface {
 	GetByGroups(ctx context.Context, groups []string) (aclmodels.AclV3List, error)
 }
 
+// GrantSource loads raw grants for the current request and its groups.
+// Implementations may read from an ACL store or from verified token claims.
+type GrantSource interface {
+	GetGrants(ctx context.Context, groups []string) (aclgrants.Grants, error)
+}
+
+type storeGrantSource struct {
+	reader GroupReader
+}
+
+func (s storeGrantSource) GetGrants(ctx context.Context, groups []string) (aclgrants.Grants, error) {
+	entries, err := s.reader.GetByGroups(ctx, groups)
+	if err != nil {
+		return nil, err
+	}
+
+	grants := make(aclgrants.Grants, 0, len(entries))
+	for _, entry := range entries {
+		grants = append(grants, aclgrants.Grant{
+			Scope:   entry.Scope,
+			Subject: entry.Subject,
+			Access:  entry.Access,
+		})
+	}
+	return grants, nil
+}
+
 // Resolver resolves access for a set of groups using a Store.
 // It loads all entries in one batch call, then compiles access in-memory.
 // An optional ScopeExpander enables hierarchical scope resolution:
 // if a user has access to a Project, the expander resolves all descendant
 // ownerrefs (Workspaces, Clusters, etc.) so they are included in the result.
 type Resolver struct {
-	store    GroupReader
+	source   GrantSource
 	expander ScopeExpander
 }
 
 // NewResolver creates a new resolver with the given store backend.
 // Use WithScopeExpander to enable hierarchical scope resolution.
 func NewResolver(store GroupReader, opts ...ResolverOption) *Resolver {
-	r := &Resolver{store: store}
+	return NewResolverWithGrantSource(storeGrantSource{reader: store}, opts...)
+}
+
+// NewResolverWithGrantSource creates a resolver using the provided grant source.
+// Use this when grants come from a source other than the ACL store.
+func NewResolverWithGrantSource(source GrantSource, opts ...ResolverOption) *Resolver {
+	r := &Resolver{source: source}
 	for _, opt := range opts {
 		opt(r)
 	}
@@ -121,16 +155,16 @@ func (r *Resolver) ResolveAccess(ctx context.Context, groups []string, scope acl
 		attribute.String("acl.subject", string(subject)),
 	)
 
-	entries, err := r.store.GetByGroups(ctx, groups)
+	grants, err := r.source.GetGrants(ctx, groups)
 	if err != nil {
 		return nil, rortracer.SpanError(span, err)
 	}
 
 	seen := make(map[aclmodels.AccessTypeV3]struct{})
 
-	for _, entry := range entries {
-		if matchesScopeSubject(entry, scope, subject) {
-			for _, a := range entry.Access {
+	for _, grant := range grants {
+		if matchesScopeSubject(grant, scope, subject) {
+			for _, a := range grant.Access {
 				seen[a] = struct{}{}
 			}
 		}
@@ -162,7 +196,7 @@ func (r *Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requir
 		attribute.Int("acl.filter_subjects", len(filter.Subjects)),
 	)
 
-	entries, err := r.store.GetByGroups(ctx, groups)
+	grants, err := r.source.GetGrants(ctx, groups)
 	if err != nil {
 		return nil, rortracer.SpanError(span, err)
 	}
@@ -186,23 +220,23 @@ func (r *Resolver) ResolveOwnerrefs(ctx context.Context, groups []string, requir
 	var seeds []Ownerref
 	seedSeen := make(map[Ownerref]struct{})
 
-	for _, entry := range entries {
-		if !slices.Contains(entry.Access, requiredAccess) {
+	for _, grant := range grants {
+		if !slices.Contains(grant.Access, requiredAccess) {
 			continue
 		}
 		// Global access — unrestricted. Mirrors the global semantics in
 		// matchesScopeSubject: the "all" scope or subject, or the "ror" scope
 		// with the global subject.
-		if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll ||
-			(entry.Scope == aclscope.ScopeRor && entry.Subject == aclscope.SubjectGlobal) {
+		if grant.Scope == aclscope.ScopeAll || grant.Subject == aclscope.SubjectAll ||
+			(grant.Scope == aclscope.ScopeRor && grant.Subject == aclscope.SubjectGlobal) {
 			span.SetAttributes(attribute.Bool("acl.unrestricted", true))
 			return nil, nil
 		}
 
-		ref := Ownerref{Scope: entry.Scope, Subject: entry.Subject}
+		ref := Ownerref{Scope: grant.Scope, Subject: grant.Subject}
 		addRef(ref)
 
-		if r.expander != nil && !filter.skipExpansion(entry.Scope) {
+		if r.expander != nil && !filter.skipExpansion(grant.Scope) {
 			if _, dup := seedSeen[ref]; !dup {
 				seedSeen[ref] = struct{}{}
 				seeds = append(seeds, ref)
@@ -244,18 +278,18 @@ func (r *Resolver) HasAccess(ctx context.Context, groups []string, scope aclscop
 // - scope and subject match exactly, OR
 // - entry has scope "all" or subject "All" (global grant), OR
 // - entry has scope "ror" with subject matching the requested scope or "Global"
-func matchesScopeSubject(entry aclmodels.AclV3ListItem, scope aclscope.Scope, subject aclscope.Subject) bool {
+func matchesScopeSubject(grant aclgrants.Grant, scope aclscope.Scope, subject aclscope.Subject) bool {
 	// Exact match
-	if entry.Scope == scope && entry.Subject == subject {
+	if grant.Scope == scope && grant.Subject == subject {
 		return true
 	}
 	// Global scope
-	if entry.Scope == aclscope.ScopeAll || entry.Subject == aclscope.SubjectAll {
+	if grant.Scope == aclscope.ScopeAll || grant.Subject == aclscope.SubjectAll {
 		return true
 	}
 	// "ror" scope with subject matching the requested scope or "Global"
-	if entry.Scope == aclscope.ScopeRor {
-		if entry.Subject == aclscope.Subject(scope) || entry.Subject == aclscope.SubjectGlobal {
+	if grant.Scope == aclscope.ScopeRor {
+		if grant.Subject == aclscope.Subject(scope) || grant.Subject == aclscope.SubjectGlobal {
 			return true
 		}
 	}
