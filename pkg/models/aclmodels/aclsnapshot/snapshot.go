@@ -106,19 +106,12 @@ func validateRows(rows []Row, l Limits) error {
 	if rows == nil || len(rows) > l.MaxRows {
 		return fmt.Errorf("rows must be non-null and contain at most %d entries", l.MaxRows)
 	}
-	type identity struct{ group, scope, subject string }
-	seen := make(map[identity]bool, len(rows))
 	for i, row := range rows {
-		id := identity{row.Group, string(row.Grant.Scope), string(row.Grant.Subject)}
-		for _, value := range []string{id.group, id.scope, id.subject} {
+		for _, value := range []string{row.Group, string(row.Grant.Scope), string(row.Grant.Subject)} {
 			if value == "" || !utf8.ValidString(value) || len(value) > l.MaxFieldBytes {
 				return fmt.Errorf("row %d: invalid or oversized group, scope or subject", i)
 			}
 		}
-		if seen[id] {
-			return fmt.Errorf("row %d: duplicate group/scope/subject", i)
-		}
-		seen[id] = true
 		if row.Grant.Access == nil || len(row.Grant.Access) > l.MaxAccessEntries {
 			return fmt.Errorf("row %d: access must be non-null and contain at most %d entries", i, l.MaxAccessEntries)
 		}
@@ -139,7 +132,7 @@ func validateRows(rows []Row, l Limits) error {
 }
 
 // CanonicalRows validates and sorts copied rows/access lists without changing
-// caller-owned slices. It preserves empty policy and empty access arrays.
+// caller-owned slices. It preserves repeated grants, empty policy and empty access arrays.
 func CanonicalRows(rows []Row, l Limits) ([]Row, error) {
 	if err := l.Validate(); err != nil {
 		return nil, err
@@ -162,7 +155,7 @@ func CanonicalRows(rows []Row, l Limits) ([]Row, error) {
 				return cmp
 			}
 		}
-		return 0
+		return slices.Compare(a.Grant.Access, b.Grant.Access)
 	})
 	return result, nil
 }

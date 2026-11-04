@@ -93,7 +93,6 @@ func TestValidationFailures(t *testing.T) {
 		{"subject", func(p *Payload) { p.Rows[0].Grant.Subject = "" }},
 		{"utf8", func(p *Payload) { p.Rows[0].Group = "\xff" }},
 		{"field bound", func(p *Payload) { p.Rows[0].Group = strings.Repeat("a", 129) }},
-		{"duplicate rows", func(p *Payload) { p.Rows = append(p.Rows, p.Rows[0]) }},
 		{"nil access", func(p *Payload) { p.Rows[0].Grant.Access = nil }},
 		{"access bound", func(p *Payload) { p.Rows[0].Grant.Access = make([]aclcaps.AccessTypeV3, 11) }},
 		{"duplicate access", func(p *Payload) { p.Rows[0].Grant.Access = []aclcaps.AccessTypeV3{"a:b", "a:b"} }},
@@ -108,6 +107,72 @@ func TestValidationFailures(t *testing.T) {
 				t.Fatal("invalid payload accepted")
 			}
 		})
+	}
+}
+
+func TestRepeatedRowsPreservedAndDeterministic(t *testing.T) {
+	p := testPayload()
+	grant := p.Rows[0]
+	p.Rows = nil
+	for _, access := range [][]aclcaps.AccessTypeV3{
+		{"ror:write", "ror:read"}, {"ror:read"}, {}, {"ror:read"}, {"ror:write"},
+	} {
+		row := grant
+		row.Grant.Access = access
+		p.Rows = append(p.Rows, row)
+	}
+	before, err := json.Marshal(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, err := Encode(p, testLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	after, err := json.Marshal(p)
+	if err != nil || string(before) != string(after) {
+		t.Fatal("canonicalization mutated caller-owned repeated rows")
+	}
+	decoded, err := Decode(first, testLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := [][]aclcaps.AccessTypeV3{
+		{}, {"ror:read"}, {"ror:read"}, {"ror:read", "ror:write"}, {"ror:write"},
+	}
+	if len(decoded.Rows) != len(want) {
+		t.Fatalf("repeated rows were lost: %#v", decoded.Rows)
+	}
+	for i, row := range decoded.Rows {
+		if !reflect.DeepEqual(row.Grant.Access, want[i]) {
+			t.Fatalf("row %d: access = %v, want %v", i, row.Grant.Access, want[i])
+		}
+	}
+	// Exercise all source-row orders, including identical repetitions and an
+	// empty access list, to guard the content hash against MongoDB scan order.
+	var permute func(int)
+	permute = func(i int) {
+		if i == len(p.Rows) {
+			encoded, err := Encode(p, testLimits())
+			if err != nil || string(encoded) != string(first) {
+				t.Fatalf("source order changed canonical bytes: %v", err)
+			}
+			return
+		}
+		for j := i; j < len(p.Rows); j++ {
+			p.Rows[i], p.Rows[j] = p.Rows[j], p.Rows[i]
+			permute(i + 1)
+			p.Rows[i], p.Rows[j] = p.Rows[j], p.Rows[i]
+		}
+	}
+	permute(0)
+	limits := testLimits()
+	limits.MaxRows = len(p.Rows) - 1
+	if _, err := Encode(p, limits); err == nil {
+		t.Fatal("repeated rows bypassed the row bound")
+	}
+	if _, err := Decode(first, limits); err == nil {
+		t.Fatal("repeated rows bypassed the decoded row bound")
 	}
 }
 
