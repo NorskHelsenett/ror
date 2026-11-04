@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/tokenhelper"
@@ -13,6 +14,10 @@ import (
 )
 
 var (
+	// Providers are also value-based persistence DTOs. Keep synchronization
+	// outside those values so adapters never copy a live mutex.
+	stateMu sync.RWMutex
+
 	nowFunc       = time.Now
 	generateKeyFn = GenerateKey
 	jwkFromRawFn  = jwk.Import[jwk.Key]
@@ -133,12 +138,16 @@ func GetSigningTokenKeyStorage() SigningTokenKeyStorage {
 // getCurrentKey returns the current active key used for signing new tokens.
 // The current key is always at index 1 in the Keys map.
 func (k *KeyStorageProvider) getCurrentKey() Key {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
 	return k.Keys[1]
 }
 
 // Save persists the current key storage state to the underlying storage adapter.
 // Returns an error if no storage adapter is configured or if the save operation fails.
 func (k *KeyStorageProvider) Save() error {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
 	if k.storageAdapter != nil {
 		return k.storageAdapter.Set(k)
 	}
@@ -156,6 +165,8 @@ func (k *KeyStorageProvider) Load() error {
 		if err != nil {
 			return err
 		}
+		stateMu.Lock()
+		defer stateMu.Unlock()
 		k.LastRotation = loaded.LastRotation
 		k.RotationInterval = loaded.RotationInterval
 		k.NumKeys = loaded.NumKeys
@@ -173,7 +184,9 @@ func (k *KeyStorageProvider) Load() error {
 // The force parameter can be set to true to bypass the interval check and force rotation.
 // Returns true if rotation occurred, false otherwise.
 func (k *KeyStorageProvider) Rotate(force bool) bool {
-	if k.needRotate(force) {
+	stateMu.Lock()
+	defer stateMu.Unlock()
+	if k.rotationDue(force) {
 		for i := 0; i < k.NumKeys; i++ {
 			k.Keys[i] = k.Keys[i+1]
 			if k.Keys[i].KeyID == "" {
@@ -195,12 +208,20 @@ func (k *KeyStorageProvider) Rotate(force bool) bool {
 // or the force parameter. Returns true if the current time exceeds the last rotation
 // time plus the rotation interval, or if force is true.
 func (k *KeyStorageProvider) needRotate(force bool) bool {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
+	return k.rotationDue(force)
+}
+
+func (k *KeyStorageProvider) rotationDue(force bool) bool {
 	return nowFunc().Unix() > k.LastRotation.Add(k.RotationInterval).Unix() || force
 }
 
 // Verify parses and validates a JWT string using the stored public keys based on kid header.
 // Returns the verified token or an error if verification fails.
 func (k *KeyStorageProvider) Verify(tokenString string) (*jwt.Token, error) {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
 	if k == nil {
 		return nil, errors.New("keystorage provider is nil")
 	}
@@ -312,6 +333,8 @@ func (k *KeyStorageProvider) Sign(claims jwt.MapClaims) (string, error) {
 //
 // Returns an error if no keys are available or if key conversion fails.
 func (k *KeyStorageProvider) GetJwks() (jwk.Set, error) {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
 	if k == nil || len(k.Keys) == 0 {
 		return nil, errors.New("no keys available in keystorage")
 	}
