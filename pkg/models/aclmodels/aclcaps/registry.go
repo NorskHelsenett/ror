@@ -38,6 +38,9 @@ var Registry = &Namespace{
 				"metadata":      {Verbs: verbs(VerbWrite)},
 				"vulnerability": {Verbs: verbs(VerbRead, VerbWrite)},
 				"config":        {Verbs: verbs(VerbRead, VerbWrite)},
+				"acl": {Children: map[string]*Namespace{
+					"snapshot": {Verbs: verbs(VerbRead)},
+				}},
 			},
 		},
 		"kubernetes": {

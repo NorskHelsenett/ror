@@ -46,6 +46,7 @@ const (
 	CapRorMetadata      Capability = "ror:metadata"
 	CapRorVulnerability Capability = "ror:vulnerability"
 	CapRorConfig        Capability = "ror:config"
+	CapRorAclSnapshot   Capability = "ror:acl:snapshot"
 
 	CapKubernetes              Capability = "kubernetes"
 	CapKubernetesArgocd        Capability = "kubernetes:argocd"
