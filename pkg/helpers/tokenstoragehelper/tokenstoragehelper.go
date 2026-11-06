@@ -147,9 +147,16 @@ func (k *KeyStorageProvider) getCurrentKey() Key {
 // Returns an error if no storage adapter is configured or if the save operation fails.
 func (k *KeyStorageProvider) Save() error {
 	stateMu.RLock()
-	defer stateMu.RUnlock()
-	if k.storageAdapter != nil {
-		return k.storageAdapter.Set(k)
+	adapter := k.storageAdapter
+	snapshot := KeyStorageProvider{
+		LastRotation:     k.LastRotation,
+		RotationInterval: k.RotationInterval,
+		NumKeys:          k.NumKeys,
+		Keys:             cloneKeys(k.Keys),
+	}
+	stateMu.RUnlock()
+	if adapter != nil {
+		return adapter.Set(&snapshot)
 	}
 	return errors.New("no storage provider set")
 }
@@ -170,7 +177,7 @@ func (k *KeyStorageProvider) Load() error {
 		k.LastRotation = loaded.LastRotation
 		k.RotationInterval = loaded.RotationInterval
 		k.NumKeys = loaded.NumKeys
-		k.Keys = loaded.Keys
+		k.Keys = cloneKeys(loaded.Keys)
 		return nil
 	}
 	return errors.New("no storage provider set")
@@ -184,24 +191,73 @@ func (k *KeyStorageProvider) Load() error {
 // The force parameter can be set to true to bypass the interval check and force rotation.
 // Returns true if rotation occurred, false otherwise.
 func (k *KeyStorageProvider) Rotate(force bool) bool {
+	stateMu.RLock()
+	original := KeyStorageProvider{
+		LastRotation:     k.LastRotation,
+		RotationInterval: k.RotationInterval,
+		NumKeys:          k.NumKeys,
+		Keys:             cloneKeys(k.Keys),
+	}
+	stateMu.RUnlock()
+	if !original.rotationDue(force) {
+		return false
+	}
+
+	rotated := KeyStorageProvider{
+		LastRotation:     original.LastRotation,
+		RotationInterval: original.RotationInterval,
+		NumKeys:          original.NumKeys,
+		Keys:             cloneKeys(original.Keys),
+	}
+	for i := 0; i < original.NumKeys; i++ {
+		rotated.Keys[i] = original.Keys[i+1]
+		if rotated.Keys[i].KeyID == "" {
+			rlog.Info("generating new key for position", rlog.Int("position", i))
+			newKey, err := generateKeyFn()
+			if err != nil {
+				rlog.Error("could not generate new key", err)
+				return false
+			}
+			rotated.Keys[i] = newKey
+		}
+	}
+	rotated.LastRotation = nowFunc()
+
 	stateMu.Lock()
 	defer stateMu.Unlock()
-	if k.rotationDue(force) {
-		for i := 0; i < k.NumKeys; i++ {
-			k.Keys[i] = k.Keys[i+1]
-			if k.Keys[i].KeyID == "" {
-				rlog.Info("generating new key for position", rlog.Int("position", i))
-				newKey, err := generateKeyFn()
-				if err != nil {
-					rlog.Error("could not generate new key", err)
-				}
-				k.Keys[i] = newKey
-			}
-		}
-		k.LastRotation = nowFunc()
-		return true
+	if !sameKeyStorageState(k, &original) {
+		return false
 	}
-	return false
+	k.LastRotation = rotated.LastRotation
+	k.Keys = rotated.Keys
+	return true
+}
+
+func cloneKeys(keys map[int]Key) map[int]Key {
+	if keys == nil {
+		return nil
+	}
+	cloned := make(map[int]Key, len(keys))
+	for index, key := range keys {
+		cloned[index] = key
+	}
+	return cloned
+}
+
+func sameKeyStorageState(current, previous *KeyStorageProvider) bool {
+	if !current.LastRotation.Equal(previous.LastRotation) ||
+		current.RotationInterval != previous.RotationInterval ||
+		current.NumKeys != previous.NumKeys ||
+		len(current.Keys) != len(previous.Keys) {
+		return false
+	}
+	for index, key := range previous.Keys {
+		currentKey, ok := current.Keys[index]
+		if !ok || currentKey != key {
+			return false
+		}
+	}
+	return true
 }
 
 // needRotate determines whether key rotation is needed based on the rotation interval

@@ -137,7 +137,11 @@ func TestKeyStorageProviderSaveSuccess(t *testing.T) {
 	provider := KeyStorageProvider{}
 	adapter := &mockStorageAdapter{
 		setFn: func(ks *KeyStorageProvider) error {
-			require.Equal(t, &provider, ks)
+			require.NotSame(t, &provider, ks)
+			require.Equal(t, provider.LastRotation, ks.LastRotation)
+			require.Equal(t, provider.RotationInterval, ks.RotationInterval)
+			require.Equal(t, provider.NumKeys, ks.NumKeys)
+			require.Equal(t, provider.Keys, ks.Keys)
 			return nil
 		},
 		getFn: func() (KeyStorageProvider, error) {
@@ -263,9 +267,128 @@ func TestKeyStorageProviderRotateGenerateKeyError(t *testing.T) {
 	}
 
 	rotated := provider.Rotate(false)
-	require.True(t, rotated)
+	require.False(t, rotated)
+	require.Equal(t, fixedNow.Add(-time.Hour), provider.LastRotation)
+	require.Equal(t, "active", provider.Keys[0].KeyID)
+}
+
+func TestKeyStorageProviderSaveDoesNotHoldStateLock(t *testing.T) {
+	resetGlobals()
+	setEntered := make(chan struct{})
+	releaseSet := make(chan struct{})
+	provider := &KeyStorageProvider{
+		Keys: map[int]Key{1: {KeyID: "kid", PrivateKey: generateRSAKey(t, 1024), AlgorithmKey: "RS256"}},
+	}
+	provider.storageAdapter = &mockStorageAdapter{
+		setFn: func(*KeyStorageProvider) error {
+			close(setEntered)
+			<-releaseSet
+			return nil
+		},
+	}
+
+	saveDone := make(chan error, 1)
+	go func() { saveDone <- provider.Save() }()
+	<-setEntered
+
+	readDone := make(chan error, 1)
+	go func() {
+		_ = provider.getCurrentKey()
+		readDone <- nil
+	}()
+	select {
+	case err := <-readDone:
+		require.NoError(t, err)
+	case <-time.After(time.Second):
+		close(releaseSet)
+		t.Fatal("key reads blocked while storage adapter persisted state")
+	}
+	close(releaseSet)
+	require.NoError(t, <-saveDone)
+}
+
+func TestKeyStorageProviderRotateDoesNotHoldStateLockDuringGeneration(t *testing.T) {
+	resetGlobals()
+	fixedNow := time.Unix(800, 0)
+	nowFunc = func() time.Time { return fixedNow }
+	generationEntered := make(chan struct{})
+	releaseGeneration := make(chan struct{})
+	generateKeyFn = func() (Key, error) {
+		close(generationEntered)
+		<-releaseGeneration
+		return Key{KeyID: "generated", AlgorithmKey: "RS256"}, nil
+	}
+	provider := &KeyStorageProvider{
+		LastRotation:     fixedNow.Add(-time.Hour),
+		RotationInterval: time.Minute,
+		NumKeys:          1,
+		Keys: map[int]Key{
+			0: {KeyID: "active", PrivateKey: generateRSAKey(t, 1024), AlgorithmKey: "RS256"},
+			1: {},
+		},
+	}
+	rotateDone := make(chan bool, 1)
+	go func() { rotateDone <- provider.Rotate(true) }()
+	<-generationEntered
+
+	readDone := make(chan error, 1)
+	go func() {
+		_ = provider.getCurrentKey()
+		readDone <- nil
+	}()
+	select {
+	case err := <-readDone:
+		require.NoError(t, err)
+	case <-time.After(time.Second):
+		close(releaseGeneration)
+		t.Fatal("key reads blocked while rotation generated a key")
+	}
+	close(releaseGeneration)
+	require.True(t, <-rotateDone)
 	require.Equal(t, fixedNow, provider.LastRotation)
-	require.Empty(t, provider.Keys[0].KeyID)
+}
+
+func TestKeyStorageProviderConcurrentRotationsCommitOnce(t *testing.T) {
+	resetGlobals()
+	fixedNow := time.Unix(900, 0)
+	nowFunc = func() time.Time { return fixedNow }
+	generationEntered := make(chan struct{}, 2)
+	releaseGeneration := make(chan struct{})
+	generateKeyFn = func() (Key, error) {
+		generationEntered <- struct{}{}
+		<-releaseGeneration
+		return Key{KeyID: "generated", AlgorithmKey: "RS256"}, nil
+	}
+	provider := &KeyStorageProvider{
+		LastRotation:     fixedNow.Add(-time.Hour),
+		RotationInterval: time.Minute,
+		NumKeys:          1,
+		Keys: map[int]Key{
+			0: {KeyID: "active"},
+			1: {},
+		},
+	}
+	results := make(chan bool, 2)
+	go func() { results <- provider.Rotate(true) }()
+	go func() { results <- provider.Rotate(true) }()
+	for range 2 {
+		select {
+		case <-generationEntered:
+		case <-time.After(time.Second):
+			close(releaseGeneration)
+			t.Fatal("concurrent rotation did not generate both replacement keys")
+		}
+	}
+	close(releaseGeneration)
+	rotations := 0
+	for range 2 {
+		if <-results {
+			rotations++
+		}
+	}
+	require.Equal(t, 1, rotations)
+	require.Equal(t, fixedNow, provider.LastRotation)
+	require.Equal(t, "generated", provider.Keys[0].KeyID)
 }
 
 func TestKeyStorageProviderNeedRotate(t *testing.T) {

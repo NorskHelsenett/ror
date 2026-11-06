@@ -241,8 +241,12 @@ func checkValue(decoder *json.Decoder, depth int) error {
 			if !ok || seen[name] {
 				return fmt.Errorf("invalid or duplicate snapshot object key")
 			}
+			if !allowedSnapshotField(depth, name) {
+				return fmt.Errorf("invalid snapshot object key %q", name)
+			}
 			seen[name] = true
 		}
+
 		if err := checkValue(decoder, depth+1); err != nil {
 			return err
 		}
@@ -251,4 +255,16 @@ func checkValue(decoder *json.Decoder, depth int) error {
 		return fmt.Errorf("invalid snapshot JSON closing delimiter: %w", err)
 	}
 	return nil
+}
+
+func allowedSnapshotField(depth int, name string) bool {
+	switch depth {
+	case 0:
+		return name == "schema" || name == "revision" || name == "generatedAt" || name == "rows"
+	case 2:
+		return name == "group" || name == "grant"
+	case 3:
+		return name == "scope" || name == "subject" || name == "access"
+	}
+	return false
 }
