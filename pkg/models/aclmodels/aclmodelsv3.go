@@ -35,6 +35,7 @@ const (
 	CapRorMetadata      = aclcaps.CapRorMetadata
 	CapRorVulnerability = aclcaps.CapRorVulnerability
 	CapRorConfig        = aclcaps.CapRorConfig
+	CapRorAclSnapshot   = aclcaps.CapRorAclSnapshot
 
 	CapKubernetes              = aclcaps.CapKubernetes
 	CapKubernetesArgocd        = aclcaps.CapKubernetesArgocd
