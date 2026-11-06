@@ -233,8 +233,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lestrrat-go/dsig v1.4.0 h1:g7LUjK8cT74A5DzBXJI5HzsJuLhoYN0Wzj4nuOMIrH8=
 github.com/lestrrat-go/dsig v1.4.0/go.mod h1:I8Nddg/vN2cUl/h8N7SRRApLnNNeyZPIqLYpvpOtGGo=
-github.com/lestrrat-go/jwx/v4 v4.5.0 h1:lgU8YcqaJo/iZllX4AvSaQTzT2XpWWMrDcPMe6+KzqI=
-github.com/lestrrat-go/jwx/v4 v4.5.0/go.mod h1:HpoztFC5HrNj9iKkZJ3XTQQgzCY2Zto/29n89QhTC10=
+github.com/lestrrat-go/jwx/v4 v4.6.0 h1:Gq/JIOqNb/Fl3Oug5Ylfu/OUNLAnXQM+A8dMOPn4OIc=
+github.com/lestrrat-go/jwx/v4 v4.6.0/go.mod h1:QOCcs9ZL83fD8Abq9mDXLrLT0ObfyINsISiW03PZPMs=
 github.com/lestrrat-go/option/v3 v3.0.0-alpha1 h1:dvdzLwm/Ba5CJUF3jQP7w/iNYSLfy7yyh9XXNa1WjxI=
 github.com/lestrrat-go/option/v3 v3.0.0-alpha1/go.mod h1:5KSg20dfsKkNJtjDmaQRLZVXuUrzuCCcz/gbDK0pfKk=
 github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de h1:9TO3cAIGXtEhnIaL+V+BEER86oLrvS+kWobKpbJuye0=
@@ -374,8 +374,6 @@ github.com/tkrajina/go-reflector v0.5.8 h1:yPADHrwmUbMq4RGEyaOUpz2H90sRsETNVpjzo
 github.com/tkrajina/go-reflector v0.5.8/go.mod h1:ECbqLgccecY5kPmPmXg1MrHW585yMcDkVl6IvJe64T4=
 github.com/tkrajina/typescriptify-golang-structs v0.2.0 h1:ZedWk82egydDspGTryAatbX0/1NZDQbdiZLoCbOk4f8=
 github.com/tkrajina/typescriptify-golang-structs v0.2.0/go.mod h1:sjU00nti/PMEOZb07KljFlR+lJ+RotsC0GBQMv9EKls=
-github.com/valyala/fastjson v1.6.10 h1:/yjJg8jaVQdYR3arGxPE2X5z89xrlhS0eGXdv+ADTh4=
-github.com/valyala/fastjson v1.6.10/go.mod h1:e6FubmQouUNP73jtMLmcbxS6ydWIpOfhz34TSfO3JaE=
 github.com/vitistack/common v1.0.0 h1:H/w2MFwP/unQnGcwvPUfRxzawesaL/Bh8X279LdDvzs=
 github.com/vitistack/common v1.0.0/go.mod h1:n06aB+PKJgDqL07X2FKx+coMLRZvndadIeG5UkD6SOE=
 github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
