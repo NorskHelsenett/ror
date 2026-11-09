@@ -43,7 +43,7 @@ func ParseHeader(envelope []byte, l Limits) (Header, error) {
 	if len(envelope) > l.MaxEnvelopeBytes {
 		return Header{}, fmt.Errorf("signed snapshot exceeds envelope byte bound")
 	}
-	parts := bytes.Split(envelope, []byte("."))
+	parts := bytes.SplitN(envelope, []byte("."), 4)
 	if len(parts) != 3 || len(parts[0]) == 0 || len(parts[1]) == 0 || len(parts[2]) == 0 {
 		return Header{}, fmt.Errorf("signed snapshot must be compact JWS")
 	}
