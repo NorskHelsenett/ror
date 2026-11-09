@@ -53,7 +53,11 @@ const (
 	HttpTransportClientOptsQuery         HttpTransportClientOpts = "QUERY"         // Add query parameters
 	HttpTransportClientTimeout           HttpTransportClientOpts = "TIMEOUT"       // Set request timeout
 	HttpTransportClientOptsSkipPreflight HttpTransportClientOpts = "SKIPPREFLIGHT" // Bypass the RetryAfter preflight gate (e.g. for health probes)
+	HttpTransportClientOptsMaxBytes      HttpTransportClientOpts = "MAXBYTES"      // Maximum response body size (int64) for GetRaw
 )
+
+// DefaultRawMaxBytes bounds GetRaw response bodies when HttpTransportClientOptsMaxBytes is not set.
+const DefaultRawMaxBytes int64 = 1 << 20
 
 // HttpTransportClientConfig defines the configuration for the HTTP transport client.
 type HttpTransportClientConfig struct {
@@ -339,6 +343,82 @@ func (t *HttpTransportClient) Head(ctx context.Context, path string, params ...H
 	}
 
 	return res.Header, res.StatusCode, nil
+}
+
+// RawResponse is an undecoded HTTP response with a bounded body.
+type RawResponse struct {
+	StatusCode int
+	Header     http.Header
+	Body       []byte
+}
+
+// GetRaw performs a GET request and returns the response body without decoding it.
+// Bodies larger than HttpTransportClientOptsMaxBytes (default DefaultRawMaxBytes)
+// are rejected. 304 Not Modified is returned with an
+// empty body. Compressed responses are transparently decoded by the HTTP transport.
+// An Accept header supplied through params replaces the default JSON Accept header.
+func (t *HttpTransportClient) GetRaw(ctx context.Context, path string, params ...HttpTransportClientParams) (*RawResponse, error) {
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.GetRaw")
+	defer span.End()
+	maxBytes, err := rawMaxBytes(params...)
+	if err != nil {
+		return nil, err
+	}
+	if !skipPreflight(params...) {
+		if err := t.PreflightCheck(); err != nil {
+			return nil, err
+		}
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, t.Config.BaseURL+path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	t.AddCommonHeaders(req)
+	req.Header.Del("Content-Type")
+	req.Header.Del("Accept")
+	t.ParseParams(req, params...)
+	if req.Header.Get("Accept") == "" {
+		req.Header.Set("Accept", "application/json")
+	}
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
+
+	if err := t.postflightCheck(res); err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(io.LimitReader(res.Body, maxBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(body)) > maxBytes {
+		return nil, fmt.Errorf("response body from %s exceeds %d bytes", res.Request.URL.Path, maxBytes)
+	}
+	return &RawResponse{StatusCode: res.StatusCode, Header: res.Header, Body: body}, nil
+}
+
+func rawMaxBytes(params ...HttpTransportClientParams) (int64, error) {
+	maxBytes := DefaultRawMaxBytes
+	for _, param := range params {
+		if param.Key != HttpTransportClientOptsMaxBytes {
+			continue
+		}
+		value, ok := param.Value.(int64)
+		if !ok || value <= 0 || value == 1<<63-1 {
+			return 0, fmt.Errorf("%s must be an int64 between 1 and MaxInt64-1", HttpTransportClientOptsMaxBytes)
+		}
+		maxBytes = value
+	}
+	return maxBytes, nil
 }
 
 // skipPreflight reports whether the request params request bypassing the

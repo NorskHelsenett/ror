@@ -20,7 +20,18 @@ import (
 const (
 	Schema    = "ror.acl.snapshot/1"
 	MediaType = "application/ror-acl-snapshot+jws"
+	// ContentType is the HTTP content type of a compact JWS snapshot envelope.
+	ContentType = "application/jose"
 )
+
+// FetchResponse is a snapshot envelope fetched over HTTP. NotModified is set
+// when the server answered 304 for the supplied ETag; Envelope is then empty.
+// The envelope is not verified.
+type FetchResponse struct {
+	Envelope    []byte
+	ETag        string
+	NotModified bool
+}
 
 // Revision is a positive uint64 encoded as a canonical decimal JSON string.
 type Revision uint64
@@ -57,7 +68,7 @@ type Payload struct {
 	Rows        []Row     `json:"rows"`
 }
 
-// Limits are required deployment bounds, not suggested production defaults.
+// Limits bound snapshot processing for producers and consumers.
 // MaxFieldBytes applies to group/scope/subject/access strings and signing key IDs.
 type Limits struct {
 	MaxPayloadBytes  int
@@ -66,6 +77,18 @@ type Limits struct {
 	MaxAccessEntries int
 	MaxFieldBytes    int
 	MaxHeaderBytes   int
+}
+
+// DefaultLimits returns the shared producer and consumer bounds.
+func DefaultLimits() Limits {
+	return Limits{
+		MaxPayloadBytes:  8 * 1024 * 1024,
+		MaxEnvelopeBytes: 12 * 1024 * 1024,
+		MaxRows:          10000,
+		MaxAccessEntries: 64,
+		MaxFieldBytes:    1024,
+		MaxHeaderBytes:   4096,
+	}
 }
 
 func (l Limits) Validate() error {
