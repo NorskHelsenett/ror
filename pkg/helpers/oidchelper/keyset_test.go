@@ -150,12 +150,14 @@ func TestKeySetCoalescesConcurrentFetches(t *testing.T) {
 func TestKeySetWaitHonorsContext(t *testing.T) {
 	release := make(chan struct{})
 	defer close(release)
+	started := make(chan struct{})
 	cache := NewKeySet(func(context.Context) (jwk.Set, error) {
+		close(started)
 		<-release
 		return nil, errors.New("released")
 	}, time.Minute)
 	go func() { _, _ = cache.KeyFor(context.Background(), "a") }()
-	time.Sleep(20 * time.Millisecond)
+	<-started
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	if _, err := cache.KeyFor(ctx, "a"); !errors.Is(err, context.Canceled) {
