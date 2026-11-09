@@ -6,6 +6,7 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/apicontracts"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclscope"
+	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclsnapshot"
 )
 
 type AclInterface interface {
@@ -36,4 +37,8 @@ type AclInterface interface {
 	GetByFilter(ctx context.Context, filter apicontracts.Filter) (*apicontracts.PaginatedResult[aclmodels.AclV3ListItem], error)
 	// GetAll pages through GetByFilter and returns every V3 ACL entry.
 	GetAll(ctx context.Context) (*[]aclmodels.AclV3ListItem, error)
+	// GetSnapshot fetches the signed ACL snapshot envelope via GET /v2/acl/snapshot.
+	// A nonempty etag is sent as If-None-Match. The envelope is bounded by
+	// limits.MaxEnvelopeBytes but is not verified; use aclsnapshot.Verify.
+	GetSnapshot(ctx context.Context, etag string, limits aclsnapshot.Limits) (*aclsnapshot.FetchResponse, error)
 }
