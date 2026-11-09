@@ -4,6 +4,11 @@
 //
 // The client handles authentication through an injected AuthProvider interface, manages request
 // timeouts, and implements rate limiting through Retry-After response headers.
+//
+// Rejected HTTP responses (outside 200-399) return *HTTPError from every request
+// method, including HEAD and GetRaw. Callers can inspect it with errors.As.
+// Request, network, context, and decoding failures retain their original error
+// types; an HTTPError always indicates that an HTTP response was received.
 package httpclient
 
 import (
@@ -26,6 +31,22 @@ import (
 
 // DefaultTimeout defines the default HTTP request timeout duration
 var DefaultTimeout = 60 * time.Second
+
+// HTTPError describes a rejected HTTP response. It is returned consistently for
+// every status outside 200-399, independently of the request method or endpoint.
+type HTTPError struct {
+	StatusCode int
+	Method     string
+	URL        string
+	// RetryAfter is zero when the response did not impose a retry delay.
+	RetryAfter time.Time
+	// Message preserves the human-readable response error, including retry advice.
+	Message string
+}
+
+func (e *HTTPError) Error() string {
+	return e.Message
+}
 
 // HttpTransportClientParams encapsulates parameters for HTTP client requests
 // with a key-value structure to enable flexible configuration options.
@@ -493,24 +514,32 @@ func (t *HttpTransportClient) getRetryAfterHeader(res *http.Response) time.Time 
 //   - res: HTTP response to process
 //
 // Returns:
-//   - error: Formatted error message for non-successful responses, nil for successful responses
+//   - error: *HTTPError for rejected responses, nil for accepted responses
 func (t *HttpTransportClient) HandleNonOk(res *http.Response) error {
-	if res.StatusCode > 399 || res.StatusCode < 200 {
-		if res.StatusCode == http.StatusServiceUnavailable || res.StatusCode == http.StatusTooManyRequests {
-			t.Status.RetryAfter = t.getRetryAfterHeader(res)
-			return fmt.Errorf("http error: %s from %s (retry after: %s)", res.Status, res.Request.URL, t.Status.RetryAfter.Format(time.RFC3339))
-		}
-		if res.StatusCode == http.StatusUnauthorized && res.Request.Method != "HEAD" {
-			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for unauthorized
-			return fmt.Errorf("http error: %s from %s (unauthorized, check your authentication) Connection throttled", res.Status, res.Request.URL)
-		}
-		if res.StatusCode == http.StatusForbidden && res.Request.Method != "HEAD" {
-			t.Status.RetryAfter = time.Now().Add(DefaultTimeout) // Default retry after 60 seconds for forbidden
-			return fmt.Errorf("http error: %s from %s (forbidden, check your permissions) Connection throttled", res.Status, res.Request.URL)
-		}
-		return fmt.Errorf("http error: %s from %s", res.Status, res.Request.URL)
+	if res.StatusCode >= 200 && res.StatusCode <= 399 {
+		return nil
 	}
-	return nil
+	responseErr := &HTTPError{
+		StatusCode: res.StatusCode,
+		Method:     res.Request.Method,
+		URL:        res.Request.URL.String(),
+		Message:    fmt.Sprintf("http error: %s from %s", res.Status, res.Request.URL),
+	}
+	switch {
+	case res.StatusCode == http.StatusServiceUnavailable || res.StatusCode == http.StatusTooManyRequests:
+		responseErr.RetryAfter = t.getRetryAfterHeader(res)
+		responseErr.Message += fmt.Sprintf(" (retry after: %s)", responseErr.RetryAfter.Format(time.RFC3339))
+	case res.StatusCode == http.StatusUnauthorized && res.Request.Method != http.MethodHead:
+		responseErr.RetryAfter = time.Now().Add(DefaultTimeout)
+		responseErr.Message += " (unauthorized, check your authentication) Connection throttled"
+	case res.StatusCode == http.StatusForbidden && res.Request.Method != http.MethodHead:
+		responseErr.RetryAfter = time.Now().Add(DefaultTimeout)
+		responseErr.Message += " (forbidden, check your permissions) Connection throttled"
+	}
+	if !responseErr.RetryAfter.IsZero() {
+		t.Status.RetryAfter = responseErr.RetryAfter
+	}
+	return responseErr
 }
 
 // postflightCheck is a placeholder for any postflight checks that might be needed after a request.
