@@ -413,8 +413,8 @@ func rawMaxBytes(params ...HttpTransportClientParams) (int64, error) {
 			continue
 		}
 		value, ok := param.Value.(int64)
-		if !ok || value <= 0 {
-			return 0, fmt.Errorf("%s must be a positive int64", HttpTransportClientOptsMaxBytes)
+		if !ok || value <= 0 || value == 1<<63-1 {
+			return 0, fmt.Errorf("%s must be an int64 between 1 and MaxInt64-1", HttpTransportClientOptsMaxBytes)
 		}
 		maxBytes = value
 	}
