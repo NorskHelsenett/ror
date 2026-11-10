@@ -906,6 +906,63 @@ func TestNewResourceSetFromDynamicClientOrganizationalUnit(t *testing.T) {
 	}
 }
 
+func TestNewResourceSetFromDynamicClientHTTPRoute(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]any{
+			"kind":       "HTTPRoute",
+			"apiVersion": "gateway.networking.k8s.io/v1",
+			"metadata": map[string]any{
+				"name": "test-httproute",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientGateway(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]any{
+			"kind":       "Gateway",
+			"apiVersion": "gateway.networking.k8s.io/v1",
+			"metadata": map[string]any{
+				"name": "test-gateway",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
+func TestNewResourceSetFromDynamicClientGatewayClass(t *testing.T) {
+	input := &unstructured.Unstructured{
+		Object: map[string]any{
+			"kind":       "GatewayClass",
+			"apiVersion": "gateway.networking.k8s.io/v1",
+			"metadata": map[string]any{
+				"name": "test-gatewayclass",
+			},
+		},
+	}
+
+	expected := NewResourceFromDynamicClient(input)
+	result := NewResourceSetFromDynamicClient(input)
+
+	if !reflect.DeepEqual(result.Get(), expected) {
+		t.Errorf("Expected %v, but got %v", expected, result)
+	}
+}
+
 func TestNewResourceSetFromDynamicClientUnknown(t *testing.T) {
 	input := &unstructured.Unstructured{
 		Object: map[string]any{

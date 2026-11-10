@@ -45,11 +45,21 @@ func convertMapToStruct(src map[string]any, dstValue reflect.Value, dstType refl
 		jsonTag := field.Tag.Get("json")
 		fieldName := field.Name
 		if jsonTag != "" && jsonTag != "-" {
-			// Parse JSON tag (e.g., "name,omitempty" -> "name")
-			if commaIdx := strings.Index(jsonTag, ","); commaIdx > 0 {
-				fieldName = jsonTag[:commaIdx]
-			} else {
-				fieldName = jsonTag
+			tagParts := strings.Split(jsonTag, ",")
+			if tagParts[0] == "" {
+				for _, option := range tagParts[1:] {
+					if option == "inline" {
+						if err := setFieldValue(fieldValue, src); err != nil {
+							rlog.Error("Failed to set inline field "+field.Name, err)
+						}
+						break
+					}
+				}
+				continue
+			}
+			fieldName = tagParts[0]
+			if fieldName == "-" {
+				continue
 			}
 		}
 
@@ -133,7 +143,9 @@ func setFieldValue(fieldValue reflect.Value, srcValue any) error {
 						if err := setFieldValue(mapValue, srcVal.MapIndex(key).Interface()); err != nil {
 							return err
 						}
-						newMap.SetMapIndex(key, mapValue)
+						mapKey := reflect.New(fieldType.Key()).Elem()
+						mapKey.SetString(key.String())
+						newMap.SetMapIndex(mapKey, mapValue)
 					}
 				}
 				fieldValue.Set(newMap)

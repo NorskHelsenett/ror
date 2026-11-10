@@ -290,6 +290,24 @@ var (
 		Kind:    "OrganizationalUnit",
 	}
 
+	ResourceHTTPRouteGVK = schema.GroupVersionKind{
+		Group:   "gateway.networking.k8s.io",
+		Version: "v1",
+		Kind:    "HTTPRoute",
+	}
+
+	ResourceGatewayGVK = schema.GroupVersionKind{
+		Group:   "gateway.networking.k8s.io",
+		Version: "v1",
+		Kind:    "Gateway",
+	}
+
+	ResourceGatewayClassGVK = schema.GroupVersionKind{
+		Group:   "gateway.networking.k8s.io",
+		Version: "v1",
+		Kind:    "GatewayClass",
+	}
+
 	ResourceUnknownGVK = schema.GroupVersionKind{
 		Group:   "unknown.ror.internal",
 		Version: "v1",

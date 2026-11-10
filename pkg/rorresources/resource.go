@@ -62,6 +62,9 @@ type Resource struct {
 	ManagedDatabaseResource                 *rortypes.ResourceManagedDatabase                 `json:"manageddatabase,omitempty" bson:"manageddatabase,omitempty"`
 	ConfigResource                          *rortypes.ResourceConfig                          `json:"config,omitempty" bson:"config,omitempty"`
 	OrganizationalUnitResource              *rortypes.ResourceOrganizationalUnit              `json:"organizationalunit,omitempty" bson:"organizationalunit,omitempty"`
+	HTTPRouteResource                       *rortypes.ResourceHTTPRoute                       `json:"httproute,omitempty" bson:"httproute,omitempty"`
+	GatewayResource                         *rortypes.ResourceGateway                         `json:"gateway,omitempty" bson:"gateway,omitempty"`
+	GatewayClassResource                    *rortypes.ResourceGatewayClass                    `json:"gatewayclass,omitempty" bson:"gatewayclass,omitempty"`
 	UnknownResource                         *rortypes.ResourceUnknown                         `json:"unknown,omitempty" bson:"unknown,omitempty"`
 
 	common rortypes.CommonResourceInterface
@@ -545,6 +548,36 @@ func NewRorOrganizationalUnitResource() *Resource {
 	return &r
 }
 
+// NewRorHTTPRouteResource provides a empty resource of a given kind/apiversion
+func NewRorHTTPRouteResource() *Resource {
+	r := Resource{}
+	r.Kind = "HTTPRoute"
+	r.APIVersion = "gateway.networking.k8s.io/v1"
+	r.HTTPRouteResource = &rortypes.ResourceHTTPRoute{}
+	r.common = rortypes.NewCommonFactory(r.HTTPRouteResource)
+	return &r
+}
+
+// NewRorGatewayResource provides a empty resource of a given kind/apiversion
+func NewRorGatewayResource() *Resource {
+	r := Resource{}
+	r.Kind = "Gateway"
+	r.APIVersion = "gateway.networking.k8s.io/v1"
+	r.GatewayResource = &rortypes.ResourceGateway{}
+	r.common = rortypes.NewCommonFactory(r.GatewayResource)
+	return &r
+}
+
+// NewRorGatewayClassResource provides a empty resource of a given kind/apiversion
+func NewRorGatewayClassResource() *Resource {
+	r := Resource{}
+	r.Kind = "GatewayClass"
+	r.APIVersion = "gateway.networking.k8s.io/v1"
+	r.GatewayClassResource = &rortypes.ResourceGatewayClass{}
+	r.common = rortypes.NewCommonFactory(r.GatewayClassResource)
+	return &r
+}
+
 // NewRorUnknownResource provides a empty resource of a given kind/apiversion
 func NewRorUnknownResource() *Resource {
 	r := Resource{}
@@ -751,6 +784,18 @@ func (r *Resource) SetConfig(res *rortypes.ResourceConfig) {
 
 func (r *Resource) SetOrganizationalUnit(res *rortypes.ResourceOrganizationalUnit) {
 	r.OrganizationalUnitResource = res
+}
+
+func (r *Resource) SetHTTPRoute(res *rortypes.ResourceHTTPRoute) {
+	r.HTTPRouteResource = res
+}
+
+func (r *Resource) SetGateway(res *rortypes.ResourceGateway) {
+	r.GatewayResource = res
+}
+
+func (r *Resource) SetGatewayClass(res *rortypes.ResourceGatewayClass) {
+	r.GatewayClassResource = res
 }
 
 func (r *Resource) SetUnknown(res *rortypes.ResourceUnknown) {
@@ -990,6 +1035,21 @@ func (r *Resource) Config() rortypes.Configinterface {
 // OrganizationalUnit is a wrapper for the underlying resource, it provides a OrganizationalUnitinterface to work with OrganizationalUnits
 func (r *Resource) OrganizationalUnit() rortypes.OrganizationalUnitinterface {
 	return r.OrganizationalUnitResource
+}
+
+// HTTPRoute is a wrapper for the underlying resource, it provides a HTTPRouteinterface to work with httproutes
+func (r *Resource) HTTPRoute() rortypes.HTTPRouteinterface {
+	return r.HTTPRouteResource
+}
+
+// Gateway is a wrapper for the underlying resource, it provides a Gatewayinterface to work with gateways
+func (r *Resource) Gateway() rortypes.Gatewayinterface {
+	return r.GatewayResource
+}
+
+// GatewayClass is a wrapper for the underlying resource, it provides a GatewayClassinterface to work with gatewayclasses
+func (r *Resource) GatewayClass() rortypes.GatewayClassinterface {
+	return r.GatewayClassResource
 }
 
 // Unknown is a wrapper for the underlying resource, it provides a Unknowninterface to work with unknowns

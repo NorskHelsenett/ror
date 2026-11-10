@@ -279,6 +279,21 @@ func NewResourceFromMapInterface(input map[string]any) *rorresources.Resource {
 		r.SetOrganizationalUnit(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
+	case "gateway.networking.k8s.io/v1, Kind=HTTPRoute":
+		res := newHTTPRouteFromMapInterface(input)
+		r.SetHTTPRoute(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
+	case "gateway.networking.k8s.io/v1, Kind=Gateway":
+		res := newGatewayFromMapInterface(input)
+		r.SetGateway(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
+	case "gateway.networking.k8s.io/v1, Kind=GatewayClass":
+		res := newGatewayClassFromMapInterface(input)
+		r.SetGatewayClass(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		res := newUnknownFromMapInterface(input)
 		r.SetUnknown(res)
@@ -943,6 +958,48 @@ func newOrganizationalUnitFromMapInterface(input map[string]any) *rortypes.Resou
 
 	if err != nil {
 		rlog.Error("could not convert input to ResourceOrganizationalUnit", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newHTTPRouteFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newHTTPRouteFromMapInterface(input map[string]any) *rortypes.ResourceHTTPRoute {
+	result := rortypes.ResourceHTTPRoute{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceHTTPRoute", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newGatewayFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newGatewayFromMapInterface(input map[string]any) *rortypes.ResourceGateway {
+	result := rortypes.ResourceGateway{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceGateway", err)
+		return nil
+	}
+
+	return &result
+}
+
+// newGatewayClassFromMapInterface creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newGatewayClassFromMapInterface(input map[string]any) *rortypes.ResourceGatewayClass {
+	result := rortypes.ResourceGatewayClass{}
+	err := convertUnstructuredToStruct(input, &result)
+
+	if err != nil {
+		rlog.Error("could not convert input to ResourceGatewayClass", err)
 		return nil
 	}
 
