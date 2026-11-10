@@ -1,5 +1,8 @@
 /* Do not change, this code is generated from Golang structs */
 
+type LabelKey = string;
+type AnnotationKey = string;
+
 export enum VulnerabilityStatus {
   NOT_ASSESSED = 0,
   NEEDS_TRIAGE = 1,

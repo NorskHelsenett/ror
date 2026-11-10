@@ -77,3 +77,47 @@ func TestGatewayInfrastructureMapConversion(t *testing.T) {
 		t.Fatalf("got %#v, want %#v", resource.Spec.Infrastructure, want)
 	}
 }
+
+func TestHTTPRouteMapConversionIncludesEmbeddedFields(t *testing.T) {
+	resource := newHTTPRouteFromMapInterface(map[string]any{
+		"spec": map[string]any{
+			"parentRefs": []any{
+				map[string]any{"name": "gateway", "sectionName": "https"},
+			},
+			"rules": []any{
+				map[string]any{
+					"backendRefs": []any{
+						map[string]any{"name": "backend", "port": 8080, "weight": 7},
+					},
+				},
+			},
+		},
+		"status": map[string]any{
+			"parents": []any{
+				map[string]any{
+					"parentRef":      map[string]any{"name": "gateway"},
+					"controllerName": "example.com/controller",
+				},
+			},
+		},
+	})
+	if resource == nil {
+		t.Fatal("HTTPRoute was not converted")
+	}
+	if len(resource.Spec.ParentRefs) != 1 || string(resource.Spec.ParentRefs[0].Name) != "gateway" ||
+		resource.Spec.ParentRefs[0].SectionName == nil || string(*resource.Spec.ParentRefs[0].SectionName) != "https" {
+		t.Fatalf("HTTPRoute parentRefs were not converted: %#v", resource.Spec.ParentRefs)
+	}
+	if len(resource.Spec.Rules) != 1 || len(resource.Spec.Rules[0].BackendRefs) != 1 {
+		t.Fatalf("HTTPRoute backendRefs were not converted: %#v", resource.Spec.Rules)
+	}
+	backend := resource.Spec.Rules[0].BackendRefs[0]
+	if string(backend.Name) != "backend" || backend.Port == nil || int32(*backend.Port) != 8080 ||
+		backend.Weight == nil || *backend.Weight != 7 {
+		t.Fatalf("HTTPRoute backend ref fields were not converted: %#v", backend)
+	}
+	if len(resource.Status.Parents) != 1 || string(resource.Status.Parents[0].ParentRef.Name) != "gateway" ||
+		string(resource.Status.Parents[0].ControllerName) != "example.com/controller" {
+		t.Fatalf("HTTPRoute status parents were not converted: %#v", resource.Status.Parents)
+	}
+}
