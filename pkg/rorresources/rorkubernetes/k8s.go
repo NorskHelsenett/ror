@@ -283,6 +283,21 @@ func NewResourceFromDynamicClient(input *unstructured.Unstructured) *rorresource
 		r.SetOrganizationalUnit(res)
 		r.SetCommonInterface(rortypes.NewCommonFactory(res))
 
+	case "gateway.networking.k8s.io/v1, Kind=HTTPRoute":
+		res := newHTTPRouteFromDynamicClient(input)
+		r.SetHTTPRoute(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
+	case "gateway.networking.k8s.io/v1, Kind=Gateway":
+		res := newGatewayFromDynamicClient(input)
+		r.SetGateway(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
+	case "gateway.networking.k8s.io/v1, Kind=GatewayClass":
+		res := newGatewayClassFromDynamicClient(input)
+		r.SetGatewayClass(res)
+		r.SetCommonInterface(rortypes.NewCommonFactory(res))
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		res := newUnknownFromDynamicClient(input)
 		r.SetUnknown(res)
@@ -1227,6 +1242,66 @@ func newOrganizationalUnitFromDynamicClient(obj *unstructured.Unstructured) *ror
 	err = json.Unmarshal(nrjson, &nr)
 	if err != nil {
 		rlog.Error("Could not unmarshal json to OrganizationalUnit", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newHTTPRouteFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newHTTPRouteFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceHTTPRoute {
+	nr := rortypes.ResourceHTTPRoute{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to HTTPRoute", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newGatewayFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newGatewayFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceGateway {
+	nr := rortypes.ResourceGateway{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to Gateway", err)
+	}
+
+	// Explicitly free the JSON bytes to help garbage collection
+	nrjson = nil
+
+	return &nr
+}
+
+// newGatewayClassFromDynamicClient creates the underlying resource from a unstructured.Unstructured type provided
+// by the kubernetes universal client.
+func newGatewayClassFromDynamicClient(obj *unstructured.Unstructured) *rortypes.ResourceGatewayClass {
+	nr := rortypes.ResourceGatewayClass{}
+	nrjson, err := obj.MarshalJSON()
+	if err != nil {
+		rlog.Error("Could not mashal unstructired to json", err)
+	}
+
+	err = json.Unmarshal(nrjson, &nr)
+	if err != nil {
+		rlog.Error("Could not unmarshal json to GatewayClass", err)
 	}
 
 	// Explicitly free the JSON bytes to help garbage collection

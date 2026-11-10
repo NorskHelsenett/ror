@@ -378,6 +378,27 @@ func NewResourceFromStruct(res Resource) (*Resource, error) {
 		r.SetOrganizationalUnit(res.OrganizationalUnitResource)
 		r.common = rortypes.NewCommonFactory(res.OrganizationalUnitResource)
 
+	case "gateway.networking.k8s.io/v1, Kind=HTTPRoute":
+		if res.HTTPRouteResource == nil {
+			res.HTTPRouteResource = &rortypes.ResourceHTTPRoute{}
+		}
+		r.SetHTTPRoute(res.HTTPRouteResource)
+		r.common = rortypes.NewCommonFactory(res.HTTPRouteResource)
+
+	case "gateway.networking.k8s.io/v1, Kind=Gateway":
+		if res.GatewayResource == nil {
+			res.GatewayResource = &rortypes.ResourceGateway{}
+		}
+		r.SetGateway(res.GatewayResource)
+		r.common = rortypes.NewCommonFactory(res.GatewayResource)
+
+	case "gateway.networking.k8s.io/v1, Kind=GatewayClass":
+		if res.GatewayClassResource == nil {
+			res.GatewayClassResource = &rortypes.ResourceGatewayClass{}
+		}
+		r.SetGatewayClass(res.GatewayClassResource)
+		r.common = rortypes.NewCommonFactory(res.GatewayClassResource)
+
 	case "unknown.ror.internal/v1, Kind=Unknown":
 		if res.UnknownResource == nil {
 			res.UnknownResource = &rortypes.ResourceUnknown{}

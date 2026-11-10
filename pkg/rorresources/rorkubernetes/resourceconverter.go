@@ -133,7 +133,9 @@ func setFieldValue(fieldValue reflect.Value, srcValue any) error {
 						if err := setFieldValue(mapValue, srcVal.MapIndex(key).Interface()); err != nil {
 							return err
 						}
-						newMap.SetMapIndex(key, mapValue)
+						mapKey := reflect.New(fieldType.Key()).Elem()
+						mapKey.SetString(key.String())
+						newMap.SetMapIndex(mapKey, mapValue)
 					}
 				}
 				fieldValue.Set(newMap)
