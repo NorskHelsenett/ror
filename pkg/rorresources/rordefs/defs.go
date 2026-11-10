@@ -532,6 +532,39 @@ var ResourceDatabase = ApiResource{
 	Versions:   []ApiVersions{ApiVersionV2},
 }
 
+var ResourceHTTPRoute = ApiResource{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "HTTPRoute",
+		APIVersion: "gateway.networking.k8s.io/v1",
+	},
+	Plural:     "httproutes",
+	Namespaced: true,
+	Types:      []ApiResourceType{ApiResourceTypeClusterAgentV2},
+	Versions:   []ApiVersions{ApiVersionV2},
+}
+
+var ResourceGateway = ApiResource{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "Gateway",
+		APIVersion: "gateway.networking.k8s.io/v1",
+	},
+	Plural:     "gateways",
+	Namespaced: true,
+	Types:      []ApiResourceType{ApiResourceTypeClusterAgentV2},
+	Versions:   []ApiVersions{ApiVersionV2},
+}
+
+var ResourceGatewayClass = ApiResource{
+	TypeMeta: metav1.TypeMeta{
+		Kind:       "GatewayClass",
+		APIVersion: "gateway.networking.k8s.io/v1",
+	},
+	Plural:     "gatewayclasses",
+	Namespaced: false,
+	Types:      []ApiResourceType{ApiResourceTypeClusterAgentV2},
+	Versions:   []ApiVersions{ApiVersionV2},
+}
+
 var ResourceUnknown = ApiResource{
 	TypeMeta: metav1.TypeMeta{
 		Kind:       "Unknown",
@@ -593,5 +626,8 @@ var Resourcedefs = ApiResources{
 	ResourceDatabase,
 	ResourceConfig,
 	ResourceOrganizationalUnit,
+	ResourceHTTPRoute,
+	ResourceGateway,
+	ResourceGatewayClass,
 	ResourceUnknown,
 }

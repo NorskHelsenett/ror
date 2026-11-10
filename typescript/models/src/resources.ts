@@ -1,5 +1,8 @@
 /* Do not change, this code is generated from Golang structs */
 
+type LabelKey = string;
+type AnnotationKey = string;
+
 export enum VulnerabilityStatus {
   NOT_ASSESSED = 0,
   NEEDS_TRIAGE = 1,
@@ -15,6 +18,335 @@ export enum ResourceTagProperties {
   color = 'color',
 }
 export interface ResourceUnknown {}
+export interface SupportedFeature {
+  name: string;
+}
+export interface GatewayClassStatus {
+  conditions?: Condition[];
+  supportedFeatures?: SupportedFeature[];
+}
+export interface ParametersReference {
+  group: string;
+  kind: string;
+  name: string;
+  namespace?: string;
+}
+export interface GatewayClassSpec {
+  controllerName: string;
+  parametersRef?: ParametersReference;
+  description?: string;
+}
+export interface ResourceGatewayClass {
+  spec: GatewayClassSpec;
+  status: GatewayClassStatus;
+}
+export interface ListenerStatus {
+  name: string;
+  supportedKinds: RouteGroupKind[];
+  attachedRoutes: number;
+  conditions: Condition[];
+}
+export interface GatewayStatusAddress {
+  type?: string;
+  value: string;
+  routability?: string;
+}
+export interface GatewayStatus {
+  addresses?: GatewayStatusAddress[];
+  conditions?: Condition[];
+  listeners?: ListenerStatus[];
+  attachedListenerSets?: number;
+}
+export interface TLSPortConfig {
+  port: number;
+  tls: TLSConfig;
+}
+export interface ObjectReference {
+  group: string;
+  kind: string;
+  name: string;
+  namespace?: string;
+}
+export interface FrontendTLSValidation {
+  caCertificateRefs: ObjectReference[];
+  mode?: string;
+}
+export interface TLSConfig {
+  validation?: FrontendTLSValidation;
+}
+export interface FrontendTLSConfig {
+  default: TLSConfig;
+  perPort?: TLSPortConfig[];
+}
+export interface GatewayBackendTLS {
+  clientCertificateRef?: SecretObjectReference;
+}
+export interface GatewayTLSConfig {
+  backend?: GatewayBackendTLS;
+  frontend?: FrontendTLSConfig;
+}
+export interface ListenerNamespaces {
+  from?: string;
+  selector?: LabelSelector;
+}
+export interface AllowedListeners {
+  namespaces?: ListenerNamespaces;
+}
+export interface LocalParametersReference {
+  group: string;
+  kind: string;
+  name: string;
+}
+export interface GatewayInfrastructure {
+  labels?: { [key: LabelKey]: string };
+  annotations?: { [key: AnnotationKey]: string };
+  parametersRef?: LocalParametersReference;
+}
+export interface GatewaySpecAddress {
+  type?: string;
+  value?: string;
+  routability?: string;
+}
+export interface ListenerFilter {
+  type: string;
+  externalAuth?: HTTPExternalAuthFilter;
+  extensionRef?: LocalObjectReference;
+}
+export interface ListenerFilters {
+  requests?: ListenerFilter[];
+}
+export interface RouteGroupKind {
+  group?: string;
+  kind: string;
+}
+export interface LabelSelectorRequirement {
+  key: string;
+  operator: string;
+  values?: string[];
+}
+export interface LabelSelector {
+  matchLabels?: { [key: string]: string };
+  matchExpressions?: LabelSelectorRequirement[];
+}
+export interface RouteNamespaces {
+  from?: string;
+  selector?: LabelSelector;
+}
+export interface AllowedRoutes {
+  namespaces?: RouteNamespaces;
+  kinds?: RouteGroupKind[];
+}
+export interface SecretObjectReference {
+  group?: string;
+  kind?: string;
+  name: string;
+  namespace?: string;
+}
+export interface ListenerTLSConfig {
+  mode?: string;
+  certificateRefs?: SecretObjectReference[];
+  options?: { [key: AnnotationKey]: string };
+}
+export interface Listener {
+  name: string;
+  hostname?: string;
+  port: number;
+  protocol: string;
+  tls?: ListenerTLSConfig;
+  allowedRoutes?: AllowedRoutes;
+  filters?: ListenerFilters;
+}
+export interface GatewaySpec {
+  gatewayClassName: string;
+  listeners: Listener[];
+  addresses?: GatewaySpecAddress[];
+  infrastructure?: GatewayInfrastructure;
+  allowedListeners?: AllowedListeners;
+  tls?: GatewayTLSConfig;
+  defaultScope?: string;
+}
+export interface ResourceGateway {
+  spec: GatewaySpec;
+  status: GatewayStatus;
+}
+export interface Condition {
+  type: string;
+  status: string;
+  observedGeneration?: number;
+  lastTransitionTime: Time;
+  reason: string;
+  message: string;
+}
+export interface RouteParentStatus {
+  parentRef: ParentReference;
+  controllerName: string;
+  conditions?: Condition[];
+}
+export interface HTTPRouteStatus {
+  parents: RouteParentStatus[];
+}
+export interface HeaderConfig {
+  name: string;
+}
+export interface CookieConfig {
+  name?: string;
+  path?: string;
+  lifetimeType?: string;
+}
+export interface SessionPersistence {
+  absoluteTimeout?: string;
+  type?: string;
+  cookie?: CookieConfig;
+  header?: HeaderConfig;
+}
+export interface HTTPRouteRetry {
+  codes?: number[];
+  attempts?: number;
+  backoff?: string;
+}
+export interface HTTPRouteTimeouts {
+  request?: string;
+  backendRequest?: string;
+}
+export interface HTTPBackendRef {
+  group?: string;
+  kind?: string;
+  name: string;
+  namespace?: string;
+  port?: number;
+  weight?: number;
+  filters?: HTTPRouteFilter[];
+}
+export interface LocalObjectReference {
+  group: string;
+  kind: string;
+  name: string;
+}
+export interface ForwardBodyConfig {
+  maxSize?: number;
+}
+export interface HTTPAuthConfig {
+  path?: string;
+  allowedHeaders?: string[];
+  allowedResponseHeaders?: string[];
+}
+export interface GRPCAuthConfig {
+  allowedHeaders?: string[];
+}
+export interface HTTPExternalAuthFilter {
+  protocol?: string;
+  backendRef?: BackendObjectReference;
+  grpc?: GRPCAuthConfig;
+  http?: HTTPAuthConfig;
+  forwardBody?: ForwardBodyConfig;
+}
+export interface HTTPCORSFilter {
+  allowOrigins?: string[];
+  allowCredentials?: boolean;
+  allowMethods?: string[];
+  allowHeaders?: string[];
+  exposeHeaders?: string[];
+  maxAge?: number;
+}
+export interface HTTPURLRewriteFilter {
+  hostname?: string;
+  path?: HTTPPathModifier;
+}
+export interface HTTPPathModifier {
+  type: string;
+  replaceFullPath?: string;
+  replacePrefixMatch?: string;
+}
+export interface HTTPRequestRedirectFilter {
+  scheme?: string;
+  hostname?: string;
+  path?: HTTPPathModifier;
+  port?: number;
+  statusCode?: number;
+}
+export interface Fraction {
+  numerator: number;
+  denominator?: number;
+}
+export interface BackendObjectReference {
+  group?: string;
+  kind?: string;
+  name: string;
+  namespace?: string;
+  port?: number;
+}
+export interface HTTPRequestMirrorFilter {
+  backendRef: BackendObjectReference;
+  percent?: number;
+  fraction?: Fraction;
+}
+export interface HTTPHeader {
+  name: string;
+  value: string;
+}
+export interface HTTPHeaderFilter {
+  set?: HTTPHeader[];
+  add?: HTTPHeader[];
+  remove?: string[];
+}
+export interface HTTPRouteFilter {
+  type: string;
+  requestHeaderModifier?: HTTPHeaderFilter;
+  responseHeaderModifier?: HTTPHeaderFilter;
+  requestMirror?: HTTPRequestMirrorFilter;
+  requestRedirect?: HTTPRequestRedirectFilter;
+  urlRewrite?: HTTPURLRewriteFilter;
+  cors?: HTTPCORSFilter;
+  externalAuth?: HTTPExternalAuthFilter;
+  extensionRef?: LocalObjectReference;
+}
+export interface HTTPQueryParamMatch {
+  type?: string;
+  name: string;
+  value: string;
+}
+export interface HTTPHeaderMatch {
+  type?: string;
+  name: string;
+  value: string;
+}
+export interface HTTPPathMatch {
+  type?: string;
+  value?: string;
+}
+export interface HTTPRouteMatch {
+  path?: HTTPPathMatch;
+  headers?: HTTPHeaderMatch[];
+  queryParams?: HTTPQueryParamMatch[];
+  method?: string;
+}
+export interface HTTPRouteRule {
+  name?: string;
+  matches?: HTTPRouteMatch[];
+  filters?: HTTPRouteFilter[];
+  backendRefs?: HTTPBackendRef[];
+  timeouts?: HTTPRouteTimeouts;
+  retry?: HTTPRouteRetry;
+  sessionPersistence?: SessionPersistence;
+}
+export interface ParentReference {
+  group?: string;
+  kind?: string;
+  namespace?: string;
+  name: string;
+  sectionName?: string;
+  port?: number;
+}
+export interface HTTPRouteSpec {
+  parentRefs?: ParentReference[];
+  useDefaultGateways?: string;
+  hostnames?: string[];
+  rules?: HTTPRouteRule[];
+}
+export interface ResourceHTTPRoute {
+  spec: HTTPRouteSpec;
+  status: HTTPRouteStatus;
+}
 export interface ResourceOrganizationalUnitStatus {
   name: string;
   type: string;
@@ -1725,6 +2057,9 @@ export interface Resource {
   manageddatabase?: ResourceManagedDatabase;
   config?: ResourceConfig;
   organizationalunit?: ResourceOrganizationalUnit;
+  httproute?: ResourceHTTPRoute;
+  gateway?: ResourceGateway;
+  gatewayclass?: ResourceGatewayClass;
   unknown?: ResourceUnknown;
 }
 export interface ResourceSet {

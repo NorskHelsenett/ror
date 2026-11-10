@@ -76,6 +76,7 @@ func generateTypescriptModels() {
 	converter := typescriptify.New()
 	converter.CreateInterface = true
 	converter.CreateConstructor = true
+	converter.WithCustomCodeBefore("type LabelKey = string;\ntype AnnotationKey = string;")
 	converter.AddEnum(rortypes.AllVulnerabilityStatuses)
 	converter.AddEnum(rortypes.AllVulnerabilityDismissalReasons)
 	converter.AddEnum(rortypes.AllResourceTagProperties)
