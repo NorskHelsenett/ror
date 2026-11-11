@@ -51,6 +51,35 @@ type fakeClock struct{ now time.Time }
 
 func (c *fakeClock) Now() time.Time { return c.now }
 
+func TestKeySetSeed(t *testing.T) {
+	private := newTestRSAKey(t)
+	first := testKeySet(t, testPublicKey(t, private, "a"))
+	next := testKeySet(t, testPublicKey(t, private, "b"))
+	var calls int
+	cache := NewKeySet(func(context.Context) (jwk.Set, error) {
+		calls++
+		return next, nil
+	}, time.Minute)
+	if err := cache.Seed(jwk.NewSet()); err == nil {
+		t.Fatal("invalid seed accepted")
+	}
+	if err := cache.Seed(first); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := cache.KeyFor(context.Background(), "a"); err != nil || calls != 0 {
+		t.Fatalf("seeded lookup fetched: %v, %d", err, calls)
+	}
+	if _, err := cache.KeyFor(context.Background(), "b"); err != nil || calls != 1 {
+		t.Fatalf("unknown key did not refresh: %v, %d", err, calls)
+	}
+	if err := cache.Seed(first); err == nil {
+		t.Fatal("seed replaced fetched keys")
+	}
+	if _, ok := cache.cachedWith("b"); !ok {
+		t.Fatal("fetched keys lost")
+	}
+}
+
 func TestKeySetRefreshesOnlyForUnknownKeyIDs(t *testing.T) {
 	private := newTestRSAKey(t)
 	first := testKeySet(t, testPublicKey(t, private, "a"))
