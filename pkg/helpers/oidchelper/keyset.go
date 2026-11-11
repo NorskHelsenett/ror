@@ -43,6 +43,24 @@ func NewKeySet(fetch KeySetFetcher, interval time.Duration) *KeySet {
 	return &KeySet{fetch: fetch, interval: interval, now: time.Now, fetching: make(chan struct{}, 1)}
 }
 
+// Seed installs independently trusted, validated keys only into an empty cache.
+// It waits for any in-flight fetch before checking whether the cache is empty.
+func (k *KeySet) Seed(keys jwk.Set) error {
+	if err := ValidatePublicKeySet(keys); err != nil {
+		return err
+	}
+	k.fetching <- struct{}{}
+	defer func() { <-k.fetching }()
+
+	k.mu.Lock()
+	defer k.mu.Unlock()
+	if k.keys != nil {
+		return errors.New("verification key cache is already initialized")
+	}
+	k.keys = keys
+	return nil
+}
+
 // KeyFor returns the cached public key set when it contains kid, refreshing the
 // cache first when kid is unknown and the refresh interval allows it.
 func (k *KeySet) KeyFor(ctx context.Context, kid string) (jwk.Set, error) {
