@@ -140,7 +140,7 @@ func (c *redisStartupChecker) CheckHealth(ctx context.Context) []rorhealth.Check
 
 // NewFromClient creates a RedisDB from an existing go-redis client.
 // Useful for testing with miniredis or other pre-configured clients.
-func NewFromClient(client *goredis.Client) RedisDB {
+func NewFromClient(client *goredis.Client) AtomicRedisDB {
 	return &rediscon{Client: client}
 }
 
