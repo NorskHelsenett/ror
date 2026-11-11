@@ -44,10 +44,14 @@ func NewKeySet(fetch KeySetFetcher, interval time.Duration) *KeySet {
 }
 
 // Seed installs independently trusted, validated keys only into an empty cache.
+// It waits for any in-flight fetch before checking whether the cache is empty.
 func (k *KeySet) Seed(keys jwk.Set) error {
 	if err := ValidatePublicKeySet(keys); err != nil {
 		return err
 	}
+	k.fetching <- struct{}{}
+	defer func() { <-k.fetching }()
+
 	k.mu.Lock()
 	defer k.mu.Unlock()
 	if k.keys != nil {

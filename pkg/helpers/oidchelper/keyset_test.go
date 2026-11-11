@@ -5,9 +5,11 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"errors"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"testing"
+	"testing/synctest"
 	"time"
 
 	"github.com/lestrrat-go/jwx/v4/jwk"
@@ -77,6 +79,65 @@ func TestKeySetSeed(t *testing.T) {
 	}
 	if _, ok := cache.cachedWith("b"); !ok {
 		t.Fatal("fetched keys lost")
+	}
+}
+
+func TestKeySetSeedWaitsForFetch(t *testing.T) {
+	private := newTestRSAKey(t)
+	seeded := testKeySet(t, testPublicKey(t, private, "seeded"))
+	fetched := testKeySet(t, testPublicKey(t, private, "fetched"))
+
+	for _, fail := range []bool{false, true} {
+		t.Run(fmt.Sprintf("fetch-fails=%t", fail), func(t *testing.T) {
+			synctest.Test(t, func(t *testing.T) {
+				release := make(chan struct{})
+				cache := NewKeySet(func(context.Context) (jwk.Set, error) {
+					<-release
+					if fail {
+						return nil, errors.New("fetch failed")
+					}
+					return fetched, nil
+				}, time.Minute)
+				fetchDone := make(chan error, 1)
+				go func() {
+					_, err := cache.KeyFor(context.Background(), "fetched")
+					fetchDone <- err
+				}()
+				synctest.Wait()
+
+				seedDone := make(chan error, 1)
+				go func() { seedDone <- cache.Seed(seeded) }()
+				synctest.Wait()
+				select {
+				case err := <-seedDone:
+					close(release)
+					t.Fatalf("Seed completed during an in-flight fetch: %v", err)
+				default:
+				}
+
+				close(release)
+				if err := <-fetchDone; (err != nil) != fail {
+					t.Fatalf("fetch error = %v, want failure %t", err, fail)
+				}
+				err := <-seedDone
+				if fail {
+					if err != nil {
+						t.Fatalf("Seed after failed fetch: %v", err)
+					}
+					// The failed fetch's refresh throttle must not block seeded keys.
+					if _, err := cache.KeyFor(context.Background(), "seeded"); err != nil {
+						t.Fatalf("seeded key lookup: %v", err)
+					}
+				} else {
+					if err == nil {
+						t.Fatal("Seed replaced the completed fetch")
+					}
+					if _, ok := cache.cachedWith("fetched"); !ok {
+						t.Fatal("fetched keys were lost")
+					}
+				}
+			})
+		})
 	}
 }
 
