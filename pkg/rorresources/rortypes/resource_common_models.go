@@ -22,6 +22,7 @@ var (
 	// aclmodels.ErrInvalidScope is returned when the scope is invalid
 	ErrInvalidScope   = errors.New("invalid scope")
 	ErrInvalidSubject = errors.New("invalid subject")
+	ErrPatchNilTarget = errors.New("patch target is nil")
 )
 
 type ResourceTagProperties string
