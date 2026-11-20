@@ -136,59 +136,6 @@ func (p *ResourcePatch) Validate() error {
 	return nil
 }
 
-// TODO: Is this needed?
-// Apply returns a copy of in with the patch applied. The input resource is left
-// untouched.
-//
-// The returned resource is rebuilt with NewResourceFromStruct so that its common
-// interface is bound, which keeps ApplyInputFilter and GenRorHash usable on the
-// result like on any other resource.
-func (p *ResourcePatch) Apply(in *Resource) (*Resource, error) {
-	if p == nil {
-		return nil, ErrPatchNil
-	}
-	if in == nil {
-		return nil, ErrPatchNilResource
-	}
-	if err := p.Validate(); err != nil {
-		return nil, err
-	}
-	if in.GetUID() != "" && in.GetUID() != p.UID {
-		return nil, ErrPatchUIDMismatch
-	}
-	if in.GetKind() != p.Kind || in.GetAPIVersion() != p.APIVersion {
-		return nil, ErrPatchKindMismatch
-	}
-
-	out, err := cloneResource(in)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := p.ApplyTo(&out.CommonResource); err != nil {
-		return nil, err
-	}
-
-	switch {
-{{- range .}}
-	case p.{{.Kind}}Resource.IsSet():
-		if out.{{.Kind}}Resource == nil {
-			return nil, ErrPatchNoSubResource
-		}
-		if p.{{.Kind}}Resource.IsNull() {
-			// An explicitly nulled sub resource is reset instead of patched.
-			*out.{{.Kind}}Resource = rortypes.Resource{{.Kind}}{}
-			break
-		}
-		sub, _ := p.{{.Kind}}Resource.Value()
-		if err := sub.ApplyTo(out.{{.Kind}}Resource); err != nil {
-			return nil, err
-		}
-{{- end}}
-	}
-
-	return out, nil
-}
 
 // cloneResource returns a deep copy of in with its common interface rebound, so
 // that applying a patch never reaches the resource the caller passed in.
