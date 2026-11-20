@@ -1,3 +1,6 @@
+// Package optional provides a generic Optional type that can be used to represent the three states of a field in a partial update: unset, null, and value.
+// It is designed to work with JSON marshaling and unmarshaling, allowing for fine-grained control over how fields are represented in JSON payloads.
+// The package also includes utility functions for applying optional values to target fields and for working with nested patches.
 package optional
 
 import (
@@ -17,9 +20,9 @@ import (
 // document. The `omitempty` tag has no effect on struct types and would emit
 // unset fields as null, which in merge patch semantics means "delete".
 type Optional[T any] struct {
-	set   bool
-	null  bool
 	value T
+	null  bool
+	set   bool
 }
 
 // NewOptional returns an Optional holding value.
@@ -127,7 +130,7 @@ func (o Optional[T]) Ptr() *T {
 	return &v
 }
 
-// Any returns the value as interface{} to satisfy OptionalAny interface
+// Any returns the value as any to satisfy OptionalAny interface
 func (o Optional[T]) Any() (any, bool) {
 	if !o.set || o.null {
 		return nil, false
@@ -161,9 +164,6 @@ func SetUpdate[T any](m map[string]any, column string, o Optional[T]) {
 
 // Apply writes o into target. An unset Optional leaves target untouched, a null
 // Optional resets target to its zero value and a value is assigned to target.
-//
-// Apply is the leaf of a patch: use it for fields that are replaced as a whole,
-// such as scalars, slices, maps and structs that are not patchable themselves.
 func Apply[T any](o Optional[T], target *T) {
 	if target == nil || !o.set {
 		return
