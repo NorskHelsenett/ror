@@ -144,6 +144,7 @@ nav:
       - Generator:
           - development/generator/index.md
           - development/generator/resources.md
+          - development/generator/patching.md
           - development/generator/using-generator.md
       - Makerfile:
           - development/makerfile/index.md

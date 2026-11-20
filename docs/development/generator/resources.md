@@ -184,3 +184,8 @@ TODO
 
 Used by the generator to fetch resource definitions of a specific version.
 Best practice is to set this to the highest version, unless you specifically need to support a lower version for some reason.
+
+### Patchable
+
+Marks the kind as supporting partial updates, which generates a patch mirror
+for its definition. See [patching resources](./patching.md).
