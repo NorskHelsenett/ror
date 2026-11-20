@@ -3,6 +3,7 @@ package optional
 import (
 	"fmt"
 	"log/slog"
+	"reflect"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -78,7 +79,7 @@ func IsRequestValid(request any) error {
 	return nil
 }
 
-// Interface that all Optional types implement
+// OptionalAny interface that all Optional types implement
 type OptionalAny interface {
 	IsSet() bool
 	IsNull() bool
@@ -87,7 +88,7 @@ type OptionalAny interface {
 
 func RegisterNonNullValidation(v *validator.Validate) {
 	err := v.RegisterValidation("nonull", func(fl validator.FieldLevel) bool {
-		optAny, ok := fl.Field().Interface().(OptionalAny)
+		optAny, ok := reflect.TypeAssert[OptionalAny](fl.Field())
 		if !ok {
 			return true
 		}
@@ -104,7 +105,7 @@ func RegisterNonNullValidation(v *validator.Validate) {
 func RegisterOptionalValidation(v *validator.Validate) error {
 	err := v.RegisterValidation("opt", func(fl validator.FieldLevel) bool {
 		// Check if this field implements OptionalAny
-		optAny, ok := fl.Field().Interface().(OptionalAny)
+		optAny, ok := reflect.TypeAssert[OptionalAny](fl.Field())
 		if !ok {
 			// Not an Optional type, skip validation
 			return true
