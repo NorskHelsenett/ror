@@ -86,11 +86,26 @@ func (g Generator) TemplateToFile(filepath string, templatePath string, data any
 	fmt.Println("Generated file: ", filepath)
 }
 
-// touchFile will create a file if it does not exist
+// TouchFile will create a file if it does not exist
 func (g Generator) TouchFile(filePath string) error {
 	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
 	return file.Close()
+}
+
+// WriteGoFile writes generated go source to a path and formats it.
+func (g Generator) WriteGoFile(filePath string, source string) error {
+	if err := os.WriteFile(filePath, []byte(source), 0600); err != nil { // #nosec G306 - generated source is not secret
+		return fmt.Errorf("could not write %s: %w", filePath, err)
+	}
+
+	fmtcmd := exec.Command("go", "fmt", filePath)
+	if out, err := fmtcmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("go fmt failed on %s: %w: %s", filePath, err, out)
+	}
+
+	fmt.Println("Generated file: ", filePath)
+	return nil
 }

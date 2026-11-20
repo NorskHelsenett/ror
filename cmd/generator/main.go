@@ -1,6 +1,6 @@
 // The Generator package provides a way to generate code for collecting,
 // transfering and saving resources in the agent and api.
-// It also provides functions to fetc the resources.
+// It also provides functions to fetch the resources.
 //
 //		go run build/generator/main.go
 //
@@ -13,6 +13,8 @@
 //	  - pkg/rorresources/rortypes/resource_interfaces.go
 //	  - pkg/rorresources/rortypes/resource_models_methods.go
 //	  - pkg/rorresources/rortypes/resource_input_filter_*.go
+//	  - pkg/rorresources/rortypes/resourcepatchdef_<definition>.go
+//	  - pkg/rorresources/resourcepatch.go
 //
 // The repo github.com/NorskHelsenett/ROR, should be placed in the ../ror folder or the ROR_PATH environment variable should be set to the path.
 //
@@ -28,6 +30,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"reflect"
 
 	"github.com/NorskHelsenett/ror/pkg/rorresources"
 	"github.com/NorskHelsenett/ror/pkg/rorresources/rordefs"
@@ -38,26 +41,75 @@ import (
 
 var generator *rorgenerator.Generator
 
+var v1TemplateFiles = []string{
+	"pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl",
+	"pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl",
+}
+
+var v2TemplateFiles = []string{
+	"pkg/rorresources/fromstruct.go.tmpl",
+	"pkg/rorresources/resource.go.tmpl",
+	"pkg/rorresources/rorkubernetes/k8s_test.go.tmpl",
+	"pkg/rorresources/rorkubernetes/k8s.go.tmpl",
+	"pkg/rorresources/rorkubernetes/k8s_new.go.tmpl",
+	"pkg/rorresources/rortypes/resource_types_generated.go.tmpl",
+}
+
 func main() {
 
 	generator = rorgenerator.NewGenerator()
 
 	// Resource models v1
-	generator.TemplateFile("pkg/apicontracts/apiresourcecontracts/resource_models_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
-	generator.TemplateFile("pkg/apicontracts/apiresourcecontracts/resource_models_methods_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
+	for _, templateFile := range v1TemplateFiles {
+		generator.TemplateFile(templateFile, rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV1))
+	}
 
 	// Resource models v2
-	generator.TemplateFile("pkg/rorresources/fromstruct.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/resource.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_test.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rorkubernetes/k8s_new.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	// Removed, should include interface in the resource definitions if needed
-	//generator.TemplateFile("pkg/rorresources/rortypes/resource_interfaces.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	//generator.TemplateFile("pkg/rorresources/rortypes/resource_models_methods.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
-	generator.TemplateFile("pkg/rorresources/rortypes/resource_types_generated.go.tmpl", rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	for _, templateFile := range v2TemplateFiles {
+		generator.TemplateFile(templateFile, rordefs.Resourcedefs.GetResourcesByVersion(rordefs.ApiVersionV2))
+	}
+
+	generatePatchMirrors()
+	generator.TemplateFile("pkg/rorresources/resourcepatch.go.tmpl", rordefs.Resourcedefs.GetPatchableResources())
 
 	generateTypescriptModels()
+}
+
+// generatePatchMirrors generates the patch mirrors of the patchable resource(s) definitions.
+// see pkg/rorresources/rorgenerator/patchmirror.go for more information.
+func generatePatchMirrors() {
+	var roots []rorgenerator.PatchMirrorRoot
+	for _, resource := range rordefs.Resourcedefs.GetPatchableResources() {
+		roots = append(roots, rorgenerator.PatchMirrorRoot{Kind: resource.Kind, Type: patchMirrorRoot(resource.Kind)})
+	}
+
+	err := generator.PatchMirrorFiles(roots, rorgenerator.PatchMirrorConfig{
+		Package:          "rortypes",
+		PackagePath:      "github.com/NorskHelsenett/ror/pkg/rorresources/rortypes",
+		SourceDir:        "pkg/rorresources/rortypes",
+		Prefix:           "ResourcePatch",
+		SourceFilePrefix: "resourcedef_",
+		FilePrefix:       "resourcepatchdef_",
+		OptionalPackage:  "github.com/NorskHelsenett/ror/pkg/helpers/optional",
+		NilTargetError:   "ErrPatchNilTarget",
+		GeneratedBy:      "cmd/generator/main.go",
+		// Quantity wraps a kubernetes quantity and marshals itself as a
+		// string, so it is replaced as a whole rather than taken apart.
+		Opaque: map[string]bool{"Quantity": true},
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+// patchMirrorRoot finds the reflect.Type of the resource patch mirror of the given kind.
+// It panics if the kind is marked patchable but rorresources.Resource has no field for it, which means the generator needs to be run again to add it.
+func patchMirrorRoot(kind string) reflect.Type {
+	field, ok := reflect.TypeOf(rorresources.Resource{}).FieldByName(kind + "Resource")
+	if !ok {
+		panic(fmt.Sprintf("kind %q is marked patchable but rorresources.Resource has no %sResource field, run the generator again to add it", kind, kind))
+	}
+	return field.Type.Elem()
 }
 
 func generateTypescriptModels() {
