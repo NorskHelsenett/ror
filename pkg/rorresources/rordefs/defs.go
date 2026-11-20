@@ -287,6 +287,7 @@ var ResourceKubernetesCluster = ApiResource{
 	Namespaced: true,
 	Types:      []ApiResourceType{ApiResourceTypeInternal, ApiResourceTypeTanzuAgent},
 	Versions:   []ApiVersions{ApiVersionV1, ApiVersionV2},
+	Patchable:  true,
 }
 
 var ResourceProvider = ApiResource{
@@ -519,6 +520,7 @@ var ResourceOrganizationalUnit = ApiResource{
 	Namespaced: false,
 	Types:      []ApiResourceType{ApiResourceTypeInternal},
 	Versions:   []ApiVersions{ApiVersionV2},
+	Patchable:  true,
 }
 
 var ResourceDatabase = ApiResource{

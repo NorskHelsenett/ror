@@ -46,7 +46,11 @@ type ApiResource struct {
 	// ProtectedBy names the capability (without verb) required to access this
 	// resource kind; empty means it is accessible with the standard ror caps.
 	ProtectedBy aclcaps.Capability
-	resource    any
+	// Patchable marks the kind as supporting partial updates. A patchable kind
+	// gets a generated patch mirror in rortypes and a field on
+	// rorresources.ResourcePatch.
+	Patchable bool
+	resource  any
 }
 
 // GetApiVersion
@@ -131,6 +135,17 @@ func (m ApiResources) ProtectedByKind(kind string) aclcaps.Capability {
 		}
 	}
 	return ""
+}
+
+// GetPatchableResources returns the resources that support partial updates.
+func (m ApiResources) GetPatchableResources() ApiResources {
+	var resources ApiResources
+	for _, resource := range m {
+		if resource.Patchable {
+			resources = append(resources, resource)
+		}
+	}
+	return resources
 }
 
 // Deprecated: migrate to the ApiResources.GetSchemasByType
