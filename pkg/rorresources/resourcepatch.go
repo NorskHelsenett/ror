@@ -156,6 +156,70 @@ func (p *ResourcePatch) Validate() error {
 	return nil
 }
 
+// Apply returns a copy of in with the patch applied. The input resource is left
+// untouched.
+//
+// The returned resource is rebuilt with NewResourceFromStruct so that its common
+// interface is bound, which keeps ApplyInputFilter and GenRorHash usable on the
+// result like on any other resource.
+func (p *ResourcePatch) Apply(in *Resource) (*Resource, error) {
+	if p == nil {
+		return nil, ErrPatchNil
+	}
+	if in == nil {
+		return nil, ErrPatchNilResource
+	}
+	if err := p.Validate(); err != nil {
+		return nil, err
+	}
+	if in.GetUID() != "" && in.GetUID() != p.UID {
+		return nil, ErrPatchUIDMismatch
+	}
+	if in.GetKind() != p.Kind || in.GetAPIVersion() != p.APIVersion {
+		return nil, ErrPatchKindMismatch
+	}
+
+	out, err := cloneResource(in)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := p.ApplyTo(&out.CommonResource); err != nil {
+		return nil, err
+	}
+
+	switch {
+	case p.KubernetesClusterResource.IsSet():
+		if out.KubernetesClusterResource == nil {
+			return nil, ErrPatchNoSubResource
+		}
+		if p.KubernetesClusterResource.IsNull() {
+			// An explicitly nulled sub resource is reset instead of patched.
+			*out.KubernetesClusterResource = rortypes.ResourceKubernetesCluster{}
+			break
+		}
+		sub, _ := p.KubernetesClusterResource.Value()
+		if err := sub.ApplyTo(out.KubernetesClusterResource); err != nil {
+			return nil, err
+		}
+	case p.OrganizationalUnitResource.IsSet():
+		if out.OrganizationalUnitResource == nil {
+			return nil, ErrPatchNoSubResource
+		}
+		if p.OrganizationalUnitResource.IsNull() {
+			// An explicitly nulled sub resource is reset instead of patched.
+			*out.OrganizationalUnitResource = rortypes.ResourceOrganizationalUnit{}
+			break
+		}
+		sub, _ := p.OrganizationalUnitResource.Value()
+		if err := sub.ApplyTo(out.OrganizationalUnitResource); err != nil {
+			return nil, err
+		}
+	}
+
+	return out, nil
+}
+
 // cloneResource returns a deep copy of in with its common interface rebound, so
 // that applying a patch never reaches the resource the caller passed in.
 func cloneResource(in *Resource) (*Resource, error) {
@@ -168,4 +232,11 @@ func cloneResource(in *Resource) (*Resource, error) {
 		return nil, fmt.Errorf("could not decode resource: %w", err)
 	}
 	return NewResourceFromStruct(cloned)
+}
+
+func (p *ResourcePatch) GetUID() string {
+	if p == nil {
+		return ""
+	}
+	return p.UID
 }
