@@ -56,7 +56,7 @@ func (c *RorClient) V2() clientinterface.RorCommonClientApiInterfaceV2 {
 	return c.v2
 }
 
-// Pingchecks the connection to the transport with a context.
+// Ping checks the connection to the transport with a context.
 func (c *RorClient) Ping(ctx context.Context) bool {
 	return c.Transport.Ping(ctx)
 }
