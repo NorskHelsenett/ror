@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/resources"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 	"github.com/NorskHelsenett/ror/pkg/helpers/resourcecache/resourcecachehashlist"
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/rorresourceowner"
@@ -20,6 +21,9 @@ type V2Client struct {
 	Client   *httpclient.HttpTransportClient
 	basePath string
 }
+
+// Interface guard: V2Client implements ResourcesInterface
+var _ resources.ResourcesInterface = (*V2Client)(nil)
 
 func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	return &V2Client{
@@ -43,6 +47,16 @@ func (c *V2Client) Get(ctx context.Context, query rorresources.ResourceQuery) (*
 func (c *V2Client) Update(ctx context.Context, res *rorresources.ResourceSet) (*rorresources.ResourceUpdateResults, error) {
 	var ret *rorresources.ResourceUpdateResults
 	err := c.Client.PostJSON(ctx, c.basePath, res, &ret, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsHeaders, Value: map[string]string{"X-Resources-Count": strconv.Itoa(res.Len())}})
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
+func (c *V2Client) Patch(ctx context.Context, res *rorresources.ResourcePatchSet) (*rorresources.ResourceUpdateResults, error) {
+	var ret *rorresources.ResourceUpdateResults
+	err := c.Client.PatchJSON(ctx, c.basePath, res, &ret, httpclient.HttpTransportClientParams{Key: httpclient.HttpTransportClientOptsHeaders, Value: map[string]string{"X-Resources-Count": strconv.Itoa(res.Len())}})
 	if err != nil {
 		return nil, err
 	}
