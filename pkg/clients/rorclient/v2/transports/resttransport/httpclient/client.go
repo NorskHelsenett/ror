@@ -255,6 +255,47 @@ func (t *HttpTransportClient) PostJSON(ctx context.Context, path string, in any,
 	return nil
 }
 
+// PatchJSON performs a PATCH request with the provided context and input,
+// then unmarshals the JSON response into the out parameter.
+// If an output is expected the "out" parameter MUST be a pointer.
+func (t *HttpTransportClient) PatchJSON(ctx context.Context, path string, in any, out any, params ...HttpTransportClientParams) error {
+	ctx, span := rortracer.StartSpan(ctx, "httpclient.PatchJSON")
+	defer span.End()
+	if err := t.PreflightCheck(); err != nil {
+		return err
+	}
+
+	jsonData, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, "PATCH", t.Config.BaseURL+path, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+
+	t.AddCommonHeaders(req)
+	t.ParseParams(req, params...)
+
+	res, err := t.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err = res.Body.Close()
+		if err != nil {
+			rlog.Errorc(ctx, "failed to close body", err)
+		}
+	}()
+
+	err = t.handleResponse(res, out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // PutJSON performs a PUT request with the provided context and input,
 // then unmarshals the JSON response into the out parameter.
 // If an output is expected the "out" parameter MUST be a pointer.
