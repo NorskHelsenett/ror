@@ -1,7 +1,9 @@
+// Package rorresources contains the resource and resource set definitions used in the ror eco-system.
 package rorresources
 
 import (
 	"encoding/json"
+	"errors"
 	"math"
 
 	"github.com/NorskHelsenett/ror/pkg/helpers/stringhelper"
@@ -9,11 +11,11 @@ import (
 	"github.com/NorskHelsenett/ror/pkg/rlog"
 )
 
-// ResourceSet is the common way to present one or more resources in ror.
+// ResourceSet is the common way to present one or more resources in rors.
 type ResourceSet struct {
-	nextcursor int
 	query      *ResourceQuery
 	Resources  []*Resource `json:"resources,omitempty"`
+	nextcursor int
 }
 
 func (rs *ResourceSet) SetQuery(query *ResourceQuery) {
@@ -32,68 +34,72 @@ func NewResourceSet() *ResourceSet {
 
 // Add adds a resource to the ResourceSet
 // If resource already exists it will be replaced.
-func (r *ResourceSet) Add(add *Resource) {
+func (rs *ResourceSet) Add(add *Resource) {
 	if add == nil {
 		return
 	}
-	if r.GetByUid(add.GetUID()) != nil {
-		r.DeleteByUid(add.GetUID())
+	if rs.GetByUid(add.GetUID()) != nil {
+		rs.DeleteByUid(add.GetUID())
 	}
-	if r.Resources == nil {
-		r.Resources = make([]*Resource, 0)
+	if rs.Resources == nil {
+		rs.Resources = make([]*Resource, 0)
 	}
 
-	r.Resources = append(r.Resources, add)
+	rs.Resources = append(rs.Resources, add)
 }
 
-func (r *ResourceSet) ToJson() ([]byte, error) {
-	return json.Marshal(r)
+var (
+	ErrResourceIsNil = errors.New("resource is nil")
+)
+
+func (rs *ResourceSet) ToJson() ([]byte, error) {
+	return json.Marshal(rs)
 }
 
 // Next moves the cursor along, use Get() to fetch the value eg:
 //
 //	    for resourceSet.Next(){
-//		     stringhelper.PrettyprintStruct(resourceSet.Get())
+//		     stringhelpers.PrettyprintStruct(resourceSet.Get())
 //	    }
-func (r *ResourceSet) Next() bool {
-	if r.nextcursor > (len(r.Resources) - 1) {
-		r.nextcursor = 0
+func (rs *ResourceSet) Next() bool {
+	if rs.nextcursor > (len(rs.Resources) - 1) {
+		rs.nextcursor = 0
 		return false
 	}
-	r.nextcursor++
+	rs.nextcursor++
 	return true
 }
 
 // Get returns the value of the current resource. can be used without moving the
 // pointer in case the resourceset only contains one resource.
-func (r *ResourceSet) Get() *Resource {
-	cursor := r.nextcursor - 1
-	if r.nextcursor == 0 {
+func (rs *ResourceSet) Get() *Resource {
+	cursor := rs.nextcursor - 1
+	if rs.nextcursor == 0 {
 		cursor = 0
 	}
-	if cursor > len(r.Resources) {
+	if cursor > len(rs.Resources) {
 		rlog.Error("ResourceSet.Get() cursor out of bounds", nil)
 		return nil
 	}
-	if r.Resources == nil {
+	if rs.Resources == nil {
 		return nil
 	}
-	return r.Resources[cursor]
+	return rs.Resources[cursor]
 }
 
 // All returns a slice with all resources
-func (r *ResourceSet) GetAll() []*Resource {
-	return r.Resources
+func (rs *ResourceSet) GetAll() []*Resource {
+	return rs.Resources
 }
 
 // Len returns the number of resources in the ResourceSetr
-func (r *ResourceSet) Len() int {
-	return len(r.Resources)
+func (rs *ResourceSet) Len() int {
+	return len(rs.Resources)
 }
 
 // Function to return resource by name.
-func (r *ResourceSet) GetByName(search string) *Resource {
-	for _, resource := range r.Resources {
+func (rs *ResourceSet) GetByName(search string) *Resource {
+	for _, resource := range rs.Resources {
 		if resource.GetName() == search {
 			return resource
 		}
@@ -101,15 +107,15 @@ func (r *ResourceSet) GetByName(search string) *Resource {
 	return nil
 }
 
-// Function to return resource by uid.
-func (r *ResourceSet) GetByUid(search string) *Resource {
-	if r == nil {
+// GetByUid to return resource by uid.
+func (rs *ResourceSet) GetByUid(search string) *Resource {
+	if rs == nil {
 		return nil
 	}
-	if r.Resources == nil {
+	if rs.Resources == nil {
 		return nil
 	}
-	for _, resource := range r.Resources {
+	for _, resource := range rs.Resources {
 		if resource.GetUID() == search {
 			return resource
 		}
@@ -117,27 +123,27 @@ func (r *ResourceSet) GetByUid(search string) *Resource {
 	return nil
 }
 
-// Function to delete resource by uid.
-func (r *ResourceSet) DeleteByUid(search string) {
+// DeleteByUid to delete a resource by uid.
+func (rs *ResourceSet) DeleteByUid(search string) {
 	if search == "" {
 		return
 	}
 	var newResources []*Resource
-	for _, resource := range r.Resources {
+	for _, resource := range rs.Resources {
 		if resource.GetUID() != search {
 			newResources = append(newResources, resource)
 		}
 	}
 
-	r.Resources = newResources
+	rs.Resources = newResources
 	newResources = nil
 }
 
 // FilterByLabels returns a ResourceSet filtered by label.
-func (r *ResourceSet) FilterByLabels(search map[string]string) *ResourceSet {
+func (rs *ResourceSet) FilterByLabels(search map[string]string) *ResourceSet {
 	var response ResourceSet
 
-	for _, resource := range r.Resources {
+	for _, resource := range rs.Resources {
 		metadata := resource.GetMetadata()
 		if len(metadata.Labels) != 0 {
 			if stringhelper.CompareLabels(search, metadata.Labels) {
@@ -149,10 +155,10 @@ func (r *ResourceSet) FilterByLabels(search map[string]string) *ResourceSet {
 }
 
 // FilterByAPIVersionKind returns a ResourceSet filtered by apiversion and kind.
-func (r *ResourceSet) FilterByAPIVersionKind(apiVersion string, kind string) *ResourceSet {
+func (rs *ResourceSet) FilterByAPIVersionKind(apiVersion string, kind string) *ResourceSet {
 	var response ResourceSet
 
-	for _, resource := range r.Resources {
+	for _, resource := range rs.Resources {
 		if resource.GetAPIVersion() == apiVersion && resource.GetKind() == kind {
 			response.Add(resource)
 		}
@@ -161,10 +167,10 @@ func (r *ResourceSet) FilterByAPIVersionKind(apiVersion string, kind string) *Re
 }
 
 // FilterByOwnerReference returns a ResourceSet filtered by ownerreference.
-func (r *ResourceSet) FilterByOwnerReference(ownerRef rorresourceowner.RorResourceOwnerReference) *ResourceSet {
+func (rs *ResourceSet) FilterByOwnerReference(ownerRef rorresourceowner.RorResourceOwnerReference) *ResourceSet {
 	var response ResourceSet
 
-	for _, resource := range r.Resources {
+	for _, resource := range rs.Resources {
 		metadata := resource.GetRorMeta()
 		if metadata.Ownerref.Scope == ownerRef.Scope && metadata.Ownerref.Subject == ownerRef.Subject {
 			response.Add(resource)
@@ -174,8 +180,8 @@ func (r *ResourceSet) FilterByOwnerReference(ownerRef rorresourceowner.RorResour
 }
 
 type ResourceUpdateResult struct {
-	Status  int    `json:"status,omitempty"`
 	Message string `json:"message,omitempty"`
+	Status  int    `json:"status,omitempty"`
 }
 
 func NewResourceUpdateResult(status int, message string) *ResourceUpdateResult {
@@ -223,14 +229,14 @@ func NewResourceUpdateResults(opts ...ConfigOption) *ResourceUpdateResults {
 	}
 }
 
-func (r *ResourceUpdateResults) Add(key string, entry *ResourceUpdateResult) {
-	r.Results[key] = *entry
+func (rs *ResourceUpdateResults) Add(key string, entry *ResourceUpdateResult) {
+	rs.Results[key] = *entry
 }
 
-// FailedResources is a method to return a list of failed resources.
-func (r *ResourceUpdateResults) GetFailedResources() map[string]ResourceUpdateResult {
+// GetFailedResources is a method to return a list of failed resources.
+func (rs *ResourceUpdateResults) GetFailedResources() map[string]ResourceUpdateResult {
 	failedResources := make(map[string]ResourceUpdateResult, 0)
-	for key, value := range r.Results {
+	for key, value := range rs.Results {
 		if value.Status > 399 || value.Status < 200 {
 			failedResources[key] = value
 		}
