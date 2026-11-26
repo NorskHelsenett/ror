@@ -4,14 +4,18 @@ import (
 	"context"
 
 	"github.com/NorskHelsenett/ror/pkg/apicontracts/apikeystypes/v2"
+	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/interfaces/v2/apikeys"
 	"github.com/NorskHelsenett/ror/pkg/clients/rorclient/v2/transports/resttransport/httpclient"
 )
 
-// implements ApiKeysInterface pkg/clients/rorclient/v2/interfaces/v2/apikeys
+// V2Client implements ApiKeysInterface pkg/clients/rorclient/v2/interfaces/v2/apikeys
 type V2Client struct {
 	Client   *httpclient.HttpTransportClient
 	basePath string
 }
+
+// Interface guard: V2Client implements ApiKeysInterface
+var _ apikeys.ApiKeysInterface = (*V2Client)(nil)
 
 func NewV2Client(client *httpclient.HttpTransportClient) *V2Client {
 	return &V2Client{
