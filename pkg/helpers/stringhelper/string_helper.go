@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+
+	"github.com/NorskHelsenett/ror/pkg/helpers/optional"
 )
 
 type StringType = string
@@ -92,6 +94,17 @@ func CompareLabels(search map[string]string, labels map[string]string) bool {
 	i := 0
 	for k, v := range search {
 		if labels[k] == v {
+			i = i + 1
+		}
+	}
+	return i == len(search)
+}
+
+// CompareOptionalLabels compares two maps of labels
+func CompareOptionalLabels(search map[string]string, labels optional.Map[string, string]) bool {
+	i := 0
+	for k, v := range search {
+		if labels.Get(k) == v {
 			i = i + 1
 		}
 	}
