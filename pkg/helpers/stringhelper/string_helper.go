@@ -104,7 +104,11 @@ func CompareLabels(search map[string]string, labels map[string]string) bool {
 func CompareOptionalLabels(search map[string]string, labels optional.Map[string, string]) bool {
 	i := 0
 	for k, v := range search {
-		if labels.Get(k) == v {
+		label, ok := labels.Get(k)
+		if !ok {
+			continue
+		}
+		if label == v {
 			i = i + 1
 		}
 	}
@@ -123,7 +127,7 @@ func PrettyprintStruct(obj any) {
 	}
 }
 
-// Hash a password with the SHA-512 algorithm
+// HashSHA512 a password with the SHA-512 algorithm
 func HashSHA512(text string, salt []byte) string {
 	// Convert password string to byte slice
 	var textByte = []byte(text)
@@ -146,7 +150,7 @@ func HashSHA512(text string, salt []byte) string {
 	return hashedHex
 }
 
-// Check if two passwords match
+// DoHashsMatchWithString checks if two passwords match
 func DoHashsMatchWithString(hash, text string, salt []byte) bool {
 	var textHash = HashSHA512(text, salt)
 	return hash == textHash
