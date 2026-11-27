@@ -1,4 +1,4 @@
-// package delivers apicontracts for resources
+// Package rortypes delivers apicontracts for resources
 package rortypes
 
 import (
@@ -44,7 +44,7 @@ func (p ResourceTagProperties) TSName() string {
 	}
 }
 
-// Commonresource defines the minimum resource definition.
+// CommonResource defines the minimum resource definition.
 type CommonResource struct {
 	metav1.TypeMeta `json:",inline"`
 	Metadata        metav1.ObjectMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
@@ -62,10 +62,17 @@ type ResourceRorMeta struct {
 	Tags         []ResourceTag                              `json:"tags,omitempty"`
 }
 
+func NewResourceRorMeta(ownerref *rorresourceowner.RorResourceOwnerReference) *ResourceRorMeta {
+	return &ResourceRorMeta{
+		Tags:     make([]ResourceTag, 0),
+		Ownerref: *ownerref,
+	}
+}
+
 type ResourceTag struct {
+	Properties map[ResourceTagProperties]string `json:"properties" ts_type:"{ [key: string]: string }"`
 	Key        string                           `json:"key"`
 	Value      string                           `json:"value"`
-	Properties map[ResourceTagProperties]string `json:"properties" ts_type:"{ [key: string]: string }"`
 }
 
 func (t ResourceRorMeta) GetTagValueByKey(key string) (string, bool) {
