@@ -1,3 +1,4 @@
+// Package rorresourceowner provides the models and variables for resource owner references in the ror eco-system.
 package rorresourceowner
 
 import (
@@ -17,6 +18,13 @@ var (
 type RorResourceOwnerReference struct {
 	Scope   aclscope.Scope   `json:"scope"`   // cluster, workspace,...
 	Subject aclscope.Subject `json:"subject"` // ror id eg clusterId or workspaceName
+}
+
+func NewRorResourceOwnerReference(scope aclscope.Scope, subject aclscope.Subject) *RorResourceOwnerReference {
+	return &RorResourceOwnerReference{
+		Scope:   scope,
+		Subject: subject,
+	}
 }
 
 // Validate validates the ResourceOwnerReference
