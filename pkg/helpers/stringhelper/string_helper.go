@@ -1,3 +1,4 @@
+// Package stringhelper provides helper functions for string manipulation and hashing.
 package stringhelper
 
 import (
