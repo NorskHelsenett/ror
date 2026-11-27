@@ -35,6 +35,13 @@ func (m Map[K, V]) Set(key K, value V) Map[K, V] {
 	return m
 }
 
+// Get returns the value and a boolean indicating if the key is set.
+// If the bool is false, the value is the zero value of V - "" for string, 0 for int, etc..
+// If the bool is true, the  value is the value of V.
+func (m Map[K, V]) Get(key K) (V, bool) {
+	return m[key].value, m[key].IsSet()
+}
+
 // Delete marks key to be removed from the target.
 func (m Map[K, V]) Delete(key K) Map[K, V] {
 	m[key] = Null[V]()
