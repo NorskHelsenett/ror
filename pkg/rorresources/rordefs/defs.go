@@ -1,5 +1,5 @@
-// The package provides the models and variables needed to generate code and endpoints for the implemented rorresources
-package rordefs // Package resourcegeneratormodels
+// Package rordefs provide the models and variables needed to generate code and endpoints for the implemented rorresources
+package rordefs
 
 import (
 	"github.com/NorskHelsenett/ror/pkg/models/aclmodels/aclcaps"
