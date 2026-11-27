@@ -97,3 +97,17 @@ func (p *ResourcePatch) tags() rortypes.ResourcePatchTags {
 	p.RorMeta.Set(meta)
 	return tags
 }
+
+// GetAPIVersion returns the API version of the resource
+func (r *ResourcePatch) GetAPIVersion() string {
+	return r.APIVersion
+}
+
+func (r *ResourcePatch) GetKind() string {
+	return r.Kind
+}
+
+// GetRorMeta returns the RorMeta of the resource
+func (r ResourcePatch) GetRorMeta() optional.Optional[rortypes.ResourcePatchRorMeta] {
+	return r.RorMeta
+}
